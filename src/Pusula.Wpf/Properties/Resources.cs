@@ -219,6 +219,100 @@ namespace Pusula.Wpf.Properties
         /// <summary>Stok seçilmeden modül ekle istenince.</summary>
         public static string Status_SelectStockFirst { get { return Get("Status_SelectStockFirst"); } }
 
+        /// <summary>Şablon düzenleyici kaydedilince.</summary>
+        public static string Status_TemplatesSaved { get { return Get("Status_TemplatesSaved"); } }
+
+        /// <summary>Şablon düzenleyiciyi açan düğme ve menü öğesi.</summary>
+        public static string Button_EditTemplates { get { return Get("Button_EditTemplates"); } }
+
+        #endregion
+
+        #region Düzenleyici
+
+        /// <summary>Şablon düzenleyici başlığı.</summary>
+        public static string Editor_Title { get { return Get("Editor_Title"); } }
+
+        /// <summary>Şablon dosyası bilgisi; {0} yol.</summary>
+        public static string Editor_SharedNote { get { return Get("Editor_SharedNote"); } }
+
+        /// <summary>Modül listesi başlığı.</summary>
+        public static string Editor_Modules { get { return Get("Editor_Modules"); } }
+
+        /// <summary>Modül ekle düğmesi.</summary>
+        public static string Editor_AddModule { get { return Get("Editor_AddModule"); } }
+
+        /// <summary>Modül silme düğmesi.</summary>
+        public static string Editor_DeleteModule { get { return Get("Editor_DeleteModule"); } }
+
+        /// <summary>Her stokta açılan modülün etiketi.</summary>
+        public static string Editor_CoreBadge { get { return Get("Editor_CoreBadge"); } }
+
+        /// <summary>Modül adı alanı.</summary>
+        public static string Editor_Name { get { return Get("Editor_Name"); } }
+
+        /// <summary>Modül klasörü alanı (numara ve ad).</summary>
+        public static string Editor_Folder { get { return Get("Editor_Folder"); } }
+
+        /// <summary>Her stokta açılır seçeneği.</summary>
+        public static string Editor_Core { get { return Get("Editor_Core"); } }
+
+        /// <summary>Her stokta seçeneğinin açıklaması.</summary>
+        public static string Editor_CoreHint { get { return Get("Editor_CoreHint"); } }
+
+        /// <summary>Modülün işaretli geldiği şablonlar.</summary>
+        public static string Editor_InTemplates { get { return Get("Editor_InTemplates"); } }
+
+        /// <summary>Alt klasör ağacının başlığı.</summary>
+        public static string Editor_SubFolders { get { return Get("Editor_SubFolders"); } }
+
+        /// <summary>Modül klasörünün altına klasör ekler.</summary>
+        public static string Editor_AddSubFolder { get { return Get("Editor_AddSubFolder"); } }
+
+        /// <summary>Düğümün altına klasör ekler.</summary>
+        public static string Editor_AddChild { get { return Get("Editor_AddChild"); } }
+
+        /// <summary>Sil düğmesinin ipucu.</summary>
+        public static string Editor_Delete { get { return Get("Editor_Delete"); } }
+
+        /// <summary>Silme açıklaması.</summary>
+        public static string Editor_DeleteHint { get { return Get("Editor_DeleteHint"); } }
+
+        /// <summary>Şablon listesi başlığı.</summary>
+        public static string Editor_Templates { get { return Get("Editor_Templates"); } }
+
+        /// <summary>Şablon ekle düğmesi.</summary>
+        public static string Editor_AddTemplate { get { return Get("Editor_AddTemplate"); } }
+
+        /// <summary>Şablon bölümünün açıklaması.</summary>
+        public static string Editor_TemplatesHint { get { return Get("Editor_TemplatesHint"); } }
+
+        /// <summary>Yeni modülün varsayılan adı.</summary>
+        public static string Editor_NewModule { get { return Get("Editor_NewModule"); } }
+
+        /// <summary>Yeni şablonun varsayılan adı.</summary>
+        public static string Editor_NewTemplate { get { return Get("Editor_NewTemplate"); } }
+
+        /// <summary>Yeni klasörün varsayılan adı.</summary>
+        public static string Editor_NewFolder { get { return Get("Editor_NewFolder"); } }
+
+        /// <summary>Kaydet düğmesi.</summary>
+        public static string Editor_Save { get { return Get("Editor_Save"); } }
+
+        /// <summary>Boş modül adı.</summary>
+        public static string Editor_ErrorModuleName { get { return Get("Editor_ErrorModuleName"); } }
+
+        /// <summary>Geçersiz modül klasörü; {0} ad.</summary>
+        public static string Editor_ErrorFolder { get { return Get("Editor_ErrorFolder"); } }
+
+        /// <summary>Tekrarlı modül klasörü; {0} ad.</summary>
+        public static string Editor_ErrorDuplicateFolder { get { return Get("Editor_ErrorDuplicateFolder"); } }
+
+        /// <summary>Geçersiz alt klasör; {0} modül, {1} ad.</summary>
+        public static string Editor_ErrorSubFolder { get { return Get("Editor_ErrorSubFolder"); } }
+
+        /// <summary>Geçersiz şablon adı.</summary>
+        public static string Editor_ErrorTemplateName { get { return Get("Editor_ErrorTemplateName"); } }
+
         #endregion
     }
 }

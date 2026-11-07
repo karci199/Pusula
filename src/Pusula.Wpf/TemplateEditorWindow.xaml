@@ -1,0 +1,259 @@
+﻿<controls:ChromeWindow x:Class="Pusula.Wpf.TemplateEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:DesignKit.Controls;assembly=DesignKit.Wpf"
+        xmlns:local="clr-namespace:Pusula.Wpf"
+        xmlns:res="clr-namespace:Pusula.Wpf.Properties"
+        Title="{x:Static res:Resources.Editor_Title}"
+        Width="980" Height="720"
+        MinWidth="760" MinHeight="520"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        FontFamily="{DynamicResource AppFont}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        Background="{DynamicResource SurfaceBaseBrush}">
+
+    <controls:ChromeWindow.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
+        <Style x:Key="SectionLabel" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </controls:ChromeWindow.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Başlık -->
+        <StackPanel Grid.Row="0" Margin="24,12,24,12">
+            <TextBlock Style="{DynamicResource SubtitleTextBlockStyle}" Text="{x:Static res:Resources.Editor_Title}" />
+            <TextBlock Style="{DynamicResource CaptionTextBlockStyle}"
+                       Foreground="{DynamicResource TextTertiaryBrush}"
+                       Text="{Binding FileNote}" />
+        </StackPanel>
+
+        <!-- Modüller ve seçili modül -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="260" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    Background="{DynamicResource LayerBrush}"
+                    BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                    BorderThickness="0,1,1,1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid Margin="16,8,8,4">
+                        <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Editor_Modules}" />
+                        <Button HorizontalAlignment="Right" Command="{Binding AddModuleCommand}">
+                            <StackPanel Orientation="Horizontal">
+                                <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
+                                <TextBlock Text="{x:Static res:Resources.Editor_AddModule}" Margin="6,0,0,0" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                    <ListBox Grid.Row="1"
+                             ItemsSource="{Binding Modules}"
+                             SelectedItem="{Binding SelectedModule, Mode=TwoWay}"
+                             Background="Transparent"
+                             BorderThickness="0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="28" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding Number}"
+                                               FontFamily="Consolas"
+                                               Foreground="{DynamicResource TextTertiaryBrush}" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Column="2"
+                                               Margin="8,0,0,0"
+                                               Style="{DynamicResource CaptionTextBlockStyle}"
+                                               Foreground="{DynamicResource AccentBrush}"
+                                               Text="{x:Static res:Resources.Editor_CoreBadge}"
+                                               Visibility="{Binding Core, Converter={StaticResource BoolToVis}}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Border>
+
+            <!-- Seçili modül -->
+            <ScrollViewer Grid.Column="1"
+                          VerticalScrollBarVisibility="Auto"
+                          BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                          Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}">
+                <StackPanel Margin="24,12" DataContext="{Binding SelectedModule}">
+                    <controls:FormField Header="{x:Static res:Resources.Editor_Name}" LabelWidth="110">
+                        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                    </controls:FormField>
+                    <controls:FormField Header="{x:Static res:Resources.Editor_Folder}" LabelWidth="110" Margin="0,8,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="64" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Text="{Binding Number, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Grid.Column="1" Margin="8,0,0,0" Text="{Binding FolderName, UpdateSourceTrigger=PropertyChanged}" />
+                        </Grid>
+                    </controls:FormField>
+                    <controls:FormField Header="{x:Static res:Resources.Editor_Core}" LabelWidth="110" Margin="0,8,0,0">
+                        <CheckBox IsChecked="{Binding Core, Mode=TwoWay}" Content="{x:Static res:Resources.Editor_CoreHint}" />
+                    </controls:FormField>
+                    <controls:FormField Header="{x:Static res:Resources.Editor_InTemplates}" LabelWidth="110" Margin="0,8,0,0"
+                                        Visibility="{Binding IsOptional, Converter={StaticResource BoolToVis}}">
+                        <ItemsControl ItemsSource="{Binding Flags}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                              Content="{Binding Template.Name}"
+                                              Margin="0,0,16,4" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </controls:FormField>
+
+                    <Grid Margin="0,20,0,6">
+                        <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Editor_SubFolders}" />
+                        <Button HorizontalAlignment="Right" Command="{Binding AddSubFolderCommand}">
+                            <StackPanel Orientation="Horizontal">
+                                <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
+                                <TextBlock Text="{x:Static res:Resources.Editor_AddSubFolder}" Margin="6,0,0,0" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                    <Border Background="{DynamicResource LayerBrush}"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="{DynamicResource OverlayCornerRadius}"
+                            Padding="8">
+                        <StackPanel>
+                            <TextBlock Margin="8,4" FontFamily="Consolas" Text="{Binding Folder}" />
+                            <TreeView ItemsSource="{Binding SubFolders}" Background="Transparent" BorderThickness="0">
+                                <TreeView.ItemContainerStyle>
+                                    <Style TargetType="TreeViewItem" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                                        <Setter Property="IsExpanded" Value="True" />
+                                    </Style>
+                                </TreeView.ItemContainerStyle>
+                                <TreeView.ItemTemplate>
+                                    <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="14"
+                                                               Foreground="{DynamicResource TextTertiaryBrush}"
+                                                               VerticalAlignment="Center" />
+                                            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                                     Width="200" Margin="8,0,0,0" />
+                                            <Button Style="{DynamicResource IconButtonStyle}"
+                                                    Command="{Binding AddChildCommand}"
+                                                    ToolTip="{x:Static res:Resources.Editor_AddChild}"
+                                                    Margin="4,0,0,0">
+                                                <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" />
+                                            </Button>
+                                            <Button Style="{DynamicResource IconButtonStyle}"
+                                                    Command="{Binding DeleteCommand}"
+                                                    ToolTip="{x:Static res:Resources.Editor_Delete}">
+                                                <controls:FontIcon Glyph="{x:Static local:AppIcons.Delete}" FontSize="12" />
+                                            </Button>
+                                        </StackPanel>
+                                    </HierarchicalDataTemplate>
+                                </TreeView.ItemTemplate>
+                            </TreeView>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Style="{DynamicResource CaptionTextBlockStyle}"
+                               Foreground="{DynamicResource TextTertiaryBrush}"
+                               Margin="0,6,0,0"
+                               TextWrapping="Wrap"
+                               Text="{x:Static res:Resources.Editor_DeleteHint}" />
+
+                    <Button HorizontalAlignment="Left"
+                            Margin="0,20,0,0"
+                            Command="{Binding DataContext.DeleteModuleCommand, RelativeSource={RelativeSource AncestorType=Window}}">
+                        <StackPanel Orientation="Horizontal">
+                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Delete}" FontSize="12" VerticalAlignment="Center" />
+                            <TextBlock Text="{x:Static res:Resources.Editor_DeleteModule}" Margin="6,0,0,0" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- Şablonlar -->
+        <Border Grid.Row="2"
+                BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="24,12">
+            <StackPanel>
+                <Grid Margin="0,0,0,6">
+                    <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Editor_Templates}" />
+                    <Button HorizontalAlignment="Right" Command="{Binding AddTemplateCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
+                            <TextBlock Text="{x:Static res:Resources.Editor_AddTemplate}" Margin="6,0,0,0" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+                <ItemsControl ItemsSource="{Binding Templates}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,16,4">
+                                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="180" />
+                                <Button Style="{DynamicResource IconButtonStyle}"
+                                        Command="{Binding DeleteCommand}"
+                                        ToolTip="{x:Static res:Resources.Editor_Delete}"
+                                        Margin="4,0,0,0">
+                                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Delete}" FontSize="12" />
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock Style="{DynamicResource CaptionTextBlockStyle}"
+                           Foreground="{DynamicResource TextTertiaryBrush}"
+                           Text="{x:Static res:Resources.Editor_TemplatesHint}" />
+            </StackPanel>
+        </Border>
+
+        <!-- Alt: hata, vazgeç, kaydet -->
+        <Grid Grid.Row="3" Margin="24,12">
+            <TextBlock VerticalAlignment="Center"
+                       TextWrapping="Wrap"
+                       Margin="0,0,220,0"
+                       Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+                       Text="{Binding Error}" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="{x:Static res:Resources.Dialog_Cancel}" IsCancel="True" Click="Cancel_Click" />
+                <Button Content="{x:Static res:Resources.Editor_Save}"
+                        Style="{DynamicResource AccentButtonStyle}"
+                        Margin="8,0,0,0"
+                        Click="Save_Click" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+
+</controls:ChromeWindow>

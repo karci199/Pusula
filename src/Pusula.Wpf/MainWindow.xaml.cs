@@ -6,6 +6,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using DesignKit.Controls;
 using Pusula.Wpf.ViewModels;
+using Pusula.Wpf.ViewModels.TemplateEditor;
 
 namespace Pusula.Wpf
 {
@@ -67,6 +68,23 @@ namespace Pusula.Wpf
             if (!viewModel.ConfirmNewProject())
             {
                 Dispatcher.BeginInvoke(new Action(() => viewModel.IsProjectDialogOpen = true));
+            }
+        }
+
+        private void EditTemplates_Click(object sender, RoutedEventArgs e)
+        {
+            if (!viewModel.CanEditTemplates())
+            {
+                return;
+            }
+
+            var editor = new TemplateEditorWindow(new TemplateEditorViewModel(viewModel.RootPath, viewModel.Templates))
+            {
+                Owner = this,
+            };
+            if (editor.ShowDialog() == true)
+            {
+                viewModel.ReloadTemplates();
             }
         }
 

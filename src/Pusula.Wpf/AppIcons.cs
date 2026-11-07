@@ -23,5 +23,11 @@
 
         /// <summary>Yenile.</summary>
         public const string Refresh = "";
+
+        /// <summary>Sil.</summary>
+        public const string Delete = "";
+
+        /// <summary>Ayarlar / şablonlar.</summary>
+        public const string Settings = "";
     }
 }

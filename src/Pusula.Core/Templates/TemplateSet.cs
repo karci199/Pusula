@@ -1,41 +1,46 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Pusula.Core.Templates
 {
     /// <summary>
-    /// Kökteki <c>_PUSULA\sablon.json</c> içeriği: yeni projede ve stokta açılan klasörler,
-    /// seçilebilir modüller ve modüllerin hazır seçimleri (şablonlar).
+    /// Kökteki <c>_PUSULA\sablon.json</c> içeriği: yeni projede açılan klasörler, stok modülleri
+    /// (bir kısmı her stokta açılır) ve modüllerin hazır seçimleri (şablonlar).
     /// </summary>
     [DataContract]
     public sealed class TemplateSet
     {
+        /// <summary>Geçerli dosya biçimi sürümü.</summary>
+        public const int CurrentSchemaVersion = 2;
+
         /// <summary>Serileştirici kurucuyu çağırmaz; dosyada olmayan alanlar boş değerle başlar.</summary>
         [OnDeserializing]
         private void OnDeserializing(StreamingContext context)
         {
             SchemaVersion = 1;
             ProjectFolders = new List<string>();
-            CoreFolders = new List<string>();
+            LegacyCoreFolders = null;
             Modules = new List<ModuleDefinition>();
             Templates = new List<TemplatePreset>();
         }
 
         /// <summary>Dosya biçiminin sürümü.</summary>
         [DataMember(Name = "schemaVersion", Order = 0)]
-        public int SchemaVersion { get; set; } = 1;
+        public int SchemaVersion { get; set; } = CurrentSchemaVersion;
 
         /// <summary>Her yeni projede açılan klasörler.</summary>
         [DataMember(Name = "projectFolders", Order = 1)]
         public List<string> ProjectFolders { get; set; } = new List<string>();
 
-        /// <summary>Her yeni stokta açılan klasörler.</summary>
-        [DataMember(Name = "stockCoreFolders", Order = 2)]
-        public List<string> CoreFolders { get; set; } = new List<string>();
+        /// <summary>Sürüm 1'deki çekirdek klasör listesi; okunurken modüle çevrilir, yazılmaz.</summary>
+        [DataMember(Name = "stockCoreFolders", Order = 2, EmitDefaultValue = false)]
+        public List<string>? LegacyCoreFolders { get; set; }
 
-        /// <summary>Stokta seçilebilir modüller.</summary>
+        /// <summary>Stok modülleri.</summary>
         [DataMember(Name = "stockModules", Order = 3)]
         public List<ModuleDefinition> Modules { get; set; } = new List<ModuleDefinition>();
 
@@ -43,19 +48,57 @@ namespace Pusula.Core.Templates
         [DataMember(Name = "stockTemplates", Order = 4)]
         public List<TemplatePreset> Templates { get; set; } = new List<TemplatePreset>();
 
+        /// <summary>Her stokta açılan modüller.</summary>
+        public IEnumerable<ModuleDefinition> CoreModules
+        {
+            get { return Modules.Where(m => m.Core); }
+        }
+
+        /// <summary>Seçilebilen (her stokta açılmayan) modüller.</summary>
+        public IEnumerable<ModuleDefinition> OptionalModules
+        {
+            get { return Modules.Where(m => !m.Core); }
+        }
+
         /// <summary>
-        /// Çekirdek klasörler + seçilen modüllerin klasörleri ve alt klasörleri (stoka göre göreli yollar).
+        /// Her stokta açılan modüller + seçilen modüllerin klasörleri ve alt klasörleri (stoka göre göreli yollar).
         /// </summary>
         public IReadOnlyList<string> StockFoldersFor(IEnumerable<string> moduleKeys)
         {
-            var keys = new HashSet<string>(moduleKeys, System.StringComparer.OrdinalIgnoreCase);
-            var result = new List<string>(CoreFolders);
-            foreach (var module in Modules.Where(m => keys.Contains(m.Key)))
+            var keys = new HashSet<string>(moduleKeys, StringComparer.OrdinalIgnoreCase);
+            return Modules
+                .Where(m => m.Core || keys.Contains(m.Key))
+                .SelectMany(m => m.AllFolders())
+                .ToList();
+        }
+
+        /// <summary>Eski sürüm dosyayı geçerli biçime çevirir (yalnızca bellekte).</summary>
+        public void Normalize()
+        {
+            if (LegacyCoreFolders != null)
             {
-                result.AddRange(module.AllFolders());
+                var index = 0;
+                foreach (var folder in LegacyCoreFolders)
+                {
+                    if (Modules.Any(m => string.Equals(m.Folder, folder, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        continue;
+                    }
+
+                    Modules.Insert(index++, new ModuleDefinition
+                    {
+                        Key = folder,
+                        Name = ModuleDefinition.SplitFolder(folder).Item2.Replace('_', ' '),
+                        Folder = folder,
+                        Core = true,
+                    });
+                }
+
+                LegacyCoreFolders = null;
             }
 
-            return result;
+            Modules = Modules.OrderBy(m => m.Folder.StartsWith("_", StringComparison.Ordinal)).ThenBy(m => m.Folder, StringComparer.OrdinalIgnoreCase).ToList();
+            SchemaVersion = CurrentSchemaVersion;
         }
 
         /// <summary>İlk kullanımda yazılan varsayılan içerik.</summary>
@@ -63,8 +106,17 @@ namespace Pusula.Core.Templates
         {
             var set = new TemplateSet();
             set.ProjectFolders.Add("00_Proje_Geneli");
-            set.CoreFolders.AddRange(new[] { "00_Diger", "01_Dokumanlar", "03_Test_Sonuclari", "07_Fotograflar", "_ARSIV" });
+            set.Modules.Add(new ModuleDefinition { Key = "other", Name = "Diğer", Folder = "00_Diger", Core = true });
+            set.Modules.Add(new ModuleDefinition { Key = "documents", Name = "Dokümanlar", Folder = "01_Dokumanlar", Core = true });
             set.Modules.Add(new ModuleDefinition { Key = "testPlans", Name = "Test planları", Folder = "02_Test_Planlari" });
+            set.Modules.Add(new ModuleDefinition
+            {
+                Key = "testResults",
+                Name = "Test sonuçları",
+                Folder = "03_Test_Sonuclari",
+                Core = true,
+                SubFolders = new List<string> { "VNA", "SATIMO", @"SATIMO\Ham", @"SATIMO\Analiz", "Yankisiz", "CK" },
+            });
             set.Modules.Add(new ModuleDefinition
             {
                 Key = "qualification",
@@ -80,6 +132,8 @@ namespace Pusula.Core.Templates
                 SubFolders = new List<string> { "Mekanik", "Kablaj" },
             });
             set.Modules.Add(new ModuleDefinition { Key = "software", Name = "Yazılımlar", Folder = "06_Yazilimlar" });
+            set.Modules.Add(new ModuleDefinition { Key = "photos", Name = "Fotoğraflar", Folder = "07_Fotograflar", Core = true });
+            set.Modules.Add(new ModuleDefinition { Key = "archive", Name = "Arşiv", Folder = "_ARSIV", Core = true });
             set.Templates.Add(new TemplatePreset { Name = "Pasif anten" });
             set.Templates.Add(new TemplatePreset
             {
@@ -90,10 +144,12 @@ namespace Pusula.Core.Templates
         }
     }
 
-    /// <summary>Seçilebilir bir modül: ad, açılacak klasör ve alt klasörleri.</summary>
+    /// <summary>Bir stok modülü: ad, klasör, iç içe alt klasörler.</summary>
     [DataContract]
     public sealed class ModuleDefinition
     {
+        private static readonly Regex NumberedFolder = new Regex(@"^(\d+)_(.+)$");
+
         /// <summary>Serileştirici kurucuyu çağırmaz; dosyada olmayan alanlar boş değerle başlar.</summary>
         [OnDeserializing]
         private void OnDeserializing(StreamingContext context)
@@ -101,10 +157,11 @@ namespace Pusula.Core.Templates
             Key = string.Empty;
             Name = string.Empty;
             Folder = string.Empty;
+            Core = false;
             SubFolders = new List<string>();
         }
 
-        /// <summary>Şablonlarda kullanılan anahtar.</summary>
+        /// <summary>Şablonlarda kullanılan değişmez anahtar.</summary>
         [DataMember(Name = "key", Order = 0)]
         public string Key { get; set; } = string.Empty;
 
@@ -112,12 +169,16 @@ namespace Pusula.Core.Templates
         [DataMember(Name = "name", Order = 1)]
         public string Name { get; set; } = string.Empty;
 
-        /// <summary>Stok altında açılacak klasör adı (sabit numaralı).</summary>
+        /// <summary>Stok altında açılacak klasör adı (örn. <c>03_Test_Sonuclari</c>).</summary>
         [DataMember(Name = "folder", Order = 2)]
         public string Folder { get; set; } = string.Empty;
 
-        /// <summary>Modül klasörünün altında açılacak klasörler.</summary>
-        [DataMember(Name = "subFolders", Order = 3)]
+        /// <summary>Her yeni stokta açılır mı.</summary>
+        [DataMember(Name = "core", Order = 3)]
+        public bool Core { get; set; }
+
+        /// <summary>Modül klasörünün altındaki klasörler; iç içe olabilir (örn. <c>SATIMO\Ham</c>).</summary>
+        [DataMember(Name = "subFolders", Order = 4)]
         public List<string> SubFolders { get; set; } = new List<string>();
 
         /// <summary>Modül klasörü ve alt klasörleri (stoka göre göreli yollar).</summary>
@@ -128,6 +189,18 @@ namespace Pusula.Core.Templates
             {
                 yield return Path.Combine(Folder, sub);
             }
+        }
+
+        /// <summary><c>03_Test_Sonuclari</c> → (<c>03</c>, <c>Test_Sonuclari</c>); numarasızsa numara boş.</summary>
+        public static Tuple<string, string> SplitFolder(string folder)
+        {
+            var match = NumberedFolder.Match(folder ?? string.Empty);
+            if (match.Success)
+            {
+                return Tuple.Create(match.Groups[1].Value, match.Groups[2].Value);
+            }
+
+            return Tuple.Create(string.Empty, folder ?? string.Empty);
         }
     }
 

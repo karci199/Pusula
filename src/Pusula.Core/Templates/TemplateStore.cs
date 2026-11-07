@@ -5,7 +5,7 @@ using Pusula.Core.Tracking;
 namespace Pusula.Core.Templates
 {
     /// <summary>
-    /// Şablon dosyasını (<c>&lt;kök&gt;\_PUSULA\sablon.json</c>) okur; yoksa varsayılanı yazar.
+    /// Şablon dosyasını (<c>&lt;kök&gt;\_PUSULA\sablon.json</c>) okur ve yazar; yoksa varsayılanı oluşturur.
     /// </summary>
     public static class TemplateStore
     {
@@ -23,21 +23,22 @@ namespace Pusula.Core.Templates
 
         /// <summary>
         /// Şablonları okur. Dosya yoksa varsayılanı oluşturup yazar; bozuksa varsayılanı döner ama dosyaya dokunmaz.
+        /// Eski sürüm dosya bellekte geçerli biçime çevrilir; dosya ancak kaydedilince güncellenir.
         /// </summary>
         public static TemplateSet LoadOrCreate(string root)
         {
             var path = FilePath(root);
             if (File.Exists(path))
             {
-                return JsonFile.TryRead<TemplateSet>(path) ?? TemplateSet.CreateDefault();
+                var loaded = JsonFile.TryRead<TemplateSet>(path) ?? TemplateSet.CreateDefault();
+                loaded.Normalize();
+                return loaded;
             }
 
             var set = TemplateSet.CreateDefault();
             try
             {
-                JsonFile.WriteAtomic(path, set);
-                var folder = new DirectoryInfo(Path.Combine(root, FolderName));
-                folder.Attributes |= FileAttributes.Hidden;
+                Save(root, set);
             }
             catch (IOException)
             {
@@ -47,6 +48,18 @@ namespace Pusula.Core.Templates
             }
 
             return set;
+        }
+
+        /// <summary>Şablonları atomik olarak yazar ve <c>_PUSULA</c> klasörünü gizler.</summary>
+        public static void Save(string root, TemplateSet set)
+        {
+            set.Normalize();
+            JsonFile.WriteAtomic(FilePath(root), set);
+            var folder = new DirectoryInfo(Path.Combine(root, FolderName));
+            if ((folder.Attributes & FileAttributes.Hidden) == 0)
+            {
+                folder.Attributes |= FileAttributes.Hidden;
+            }
         }
     }
 }

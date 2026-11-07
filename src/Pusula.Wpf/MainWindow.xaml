@@ -69,6 +69,12 @@
                     <controls:FontIcon Glyph="{x:Static local:AppIcons.Project}" Foreground="{DynamicResource Pusula.ProjectIconBrush}" />
                 </MenuItem.Icon>
             </MenuItem>
+            <Separator />
+            <MenuItem Header="{x:Static res:Resources.Button_EditTemplates}" Click="EditTemplates_Click">
+                <MenuItem.Icon>
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Settings}" />
+                </MenuItem.Icon>
+            </MenuItem>
         </ContextMenu>
 
         <ContextMenu x:Key="NodeMenu">
@@ -150,6 +156,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0"
                                    Style="{DynamicResource CaptionTextBlockStyle}"
@@ -168,6 +175,12 @@
                                 ToolTip="{x:Static res:Resources.Button_Refresh}"
                                 Margin="4,0,0,0">
                             <controls:FontIcon Glyph="{x:Static local:AppIcons.Refresh}" FontSize="14" />
+                        </Button>
+                        <Button Grid.Column="3"
+                                Style="{DynamicResource IconButtonStyle}"
+                                Click="EditTemplates_Click"
+                                ToolTip="{x:Static res:Resources.Button_EditTemplates}">
+                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Settings}" FontSize="14" />
                         </Button>
                     </Grid>
 

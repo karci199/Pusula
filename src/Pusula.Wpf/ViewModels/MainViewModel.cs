@@ -280,7 +280,7 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Her stokta açılan klasörlerin listesi (bilgi metni).</summary>
         public string CoreFoldersText
         {
-            get { return string.Format(Resources.Dialog_AlwaysCreated, string.Join(", ", templates.CoreFolders)); }
+            get { return string.Format(Resources.Dialog_AlwaysCreated, string.Join(", ", templates.CoreModules.Select(m => m.Folder))); }
         }
 
         /// <summary>Diyalogdaki hata metni; boşsa gizlidir.</summary>
@@ -306,7 +306,7 @@ namespace Pusula.Wpf.ViewModels
             StockError = string.Empty;
 
             StockModules.Clear();
-            foreach (var module in templates.Modules)
+            foreach (var module in templates.OptionalModules)
             {
                 StockModules.Add(new ModuleOptionViewModel(module, false));
             }
@@ -383,6 +383,39 @@ namespace Pusula.Wpf.ViewModels
             }
 
             return string.Empty;
+        }
+
+        #endregion
+
+        #region Şablonlar
+
+        /// <summary>Geçerli kökün şablonları.</summary>
+        public TemplateSet Templates
+        {
+            get { return templates; }
+        }
+
+        /// <summary>Şablon düzenleyici kapanınca çağrılır; şablonları dosyadan yeniden okur.</summary>
+        public void ReloadTemplates()
+        {
+            if (HasRoot)
+            {
+                templates = TemplateStore.LoadOrCreate(rootPath);
+                Status = Resources.Status_TemplatesSaved;
+            }
+        }
+
+        /// <summary>Şablon düzenleyici açılabilir mi; değilse durum metnini doldurur.</summary>
+        public bool CanEditTemplates()
+        {
+            if (!HasRoot)
+            {
+                Status = Resources.Status_SelectRootFirst;
+                return false;
+            }
+
+            templates = TemplateStore.LoadOrCreate(rootPath);
+            return true;
         }
 
         #endregion
