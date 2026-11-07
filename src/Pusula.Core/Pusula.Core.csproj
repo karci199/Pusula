@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Pusula.Core — alan modeli, ayrıştırıcılar, tarama ve kurallar.
+    Arayüzden bağımsızdır: WPF veya DesignKit referansı almaz.
+  -->
+  <PropertyGroup>
+    <RootNamespace>Pusula.Core</RootNamespace>
+    <AssemblyName>Pusula.Core</AssemblyName>
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Pusula.Wpf — WPF arayüz. Çıktı: Pusula.exe.
+    Ortak ayarlar ..\..\Directory.Build.props dosyasından gelir.
+  -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>Pusula.Wpf</RootNamespace>
+    <AssemblyName>Pusula</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Pusula.Core\Pusula.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="DesignKit.Wpf">
+      <HintPath>$(DependenciesDir)DesignKit\DesignKit.Wpf.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
