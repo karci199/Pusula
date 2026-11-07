@@ -24,17 +24,17 @@
   <data name="Root_DialogTitle" xml:space="preserve">
     <value>Projelerin durduğu klasörü seçin</value>
   </data>
-  <data name="Button_NewProject" xml:space="preserve">
-    <value>Yeni proje</value>
+  <data name="Tree_Header" xml:space="preserve">
+    <value>Projeler</value>
   </data>
-  <data name="Button_NewStock" xml:space="preserve">
-    <value>Yeni stok</value>
+  <data name="Tree_NoRoot" xml:space="preserve">
+    <value>Başlamak için yukarıdan projeler klasörünü seçin.</value>
+  </data>
+  <data name="Button_Add" xml:space="preserve">
+    <value>Ekle</value>
   </data>
   <data name="Button_Refresh" xml:space="preserve">
     <value>Yenile</value>
-  </data>
-  <data name="Tree_NoRoot" xml:space="preserve">
-    <value>Henüz kök klasör seçilmedi.</value>
   </data>
   <data name="Kind_Project" xml:space="preserve">
     <value>Proje</value>
@@ -45,17 +45,38 @@
   <data name="Kind_Plain" xml:space="preserve">
     <value>Klasör</value>
   </data>
+  <data name="Menu_NewProject" xml:space="preserve">
+    <value>Yeni proje</value>
+  </data>
+  <data name="Menu_NewStock" xml:space="preserve">
+    <value>Yeni stok</value>
+  </data>
+  <data name="Menu_NewStockFor" xml:space="preserve">
+    <value>Yeni stok · {0}</value>
+  </data>
+  <data name="Menu_OpenFolder" xml:space="preserve">
+    <value>Klasörde aç</value>
+  </data>
+  <data name="Menu_Refresh" xml:space="preserve">
+    <value>Yenile</value>
+  </data>
+  <data name="Gesture_NewProject" xml:space="preserve">
+    <value>Ctrl+N</value>
+  </data>
+  <data name="Gesture_NewStock" xml:space="preserve">
+    <value>Ctrl+Shift+N</value>
+  </data>
   <data name="Content_EmptyTitle" xml:space="preserve">
     <value>Pusula</value>
   </data>
   <data name="Content_EmptyHint" xml:space="preserve">
-    <value>Soldaki ağaçtan bir klasör seçin.</value>
+    <value>Soldaki ağaçtan bir proje ya da stok seçin.</value>
   </data>
   <data name="Dialog_NewProjectTitle" xml:space="preserve">
     <value>Yeni proje</value>
   </data>
-  <data name="Dialog_NewStockTitle" xml:space="preserve">
-    <value>Yeni stok</value>
+  <data name="Dialog_NewStockTitleFor" xml:space="preserve">
+    <value>Yeni stok · {0}</value>
   </data>
   <data name="Dialog_Create" xml:space="preserve">
     <value>Oluştur</value>
@@ -68,9 +89,6 @@
   </data>
   <data name="Field_ProjectName" xml:space="preserve">
     <value>Proje adı</value>
-  </data>
-  <data name="Field_ParentProject" xml:space="preserve">
-    <value>Proje</value>
   </data>
   <data name="Field_StockNo" xml:space="preserve">
     <value>Stok no</value>

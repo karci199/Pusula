@@ -28,5 +28,17 @@ namespace Pusula.Core.Tracking
         {
             return Path.Combine(folder, FolderName, StockFileName);
         }
+
+        /// <summary>
+        /// <c>_TAKIP</c> klasörünü Windows Gezgini'nde gizler; klasör yoksa bir şey yapmaz.
+        /// </summary>
+        public static void HideTrackingFolder(string folder)
+        {
+            var tracking = new DirectoryInfo(Path.Combine(folder, FolderName));
+            if (tracking.Exists && (tracking.Attributes & FileAttributes.Hidden) == 0)
+            {
+                tracking.Attributes |= FileAttributes.Hidden;
+            }
+        }
     }
 }

@@ -48,7 +48,7 @@ namespace Pusula.Wpf.Properties
 
         #endregion
 
-        #region Araç çubuğu
+        #region Kök klasör
 
         /// <summary>Kök klasör alanı boşken görünen metin.</summary>
         public static string Root_Placeholder { get { return Get("Root_Placeholder"); } }
@@ -59,21 +59,21 @@ namespace Pusula.Wpf.Properties
         /// <summary>Klasör seçme penceresinin başlığı.</summary>
         public static string Root_DialogTitle { get { return Get("Root_DialogTitle"); } }
 
-        /// <summary>Yeni proje düğmesi.</summary>
-        public static string Button_NewProject { get { return Get("Button_NewProject"); } }
-
-        /// <summary>Yeni stok düğmesi.</summary>
-        public static string Button_NewStock { get { return Get("Button_NewStock"); } }
-
-        /// <summary>Yenile düğmesinin ipucu.</summary>
-        public static string Button_Refresh { get { return Get("Button_Refresh"); } }
-
         #endregion
 
         #region Ağaç
 
+        /// <summary>Ağaç bölümünün başlığı.</summary>
+        public static string Tree_Header { get { return Get("Tree_Header"); } }
+
         /// <summary>Kök klasör seçilmemişken ağaç alanında görünen metin.</summary>
         public static string Tree_NoRoot { get { return Get("Tree_NoRoot"); } }
+
+        /// <summary>Ekle düğmesinin ipucu.</summary>
+        public static string Button_Add { get { return Get("Button_Add"); } }
+
+        /// <summary>Yenile düğmesinin ipucu.</summary>
+        public static string Button_Refresh { get { return Get("Button_Refresh"); } }
 
         /// <summary>Proje türünün adı.</summary>
         public static string Kind_Project { get { return Get("Kind_Project"); } }
@@ -83,6 +83,31 @@ namespace Pusula.Wpf.Properties
 
         /// <summary>İşaretsiz klasörün tür adı.</summary>
         public static string Kind_Plain { get { return Get("Kind_Plain"); } }
+
+        #endregion
+
+        #region Menü
+
+        /// <summary>Yeni proje menü öğesi.</summary>
+        public static string Menu_NewProject { get { return Get("Menu_NewProject"); } }
+
+        /// <summary>Yeni stok menü öğesi (hedef proje yokken).</summary>
+        public static string Menu_NewStock { get { return Get("Menu_NewStock"); } }
+
+        /// <summary>Yeni stok menü öğesi; {0} hedef proje.</summary>
+        public static string Menu_NewStockFor { get { return Get("Menu_NewStockFor"); } }
+
+        /// <summary>Klasörü Windows Gezgini'nde açar.</summary>
+        public static string Menu_OpenFolder { get { return Get("Menu_OpenFolder"); } }
+
+        /// <summary>Yenile menü öğesi.</summary>
+        public static string Menu_Refresh { get { return Get("Menu_Refresh"); } }
+
+        /// <summary>Yeni proje kısayolu.</summary>
+        public static string Gesture_NewProject { get { return Get("Gesture_NewProject"); } }
+
+        /// <summary>Yeni stok kısayolu.</summary>
+        public static string Gesture_NewStock { get { return Get("Gesture_NewStock"); } }
 
         #endregion
 
@@ -101,8 +126,8 @@ namespace Pusula.Wpf.Properties
         /// <summary>Yeni proje diyaloğunun başlığı.</summary>
         public static string Dialog_NewProjectTitle { get { return Get("Dialog_NewProjectTitle"); } }
 
-        /// <summary>Yeni stok diyaloğunun başlığı.</summary>
-        public static string Dialog_NewStockTitle { get { return Get("Dialog_NewStockTitle"); } }
+        /// <summary>Yeni stok diyaloğunun başlığı; {0} proje.</summary>
+        public static string Dialog_NewStockTitleFor { get { return Get("Dialog_NewStockTitleFor"); } }
 
         /// <summary>Diyaloğun oluştur düğmesi.</summary>
         public static string Dialog_Create { get { return Get("Dialog_Create"); } }
@@ -115,9 +140,6 @@ namespace Pusula.Wpf.Properties
 
         /// <summary>Proje adı alanı.</summary>
         public static string Field_ProjectName { get { return Get("Field_ProjectName"); } }
-
-        /// <summary>Stokun ekleneceği proje.</summary>
-        public static string Field_ParentProject { get { return Get("Field_ParentProject"); } }
 
         /// <summary>Stok numarası alanı.</summary>
         public static string Field_StockNo { get { return Get("Field_StockNo"); } }

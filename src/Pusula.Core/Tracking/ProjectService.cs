@@ -74,6 +74,8 @@ namespace Pusula.Core.Tracking
                     writeMarker(folder);
                 }
 
+                TrackingFiles.HideTrackingFolder(folder);
+
                 return CreateResult.Success(folder);
             }
             catch (IOException ex)

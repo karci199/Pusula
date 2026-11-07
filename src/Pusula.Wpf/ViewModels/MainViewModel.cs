@@ -34,7 +34,14 @@ namespace Pusula.Wpf.ViewModels
             RefreshCommand = new RelayCommand(Refresh);
             NewProjectCommand = new RelayCommand(OpenNewProject);
             NewStockCommand = new RelayCommand(OpenNewStock);
+            OpenFolderCommand = new RelayCommand(OpenSelectedFolder);
+
+            settings = AppSettings.Load();
+            rootPath = settings.RootPath ?? string.Empty;
+            Refresh();
         }
+
+        private readonly AppSettings settings;
 
         #region Kök ve ağaç
 
@@ -46,6 +53,8 @@ namespace Pusula.Wpf.ViewModels
             {
                 if (SetProperty(ref rootPath, value ?? string.Empty))
                 {
+                    settings.RootPath = rootPath;
+                    settings.Save();
                     Refresh();
                 }
             }
@@ -69,6 +78,7 @@ namespace Pusula.Wpf.ViewModels
                 if (SetProperty(ref selectedNode, value))
                 {
                     OnPropertyChanged(nameof(HasSelection));
+                    OnPropertyChanged(nameof(NewStockMenuText));
                 }
             }
         }
@@ -203,10 +213,25 @@ namespace Pusula.Wpf.ViewModels
             set { SetProperty(ref isStockDialogOpen, value); }
         }
 
-        /// <summary>Stokun ekleneceği projenin adı (diyalogda gösterilir).</summary>
-        public string StockParentTitle
+        /// <summary>Yeni stok diyaloğunun başlığı; stokun ekleneceği projeyi de söyler.</summary>
+        public string StockDialogTitle
         {
-            get { return Path.GetFileName(stockParentFolder); }
+            get { return string.Format(Resources.Dialog_NewStockTitleFor, Path.GetFileName(stockParentFolder)); }
+        }
+
+        /// <summary>Menüdeki "Yeni stok" metni; seçime göre hedef projeyi gösterir.</summary>
+        public string NewStockMenuText
+        {
+            get
+            {
+                var project = SelectedProjectFolder();
+                if (project.Length == 0)
+                {
+                    return Resources.Menu_NewStock;
+                }
+
+                return string.Format(Resources.Menu_NewStockFor, Path.GetFileName(project));
+            }
         }
 
         /// <summary>Girilen stok numarası.</summary>
@@ -240,7 +265,7 @@ namespace Pusula.Wpf.ViewModels
             }
 
             stockParentFolder = project;
-            OnPropertyChanged(nameof(StockParentTitle));
+            OnPropertyChanged(nameof(StockDialogTitle));
             NewStockNo = string.Empty;
             NewStockName = string.Empty;
             StockError = string.Empty;
@@ -292,6 +317,23 @@ namespace Pusula.Wpf.ViewModels
             }
 
             return string.Empty;
+        }
+
+        #endregion
+
+        #region Klasörü aç
+
+        /// <summary>Seçili klasörü Windows Gezgini'nde açar.</summary>
+        public ICommand OpenFolderCommand { get; }
+
+        private void OpenSelectedFolder()
+        {
+            if (selectedNode == null || !Directory.Exists(selectedNode.Path))
+            {
+                return;
+            }
+
+            System.Diagnostics.Process.Start("explorer.exe", "\"" + selectedNode.Path + "\"");
         }
 
         #endregion

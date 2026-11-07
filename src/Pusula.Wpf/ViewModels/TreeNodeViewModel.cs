@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using DesignKit.Icons;
 using Pusula.Core.Tracking;
 using Pusula.Wpf.Mvvm;
 using Pusula.Wpf.Properties;
@@ -48,11 +47,11 @@ namespace Pusula.Wpf.ViewModels
                 switch (Entry.Kind)
                 {
                     case FolderKind.Project:
-                        return Symbol.ViewAll;
+                        return AppIcons.Project;
                     case FolderKind.Stock:
-                        return Symbol.Device;
+                        return AppIcons.Stock;
                     default:
-                        return Symbol.Folder;
+                        return AppIcons.Folder;
                 }
             }
         }
