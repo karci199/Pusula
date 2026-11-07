@@ -15,13 +15,97 @@
   <data name="Window_Title" xml:space="preserve">
     <value>Pusula</value>
   </data>
+  <data name="Root_Placeholder" xml:space="preserve">
+    <value>Projeler klasörünü seçin</value>
+  </data>
+  <data name="Root_Browse" xml:space="preserve">
+    <value>Gözat</value>
+  </data>
+  <data name="Root_DialogTitle" xml:space="preserve">
+    <value>Projelerin durduğu klasörü seçin</value>
+  </data>
+  <data name="Button_NewProject" xml:space="preserve">
+    <value>Yeni proje</value>
+  </data>
+  <data name="Button_NewStock" xml:space="preserve">
+    <value>Yeni stok</value>
+  </data>
+  <data name="Button_Refresh" xml:space="preserve">
+    <value>Yenile</value>
+  </data>
   <data name="Tree_NoRoot" xml:space="preserve">
     <value>Henüz kök klasör seçilmedi.</value>
+  </data>
+  <data name="Kind_Project" xml:space="preserve">
+    <value>Proje</value>
+  </data>
+  <data name="Kind_Stock" xml:space="preserve">
+    <value>Stok</value>
+  </data>
+  <data name="Kind_Plain" xml:space="preserve">
+    <value>Klasör</value>
   </data>
   <data name="Content_EmptyTitle" xml:space="preserve">
     <value>Pusula</value>
   </data>
   <data name="Content_EmptyHint" xml:space="preserve">
     <value>Soldaki ağaçtan bir klasör seçin.</value>
+  </data>
+  <data name="Dialog_NewProjectTitle" xml:space="preserve">
+    <value>Yeni proje</value>
+  </data>
+  <data name="Dialog_NewStockTitle" xml:space="preserve">
+    <value>Yeni stok</value>
+  </data>
+  <data name="Dialog_Create" xml:space="preserve">
+    <value>Oluştur</value>
+  </data>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>Vazgeç</value>
+  </data>
+  <data name="Field_ProjectNo" xml:space="preserve">
+    <value>Proje no</value>
+  </data>
+  <data name="Field_ProjectName" xml:space="preserve">
+    <value>Proje adı</value>
+  </data>
+  <data name="Field_ParentProject" xml:space="preserve">
+    <value>Proje</value>
+  </data>
+  <data name="Field_StockNo" xml:space="preserve">
+    <value>Stok no</value>
+  </data>
+  <data name="Field_StockName" xml:space="preserve">
+    <value>Stok adı</value>
+  </data>
+  <data name="Status_SelectRootFirst" xml:space="preserve">
+    <value>Önce projeler klasörünü seçin.</value>
+  </data>
+  <data name="Status_SelectProjectFirst" xml:space="preserve">
+    <value>Önce ağaçtan bir proje seçin.</value>
+  </data>
+  <data name="Status_ProjectCreated" xml:space="preserve">
+    <value>Proje oluşturuldu: {0}</value>
+  </data>
+  <data name="Status_StockCreated" xml:space="preserve">
+    <value>Stok oluşturuldu: {0}</value>
+  </data>
+  <data name="Error_ParentMissing" xml:space="preserve">
+    <value>Üst klasör bulunamadı.</value>
+  </data>
+  <data name="Error_NumberEmpty" xml:space="preserve">
+    <value>Numara boş olamaz.</value>
+  </data>
+  <data name="Error_NameEmpty" xml:space="preserve">
+    <value>Ad boş olamaz.</value>
+  </data>
+  <data name="Error_InvalidCharacters" xml:space="preserve">
+    <value>Klasör adında kullanılamayan bir karakter var.</value>
+  </data>
+  <data name="Error_AlreadyExists" xml:space="preserve">
+    <value>Bu klasör zaten var: {0}</value>
+  </data>
+  <data name="Error_Io" xml:space="preserve">
+    <value>Klasör oluşturulamadı: {0}</value>
   </data>
 </root>
