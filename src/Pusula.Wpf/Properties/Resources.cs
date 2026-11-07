@@ -186,5 +186,39 @@ namespace Pusula.Wpf.Properties
         public static string Error_Io { get { return Get("Error_Io"); } }
 
         #endregion
+
+        #region Şablon
+
+        /// <summary>Şablon seçimi alanı.</summary>
+        public static string Field_Template { get { return Get("Field_Template"); } }
+
+        /// <summary>Modül onay kutularının başlığı.</summary>
+        public static string Field_Modules { get { return Get("Field_Modules"); } }
+
+        /// <summary>Çekirdek klasörlerin bilgi metni; {0} liste.</summary>
+        public static string Dialog_AlwaysCreated { get { return Get("Dialog_AlwaysCreated"); } }
+
+        /// <summary>Stokta zaten bulunan modülün etiketi.</summary>
+        public static string Module_Exists { get { return Get("Module_Exists"); } }
+
+        /// <summary>Modül ekle menü öğesi.</summary>
+        public static string Menu_AddModules { get { return Get("Menu_AddModules"); } }
+
+        /// <summary>Modül ekle diyaloğunun başlığı; {0} stok.</summary>
+        public static string Dialog_AddModulesTitle { get { return Get("Dialog_AddModulesTitle"); } }
+
+        /// <summary>Modül ekle diyaloğunun ekle düğmesi.</summary>
+        public static string Dialog_Add { get { return Get("Dialog_Add"); } }
+
+        /// <summary>Modül eklenince; {0} sayı, {1} stok.</summary>
+        public static string Status_ModulesAdded { get { return Get("Status_ModulesAdded"); } }
+
+        /// <summary>Hiç yeni modül işaretlenmeden ekle denince.</summary>
+        public static string Status_NothingToAdd { get { return Get("Status_NothingToAdd"); } }
+
+        /// <summary>Stok seçilmeden modül ekle istenince.</summary>
+        public static string Status_SelectStockFirst { get { return Get("Status_SelectStockFirst"); } }
+
+        #endregion
     }
 }

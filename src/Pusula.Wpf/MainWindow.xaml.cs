@@ -70,6 +70,11 @@ namespace Pusula.Wpf
             }
         }
 
+        private void ModuleDialog_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            viewModel.ConfirmAddModules();
+        }
+
         private void StockDialog_PrimaryButtonClick(object sender, RoutedEventArgs e)
         {
             if (!viewModel.ConfirmNewStock())

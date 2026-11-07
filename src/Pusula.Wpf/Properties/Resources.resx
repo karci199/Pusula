@@ -126,4 +126,34 @@
   <data name="Error_Io" xml:space="preserve">
     <value>Klasör oluşturulamadı: {0}</value>
   </data>
+  <data name="Field_Template" xml:space="preserve">
+    <value>Şablon</value>
+  </data>
+  <data name="Field_Modules" xml:space="preserve">
+    <value>Modüller</value>
+  </data>
+  <data name="Dialog_AlwaysCreated" xml:space="preserve">
+    <value>Her stokta açılır: {0}</value>
+  </data>
+  <data name="Module_Exists" xml:space="preserve">
+    <value>var</value>
+  </data>
+  <data name="Menu_AddModules" xml:space="preserve">
+    <value>Modül ekle</value>
+  </data>
+  <data name="Dialog_AddModulesTitle" xml:space="preserve">
+    <value>Modül ekle · {0}</value>
+  </data>
+  <data name="Dialog_Add" xml:space="preserve">
+    <value>Ekle</value>
+  </data>
+  <data name="Status_ModulesAdded" xml:space="preserve">
+    <value>{0} klasör eklendi: {1}</value>
+  </data>
+  <data name="Status_NothingToAdd" xml:space="preserve">
+    <value>Eklenecek yeni modül seçilmedi.</value>
+  </data>
+  <data name="Status_SelectStockFirst" xml:space="preserve">
+    <value>Önce ağaçtan bir stok seçin.</value>
+  </data>
 </root>

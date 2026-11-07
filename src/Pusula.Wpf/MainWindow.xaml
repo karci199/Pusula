@@ -35,6 +35,24 @@
             </Style.Triggers>
         </Style>
 
+        <!-- Modül onay kutusu: ad, klasör; stokta varsa kilitli ve "var" etiketli. -->
+        <DataTemplate x:Key="ModuleOptionTemplate">
+            <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                      IsEnabled="{Binding CanChange}"
+                      Margin="0,2">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Name}" />
+                    <TextBlock Text="{Binding Folder}"
+                               Margin="8,0,0,0"
+                               Foreground="{DynamicResource TextTertiaryBrush}" />
+                    <TextBlock Text="{x:Static res:Resources.Module_Exists}"
+                               Margin="8,0,0,0"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               Visibility="{Binding Exists, Converter={StaticResource BoolToVis}}" />
+                </StackPanel>
+            </CheckBox>
+        </DataTemplate>
+
         <!-- Menüler ağaçla aynı DataContext'i kod tarafında alır (MainWindow.xaml.cs). -->
         <ContextMenu x:Key="AddMenu">
             <MenuItem Header="{Binding NewStockMenuText}"
@@ -57,6 +75,11 @@
             <MenuItem Header="{Binding NewStockMenuText}" Command="{Binding NewStockCommand}">
                 <MenuItem.Icon>
                     <controls:FontIcon Glyph="{x:Static local:AppIcons.Stock}" Foreground="{DynamicResource AccentBrush}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.Menu_AddModules}" Command="{Binding AddModulesCommand}">
+                <MenuItem.Icon>
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Menu_OpenFolder}" Command="{Binding OpenFolderCommand}">
@@ -301,7 +324,33 @@
                                     ErrorText="{Binding StockError}">
                     <TextBox Text="{Binding NewStockName, UpdateSourceTrigger=PropertyChanged}" />
                 </controls:FormField>
+                <controls:FormField Header="{x:Static res:Resources.Field_Template}" LabelWidth="90"
+                                    Margin="0,8,0,0">
+                    <ComboBox ItemsSource="{Binding TemplateNames}"
+                              SelectedItem="{Binding SelectedTemplate, Mode=TwoWay}" />
+                </controls:FormField>
+                <controls:FormField Header="{x:Static res:Resources.Field_Modules}" LabelWidth="90"
+                                    Margin="0,8,0,0">
+                    <ItemsControl ItemsSource="{Binding StockModules}" ItemTemplate="{StaticResource ModuleOptionTemplate}" />
+                </controls:FormField>
+                <TextBlock Style="{DynamicResource CaptionTextBlockStyle}"
+                           Foreground="{DynamicResource TextTertiaryBrush}"
+                           TextWrapping="Wrap"
+                           Margin="0,12,0,0"
+                           Text="{Binding CoreFoldersText}" />
             </StackPanel>
+        </controls:ContentDialog>
+
+        <!-- Modül ekle -->
+        <controls:ContentDialog Grid.RowSpan="3"
+                                IsOpen="{Binding IsModuleDialogOpen, Mode=TwoWay}"
+                                Title="{Binding ModuleDialogTitle}"
+                                PrimaryButtonText="{x:Static res:Resources.Dialog_Add}"
+                                CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                PrimaryButtonClick="ModuleDialog_PrimaryButtonClick">
+            <ItemsControl MinWidth="320"
+                          ItemsSource="{Binding AddableModules}"
+                          ItemTemplate="{StaticResource ModuleOptionTemplate}" />
         </controls:ContentDialog>
     </Grid>
 

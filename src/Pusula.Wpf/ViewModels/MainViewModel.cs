@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Windows.Input;
+using Pusula.Core.Templates;
 using Pusula.Core.Tracking;
 using Pusula.Wpf.Mvvm;
 using Pusula.Wpf.Properties;
@@ -27,6 +29,12 @@ namespace Pusula.Wpf.ViewModels
         private string newStockNo = string.Empty;
         private string newStockName = string.Empty;
         private string stockError = string.Empty;
+        private string selectedTemplate = string.Empty;
+
+        private bool isModuleDialogOpen;
+        private string moduleStockFolder = string.Empty;
+
+        private TemplateSet templates = TemplateSet.CreateDefault();
 
         /// <summary>Komutları hazırlar.</summary>
         public MainViewModel()
@@ -35,6 +43,7 @@ namespace Pusula.Wpf.ViewModels
             NewProjectCommand = new RelayCommand(OpenNewProject);
             NewStockCommand = new RelayCommand(OpenNewStock);
             OpenFolderCommand = new RelayCommand(OpenSelectedFolder);
+            AddModulesCommand = new RelayCommand(OpenAddModules);
 
             settings = AppSettings.Load();
             rootPath = settings.RootPath ?? string.Empty;
@@ -119,6 +128,7 @@ namespace Pusula.Wpf.ViewModels
                 return;
             }
 
+            templates = TemplateStore.LoadOrCreate(rootPath);
             foreach (var entry in FolderReader.ListChildren(rootPath))
             {
                 var node = new TreeNodeViewModel(entry);
@@ -187,7 +197,7 @@ namespace Pusula.Wpf.ViewModels
         /// </summary>
         public bool ConfirmNewProject()
         {
-            var result = ProjectService.CreateProject(rootPath, NewProjectNo, NewProjectName);
+            var result = ProjectService.CreateProject(rootPath, NewProjectNo, NewProjectName, templates.ProjectFolders);
             if (!result.Succeeded)
             {
                 ProjectError = ErrorText(result);
@@ -248,6 +258,31 @@ namespace Pusula.Wpf.ViewModels
             set { SetProperty(ref newStockName, value); }
         }
 
+        /// <summary>Seçilebilir şablon adları.</summary>
+        public ObservableCollection<string> TemplateNames { get; } = new ObservableCollection<string>();
+
+        /// <summary>Seçili şablon; değişince modül onay kutuları şablona göre işaretlenir.</summary>
+        public string SelectedTemplate
+        {
+            get { return selectedTemplate; }
+            set
+            {
+                if (SetProperty(ref selectedTemplate, value ?? string.Empty))
+                {
+                    ApplyTemplate();
+                }
+            }
+        }
+
+        /// <summary>Yeni stok diyaloğundaki modül onay kutuları.</summary>
+        public ObservableCollection<ModuleOptionViewModel> StockModules { get; } = new ObservableCollection<ModuleOptionViewModel>();
+
+        /// <summary>Her stokta açılan klasörlerin listesi (bilgi metni).</summary>
+        public string CoreFoldersText
+        {
+            get { return string.Format(Resources.Dialog_AlwaysCreated, string.Join(", ", templates.CoreFolders)); }
+        }
+
         /// <summary>Diyalogdaki hata metni; boşsa gizlidir.</summary>
         public string StockError
         {
@@ -269,6 +304,22 @@ namespace Pusula.Wpf.ViewModels
             NewStockNo = string.Empty;
             NewStockName = string.Empty;
             StockError = string.Empty;
+
+            StockModules.Clear();
+            foreach (var module in templates.Modules)
+            {
+                StockModules.Add(new ModuleOptionViewModel(module, false));
+            }
+
+            TemplateNames.Clear();
+            foreach (var preset in templates.Templates)
+            {
+                TemplateNames.Add(preset.Name);
+            }
+
+            OnPropertyChanged(nameof(CoreFoldersText));
+            selectedTemplate = string.Empty;
+            SelectedTemplate = TemplateNames.FirstOrDefault() ?? string.Empty;
             IsStockDialogOpen = true;
         }
 
@@ -277,7 +328,12 @@ namespace Pusula.Wpf.ViewModels
         /// </summary>
         public bool ConfirmNewStock()
         {
-            var result = ProjectService.CreateStock(stockParentFolder, NewStockNo, NewStockName);
+            var result = ProjectService.CreateStock(
+                stockParentFolder,
+                NewStockNo,
+                NewStockName,
+                SelectedTemplate,
+                templates.StockFoldersFor(StockModules.Where(m => m.IsChecked).Select(m => m.Module.Key)));
             if (!result.Succeeded)
             {
                 StockError = ErrorText(result);
@@ -295,6 +351,16 @@ namespace Pusula.Wpf.ViewModels
 
             Status = string.Format(Resources.Status_StockCreated, result.Folder);
             return true;
+        }
+
+        private void ApplyTemplate()
+        {
+            var preset = templates.Templates.FirstOrDefault(t => t.Name == selectedTemplate);
+            var keys = new HashSet<string>(preset == null ? Enumerable.Empty<string>() : preset.Modules, System.StringComparer.OrdinalIgnoreCase);
+            foreach (var option in StockModules)
+            {
+                option.IsChecked = keys.Contains(option.Module.Key);
+            }
         }
 
         /// <summary>Seçili düğüm proje ise onun, projenin altındaki stok ise üstünün yolu; yoksa boş.</summary>
@@ -317,6 +383,74 @@ namespace Pusula.Wpf.ViewModels
             }
 
             return string.Empty;
+        }
+
+        #endregion
+
+        #region Modül ekle
+
+        /// <summary>Seçili stoka eksik modül klasörlerini ekleme diyaloğunu açar.</summary>
+        public ICommand AddModulesCommand { get; }
+
+        /// <summary>Modül ekle diyaloğu açık mı.</summary>
+        public bool IsModuleDialogOpen
+        {
+            get { return isModuleDialogOpen; }
+            set { SetProperty(ref isModuleDialogOpen, value); }
+        }
+
+        /// <summary>Modül ekle diyaloğunun başlığı.</summary>
+        public string ModuleDialogTitle
+        {
+            get { return string.Format(Resources.Dialog_AddModulesTitle, Path.GetFileName(moduleStockFolder)); }
+        }
+
+        /// <summary>Modül ekle diyaloğundaki onay kutuları; stokta var olanlar işaretli ve kilitli gelir.</summary>
+        public ObservableCollection<ModuleOptionViewModel> AddableModules { get; } = new ObservableCollection<ModuleOptionViewModel>();
+
+        private void OpenAddModules()
+        {
+            if (selectedNode == null || selectedNode.Kind != FolderKind.Stock)
+            {
+                Status = Resources.Status_SelectStockFirst;
+                return;
+            }
+
+            moduleStockFolder = selectedNode.Path;
+            OnPropertyChanged(nameof(ModuleDialogTitle));
+            AddableModules.Clear();
+            foreach (var module in templates.Modules)
+            {
+                AddableModules.Add(new ModuleOptionViewModel(module, Directory.Exists(Path.Combine(moduleStockFolder, module.Folder))));
+            }
+
+            IsModuleDialogOpen = true;
+        }
+
+        /// <summary>İşaretlenen yeni modüllerin klasörlerini açar.</summary>
+        public void ConfirmAddModules()
+        {
+            var keys = AddableModules.Where(m => m.IsChecked && !m.Exists).Select(m => m.Module.Key).ToList();
+            if (keys.Count == 0)
+            {
+                Status = Resources.Status_NothingToAdd;
+                return;
+            }
+
+            var folders = templates.Modules.Where(m => keys.Contains(m.Key)).SelectMany(m => m.AllFolders());
+            try
+            {
+                var created = ProjectService.AddFolders(moduleStockFolder, folders);
+                Status = string.Format(Resources.Status_ModulesAdded, created, Path.GetFileName(moduleStockFolder));
+            }
+            catch (IOException ex)
+            {
+                Status = string.Format(Resources.Error_Io, ex.Message);
+            }
+            catch (System.UnauthorizedAccessException ex)
+            {
+                Status = string.Format(Resources.Error_Io, ex.Message);
+            }
         }
 
         #endregion

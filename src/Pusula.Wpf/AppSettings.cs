@@ -11,6 +11,13 @@ namespace Pusula.Wpf
     [DataContract]
     public sealed class AppSettings
     {
+        /// <summary>Serileştirici kurucuyu çağırmaz; dosyada olmayan alanlar boş değerle başlar.</summary>
+        [OnDeserializing]
+        private void OnDeserializing(StreamingContext context)
+        {
+            RootPath = string.Empty;
+        }
+
         /// <summary>Son seçilen projeler klasörü.</summary>
         [DataMember(Name = "rootPath", Order = 0)]
         public string RootPath { get; set; } = string.Empty;

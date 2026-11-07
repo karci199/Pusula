@@ -8,6 +8,15 @@ namespace Pusula.Core.Tracking
     [DataContract]
     public sealed class ProjectInfo
     {
+        /// <summary>Serileştirici kurucuyu çağırmaz; dosyada olmayan alanlar boş değerle başlar.</summary>
+        [OnDeserializing]
+        private void OnDeserializing(StreamingContext context)
+        {
+            SchemaVersion = 1;
+            ProjectNo = string.Empty;
+            Name = string.Empty;
+        }
+
         /// <summary>Dosya biçiminin sürümü.</summary>
         [DataMember(Name = "schemaVersion", Order = 0)]
         public int SchemaVersion { get; set; } = 1;

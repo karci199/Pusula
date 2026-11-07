@@ -1,18 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Pusula.Core.Tracking
 {
     /// <summary>
-    /// Proje ve stok klasörlerini işaret dosyalarıyla birlikte oluşturur.
+    /// Proje ve stok klasörlerini işaret dosyaları ve şablon klasörleriyle birlikte oluşturur.
     /// Var olan hiçbir klasörü ya da dosyayı ezmez.
     /// </summary>
     public static class ProjectService
     {
         /// <summary>
-        /// <c>&lt;projelerKökü&gt;\&lt;no&gt;_&lt;ad&gt;\_TAKIP\proje.json</c> oluşturur.
+        /// <c>&lt;projelerKökü&gt;\&lt;no&gt;_&lt;ad&gt;</c> klasörünü, <c>_TAKIP\proje.json</c> dosyasını
+        /// ve verilen alt klasörleri oluşturur.
         /// </summary>
-        public static CreateResult CreateProject(string projectsRoot, string projectNo, string name)
+        public static CreateResult CreateProject(string projectsRoot, string projectNo, string name, IEnumerable<string> subFolders)
         {
             projectNo = (projectNo ?? string.Empty).Trim();
             name = (name ?? string.Empty).Trim();
@@ -28,13 +30,14 @@ namespace Pusula.Core.Tracking
             }
 
             var info = new ProjectInfo { ProjectNo = projectNo, Name = name };
-            return CreateFolder(projectsRoot, projectNo + "_" + name, TrackingFiles.ProjectFile, folder => JsonFile.WriteAtomic(TrackingFiles.ProjectFile(folder), info));
+            return CreateFolder(projectsRoot, projectNo + "_" + name, subFolders, folder => JsonFile.WriteAtomic(TrackingFiles.ProjectFile(folder), info));
         }
 
         /// <summary>
-        /// <c>&lt;projeKlasörü&gt;\&lt;stokNo&gt;\_TAKIP\stok.json</c> oluşturur. Ad boş olabilir.
+        /// <c>&lt;projeKlasörü&gt;\&lt;stokNo&gt;</c> klasörünü, <c>_TAKIP\stok.json</c> dosyasını
+        /// ve şablondan gelen alt klasörleri oluşturur. Ad boş olabilir.
         /// </summary>
-        public static CreateResult CreateStock(string projectFolder, string stockNo, string name)
+        public static CreateResult CreateStock(string projectFolder, string stockNo, string name, string template, IEnumerable<string> subFolders)
         {
             stockNo = (stockNo ?? string.Empty).Trim();
             name = (name ?? string.Empty).Trim();
@@ -44,11 +47,55 @@ namespace Pusula.Core.Tracking
                 return CreateResult.Fail(CreateError.NumberEmpty, string.Empty);
             }
 
-            var info = new StockInfo { StockNo = stockNo, Name = name };
-            return CreateFolder(projectFolder, stockNo, TrackingFiles.StockFile, folder => JsonFile.WriteAtomic(TrackingFiles.StockFile(folder), info));
+            var info = new StockInfo { StockNo = stockNo, Name = name, Template = template ?? string.Empty };
+            return CreateFolder(projectFolder, stockNo, subFolders, folder => JsonFile.WriteAtomic(TrackingFiles.StockFile(folder), info));
         }
 
-        private static CreateResult CreateFolder(string parent, string folderName, Func<string, string> markerPath, Action<string> writeMarker)
+        /// <summary>
+        /// Var olan bir klasörün altında eksik alt klasörleri açar; var olanlara dokunmaz.
+        /// Açılan klasör sayısını döner.
+        /// </summary>
+        public static int AddFolders(string folder, IEnumerable<string> subFolders)
+        {
+            var created = 0;
+            foreach (var relative in subFolders)
+            {
+                if (!IsSafeRelativePath(relative))
+                {
+                    continue;
+                }
+
+                var path = Path.Combine(folder, relative);
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                    created++;
+                }
+            }
+
+            return created;
+        }
+
+        /// <summary>Göreli yol güvenli mi: köklü değil, <c>..</c> yok, geçersiz karakter yok.</summary>
+        public static bool IsSafeRelativePath(string relative)
+        {
+            if (string.IsNullOrWhiteSpace(relative) || Path.IsPathRooted(relative))
+            {
+                return false;
+            }
+
+            foreach (var part in relative.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
+            {
+                if (part.Length == 0 || part == "." || part == ".." || part.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static CreateResult CreateFolder(string parent, string folderName, IEnumerable<string> subFolders, Action<string> writeMarker)
         {
             if (string.IsNullOrWhiteSpace(parent) || !Directory.Exists(parent))
             {
@@ -69,13 +116,9 @@ namespace Pusula.Core.Tracking
             try
             {
                 Directory.CreateDirectory(folder);
-                if (!File.Exists(markerPath(folder)))
-                {
-                    writeMarker(folder);
-                }
-
+                writeMarker(folder);
                 TrackingFiles.HideTrackingFolder(folder);
-
+                AddFolders(folder, subFolders);
                 return CreateResult.Success(folder);
             }
             catch (IOException ex)
