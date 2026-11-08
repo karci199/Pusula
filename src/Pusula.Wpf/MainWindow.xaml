@@ -425,6 +425,11 @@
                         <ContentPresenter Content="{Binding Status}" ContentTemplate="{DynamicResource StatusChipTemplate}" VerticalAlignment="Center" />
                         <TextBlock Text="{Binding Meta}" Margin="8,0,0,0" VerticalAlignment="Center"
                                    Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" />
+                        <Button Margin="6,0,0,0" Style="{DynamicResource IconButtonStyle}" Width="24" Height="24" Tag="{Binding NotePath}"
+                                Click="HistoryNote_Click" ToolTip="{x:Static res:Resources.Run_OpenNote}"
+                                Visibility="{Binding HasNote, Converter={StaticResource BoolToVis}}">
+                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="12" />
+                        </Button>
                     </StackPanel>
                     <TextBlock Text="{Binding Detail}" TextWrapping="Wrap" Margin="0,3,0,0" Foreground="{DynamicResource TextSecondaryBrush}"
                                Visibility="{Binding HasDetail, Converter={StaticResource BoolToVis}}" />

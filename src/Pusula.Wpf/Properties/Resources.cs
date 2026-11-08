@@ -526,7 +526,7 @@ namespace Pusula.Wpf.Properties
         /// <summary>Genel: son sonuçlar başlığı.</summary>
         public static string General_Latest { get { return Get("General_Latest"); } }
 
-        /// <summary>Genel: zaman çizelgesi başlığı.</summary>
+        /// <summary>Genel: olayların akışı (testler, notlar, Obsidian olay notları).</summary>
         public static string General_Timeline { get { return Get("General_Timeline"); } }
 
         /// <summary>Genel: koşu yokken.</summary>
@@ -1023,6 +1023,28 @@ namespace Pusula.Wpf.Properties
 
         /// <summary>Zaman çizelgesinde notun başlığı.</summary>
         public static string QuickNote_Title { get { return Get("QuickNote_Title"); } }
+
+        #endregion
+
+        #region Olay
+
+        /// <summary>olay: toplanti</summary>
+        public static string Event_Meeting { get { return Get("Event_Meeting"); } }
+
+        /// <summary>olay: karar</summary>
+        public static string Event_Decision { get { return Get("Event_Decision"); } }
+
+        /// <summary>olay: numune</summary>
+        public static string Event_Sample { get { return Get("Event_Sample"); } }
+
+        /// <summary>olay: sevkiyat</summary>
+        public static string Event_Shipment { get { return Get("Event_Shipment"); } }
+
+        /// <summary>olay: revizyon</summary>
+        public static string Event_Revision { get { return Get("Event_Revision"); } }
+
+        /// <summary>olay: ariza</summary>
+        public static string Event_Fault { get { return Get("Event_Fault"); } }
 
         #endregion
     }

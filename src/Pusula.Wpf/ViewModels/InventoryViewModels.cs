@@ -61,8 +61,28 @@ namespace Pusula.Wpf.ViewModels
             SortDate = note.DateValue ?? DateTime.MinValue;
         }
 
+        /// <summary>Obsidian olay notundan satır oluşturur (revizyon, arıza …).</summary>
+        public HistoryRow(Pusula.Core.Notes.EventNote note)
+        {
+            Status = new StatusChip(EventKinds.Label(note.Kind), StatusTone.Neutral);
+            var date = note.Date.ToString(Resources.Format_Date);
+            Meta = note.Person.Length == 0 ? date : date + " · " + note.Person;
+            Detail = note.Excerpt.Length == 0 ? note.Title : note.Title + " · " + note.Excerpt;
+            SortDate = note.Date;
+            NotePath = note.Path;
+        }
+
         /// <summary>Sıralama tarihi.</summary>
         public DateTime SortDate { get; }
+
+        /// <summary>Olay notunun yolu (Obsidian notundan gelen satırda); diğerlerinde boş.</summary>
+        public string NotePath { get; } = string.Empty;
+
+        /// <summary>Açılacak not var mı.</summary>
+        public bool HasNote
+        {
+            get { return NotePath.Length > 0; }
+        }
 
         /// <summary>Durum etiketi (nokta rengi ve ad).</summary>
         public StatusChip Status { get; }
@@ -652,10 +672,26 @@ namespace Pusula.Wpf.ViewModels
         {
             ClearContents();
             var version = contentsVersion;
-            var contents = await Task.Run(() => RecordContents.Read(shown.Folder, shown.Record.Number)).ConfigureAwait(true);
+            List<Pusula.Core.Notes.EventNote> events = new List<Pusula.Core.Notes.EventNote>();
+            var contents = await Task.Run(() =>
+            {
+                events = Pusula.Core.Notes.EventNote.ReadAll(shown.Folder);
+                return RecordContents.Read(shown.Folder, shown.Record.Number);
+            }).ConfigureAwait(true);
             if (version != contentsVersion)
             {
                 return;
+            }
+
+            // Obsidian olay notları Geçmiş'e tarih sırasıyla katılır.
+            if (events.Count > 0)
+            {
+                var merged = History.Concat(events.Select(e => new HistoryRow(e))).OrderByDescending(r => r.SortDate).ToList();
+                History.Clear();
+                foreach (var row in merged)
+                {
+                    History.Add(row);
+                }
             }
 
             foreach (var folder in contents.Folders)

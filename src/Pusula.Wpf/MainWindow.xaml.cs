@@ -688,6 +688,15 @@ namespace Pusula.Wpf
             }
         }
 
+        // Geçmiş / proje notlarında Obsidian olay notunu açar.
+        private void HistoryNote_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is string path && path.Length > 0)
+            {
+                viewModel.OpenNoteOrFolder(path, System.IO.Path.GetDirectoryName(path) ?? string.Empty);
+            }
+        }
+
         // Satır başındaki klasör düğmesi.
         private void RowFolder_Click(object sender, RoutedEventArgs e)
         {

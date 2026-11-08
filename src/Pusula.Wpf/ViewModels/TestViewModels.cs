@@ -238,6 +238,21 @@ namespace Pusula.Wpf.ViewModels
             IsQuickNote = true;
         }
 
+        /// <summary>Obsidian olay notundan kart oluşturur (toplantı, karar …); tıklayınca not açılır.</summary>
+        public TimelineItem(Pusula.Core.Notes.EventNote note)
+        {
+            Title = note.Title;
+            Result = new StatusChip(EventKinds.Label(note.Kind), Pusula.Core.Types.StatusTone.Neutral);
+            Summary = note.Excerpt;
+            var date = note.Date.TimeOfDay == TimeSpan.Zero ? note.Date.ToString(Resources.Format_Date) : note.Date.ToString(Resources.Format_DateTime);
+            Meta = note.Person.Length == 0 ? date : date + " · " + note.Person;
+            Detail = string.Empty;
+            Photo = string.Empty;
+            NotePath = note.Path;
+            Folder = System.IO.Path.GetDirectoryName(note.Path) ?? string.Empty;
+            SortDate = note.Date;
+        }
+
         /// <summary>Sıralama tarihi (koşu tarihi ya da notun zamanı).</summary>
         public DateTime SortDate { get; }
 

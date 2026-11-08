@@ -296,6 +296,7 @@ namespace Pusula.Wpf.ViewModels
             FolderTreeNode? tree = null;
             StockCover? cover = null;
             ProjectInfo? projectInfo = null;
+            List<EventNote> events = new List<EventNote>();
             try
             {
                 summary = await Task.Run(
@@ -311,6 +312,7 @@ namespace Pusula.Wpf.ViewModels
                         tree = FolderTreeNode.Build(path, source.Token);
                         var stockSummary = FolderSummary.ForStock(path, templates, source.Token);
                         cover = StockCover.Read(path, stockSummary.Stock?.StockNo ?? Path.GetFileName(path));
+                        events = EventNote.ReadAll(path);
                         return stockSummary;
                     },
                     source.Token);
@@ -343,7 +345,7 @@ namespace Pusula.Wpf.ViewModels
                 }
 
                 ShowTests(runs);
-                AddNotesToTimeline(summary.Stock, path);
+                AddToTimeline(summary.Stock, events, path);
                 ShowInventory(summary.Stock, path);
                 if (tree != null)
                 {
@@ -430,15 +432,17 @@ namespace Pusula.Wpf.ViewModels
             OnPropertyChanged(nameof(HasAlerts));
         }
 
-        // Stokun kısa notları zaman çizelgesine tarih sırasıyla (yeniden eskiye) katılır.
-        private void AddNotesToTimeline(StockInfo? info, string path)
+        // Günlük: test koşularına kısa notlar ve Obsidian olay notları tarih sırasıyla (yeniden eskiye) katılır.
+        private void AddToTimeline(StockInfo? info, List<EventNote> events, string path)
         {
-            if (info == null || info.Notes.Count == 0)
+            var notes = info?.Notes ?? new List<QuickNote>();
+            if (notes.Count == 0 && events.Count == 0)
             {
                 return;
             }
 
-            var all = Timeline.Concat(info.Notes.Select(n => new TimelineItem(n, path)))
+            var all = Timeline.Concat(notes.Select(n => new TimelineItem(n, path)))
+                .Concat(events.Select(e => new TimelineItem(e)))
                 .OrderByDescending(i => i.SortDate)
                 .ToList();
             Timeline.Clear();

@@ -46,6 +46,10 @@ Son güncelleme: 08.11.2026. Dal: `claude/pusula-project-setup-c6ce02` (push edi
   tıkla aç), fotoğraf şeridi (kök + alt klasörler, ilk 4 + "+n"). Örnekler A–F `C:\PusulaDeneme` içinde (betik: make-record-files.ps1).
 - **Stok kapağı (Genel sekmesinin üstü):** stok kökündeki `<stok no>.md` notunun ilk satırları (yoksa "Not oluştur": YAML stok, ad,
   proje, şablon), `07_Fotograflar` (alt klasörler dahil) fotoğrafları; adında "kapak" geçen resim kapak olur. Örnek: SH2000 (AB-7000-0002).
+- **Olay notları (tek biçim, Obsidian):** stokun ya da kaydın klasöründe (`_` ile başlayanlar hariç, öneri `Notlar\`) YAML'ında
+  `olay:` (toplanti, karar, numune, sevkiyat, revizyon, ariza, not …) ve `tarih:` olan her `.md` olaydır; stokta **Günlük**'e (eski adı
+  Zaman çizelgesi), jig/kabloda **Geçmiş**'e düşer, tıklayınca açılır. `olay: test` notları test okuyucusundan gelir. Şablonlar:
+  `<kök>\_Sablonlar\Olay.md`, `Test.md`. Sıradaki: + Olay / + Test koşusu kısayolu, durum geçmişi, bağlı jig olayları, yeni dosyalar.
 - **Kısa notlar (uygulamadan):** proje / stok / envanter kaydının bilgi dosyasına (`proje.json`, `stok.json`, `kayit.json` → `notes`:
   tarih saat, kişi, metin). Stokta Genel kapağında kutu, notlar Zaman çizelgesine; kayıtta Geçmiş'e; projede "Kısa notlar" kartı.
   Tablolarda sağ tık → Not ekle… (diyalog). Obsidian notunun gövdesine yazılmaz.
@@ -117,7 +121,7 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 - `00_Proje_Geneli` iç yapısı henüz kararlaştırılmadı (öneri: Sartname, Toplantilar, Yazismalar, Planlama).
 - Şablonda kullanılmayan modülü kütüphaneden tamamen silme yok (şimdilik listede kalır).
 - Test kütüphanesi seçilmedi (xUnit / NUnit / MSTest); `Pusula.Tests` projesi yok. Şimdilik denemeler
-  geçici klasörde PowerShell betikleriyle yapılıyor (şablon düzenleyici 32, özet 13, durum 28, işaretleme 18, test koşuları 17, envanter 22 + 26, kayıt dosyaları 18, stok envanteri 13, türler 14, stok kapağı 7, arama 15, kısa not 13 kontrol).
+  geçici klasörde PowerShell betikleriyle yapılıyor (şablon düzenleyici 32, özet 13, durum 28, işaretleme 18, test koşuları 17, envanter 22 + 26, kayıt dosyaları 18, stok envanteri 13, türler 14, stok kapağı 7, arama 15, kısa not 13, olay notları 9 kontrol).
 - Git kullanıcı adı bu makinede tanımlı değil; commit'ler tek seferlik `-c user.name/user.email` ile atılıyor.
 
 ## Çalıştırma

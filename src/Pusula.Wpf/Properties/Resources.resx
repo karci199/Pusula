@@ -424,7 +424,7 @@
     <value>Son sonuçlar · her SN&apos;in son turu</value>
   </data>
   <data name="General_Timeline" xml:space="preserve">
-    <value>Zaman çizelgesi</value>
+    <value>Günlük</value>
   </data>
   <data name="General_NoRuns" xml:space="preserve">
     <value>Henüz test koşusu yok. Koşular 03_Test_Sonuclari\&lt;SİSTEM&gt;\SN01_T1 gibi klasörlerden okunur.</value>
@@ -884,5 +884,23 @@
   </data>
   <data name="QuickNote_Title" xml:space="preserve">
     <value>Kısa not</value>
+  </data>
+  <data name="Event_Meeting" xml:space="preserve">
+    <value>Toplantı</value>
+  </data>
+  <data name="Event_Decision" xml:space="preserve">
+    <value>Karar</value>
+  </data>
+  <data name="Event_Sample" xml:space="preserve">
+    <value>Numune</value>
+  </data>
+  <data name="Event_Shipment" xml:space="preserve">
+    <value>Sevkiyat</value>
+  </data>
+  <data name="Event_Revision" xml:space="preserve">
+    <value>Revizyon</value>
+  </data>
+  <data name="Event_Fault" xml:space="preserve">
+    <value>Arıza</value>
   </data>
 </root>
