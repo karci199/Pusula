@@ -28,6 +28,15 @@ namespace Pusula.Wpf
             InitializeComponent();
             DataContext = viewModel;
 
+            // İlk açılışta kök klasör seçilmemişse Ayarlar açılır (kök seçimi artık orada).
+            ContentRendered += (s, e) =>
+            {
+                if (App.Started && !viewModel.HasRoot)
+                {
+                    Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(() => Settings_Click(this, new RoutedEventArgs())));
+                }
+            };
+
             // ContextMenu görsel ağacın dışında durur; DataContext'i elle verilir.
             foreach (var key in new[] { "AddMenu", "NodeMenu", "TreeMenu" })
             {

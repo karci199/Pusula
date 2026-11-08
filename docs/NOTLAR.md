@@ -140,3 +140,5 @@ Deneme kökü: `C:\PusulaDeneme`.
 
 - Ayarlar penceresi (⚙): kök klasör (üst çubuktan taşındı), tema (KIWI'nin 9 teması, ayarlar.json'da `theme`), Şablonlar / Türler / Dosya türleri düğmeleri. Sol ağaçta envanter ayrı bölmede, projelerin hemen altında.
 
+- Yapay zeka rehberi: docs/YAPAY_ZEKA_REHBERI.md (gerçek veri kökünde CLAUDE.md olarak durur; hatalar _PUSULA\GERI_BILDIRIM.md'ye). İlk açılışta kök yoksa Ayarlar kendiliğinden açılır.
+

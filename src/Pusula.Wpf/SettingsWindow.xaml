@@ -56,7 +56,7 @@
 
             <!-- Tanımlar: kök klasörün _PUSULA altındaki dosyalar -->
             <TextBlock Margin="0,20,0,8" Style="{DynamicResource SubtitleTextBlockStyle}" Text="{x:Static res:Resources.Settings_Definitions}" />
-            <WrapPanel>
+            <WrapPanel IsEnabled="{Binding HasRoot}">
                 <Button Margin="0,0,8,8" Click="Templates_Click">
                     <StackPanel Orientation="Horizontal">
                         <controls:FontIcon Glyph="{x:Static local:AppIcons.Template}" FontSize="14" />
