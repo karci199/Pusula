@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -102,6 +103,39 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Seçili düğümün özeti (sağ panel).</summary>
         public DetailViewModel Detail { get; } = new DetailViewModel();
 
+        private DateTime lastDialogClosed = DateTime.MinValue;
+        private int openDialogs;
+
+        /// <summary>
+        /// Bir diyalog açık mı ya da az önce mi kapandı. Diyalog kapanırken tıklama arkadaki tabloya geçip
+        /// "çift tıklayınca klasörü aç"ı tetiklemesin diye kullanılır.
+        /// </summary>
+        public bool IsDialogBusy
+        {
+            get { return openDialogs > 0 || (DateTime.Now - lastDialogClosed).TotalMilliseconds < 600; }
+        }
+
+        /// <summary>Menüden bir seçim yapıldı; hemen ardından gelen çift tıklama yok sayılır.</summary>
+        public void NoteMenuChoice()
+        {
+            lastDialogClosed = DateTime.Now;
+        }
+
+        private void SetDialogOpen(ref bool field, bool value, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+        {
+            if (field == value)
+            {
+                return;
+            }
+
+            openDialogs = Math.Max(0, openDialogs + (value ? 1 : -1));
+            if (!value)
+            {
+                lastDialogClosed = DateTime.Now;
+            }
+
+            SetProperty(ref field, value, propertyName);
+        }
         /// <summary>Bir satırın klasörünü Windows Gezgini'nde açar (yoksa bir şey yapmaz).</summary>
         public void OpenPath(string path)
         {
@@ -173,7 +207,7 @@ namespace Pusula.Wpf.ViewModels
         public bool IsProjectDialogOpen
         {
             get { return isProjectDialogOpen; }
-            set { SetProperty(ref isProjectDialogOpen, value); }
+            set { SetDialogOpen(ref isProjectDialogOpen, value); }
         }
 
         /// <summary>Girilen proje numarası.</summary>
@@ -240,7 +274,7 @@ namespace Pusula.Wpf.ViewModels
         public bool IsStockDialogOpen
         {
             get { return isStockDialogOpen; }
-            set { SetProperty(ref isStockDialogOpen, value); }
+            set { SetDialogOpen(ref isStockDialogOpen, value); }
         }
 
         /// <summary>Yeni stok diyaloğunun başlığı; stokun ekleneceği projeyi de söyler.</summary>
@@ -486,7 +520,7 @@ namespace Pusula.Wpf.ViewModels
         public bool IsMarkDialogOpen
         {
             get { return isMarkDialogOpen; }
-            set { SetProperty(ref isMarkDialogOpen, value); }
+            set { SetDialogOpen(ref isMarkDialogOpen, value); }
         }
 
         /// <summary>Diyalog stok için mi (değilse proje).</summary>
@@ -618,7 +652,7 @@ namespace Pusula.Wpf.ViewModels
         public bool IsStatusNoteOpen
         {
             get { return isStatusNoteOpen; }
-            set { SetProperty(ref isStatusNoteOpen, value); }
+            set { SetDialogOpen(ref isStatusNoteOpen, value); }
         }
 
         /// <summary>Not diyaloğunun başlığı.</summary>
@@ -680,7 +714,7 @@ namespace Pusula.Wpf.ViewModels
         public bool IsModuleDialogOpen
         {
             get { return isModuleDialogOpen; }
-            set { SetProperty(ref isModuleDialogOpen, value); }
+            set { SetDialogOpen(ref isModuleDialogOpen, value); }
         }
 
         /// <summary>Modül ekle diyaloğunun başlığı.</summary>

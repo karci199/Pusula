@@ -399,4 +399,7 @@
   <data name="Error_AlreadyMarked" xml:space="preserve">
     <value>Bu klasör zaten proje ya da stok olarak işaretli.</value>
   </data>
+  <data name="Gesture_Refresh" xml:space="preserve">
+    <value>F5</value>
+  </data>
 </root>

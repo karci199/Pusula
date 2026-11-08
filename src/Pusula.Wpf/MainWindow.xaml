@@ -180,7 +180,7 @@
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
-            <MenuItem Header="{x:Static res:Resources.Menu_Refresh}" Command="{Binding RefreshCommand}" InputGestureText="F5">
+            <MenuItem Header="{x:Static res:Resources.Menu_Refresh}" Command="{Binding RefreshCommand}" InputGestureText="{x:Static res:Resources.Gesture_Refresh}">
                 <MenuItem.Icon>
                     <controls:FontIcon Glyph="{x:Static local:AppIcons.Refresh}" />
                 </MenuItem.Icon>
@@ -195,7 +195,7 @@
                     <controls:FontIcon Glyph="{x:Static local:AppIcons.Project}" Foreground="{DynamicResource Pusula.ProjectIconBrush}" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="{x:Static res:Resources.Menu_Refresh}" Command="{Binding RefreshCommand}" InputGestureText="F5">
+            <MenuItem Header="{x:Static res:Resources.Menu_Refresh}" Command="{Binding RefreshCommand}" InputGestureText="{x:Static res:Resources.Gesture_Refresh}">
                 <MenuItem.Icon>
                     <controls:FontIcon Glyph="{x:Static local:AppIcons.Refresh}" />
                 </MenuItem.Icon>

@@ -495,5 +495,12 @@ namespace Pusula.Wpf.Properties
         public static string Error_AlreadyMarked { get { return Get("Error_AlreadyMarked"); } }
 
         #endregion
+
+        #region Menü
+
+        /// <summary>Yenile kısayolu.</summary>
+        public static string Gesture_Refresh { get { return Get("Gesture_Refresh"); } }
+
+        #endregion
     }
 }

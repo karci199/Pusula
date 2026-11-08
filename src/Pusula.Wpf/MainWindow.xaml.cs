@@ -107,6 +107,7 @@ namespace Pusula.Wpf
 
             item.Click += (s, args) =>
             {
+                viewModel.NoteMenuChoice();
                 if (status.NeedsNote)
                 {
                     viewModel.AskStatusNote(status.Name);
@@ -135,7 +136,19 @@ namespace Pusula.Wpf
         // Özet tablosunda satıra çift tıklayınca o klasör açılır.
         private void DetailList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if ((sender as ListView)?.SelectedItem is DetailRowViewModel row)
+            // Yalnızca bir satırın üzerine sol tuşla yapılan çift tıklama; diyalog ya da menü az önce kapandıysa yok say.
+            if (e.ChangedButton != MouseButton.Left || viewModel.IsDialogBusy)
+            {
+                return;
+            }
+
+            var source = e.OriginalSource as DependencyObject;
+            while (source != null && !(source is ListViewItem))
+            {
+                source = VisualTreeHelper.GetParent(source);
+            }
+
+            if ((source as ListViewItem)?.DataContext is DetailRowViewModel row)
             {
                 viewModel.OpenPath(row.Path);
             }
