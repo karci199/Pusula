@@ -74,8 +74,8 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 2. ~~Durum~~ (yapıldı: tür kalıbı + stok durumu).
 3. ~~Test koşuları, Genel / Testler / Kalifikasyon / Klasörler sekmeleri~~ (yapıldı).
 3a. **Fotoğraflar sekmesi (sıradaki):** 07_Fotograflar + koşuların Foto\ klasörleri, küçük resim ızgarası, tıkla büyüt.
-3c. ~~Stokta Jig ve kablo sekmesi~~ (yapıldı): stok düzeyindeki kayıtlar + `stok.json` → `inventory` bağları; türe göre ayrı
-    bölümler, Ekle (genel / proje kaydını bağlar), Yeni, satır menüsü (Kaydı aç, Klasörde aç, Bağı kaldır). Genel'de özet kartları,
+3c. ~~Stokta Jigler / Kablolar sekmeleri~~ (yapıldı): stok düzeyindeki kayıtlar + `stok.json` → `inventory` bağları; her tür
+    kendi sekmesinde (türlerden kurulur; ileride Yazılımlar, Diğer, Arşiv), Ekle (genel / proje kaydını bağlar), Yeni, satır menüsü (Kaydı aç, Klasörde aç, Bağı kaldır). Genel'de özet kartları,
     sıra dışı durum ve bulunamayan bağ Dikkat'e düşer. Kalan: kaydın sayfasında "kullanan stoklar".
 3f. **Tür tanımlama ekranı:** ikonlu tür listesi, kilitli genel alanlar, türe özel alanlar (metin, sayı, tarih, seçim,
     evet/hayır; birim), alt türler, durumlar, numara biçimleri, düzey klasörleri.

@@ -747,9 +747,6 @@ namespace Pusula.Wpf.Properties
 
         #region Stok envanteri
 
-        /// <summary>Stok sekmesi; {0} kayıt sayısı.</summary>
-        public static string Tab_Inventory { get { return Get("Tab_Inventory"); } }
-
         /// <summary>Genel sekmesinde özet başlığı.</summary>
         public static string StockInv_Section { get { return Get("StockInv_Section"); } }
 

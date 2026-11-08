@@ -24,6 +24,70 @@
         <local:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
         <local:PathToImageConverter x:Key="PathToImage" />
 
+        <!-- Stok: bir envanter türünün sekmesi (Jigler, Kablolar …); sekmeler kodda türlerden kurulur -->
+        <DataTemplate x:Key="StockInventoryTabTemplate">
+            <Grid Margin="0,12,0,0" TextElement.FontWeight="Normal">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <controls:FontIcon Glyph="{Binding Glyph}" Foreground="{Binding Color}" FontSize="16" VerticalAlignment="Center" />
+                    <TextBlock Margin="10,0,0,0" Text="{Binding Summary}" VerticalAlignment="Center"
+                               Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Tag="{Binding Type}" Click="StockInvAdd_Click" ToolTip="{x:Static res:Resources.StockInv_AddHint}">
+                        <StackPanel Orientation="Horizontal">
+                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Inventory}" FontSize="14" />
+                            <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.StockInv_AddExisting}" />
+                        </StackPanel>
+                    </Button>
+                    <Button Margin="6,0,0,0" Tag="{Binding Type}" Click="StockInvNew_Click" ToolTip="{x:Static res:Resources.StockInv_NewHint}">
+                        <StackPanel Orientation="Horizontal">
+                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="14" />
+                            <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.StockInv_New}" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+                <ListView Grid.Row="1" Grid.ColumnSpan="2" Margin="0,8,0,0"
+                          ItemsSource="{Binding Rows}"
+                          MouseDoubleClick="InventoryList_MouseDoubleClick">
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="{x:Static res:Resources.StockInv_OpenRecord}" Click="StockInvOpen_Click" />
+                            <MenuItem Header="{x:Static res:Resources.Menu_OpenFolder}" Click="StockInvFolder_Click" />
+                            <MenuItem Header="{x:Static res:Resources.StockInv_Unlink}" Click="StockInvUnlink_Click"
+                                      Visibility="{Binding PlacementTarget.SelectedItem.IsLinked, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BoolToVis}, FallbackValue=Collapsed}" />
+                        </ContextMenu>
+                    </ListView.ContextMenu>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="{x:Static res:Resources.Inv_Number}" Width="130" DisplayMemberBinding="{Binding Number}" />
+                            <GridViewColumn Header="{x:Static res:Resources.Inv_Name}" Width="220" DisplayMemberBinding="{Binding Name}" />
+                            <GridViewColumn Header="{x:Static res:Resources.Inv_SubType}" Width="110" DisplayMemberBinding="{Binding SubType}" />
+                            <GridViewColumn Header="{x:Static res:Resources.Col_Status}" Width="190">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ContentPresenter Content="{Binding Status}" ContentTemplate="{DynamicResource StatusChipTemplate}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="{x:Static res:Resources.Inv_Location}" Width="130" DisplayMemberBinding="{Binding Location}" />
+                            <GridViewColumn Header="{x:Static res:Resources.Inv_Level}" Width="170" DisplayMemberBinding="{Binding Level}" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Margin="12,44,0,0" VerticalAlignment="Top"
+                           Style="{DynamicResource HintText}" Text="{x:Static res:Resources.StockInv_Empty}"
+                           Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVis}}" />
+            </Grid>
+        </DataTemplate>
+
         <Style x:Key="PaneLabel" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
             <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
             <Setter Property="Margin" Value="0,0,0,6" />
@@ -919,7 +983,7 @@
                 </ListView>
 
                 <!-- Stok: sekmeler -->
-                <TabControl Grid.Row="3" Grid.RowSpan="2" Margin="0,14,0,0"
+                <TabControl x:Name="StockTabs" Grid.Row="3" Grid.RowSpan="2" Margin="0,14,0,0"
                             Visibility="{Binding Detail.IsStock, Converter={StaticResource BoolToVis}}">
                     <!-- Genel -->
                     <TabItem Header="{x:Static res:Resources.Tab_General}">
@@ -1046,82 +1110,6 @@
                                   GridViewColumnHeader.Click="RunsHeader_Click"
                                   MouseDoubleClick="RunsList_MouseDoubleClick"
                                   ContextMenu="{StaticResource RunMenu}" />
-                    </TabItem>
-
-                    <!-- Jig ve kablo: türe göre ayrı bölümler -->
-                    <TabItem Header="{Binding Detail.InventoryHeader}">
-                        <ItemsControl Margin="0,12,0,0" TextElement.FontWeight="Normal" ItemsSource="{Binding Detail.InventoryGroups}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid Columns="1" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid Margin="0,0,0,14">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="*" />
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                            <controls:FontIcon Glyph="{Binding Glyph}" Foreground="{Binding Color}" FontSize="16" VerticalAlignment="Center" />
-                                            <TextBlock Margin="8,0,0,0" Text="{Binding Header}" FontWeight="SemiBold" VerticalAlignment="Center" />
-                                            <TextBlock Margin="12,0,0,0" Text="{Binding Summary}" VerticalAlignment="Center"
-                                                       Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" />
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                            <Button Tag="{Binding Type}" Click="StockInvAdd_Click" ToolTip="{x:Static res:Resources.StockInv_AddHint}">
-                                                <StackPanel Orientation="Horizontal">
-                                                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Inventory}" FontSize="14" />
-                                                    <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.StockInv_AddExisting}" />
-                                                </StackPanel>
-                                            </Button>
-                                            <Button Margin="6,0,0,0" Tag="{Binding Type}" Click="StockInvNew_Click" ToolTip="{x:Static res:Resources.StockInv_NewHint}">
-                                                <StackPanel Orientation="Horizontal">
-                                                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="14" />
-                                                    <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.StockInv_New}" />
-                                                </StackPanel>
-                                            </Button>
-                                        </StackPanel>
-                                        <ListView Grid.Row="1" Grid.ColumnSpan="2" Margin="0,8,0,0"
-                                                  ItemsSource="{Binding Rows}"
-                                                  MouseDoubleClick="InventoryList_MouseDoubleClick">
-                                            <ListView.ContextMenu>
-                                                <ContextMenu>
-                                                    <MenuItem Header="{x:Static res:Resources.StockInv_OpenRecord}" Click="StockInvOpen_Click" />
-                                                    <MenuItem Header="{x:Static res:Resources.Menu_OpenFolder}" Click="StockInvFolder_Click" />
-                                                    <MenuItem Header="{x:Static res:Resources.StockInv_Unlink}" Click="StockInvUnlink_Click"
-                                                              Visibility="{Binding PlacementTarget.SelectedItem.IsLinked, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BoolToVis}, FallbackValue=Collapsed}" />
-                                                </ContextMenu>
-                                            </ListView.ContextMenu>
-                                            <ListView.View>
-                                                <GridView>
-                                                    <GridViewColumn Header="{x:Static res:Resources.Inv_Number}" Width="130" DisplayMemberBinding="{Binding Number}" />
-                                                    <GridViewColumn Header="{x:Static res:Resources.Inv_Name}" Width="220" DisplayMemberBinding="{Binding Name}" />
-                                                    <GridViewColumn Header="{x:Static res:Resources.Inv_SubType}" Width="110" DisplayMemberBinding="{Binding SubType}" />
-                                                    <GridViewColumn Header="{x:Static res:Resources.Col_Status}" Width="190">
-                                                        <GridViewColumn.CellTemplate>
-                                                            <DataTemplate>
-                                                                <ContentPresenter Content="{Binding Status}" ContentTemplate="{DynamicResource StatusChipTemplate}" />
-                                                            </DataTemplate>
-                                                        </GridViewColumn.CellTemplate>
-                                                    </GridViewColumn>
-                                                    <GridViewColumn Header="{x:Static res:Resources.Inv_Location}" Width="130" DisplayMemberBinding="{Binding Location}" />
-                                                    <GridViewColumn Header="{x:Static res:Resources.Inv_Level}" Width="170" DisplayMemberBinding="{Binding Level}" />
-                                                </GridView>
-                                            </ListView.View>
-                                        </ListView>
-                                        <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Margin="12,44,0,0" VerticalAlignment="Top"
-                                                   Style="{StaticResource HintText}" Text="{x:Static res:Resources.StockInv_Empty}"
-                                                   Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVis}}" />
-                                    </Grid>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
                     </TabItem>
 
                     <!-- Klasörler -->

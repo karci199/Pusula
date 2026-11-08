@@ -33,6 +33,66 @@ namespace Pusula.Wpf
             {
                 ((ContextMenu)FindResource(key)).DataContext = viewModel;
             }
+
+            viewModel.Detail.InventoryGroups.CollectionChanged += (s, e) => RebuildInventoryTabs();
+            StockTabs.SelectionChanged += StockTabs_SelectionChanged;
+        }
+
+        // Stok sekmeleri: her envanter türü (Jigler, Kablolar …) Kalifikasyon'dan sonra kendi sekmesinde.
+        // Stok değişince sekmeler yeniden kurulur; açık olan tür sekmesi korunur.
+        private const string InventoryTabTag = "inventory:";
+        private string? preferredInventoryKey;
+        private bool rebuildingTabs;
+
+        // Kullanıcının seçtiği sekme hatırlanır (yeniden kurulurken oluşan seçim değişiklikleri sayılmaz).
+        private void StockTabs_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (rebuildingTabs || !ReferenceEquals(e.OriginalSource, StockTabs) || !(StockTabs.SelectedItem is TabItem selected))
+            {
+                return;
+            }
+
+            var tag = selected.Tag as string;
+            preferredInventoryKey = tag != null && tag.StartsWith(InventoryTabTag, StringComparison.Ordinal) ? tag : null;
+        }
+
+        private void RebuildInventoryTabs()
+        {
+            rebuildingTabs = true;
+            try
+            {
+                RebuildInventoryTabsCore();
+            }
+            finally
+            {
+                rebuildingTabs = false;
+            }
+        }
+
+        private void RebuildInventoryTabsCore()
+        {
+            foreach (var old in StockTabs.Items.OfType<TabItem>().Where(i => (i.Tag as string)?.StartsWith(InventoryTabTag, StringComparison.Ordinal) == true).ToList())
+            {
+                StockTabs.Items.Remove(old);
+            }
+
+            var index = 3;
+            var template = (DataTemplate)FindResource("StockInventoryTabTemplate");
+            foreach (var group in viewModel.Detail.InventoryGroups)
+            {
+                var tab = new TabItem
+                {
+                    Header = group.Header,
+                    Content = group,
+                    ContentTemplate = template,
+                    Tag = InventoryTabTag + group.Type.Key,
+                };
+                StockTabs.Items.Insert(index++, tab);
+                if (tab.Tag as string == preferredInventoryKey)
+                {
+                    StockTabs.SelectedItem = tab;
+                }
+            }
         }
 
         private void FolderTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)

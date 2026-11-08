@@ -36,13 +36,13 @@ namespace Pusula.Wpf.ViewModels
 
             Summary = string.Join(" · ", parts);
             HasWarning = side > 0 || missing > 0;
-            Header = type.PluralName + " (" + Rows.Count.ToString(System.Globalization.CultureInfo.CurrentCulture) + ")";
+            Header = type.PluralName + " · " + Rows.Count.ToString(System.Globalization.CultureInfo.CurrentCulture);
         }
 
         /// <summary>Tür.</summary>
         public TypeDefinition Type { get; }
 
-        /// <summary>"Jigler (2)".</summary>
+        /// <summary>Sekme başlığı: "Jigler · 2".</summary>
         public string Header { get; }
 
         /// <summary>"Jig 2 · 1 dikkat".</summary>

@@ -155,11 +155,6 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Bütün envanter kayıtları (ana görünüm modeli verir); stokun kullandıkları bunlardan seçilir.</summary>
         public IEnumerable<InventoryItem> InventoryItems { get; set; } = new List<InventoryItem>();
 
-        /// <summary>Sekme başlığı: "Jig ve kablo · 3".</summary>
-        public string InventoryHeader
-        {
-            get { return string.Format(Resources.Tab_Inventory, InventoryGroups.Sum(g => g.Rows.Count)); }
-        }
 
         /// <summary>Sekme başlığı: "Testler · 4".</summary>
         public string TestsHeader
@@ -269,7 +264,6 @@ namespace Pusula.Wpf.ViewModels
             QualificationRuns.Clear();
             FolderTree.Clear();
             InventoryGroups.Clear();
-            OnPropertyChanged(nameof(InventoryHeader));
             NotifyTestHeaders();
             IsProject = false;
             IsStock = false;
@@ -409,7 +403,6 @@ namespace Pusula.Wpf.ViewModels
                 }
             }
 
-            OnPropertyChanged(nameof(InventoryHeader));
             OnPropertyChanged(nameof(HasAlerts));
         }
 

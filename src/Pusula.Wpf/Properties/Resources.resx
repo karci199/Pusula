@@ -624,9 +624,6 @@
   <data name="Inv_NoteFailed" xml:space="preserve">
     <value>Not oluşturulamadı.</value>
   </data>
-  <data name="Tab_Inventory" xml:space="preserve">
-    <value>Jig ve kablo · {0}</value>
-  </data>
   <data name="StockInv_Section" xml:space="preserve">
     <value>Jig ve kablo</value>
   </data>
