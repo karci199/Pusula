@@ -71,6 +71,15 @@ namespace Pusula.Wpf
             }
         }
 
+        // Özet tablosunda satıra çift tıklayınca o klasör açılır.
+        private void DetailList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if ((sender as ListView)?.SelectedItem is DetailRowViewModel row)
+            {
+                viewModel.OpenPath(row.Path);
+            }
+        }
+
         private void EditTemplates_Click(object sender, RoutedEventArgs e)
         {
             if (!viewModel.CanEditTemplates())

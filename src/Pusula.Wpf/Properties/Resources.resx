@@ -264,4 +264,85 @@
   <data name="ModuleDialog_Hint" xml:space="preserve">
     <value>Değişiklik bu modülü kullanan tüm şablonlara yansır; var olan stok klasörlerine dokunulmaz.</value>
   </data>
+  <data name="Detail_Loading" xml:space="preserve">
+    <value>Hesaplanıyor…</value>
+  </data>
+  <data name="Detail_General" xml:space="preserve">
+    <value>Proje geneli: {0} dosya</value>
+  </data>
+  <data name="Detail_StockSubtitle" xml:space="preserve">
+    <value>Stok · {0} · {1}</value>
+  </data>
+  <data name="Detail_StockSubtitleNoTemplate" xml:space="preserve">
+    <value>Stok · {0}</value>
+  </data>
+  <data name="Detail_RowHint" xml:space="preserve">
+    <value>Satıra çift tıklayınca klasör açılır. Şablonda olup diskte olmayan klasörler eksik görünür.</value>
+  </data>
+  <data name="Tile_Stocks" xml:space="preserve">
+    <value>Stok</value>
+  </data>
+  <data name="Tile_Files" xml:space="preserve">
+    <value>Dosya</value>
+  </data>
+  <data name="Tile_Size" xml:space="preserve">
+    <value>Boyut</value>
+  </data>
+  <data name="Tile_LastChange" xml:space="preserve">
+    <value>Son değişiklik</value>
+  </data>
+  <data name="Tile_LastFile" xml:space="preserve">
+    <value>Son değişen</value>
+  </data>
+  <data name="Col_Stock" xml:space="preserve">
+    <value>Stok</value>
+  </data>
+  <data name="Col_Template" xml:space="preserve">
+    <value>Şablon</value>
+  </data>
+  <data name="Col_Files" xml:space="preserve">
+    <value>Dosya</value>
+  </data>
+  <data name="Col_Size" xml:space="preserve">
+    <value>Boyut</value>
+  </data>
+  <data name="Col_LastChange" xml:space="preserve">
+    <value>Son değişiklik</value>
+  </data>
+  <data name="Col_Folder" xml:space="preserve">
+    <value>Klasör</value>
+  </data>
+  <data name="Col_LastFile" xml:space="preserve">
+    <value>Son değişen dosya</value>
+  </data>
+  <data name="Row_Empty" xml:space="preserve">
+    <value>boş</value>
+  </data>
+  <data name="Row_Missing" xml:space="preserve">
+    <value>eksik (şablonda var, diskte yok)</value>
+  </data>
+  <data name="Row_Special" xml:space="preserve">
+    <value>sayılara girmez</value>
+  </data>
+  <data name="Size_Bytes" xml:space="preserve">
+    <value>{0} B</value>
+  </data>
+  <data name="Size_KB" xml:space="preserve">
+    <value>{0:0.#} KB</value>
+  </data>
+  <data name="Size_MB" xml:space="preserve">
+    <value>{0:0.#} MB</value>
+  </data>
+  <data name="Size_GB" xml:space="preserve">
+    <value>{0:0.#} GB</value>
+  </data>
+  <data name="Format_DateTime" xml:space="preserve">
+    <value>dd.MM.yyyy HH:mm</value>
+  </data>
+  <data name="Format_Date" xml:space="preserve">
+    <value>dd.MM.yyyy</value>
+  </data>
+  <data name="Format_Today" xml:space="preserve">
+    <value>bugün {0}</value>
+  </data>
 </root>

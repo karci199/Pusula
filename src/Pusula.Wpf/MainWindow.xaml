@@ -53,6 +53,15 @@
             </CheckBox>
         </DataTemplate>
 
+        <!-- Özet tablosu satırı: boş, eksik ya da özel klasörler soluk. -->
+        <Style x:Key="DetailRowStyle" TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsDim}" Value="True">
+                    <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
         <!-- Menüler ağaçla aynı DataContext'i kod tarafında alır (MainWindow.xaml.cs). -->
         <ContextMenu x:Key="AddMenu">
             <MenuItem Header="{Binding NewStockMenuText}"
@@ -256,40 +265,127 @@
                            Text="{x:Static res:Resources.Content_EmptyHint}" />
             </StackPanel>
 
-            <!-- Seçili düğüm: ikon, tür, ad, yol, klasörde aç -->
+            <!-- Seçili düğüm: başlık, özet kutucukları, tablo -->
             <Grid Grid.Column="1"
-                  Margin="32,24"
-                  VerticalAlignment="Top"
-                  DataContext="{Binding SelectedNode}"
-                  Visibility="{Binding DataContext.HasSelection, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <controls:FontIcon Grid.Column="0" Glyph="{Binding Glyph}" FontSize="32"
-                                   Style="{StaticResource KindIconStyle}"
-                                   VerticalAlignment="Top" Margin="0,4,16,0" />
-                <StackPanel Grid.Column="1">
-                    <TextBlock Style="{DynamicResource CaptionTextBlockStyle}"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               Text="{Binding KindText}" />
-                    <TextBlock Style="{DynamicResource SubtitleTextBlockStyle}"
-                               Text="{Binding Title}" />
-                    <TextBlock Style="{DynamicResource CaptionTextBlockStyle}"
-                               Foreground="{DynamicResource TextTertiaryBrush}"
-                               TextWrapping="Wrap"
-                               Margin="0,2,0,0"
-                               Text="{Binding Path}" />
-                </StackPanel>
-                <Button Grid.Column="2"
-                        VerticalAlignment="Top"
-                        Command="{Binding DataContext.OpenFolderCommand, RelativeSource={RelativeSource AncestorType=Window}}">
-                    <StackPanel Orientation="Horizontal">
-                        <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" VerticalAlignment="Center" />
-                        <TextBlock Text="{x:Static res:Resources.Menu_OpenFolder}" Margin="8,0,0,0" VerticalAlignment="Center" />
+                  Margin="32,20,32,12"
+                  Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Başlık -->
+                <Grid Grid.Row="0" DataContext="{Binding SelectedNode}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <controls:FontIcon Grid.Column="0" Glyph="{Binding Glyph}" FontSize="32"
+                                       Style="{StaticResource KindIconStyle}"
+                                       VerticalAlignment="Center" Margin="0,0,16,0" />
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Style="{DynamicResource CaptionTextBlockStyle}"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   Text="{Binding DataContext.Detail.Subtitle, RelativeSource={RelativeSource AncestorType=Window}}" />
+                        <TextBlock Style="{DynamicResource SubtitleTextBlockStyle}" Text="{Binding Title}" />
+                        <TextBlock Style="{DynamicResource CaptionTextBlockStyle}"
+                                   Foreground="{DynamicResource TextTertiaryBrush}"
+                                   TextTrimming="CharacterEllipsis"
+                                   Text="{Binding Path}" />
                     </StackPanel>
-                </Button>
+                    <Button Grid.Column="2"
+                            VerticalAlignment="Center"
+                            Command="{Binding DataContext.OpenFolderCommand, RelativeSource={RelativeSource AncestorType=Window}}">
+                        <StackPanel Orientation="Horizontal">
+                            <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" VerticalAlignment="Center" />
+                            <TextBlock Text="{x:Static res:Resources.Menu_OpenFolder}" Margin="8,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+
+                <!-- Özet kutucukları -->
+                <ItemsControl Grid.Row="1" Margin="0,16,0,0" ItemsSource="{Binding Detail.Tiles}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="1" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{DynamicResource LayerBrush}"
+                                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="{DynamicResource OverlayCornerRadius}"
+                                    Padding="12,8"
+                                    Margin="0,0,8,0">
+                                <StackPanel>
+                                    <TextBlock Style="{DynamicResource CaptionTextBlockStyle}"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               Text="{Binding Label}" />
+                                    <TextBlock Style="{DynamicResource SubtitleTextBlockStyle}"
+                                               TextTrimming="CharacterEllipsis"
+                                               ToolTip="{Binding Value}"
+                                               Text="{Binding Value}" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Hesaplanıyor -->
+                <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,16,0,0"
+                            Visibility="{Binding Detail.IsLoading, Converter={StaticResource BoolToVis}}">
+                    <controls:ProgressRing Width="16" Height="16" IsActive="True" />
+                    <TextBlock Margin="8,0,0,0" Foreground="{DynamicResource TextSecondaryBrush}"
+                               Text="{x:Static res:Resources.Detail_Loading}" />
+                </StackPanel>
+
+                <!-- Proje: stok tablosu -->
+                <ListView Grid.Row="2" Margin="0,16,0,0"
+                          ItemsSource="{Binding Detail.Rows}"
+                          ItemContainerStyle="{StaticResource DetailRowStyle}"
+                          MouseDoubleClick="DetailList_MouseDoubleClick"
+                          Visibility="{Binding Detail.IsProject, Converter={StaticResource BoolToVis}}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="{x:Static res:Resources.Col_Stock}" Width="200" DisplayMemberBinding="{Binding Name}" />
+                            <GridViewColumn Header="{x:Static res:Resources.Col_Template}" Width="150" DisplayMemberBinding="{Binding Template}" />
+                            <GridViewColumn Header="{x:Static res:Resources.Col_Files}" Width="80" DisplayMemberBinding="{Binding FileCount}" />
+                            <GridViewColumn Header="{x:Static res:Resources.Col_Size}" Width="100" DisplayMemberBinding="{Binding Size}" />
+                            <GridViewColumn Header="{x:Static res:Resources.Col_LastChange}" Width="170" DisplayMemberBinding="{Binding LastChange}" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+                <!-- Stok: klasör tablosu -->
+                <ListView Grid.Row="2" Margin="0,16,0,0"
+                          ItemsSource="{Binding Detail.Rows}"
+                          ItemContainerStyle="{StaticResource DetailRowStyle}"
+                          MouseDoubleClick="DetailList_MouseDoubleClick"
+                          Visibility="{Binding Detail.IsStock, Converter={StaticResource BoolToVis}}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="{x:Static res:Resources.Col_Folder}" Width="200">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" FontFamily="Consolas" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="{x:Static res:Resources.Col_Files}" Width="80" DisplayMemberBinding="{Binding FileCount}" />
+                            <GridViewColumn Header="{x:Static res:Resources.Col_Size}" Width="100" DisplayMemberBinding="{Binding Size}" />
+                            <GridViewColumn Header="{x:Static res:Resources.Col_LastFile}" Width="460" DisplayMemberBinding="{Binding LastFile}" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+                <TextBlock Grid.Row="3" Margin="0,8,0,0"
+                           Style="{DynamicResource CaptionTextBlockStyle}"
+                           Foreground="{DynamicResource TextTertiaryBrush}"
+                           Text="{Binding Detail.Note}" />
             </Grid>
         </Grid>
 

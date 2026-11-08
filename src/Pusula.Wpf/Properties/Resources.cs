@@ -336,5 +336,94 @@ namespace Pusula.Wpf.Properties
         public static string ModuleDialog_Hint { get { return Get("ModuleDialog_Hint"); } }
 
         #endregion
+
+        #region Özet
+
+        /// <summary>Özet hesaplanırken.</summary>
+        public static string Detail_Loading { get { return Get("Detail_Loading"); } }
+
+        /// <summary>Proje özetinin notu; {0} dosya sayısı.</summary>
+        public static string Detail_General { get { return Get("Detail_General"); } }
+
+        /// <summary>Stok başlığı üstü; {0} şablon, {1} proje.</summary>
+        public static string Detail_StockSubtitle { get { return Get("Detail_StockSubtitle"); } }
+
+        /// <summary>Şablonsuz stok başlığı üstü; {0} proje.</summary>
+        public static string Detail_StockSubtitleNoTemplate { get { return Get("Detail_StockSubtitleNoTemplate"); } }
+
+        /// <summary>Stok tablosunun notu.</summary>
+        public static string Detail_RowHint { get { return Get("Detail_RowHint"); } }
+
+        /// <summary>Kutucuk: stok sayısı.</summary>
+        public static string Tile_Stocks { get { return Get("Tile_Stocks"); } }
+
+        /// <summary>Kutucuk: dosya sayısı.</summary>
+        public static string Tile_Files { get { return Get("Tile_Files"); } }
+
+        /// <summary>Kutucuk: toplam boyut.</summary>
+        public static string Tile_Size { get { return Get("Tile_Size"); } }
+
+        /// <summary>Kutucuk: son değişiklik tarihi.</summary>
+        public static string Tile_LastChange { get { return Get("Tile_LastChange"); } }
+
+        /// <summary>Kutucuk: son değişen dosya.</summary>
+        public static string Tile_LastFile { get { return Get("Tile_LastFile"); } }
+
+        /// <summary>Sütun: stok.</summary>
+        public static string Col_Stock { get { return Get("Col_Stock"); } }
+
+        /// <summary>Sütun: şablon.</summary>
+        public static string Col_Template { get { return Get("Col_Template"); } }
+
+        /// <summary>Sütun: dosya sayısı.</summary>
+        public static string Col_Files { get { return Get("Col_Files"); } }
+
+        /// <summary>Sütun: boyut.</summary>
+        public static string Col_Size { get { return Get("Col_Size"); } }
+
+        /// <summary>Sütun: son değişiklik.</summary>
+        public static string Col_LastChange { get { return Get("Col_LastChange"); } }
+
+        /// <summary>Sütun: klasör.</summary>
+        public static string Col_Folder { get { return Get("Col_Folder"); } }
+
+        /// <summary>Sütun: son değişen dosya.</summary>
+        public static string Col_LastFile { get { return Get("Col_LastFile"); } }
+
+        /// <summary>Dosyası olmayan klasör.</summary>
+        public static string Row_Empty { get { return Get("Row_Empty"); } }
+
+        /// <summary>Şablonda olup diskte olmayan klasör.</summary>
+        public static string Row_Missing { get { return Get("Row_Missing"); } }
+
+        /// <summary>Alt çizgiyle başlayan özel klasör.</summary>
+        public static string Row_Special { get { return Get("Row_Special"); } }
+
+        #endregion
+
+        #region Biçim
+
+        /// <summary>Boyut: bayt.</summary>
+        public static string Size_Bytes { get { return Get("Size_Bytes"); } }
+
+        /// <summary>Boyut: KB.</summary>
+        public static string Size_KB { get { return Get("Size_KB"); } }
+
+        /// <summary>Boyut: MB.</summary>
+        public static string Size_MB { get { return Get("Size_MB"); } }
+
+        /// <summary>Boyut: GB.</summary>
+        public static string Size_GB { get { return Get("Size_GB"); } }
+
+        /// <summary>Tarih ve saat biçimi.</summary>
+        public static string Format_DateTime { get { return Get("Format_DateTime"); } }
+
+        /// <summary>Tarih biçimi.</summary>
+        public static string Format_Date { get { return Get("Format_Date"); } }
+
+        /// <summary>Bugünkü tarih; {0} saat.</summary>
+        public static string Format_Today { get { return Get("Format_Today"); } }
+
+        #endregion
     }
 }

@@ -88,7 +88,20 @@ namespace Pusula.Wpf.ViewModels
                 {
                     OnPropertyChanged(nameof(HasSelection));
                     OnPropertyChanged(nameof(NewStockMenuText));
+                    Detail.Load(selectedNode, templates);
                 }
+            }
+        }
+
+        /// <summary>Seçili düğümün özeti (sağ panel).</summary>
+        public DetailViewModel Detail { get; } = new DetailViewModel();
+
+        /// <summary>Bir satırın klasörünü Windows Gezgini'nde açar (yoksa bir şey yapmaz).</summary>
+        public void OpenPath(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                System.Diagnostics.Process.Start("explorer.exe", "\"" + path + "\"");
             }
         }
 
