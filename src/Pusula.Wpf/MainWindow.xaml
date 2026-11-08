@@ -637,14 +637,17 @@
                                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                                 <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                                 <Setter Property="ContextMenu" Value="{StaticResource NodeMenu}" />
+                                <Style.Triggers>
+                                    <!-- Envanter bölümü projelerden boşlukla ayrılır (vurgu kutusunun dışında) -->
+                                    <DataTrigger Binding="{Binding Kind}" Value="{x:Static core:FolderKind.InventoryGroup}">
+                                        <Setter Property="Margin" Value="0,18,0,0" />
+                                    </DataTrigger>
+                                </Style.Triggers>
                             </Style>
                         </TreeView.ItemContainerStyle>
                         <TreeView.ItemTemplate>
                             <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                                 <StackPanel>
-                                    <!-- Envanter bölümü projelerden çizgiyle ayrılır -->
-                                    <Border x:Name="SectionLine" Height="1" Margin="-28,10,0,10" Visibility="Collapsed"
-                                            Background="{DynamicResource DividerStrokeColorDefaultBrush}" />
                                     <StackPanel x:Name="Row" Orientation="Horizontal" Margin="0,1" ToolTip="{Binding ToolTipText}">
                                         <controls:FontIcon x:Name="Icon" Glyph="{Binding Glyph}" FontSize="15"
                                                            Style="{StaticResource KindIconStyle}"
@@ -657,7 +660,7 @@
                                 </StackPanel>
                                 <HierarchicalDataTemplate.Triggers>
                                     <DataTrigger Binding="{Binding Kind}" Value="{x:Static core:FolderKind.InventoryGroup}">
-                                        <Setter TargetName="SectionLine" Property="Visibility" Value="Visible" />
+
                                         <Setter TargetName="Title" Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
                                         <Setter TargetName="Title" Property="FontWeight" Value="SemiBold" />
                                         <Setter TargetName="Icon" Property="FontSize" Value="14" />
