@@ -585,10 +585,12 @@
                     CornerRadius="8,0,0,0" />
 
             <Border Grid.Column="0" Background="Transparent">
-                <Grid>
+                <Grid x:Name="TreePane" SizeChanged="TreePane_SizeChanged">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" MinHeight="40" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" MinHeight="60" />
                     </Grid.RowDefinitions>
 
                     <!-- Ağaç başlığı: Projeler + ekle + yenile -->
@@ -652,7 +654,7 @@
 
                     <TreeView x:Name="FolderTree"
                               Grid.Row="1"
-                              ItemsSource="{Binding Nodes}"
+                              ItemsSource="{Binding ProjectNodes}"
                               Visibility="{Binding HasRoot, Converter={StaticResource BoolToVis}}"
                               ContextMenu="{StaticResource TreeMenu}"
                               Background="Transparent"
@@ -666,12 +668,7 @@
                                 <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                                 <Setter Property="ContextMenu" Value="{StaticResource NodeMenu}" />
                                 <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource BoolToVis}}" />
-                                <Style.Triggers>
-                                    <!-- Envanter bölümü projelerden boşlukla ayrılır (vurgu kutusunun dışında) -->
-                                    <DataTrigger Binding="{Binding Kind}" Value="{x:Static core:FolderKind.InventoryGroup}">
-                                        <Setter Property="Margin" Value="0,6,0,0" />
-                                    </DataTrigger>
-                                </Style.Triggers>
+
                             </Style>
                         </TreeView.ItemContainerStyle>
                         <TreeView.ItemTemplate>
@@ -706,6 +703,25 @@
                             </HierarchicalDataTemplate>
                         </TreeView.ItemTemplate>
                     </TreeView>
+
+                    <!-- Envanter ayrı bölmede; aradaki çizgi sürüklenerek boyutlanır -->
+                    <Border Grid.Row="2" Height="1" Margin="12,2" VerticalAlignment="Center" IsHitTestVisible="False"
+                            Background="{DynamicResource CardStrokeColorDefaultBrush}"
+                            Visibility="{Binding HasInventory, Converter={StaticResource BoolToVis}}" />
+                    <GridSplitter Grid.Row="2" Height="6" HorizontalAlignment="Stretch" ResizeDirection="Rows"
+                                  Background="Transparent" Focusable="False"
+                                  Visibility="{Binding HasInventory, Converter={StaticResource BoolToVis}}" />
+                    <TreeView x:Name="InventoryTree"
+                              Grid.Row="3"
+                              ItemsSource="{Binding InventoryNodes}"
+                              Visibility="{Binding HasInventory, Converter={StaticResource BoolToVis}}"
+                              ItemContainerStyle="{Binding ItemContainerStyle, ElementName=FolderTree}"
+                              ItemTemplate="{Binding ItemTemplate, ElementName=FolderTree}"
+                              Background="Transparent"
+                              BorderThickness="0"
+                              Padding="4"
+                              SelectedItemChanged="FolderTree_SelectedItemChanged"
+                              PreviewMouseRightButtonDown="FolderTree_PreviewMouseRightButtonDown" />
                 </Grid>
             </Border>
 

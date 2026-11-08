@@ -106,7 +106,17 @@ namespace Pusula.Wpf
 
         private void FolderTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            viewModel.SelectedNode = e.NewValue as TreeNodeViewModel;
+            // İki ağaç var (projeler, envanter); birinde seçim kalkınca (boş) seçim silinmez.
+            if (e.NewValue is TreeNodeViewModel node)
+            {
+                viewModel.SelectedNode = node;
+            }
+        }
+
+        // Envanter projelerin hemen altında durur; projeler çoksa üst ağaç bölmenin üçte ikisinde kayar.
+        private void TreePane_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            FolderTree.MaxHeight = Math.Max(80, TreePane.ActualHeight * 2 / 3);
         }
 
         // Sağ tık, menü açılmadan önce tıklanan düğümü seçer.

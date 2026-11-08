@@ -120,6 +120,7 @@ namespace Pusula.Wpf.ViewModels
 
             group.IsExpanded = expanded.Count == 0 || expanded.Contains(groupPath);
             Nodes.Add(group);
+            InventoryNodes.Add(group);
         }
 
         #endregion

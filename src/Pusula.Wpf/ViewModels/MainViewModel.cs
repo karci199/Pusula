@@ -80,6 +80,18 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Ağacın üst düzey düğümleri.</summary>
         public ObservableCollection<TreeNodeViewModel> Nodes { get; } = new ObservableCollection<TreeNodeViewModel>();
 
+        /// <summary>Üst ağaçta gösterilen düğümler (projeler ve diğer klasörler).</summary>
+        public ObservableCollection<TreeNodeViewModel> ProjectNodes { get; } = new ObservableCollection<TreeNodeViewModel>();
+
+        /// <summary>Alt bölmedeki envanter ağacı (tek düğüm: Envanter).</summary>
+        public ObservableCollection<TreeNodeViewModel> InventoryNodes { get; } = new ObservableCollection<TreeNodeViewModel>();
+
+        /// <summary>Envanter bölmesi gösterilir mi.</summary>
+        public bool HasInventory
+        {
+            get { return InventoryNodes.Count > 0; }
+        }
+
         /// <summary>Kök seçili değilken ağaç yerine ipucu gösterilir.</summary>
         public bool HasRoot
         {
@@ -92,8 +104,15 @@ namespace Pusula.Wpf.ViewModels
             get { return selectedNode; }
             set
             {
+                var previous = selectedNode;
                 if (SetProperty(ref selectedNode, value))
                 {
+                    // Öbür ağaçta kalan eski seçim kaldırılır.
+                    if (previous != null && previous.IsSelected)
+                    {
+                        previous.IsSelected = false;
+                    }
+
                     OnPropertyChanged(nameof(HasSelection));
                     OnPropertyChanged(nameof(NewStockMenuText));
                     OnPropertyChanged(nameof(CanMarkAsStock));
@@ -214,6 +233,8 @@ namespace Pusula.Wpf.ViewModels
             }
 
             Nodes.Clear();
+            ProjectNodes.Clear();
+            InventoryNodes.Clear();
             SelectedNode = null;
             OnPropertyChanged(nameof(HasRoot));
             if (!HasRoot)
@@ -238,9 +259,11 @@ namespace Pusula.Wpf.ViewModels
 
                 node.IsExpanded = expanded.Contains(entry.Path);
                 Nodes.Add(node);
+                ProjectNodes.Add(node);
             }
 
             AddInventoryNodes(expanded);
+            OnPropertyChanged(nameof(HasInventory));
             ApplySearch();
         }
 
