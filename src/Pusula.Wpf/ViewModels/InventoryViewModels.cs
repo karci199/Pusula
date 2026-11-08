@@ -363,7 +363,19 @@ namespace Pusula.Wpf.ViewModels
         public bool ShowTypeFilter
         {
             get { return showTypeFilter; }
-            private set { SetProperty(ref showTypeFilter, value); }
+            private set
+            {
+                if (SetProperty(ref showTypeFilter, value))
+                {
+                    OnPropertyChanged(nameof(TypeColumnWidth));
+                }
+            }
+        }
+
+        /// <summary>Tür sütununun genişliği: tür düğümünde (hepsi aynı tür) gizli.</summary>
+        public double TypeColumnWidth
+        {
+            get { return showTypeFilter ? 60 : 0; }
         }
 
         /// <summary>Tür seçenekleri ("Tümü", "Jig", "Kablo").</summary>

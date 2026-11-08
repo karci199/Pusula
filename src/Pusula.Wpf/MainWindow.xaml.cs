@@ -36,6 +36,15 @@ namespace Pusula.Wpf
 
             viewModel.Detail.InventoryGroups.CollectionChanged += (s, e) => RebuildInventoryTabs();
             StockTabs.SelectionChanged += StockTabs_SelectionChanged;
+
+            // Tür düğümünde (hepsi aynı tür) envanter listesinin Tür sütunu gizlenir.
+            viewModel.Inventory.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(InventoryDetailViewModel.TypeColumnWidth))
+                {
+                    InventoryTypeColumn.Width = viewModel.Inventory.TypeColumnWidth;
+                }
+            };
         }
 
         // Stok sekmeleri: her envanter türü (Jigler, Kablolar …) Kalifikasyon'dan sonra kendi sekmesinde.

@@ -663,7 +663,7 @@
                                                            Style="{StaticResource KindIconStyle}"
                                                            VerticalAlignment="Center" />
                                         <TextBlock x:Name="Title" Text="{Binding Title}" Margin="9,0,0,0" VerticalAlignment="Center" />
-                                        <TextBlock x:Name="Subtitle" Text="{Binding Subtitle}" Margin="8,0,0,0" VerticalAlignment="Center" MaxWidth="120" TextWrapping="NoWrap"
+                                        <TextBlock x:Name="Subtitle" Text="{Binding DisplaySubtitle}" Margin="8,0,0,0" VerticalAlignment="Center" MaxWidth="120" TextWrapping="NoWrap"
                                                    TextTrimming="CharacterEllipsis"
                                                    Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" />
                                     </StackPanel>
@@ -679,6 +679,7 @@
                                         <Setter TargetName="Subtitle" Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding IsUnmarkedInventory}" Value="True">
+                                        <Setter TargetName="Subtitle" Property="Visibility" Value="Collapsed" />
                                         <Setter TargetName="Title" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
                                         <Setter TargetName="Title" Property="FontStyle" Value="Italic" />
                                     </DataTrigger>
@@ -1025,14 +1026,14 @@
                         <TextBlock VerticalAlignment="Center" Margin="4,0,0,6" Style="{DynamicResource CaptionTextBlockStyle}"
                                    Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Inventory.FilterSummary}" />
                     </WrapPanel>
-    <ListView Grid.Row="1" Margin="0,10,0,0"
+    <ListView x:Name="InventoryList" Grid.Row="1" Margin="0,10,0,0"
                               ItemsSource="{Binding Inventory.Rows}"
                               MouseDoubleClick="InventoryList_MouseDoubleClick">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="{x:Static res:Resources.Inv_Number}" Width="120" DisplayMemberBinding="{Binding Number}" />
                                 <GridViewColumn Header="{x:Static res:Resources.Inv_Name}" Width="190" DisplayMemberBinding="{Binding Name}" />
-                                <GridViewColumn Header="{x:Static res:Resources.Inv_Type}" Width="60" DisplayMemberBinding="{Binding TypeName}" />
+                                <GridViewColumn x:Name="InventoryTypeColumn" Header="{x:Static res:Resources.Inv_Type}" Width="60" DisplayMemberBinding="{Binding TypeName}" />
                                 <GridViewColumn Header="{x:Static res:Resources.Inv_SubType}" Width="120" DisplayMemberBinding="{Binding SubType}" />
                                 <GridViewColumn Header="{x:Static res:Resources.Col_Status}" Width="175">
                                     <GridViewColumn.CellTemplate>

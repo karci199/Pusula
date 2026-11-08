@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using Pusula.Core.Inventory;
 using Pusula.Core.Tracking;
 using Pusula.Core.Types;
@@ -17,6 +18,7 @@ namespace Pusula.Wpf.ViewModels
         private bool isExpanded;
         private bool isSelected;
         private bool isVisible = true;
+        private string searchCount = string.Empty;
 
         /// <summary>Düğümü bir klasör kaydından oluşturur.</summary>
         public TreeNodeViewModel(FolderEntry entry)
@@ -50,6 +52,12 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Adın yanında soluk ek bilgi (kaydın tanımı, türdeki kayıt sayısı); boş olabilir.</summary>
         public string Subtitle { get; } = string.Empty;
+
+        /// <summary>Ağaçta gösterilen ek bilgi: aramada tür düğümünde bulunan kayıt sayısı, yoksa <see cref="Subtitle"/>.</summary>
+        public string DisplaySubtitle
+        {
+            get { return searchCount.Length > 0 ? searchCount : Subtitle; }
+        }
 
         /// <summary>Üzerine gelince: ad ve ek bilgi ("JIG-1000-0009 · SATIMO adaptör plakası").</summary>
         public string ToolTipText
@@ -169,6 +177,12 @@ namespace Pusula.Wpf.ViewModels
             if (text.Length == 0)
             {
                 IsVisible = true;
+                if (searchCount.Length > 0)
+                {
+                    searchCount = string.Empty;
+                    OnPropertyChanged(nameof(DisplaySubtitle));
+                }
+
                 return true;
             }
 
@@ -185,6 +199,16 @@ namespace Pusula.Wpf.ViewModels
             if (anyChild)
             {
                 IsExpanded = true;
+            }
+
+            // Tür düğümü aramada bulunan kayıt sayısını gösterir ("5" yerine "1").
+            var count = Entry.Kind == FolderKind.InventoryType && text.Length > 0
+                ? Children.Count(c => c.IsVisible).ToString(System.Globalization.CultureInfo.CurrentCulture)
+                : string.Empty;
+            if (count != searchCount)
+            {
+                searchCount = count;
+                OnPropertyChanged(nameof(DisplaySubtitle));
             }
 
             IsVisible = self || anyChild;
