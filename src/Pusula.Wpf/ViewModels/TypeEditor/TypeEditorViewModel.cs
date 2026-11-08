@@ -111,6 +111,9 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
         private string color;
         private string tryNumber = string.Empty;
         private string tryResult = string.Empty;
+        private readonly string autoGeneral;
+        private readonly string autoProject;
+        private readonly string autoStock;
 
         /// <summary>Türden düzenleme kopyası kurar; <paramref name="isNew"/> ise klasörler düzenlenebilir.</summary>
         public TypeEditItem(TypeDefinition source, bool isNew)
@@ -124,6 +127,9 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
             GeneralFolder = source.GeneralFolder;
             ProjectFolder = source.ProjectFolder;
             StockFolder = source.StockFolder;
+            autoGeneral = GeneralFolder;
+            autoProject = ProjectFolder;
+            autoStock = StockFolder;
             foreach (var format in source.NumberFormats)
             {
                 Formats.Add(new FormatRow { Pattern = format.Pattern, Label = format.Label });
@@ -293,6 +299,15 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
                 return string.Format(Resources.Types_ErrorStatus, title);
             }
 
+            // Yeni türde klasörler elle değiştirilmediyse son çoğul addan yeniden üretilir.
+            if (IsNew && GeneralFolder == autoGeneral && ProjectFolder == autoProject && StockFolder == autoStock)
+            {
+                var folder = FolderName(PluralName.Trim().Length == 0 ? title : PluralName.Trim());
+                GeneralFolder = @"ENVANTER\" + folder;
+                ProjectFolder = @"00_Proje_Geneli\Envanter\" + folder;
+                StockFolder = "09_" + folder;
+            }
+
             var type = new TypeDefinition
             {
                 Key = Source.Key,
@@ -327,6 +342,13 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
             type.RecordFolders.AddRange(RecordFolders.Select(f => f.Text.Trim()).Where(f => f.Length > 0 && ProjectService.IsSafeRelativePath(f)));
             result = type;
             return string.Empty;
+        }
+
+        /// <summary>Çoğul addan klasör adı: "Yazılımlar" → "Yazilimlar".</summary>
+        public static string FolderName(string plural)
+        {
+            var key = FieldDefinition.KeyFrom(plural);
+            return key.Length == 0 ? "Tur" : char.ToUpperInvariant(key[0]) + key.Substring(1);
         }
 
         private static StatusDefinition ToDefinition(StatusRow row)
@@ -442,8 +464,7 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
             var name = Resources.Types_NewName;
             var plural = Resources.Types_NewPlural;
             var key = UniqueKey(FieldDefinition.KeyFrom(name));
-            var folder = FieldDefinition.KeyFrom(plural);
-            folder = folder.Length == 0 ? key : char.ToUpperInvariant(folder[0]) + folder.Substring(1);
+            var folder = TypeEditItem.FolderName(plural);
             var template = TypeSet.CreateDefault().Find("cable")!;
             var type = new TypeDefinition
             {
@@ -467,8 +488,13 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
 
         private string UniqueKey(string baseKey)
         {
+            return UniqueKey(baseKey, Types.Select(t => t.Source.Key));
+        }
+
+        private string UniqueKey(string baseKey, IEnumerable<string> taken)
+        {
             var key = baseKey.Length == 0 ? "tur" : baseKey;
-            var used = new HashSet<string>(original.Types.Select(t => t.Key).Concat(Types.Select(t => t.Source.Key)), StringComparer.OrdinalIgnoreCase);
+            var used = new HashSet<string>(original.Types.Where(t => !t.IsInventory).Select(t => t.Key).Concat(original.InventoryTypes.Select(t => t.Key)).Concat(taken), StringComparer.OrdinalIgnoreCase);
             var candidate = key;
             for (var i = 2; used.Contains(candidate); i++)
             {
@@ -493,7 +519,23 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
                     return false;
                 }
 
+                // Yeni türün anahtarı son addan ("Yazılım" → yazilim); var olan türün anahtarı değişmez.
+                if (item.IsNew)
+                {
+                    type.Key = UniqueKey(FieldDefinition.KeyFrom(type.Name), built.Select(t => t.Key));
+                }
+
                 built.Add(type);
+            }
+
+            var clash = built.SelectMany(t => new[] { t.GeneralFolder, t.StockFolder })
+                .Where(f => f.Length > 0)
+                .GroupBy(f => f, StringComparer.OrdinalIgnoreCase)
+                .FirstOrDefault(g => g.Count() > 1);
+            if (clash != null)
+            {
+                Error = string.Format(Resources.Types_ErrorFolder, clash.Key);
+                return false;
             }
 
             var sameName = built.GroupBy(t => t.Name, StringComparer.OrdinalIgnoreCase).FirstOrDefault(g => g.Count() > 1);

@@ -686,7 +686,8 @@ namespace Pusula.Wpf.ViewModels
             // Obsidian olay notları Geçmiş'e tarih sırasıyla katılır.
             if (events.Count > 0)
             {
-                var merged = History.Concat(events.Select(e => new HistoryRow(e))).OrderByDescending(r => r.SortDate).ToList();
+                // Önceki yüklemeden kalan olay satırları atılır (yeniden yüklemede çiftlenmesin).
+                var merged = History.Where(r => !r.HasNote).Concat(events.Select(e => new HistoryRow(e))).OrderByDescending(r => r.SortDate).ToList();
                 History.Clear();
                 foreach (var row in merged)
                 {

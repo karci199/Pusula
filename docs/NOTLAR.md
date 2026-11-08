@@ -114,6 +114,11 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 
 ## Bekleyen işler
 
+- **İnceleme sonrası kalanlar (08.11.2026):** stok seçilince klasör 4 kez taranıyor (testler, ağaç, özet, olaylar) — tek taramada birleştirilmeli
+  (ağ paylaşımında yavaşlık). Kısa not / bağ / not oluşturma UI thread'inde eşzamanlı dosya yazıyor. JSON oku-değiştir-yaz kalıbı 4 yerde
+  tekrar (`JsonFile.Update<T>` yapılmalı). Süzgeç kutularının "Tümü" düzeltmesi geçici çözüm.
+- **Dosya türleri:** uzantıya göre tanıma (Visio, WaveStudio, STEP, DWG, s1p …) — tür gibi tanımlanacak (kullanıcıyla konuşulacak).
+
 - **Jenerik test dokümanı üretme:** yeni stok açınca (ya da istenince) stok no/ad dolu test planı vb. doküman.
   Şablon modüllerine "başlangıç dosyaları" eklenebilir. DOCX üretimi için kullanıcının
   `C:\Projeler\Aktif\Divit` projesine bakılacak (orada docx üretimi var).

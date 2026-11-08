@@ -903,4 +903,7 @@
   <data name="Event_Fault" xml:space="preserve">
     <value>Arıza</value>
   </data>
+  <data name="Types_ErrorFolder" xml:space="preserve">
+    <value>İki tür aynı klasörü kullanıyor: {0}</value>
+  </data>
 </root>

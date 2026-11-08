@@ -1047,5 +1047,12 @@ namespace Pusula.Wpf.Properties
         public static string Event_Fault { get { return Get("Event_Fault"); } }
 
         #endregion
+
+        #region Türler
+
+        /// <summary>Hata.</summary>
+        public static string Types_ErrorFolder { get { return Get("Types_ErrorFolder"); } }
+
+        #endregion
     }
 }

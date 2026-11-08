@@ -19,6 +19,7 @@ namespace Pusula.Wpf.ViewModels
         private bool isSelected;
         private bool isVisible = true;
         private string searchCount = string.Empty;
+        private string? searchName;
 
         /// <summary>Düğümü bir klasör kaydından oluşturur.</summary>
         public TreeNodeViewModel(FolderEntry entry)
@@ -155,6 +156,28 @@ namespace Pusula.Wpf.ViewModels
             set { SetProperty(ref isSelected, value); }
         }
 
+        // Proje / stok adı (proje.json, stok.json); ilk aramada bir kez okunur.
+        private string SearchName
+        {
+            get
+            {
+                if (searchName == null)
+                {
+                    searchName = string.Empty;
+                    if (Entry.Kind == FolderKind.Stock)
+                    {
+                        searchName = JsonFile.TryRead<StockInfo>(TrackingFiles.StockFile(Entry.Path))?.Name ?? string.Empty;
+                    }
+                    else if (Entry.Kind == FolderKind.Project)
+                    {
+                        searchName = JsonFile.TryRead<ProjectInfo>(TrackingFiles.ProjectFile(Entry.Path))?.Name ?? string.Empty;
+                    }
+                }
+
+                return searchName;
+            }
+        }
+
         /// <summary>Aramada görünür mü.</summary>
         public bool IsVisible
         {
@@ -186,7 +209,7 @@ namespace Pusula.Wpf.ViewModels
                 return true;
             }
 
-            var self = SearchMatch.Contains(ToolTipText, text);
+            var self = SearchMatch.Contains(ToolTipText, text) || SearchMatch.Contains(SearchName, text);
             if (self && !anyChild)
             {
                 // Düğümün kendisi eşleşiyorsa altı da görünsün (proje bulunca stokları).

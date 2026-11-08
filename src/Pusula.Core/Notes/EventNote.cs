@@ -60,6 +60,12 @@ namespace Pusula.Core.Notes
         /// <summary>Tek notu okur; olay değilse (YAML'da <c>olay</c> ya da geçerli <c>tarih</c> yoksa) <c>null</c>.</summary>
         public static EventNote? TryRead(string path)
         {
+            // Önce yalnızca YAML başlığına bakılır; olay değilse dosyanın geri kalanı okunmaz (KIWI raporları vb. büyük olabilir).
+            if (!HeaderHasKind(path))
+            {
+                return null;
+            }
+
             string text;
             try
             {
@@ -108,6 +114,43 @@ namespace Pusula.Core.Notes
                 Title = title.Length > 0 ? title : System.IO.Path.GetFileNameWithoutExtension(path).Replace('_', ' '),
                 Excerpt = excerpt,
             };
+        }
+
+        private static bool HeaderHasKind(string path)
+        {
+            try
+            {
+                using (var reader = new StreamReader(path, Encoding.UTF8))
+                {
+                    var first = reader.ReadLine();
+                    if (first == null || first.Trim().TrimStart('\uFEFF') != "---")
+                    {
+                        return false;
+                    }
+
+                    for (var i = 0; i < 60; i++)
+                    {
+                        var line = reader.ReadLine();
+                        if (line == null || line.Trim() == "---")
+                        {
+                            return false;
+                        }
+
+                        if (line.TrimStart().StartsWith(KindKey + ":", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (IOException)
+            {
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+
+            return false;
         }
 
         private static IEnumerable<string> MarkdownFiles(string folder)
