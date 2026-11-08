@@ -43,6 +43,9 @@ namespace Pusula.Wpf.ViewModels
         private List<InventoryItem> inventoryItems = new List<InventoryItem>();
 
         private bool isInventoryDialogOpen;
+        private bool isInventoryMarkMode;
+        private string markInventoryFolder = string.Empty;
+        private string newInventoryStatus = string.Empty;
         private TypeDefinition? newInventoryType;
         private LevelOption? newInventoryLevel;
         private string newInventoryNumber = string.Empty;
@@ -83,6 +86,7 @@ namespace Pusula.Wpf.ViewModels
         {
             var inventoryTypes = types.InventoryTypes.ToList();
             inventoryItems = InventoryService.ReadAll(rootPath, inventoryTypes);
+            var unmarked = InventoryService.ReadUnmarked(rootPath, inventoryTypes);
             if (inventoryTypes.Count == 0)
             {
                 return;
@@ -102,6 +106,12 @@ namespace Pusula.Wpf.ViewModels
                 foreach (var entry in items)
                 {
                     typeNode.Children.Add(new TreeNodeViewModel(new FolderEntry(entry.Folder, FolderKind.InventoryItem, entry.Record.Number), type, entry, entry.Record.Name));
+                }
+
+                // Elle açılmış, kaydı olmayan klasörler: soluk, sağ tıkla "… olarak işaretle".
+                foreach (var entry in unmarked.Where(i => string.Equals(i.Record.Type, type.Key, StringComparison.OrdinalIgnoreCase)))
+                {
+                    typeNode.Children.Add(new TreeNodeViewModel(new FolderEntry(entry.Folder, FolderKind.Plain, entry.Record.Number), type, null, Resources.Inv_Unmarked));
                 }
 
                 typeNode.IsExpanded = expanded.Contains(typePath);
@@ -136,10 +146,88 @@ namespace Pusula.Wpf.ViewModels
             set { SetDialogOpen(ref isInventoryDialogOpen, value); }
         }
 
-        /// <summary>Diyalog başlığı ("Yeni kablo").</summary>
+        /// <summary>Diyalog başlığı ("Yeni kablo" ya da "Jig olarak işaretle · klasör").</summary>
         public string InventoryDialogTitle
         {
-            get { return NewMenuText(newInventoryType); }
+            get
+            {
+                return isInventoryMarkMode
+                    ? MarkMenuText(newInventoryType) + " · " + Path.GetFileName(markInventoryFolder)
+                    : NewMenuText(newInventoryType);
+            }
+        }
+
+        /// <summary>Diyalog işaretleme için mi (elle açılmış klasör); değilse yeni kayıt.</summary>
+        public bool IsInventoryMarkMode
+        {
+            get { return isInventoryMarkMode; }
+            private set { SetProperty(ref isInventoryMarkMode, value); }
+        }
+
+        /// <summary>İşaretlemede seçilebilen durumlar (klasör zaten var; çoğu zaman "Kullanımda").</summary>
+        public ObservableCollection<string> InventoryStatuses { get; } = new ObservableCollection<string>();
+
+        /// <summary>İşaretlemede seçilen durum.</summary>
+        public string NewInventoryStatus
+        {
+            get { return newInventoryStatus; }
+            set { SetProperty(ref newInventoryStatus, value ?? string.Empty); }
+        }
+
+        /// <summary>Seçili düğüm elle açılmış bir envanter klasörü mü (sağ tık menüsü için).</summary>
+        public bool CanMarkAsInventory
+        {
+            get { return selectedNode != null && selectedNode.IsUnmarkedInventory; }
+        }
+
+        /// <summary>Sağ tık menüsündeki "Jig olarak işaretle" metni.</summary>
+        public string MarkInventoryMenuText
+        {
+            get { return MarkMenuText(selectedNode?.Type); }
+        }
+
+        /// <summary>Seçili elle açılmış klasörü işaretleme diyaloğunu açar.</summary>
+        public System.Windows.Input.ICommand MarkAsInventoryCommand { get; }
+
+        /// <summary>"Jig olarak işaretle" metni.</summary>
+        public static string MarkMenuText(TypeDefinition? type)
+        {
+            return string.Format(Resources.Inv_MarkAs, type?.Name ?? string.Empty);
+        }
+
+        private void OpenMarkInventory()
+        {
+            if (selectedNode == null || !selectedNode.IsUnmarkedInventory || selectedNode.Type == null)
+            {
+                return;
+            }
+
+            var type = selectedNode.Type;
+            newInventoryType = type;
+            markInventoryFolder = selectedNode.Path;
+            IsInventoryMarkMode = true;
+            var suggestion = InventoryService.SuggestFromFolderName(type, Path.GetFileName(markInventoryFolder));
+            InventorySubTypes.Clear();
+            foreach (var subType in type.SubTypes)
+            {
+                InventorySubTypes.Add(subType);
+            }
+
+            InventoryStatuses.Clear();
+            foreach (var status in type.Statuses.Concat(type.SideStatuses))
+            {
+                InventoryStatuses.Add(status.Name);
+            }
+
+            NewInventoryNumber = suggestion.Item1;
+            NewInventoryName = suggestion.Item2;
+            NewInventorySubType = InventorySubTypes.FirstOrDefault() ?? string.Empty;
+            NewInventoryStatus = InventoryStatuses.Contains(Resources.Inv_DefaultMarkStatus) ? Resources.Inv_DefaultMarkStatus : type.InitialStatus;
+            NewInventoryNote = string.Empty;
+            InventoryError = string.Empty;
+            OnPropertyChanged(nameof(InventoryDialogTitle));
+            OnPropertyChanged(nameof(InventoryNumberHint));
+            IsInventoryDialogOpen = true;
         }
 
         /// <summary>Düzey seçenekleri (Genel; seçime göre proje ve stok).</summary>
@@ -214,6 +302,7 @@ namespace Pusula.Wpf.ViewModels
             }
 
             newInventoryType = type;
+            IsInventoryMarkMode = false;
             InventoryLevels.Clear();
             InventoryLevels.Add(new LevelOption(Resources.Inv_LevelGeneral, InventoryLevel.General, string.Empty));
             var project = SelectedProjectFolder();
@@ -247,13 +336,15 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Kaydı açar. Başarısızsa <c>false</c> döner ve hata metnini doldurur; çağıran diyaloğu yeniden açar.</summary>
         public bool ConfirmNewInventory()
         {
-            if (newInventoryType == null || newInventoryLevel == null)
+            if (newInventoryType == null || (!isInventoryMarkMode && newInventoryLevel == null))
             {
                 return true;
             }
 
-            var result = InventoryService.Create(rootPath, newInventoryType, newInventoryLevel.Level, newInventoryLevel.Owner,
-                NewInventoryNumber, NewInventoryName, NewInventorySubType, NewInventoryNote, CurrentUser);
+            var result = isInventoryMarkMode
+                ? InventoryService.Mark(rootPath, newInventoryType, markInventoryFolder, NewInventoryNumber, NewInventoryName, NewInventorySubType, NewInventoryStatus, CurrentUser, NewInventoryNote)
+                : InventoryService.Create(rootPath, newInventoryType, newInventoryLevel!.Level, newInventoryLevel.Owner,
+                    NewInventoryNumber, NewInventoryName, NewInventorySubType, NewInventoryNote, CurrentUser);
             if (!result.Succeeded)
             {
                 InventoryError = result.Error == CreateError.NumberFormat

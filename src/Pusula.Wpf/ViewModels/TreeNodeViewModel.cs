@@ -62,6 +62,12 @@ namespace Pusula.Wpf.ViewModels
             get { return Entry.Kind; }
         }
 
+        /// <summary>Envanter düzey klasöründe kaydı olmayan (elle açılmış) klasör mü.</summary>
+        public bool IsUnmarkedInventory
+        {
+            get { return Entry.Kind == FolderKind.Plain && Type != null; }
+        }
+
         /// <summary>Envanter düğümü mü (bölüm, tür ya da kayıt).</summary>
         public bool IsInventory
         {
@@ -73,7 +79,7 @@ namespace Pusula.Wpf.ViewModels
         {
             get
             {
-                if (Type != null && Type.Icon.Length > 0)
+                if (Type != null && Type.Icon.Length > 0 && Entry.Kind != FolderKind.Plain)
                 {
                     return GlyphOf(Type.Icon);
                 }

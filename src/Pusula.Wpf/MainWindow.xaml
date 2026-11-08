@@ -418,6 +418,13 @@
                     <controls:FontIcon Glyph="{x:Static local:AppIcons.Project}" Foreground="{DynamicResource Pusula.ProjectIconBrush}" />
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem Header="{Binding MarkInventoryMenuText}"
+                      Command="{Binding MarkAsInventoryCommand}"
+                      Visibility="{Binding CanMarkAsInventory, Converter={StaticResource BoolToVis}}">
+                <MenuItem.Icon>
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Check}" />
+                </MenuItem.Icon>
+            </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Menu_MarkAsStock}"
                       Command="{Binding MarkAsStockCommand}"
                       Visibility="{Binding CanMarkAsStock, Converter={StaticResource BoolToVis}}">
@@ -1081,8 +1088,17 @@
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="InventoryDialog_PrimaryButtonClick">
             <StackPanel MinWidth="380">
-                <controls:FormField Header="{x:Static res:Resources.Inv_Level}" LabelWidth="90">
+                <TextBlock Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}"
+                           TextWrapping="Wrap" MaxWidth="400" HorizontalAlignment="Left" Margin="0,0,0,10"
+                           Text="{x:Static res:Resources.Mark_Hint}"
+                           Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource BoolToVis}}" />
+                <controls:FormField Header="{x:Static res:Resources.Inv_Level}" LabelWidth="90"
+                                    Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}">
                     <ComboBox ItemsSource="{Binding InventoryLevels}" SelectedItem="{Binding NewInventoryLevel, Mode=TwoWay}" DisplayMemberPath="Label" />
+                </controls:FormField>
+                <controls:FormField Header="{x:Static res:Resources.Col_Status}" LabelWidth="90"
+                                    Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource BoolToVis}}">
+                    <ComboBox ItemsSource="{Binding InventoryStatuses}" SelectedItem="{Binding NewInventoryStatus, Mode=TwoWay}" />
                 </controls:FormField>
                 <controls:FormField Header="{x:Static res:Resources.Inv_Number}" IsRequired="True" LabelWidth="90" Margin="0,8,0,0">
                     <TextBox Text="{Binding NewInventoryNumber, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
@@ -1099,6 +1115,10 @@
                                     ErrorText="{Binding InventoryError}">
                     <TextBox Text="{Binding NewInventoryNote, UpdateSourceTrigger=PropertyChanged}" />
                 </controls:FormField>
+                <TextBlock Margin="98,6,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
+                           TextWrapping="Wrap" MaxWidth="300" HorizontalAlignment="Left"
+                           Text="{x:Static res:Resources.Inv_TemplateHint}"
+                           Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}" />
             </StackPanel>
         </controls:ContentDialog>
 

@@ -585,4 +585,16 @@
   <data name="Inv_History" xml:space="preserve">
     <value>Geçmiş</value>
   </data>
+  <data name="Inv_Unmarked" xml:space="preserve">
+    <value>işaretsiz</value>
+  </data>
+  <data name="Inv_MarkAs" xml:space="preserve">
+    <value>{0} olarak işaretle</value>
+  </data>
+  <data name="Inv_DefaultMarkStatus" xml:space="preserve">
+    <value>Kullanımda</value>
+  </data>
+  <data name="Inv_TemplateHint" xml:space="preserve">
+    <value>Kayıt klasörü şablondaki alt klasörlerle birlikte açılır.</value>
+  </data>
 </root>

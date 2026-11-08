@@ -93,6 +93,11 @@ namespace Pusula.Core.Types
                     type.PluralName = fallback.PluralName;
                 }
 
+                if (type.IsInventory && type.RecordFolders.Count == 0)
+                {
+                    type.RecordFolders.AddRange(fallback.RecordFolders);
+                }
+
                 if (type.IsInventory && type.GeneralFolder.Length == 0)
                 {
                     type.GeneralFolder = fallback.GeneralFolder;
@@ -146,16 +151,16 @@ namespace Pusula.Core.Types
             });
 
             set.Types.Add(Inventory("cable", "Kablo", "Kablolar", "E703", "#F7A35C", "JT-####-####", "Kablo numarası", "Kablolar", "05_Kablolar",
-                new[] { "RF", "Haberleşme", "Güç / veri", "Kablaj" }));
+                new[] { "RF", "Haberleşme", "Güç / veri", "Kablaj" }, new[] { "01_Belgeler", "02_Fotograflar" }));
             set.Types.Add(Inventory("jig", "Jig", "Jigler", "E90F", "#B4A7F5", "JIG-####-####", "Jig numarası", "Jigler", "05_Jigler",
-                new[] { "Mekanik", "Ölçüm adaptörü", "Montaj", "Elektriksel" }));
+                new[] { "Mekanik", "Ölçüm adaptörü", "Montaj", "Elektriksel" }, new[] { "01_Cizimler", "02_Belgeler", "03_Fotograflar" }));
 
             return set;
         }
 
         // Kablo ve jig ortak durumları: Talep → Hazırlanıyor → Teslim alındı → Kullanımda → Üretime teslim edildi;
         // sıra dışı: Onarım / değişim gerekiyor, Çoğaltma isteniyor.
-        private static TypeDefinition Inventory(string key, string name, string plural, string icon, string color, string pattern, string label, string folder, string stockFolder, string[] subTypes)
+        private static TypeDefinition Inventory(string key, string name, string plural, string icon, string color, string pattern, string label, string folder, string stockFolder, string[] subTypes, string[] recordFolders)
         {
             var type = new TypeDefinition
             {
@@ -184,6 +189,7 @@ namespace Pusula.Core.Types
                 },
             };
             type.SubTypes.AddRange(subTypes);
+            type.RecordFolders.AddRange(recordFolders);
             return type;
         }
     }
@@ -206,6 +212,7 @@ namespace Pusula.Core.Types
             GeneralFolder = string.Empty;
             ProjectFolder = string.Empty;
             StockFolder = string.Empty;
+            RecordFolders = new List<string>();
             NumberFormats = new List<NumberFormat>();
             SubTypes = new List<string>();
             Statuses = new List<StatusDefinition>();
@@ -267,6 +274,10 @@ namespace Pusula.Core.Types
         /// <summary>Stok düzeyi klasörü (stoka göre, örn. <c>05_Kablolar</c>).</summary>
         [DataMember(Name = "stockFolder", Order = 13, EmitDefaultValue = false)]
         public string StockFolder { get; set; } = string.Empty;
+
+        /// <summary>Yeni kayıt açılırken içinde açılan klasörler (kayıt şablonu, örn. 01_Cizimler).</summary>
+        [DataMember(Name = "recordFolders", Order = 14, EmitDefaultValue = false)]
+        public List<string> RecordFolders { get; set; } = new List<string>();
 
         /// <summary>Numaraya uyan ilk biçim; uymuyorsa <c>null</c>.</summary>
         public NumberFormat? MatchNumber(string number)

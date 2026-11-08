@@ -123,6 +123,7 @@ namespace Pusula.Core.Inventory
                 Directory.CreateDirectory(folder);
                 JsonFile.WriteAtomic(RecordFile(folder), record);
                 TrackingFiles.HideTrackingFolder(folder);
+                ProjectService.AddFolders(folder, type.RecordFolders);
                 return CreateResult.Success(folder);
             }
             catch (IOException ex)
@@ -132,6 +133,154 @@ namespace Pusula.Core.Inventory
             catch (UnauthorizedAccessException ex)
             {
                 return CreateResult.Fail(CreateError.IoFailure, folder, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Elle açılmış bir klasörü kayıt olarak işaretler: yalnızca gizli <c>_TAKIP\kayit.json</c> eklenir,
+        /// klasördeki dosyalara dokunulmaz, klasör adı değişmez. İlk olay verilen durumla yazılır.
+        /// </summary>
+        public static CreateResult Mark(string root, TypeDefinition type, string folder, string number, string name, string subType, string status, string person, string note = "")
+        {
+            number = (number ?? string.Empty).Trim().ToUpperInvariant();
+            name = (name ?? string.Empty).Trim();
+            if (!Directory.Exists(folder))
+            {
+                return CreateResult.Fail(CreateError.ParentMissing, string.Empty);
+            }
+
+            if (File.Exists(RecordFile(folder)))
+            {
+                return CreateResult.Fail(CreateError.AlreadyMarked, folder);
+            }
+
+            if (number.Length == 0)
+            {
+                return CreateResult.Fail(CreateError.NumberEmpty, folder);
+            }
+
+            if (name.Length == 0)
+            {
+                return CreateResult.Fail(CreateError.NameEmpty, folder);
+            }
+
+            if (!type.AcceptsNumber(number))
+            {
+                return CreateResult.Fail(CreateError.NumberFormat, folder);
+            }
+
+            var existing = ReadAll(root, new[] { type }).FirstOrDefault(i => string.Equals(i.Record.Number, number, StringComparison.OrdinalIgnoreCase));
+            if (existing != null)
+            {
+                return CreateResult.Fail(CreateError.AlreadyExists, existing.Folder);
+            }
+
+            var record = new InventoryRecord { Type = type.Key, Number = number, Name = name, SubType = (subType ?? string.Empty).Trim(), Note = (note ?? string.Empty).Trim() };
+            record.Events.Add(InventoryEvent.Create(string.IsNullOrEmpty(status) ? type.InitialStatus : status, DateTime.Today, person, string.Empty, string.Empty));
+            try
+            {
+                JsonFile.WriteAtomic(RecordFile(folder), record);
+                TrackingFiles.HideTrackingFolder(folder);
+                return CreateResult.Success(folder);
+            }
+            catch (IOException ex)
+            {
+                return CreateResult.Fail(CreateError.IoFailure, folder, ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return CreateResult.Fail(CreateError.IoFailure, folder, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Klasör adından numara ve tanım önerir: "JIG-1000-0030_Test_Aparati" → ("JIG-1000-0030", "Test Aparati").
+        /// İlk parça biçime uymuyorsa numara boş, bütün ad tanım olur.
+        /// </summary>
+        public static Tuple<string, string> SuggestFromFolderName(TypeDefinition type, string folderName)
+        {
+            var underscore = folderName.IndexOf('_');
+            var first = underscore > 0 ? folderName.Substring(0, underscore) : folderName;
+            if (type.AcceptsNumber(first) && type.NumberFormats.Count > 0)
+            {
+                var rest = underscore > 0 ? folderName.Substring(underscore + 1).Replace('_', ' ').Trim() : string.Empty;
+                return Tuple.Create(first.ToUpperInvariant(), rest);
+            }
+
+            return Tuple.Create(string.Empty, folderName.Replace('_', ' ').Trim());
+        }
+
+        /// <summary>
+        /// Düzey klasörlerinde kaydı olmayan (elle açılmış) klasörleri bulur; <c>_</c> ile başlayanlar ve kayıt şablonunun
+        /// alt klasörleri (örn. stoktaki 05_Jigler\Mekanik) hariç.
+        /// </summary>
+        public static List<InventoryItem> ReadUnmarked(string root, IEnumerable<TypeDefinition> types)
+        {
+            var result = new List<InventoryItem>();
+            foreach (var type in types)
+            {
+                foreach (var level in LevelFolders(root, type))
+                {
+                    string[] children;
+                    try
+                    {
+                        children = Directory.Exists(level.Item1) ? Directory.GetDirectories(level.Item1) : new string[0];
+                    }
+                    catch (IOException)
+                    {
+                        continue;
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        continue;
+                    }
+
+                    foreach (var child in children)
+                    {
+                        var name = Path.GetFileName(child);
+                        if (name.StartsWith("_", StringComparison.Ordinal) || File.Exists(RecordFile(child)))
+                        {
+                            continue;
+                        }
+
+                        // Stok düzeyinde yalnızca numara biçimine uyan klasörler (05_Jigler\Mekanik gibi şablon klasörleri değil).
+                        if (level.Item2 == InventoryLevel.Stock && SuggestFromFolderName(type, name).Item1.Length == 0)
+                        {
+                            continue;
+                        }
+
+                        result.Add(new InventoryItem
+                        {
+                            Folder = child,
+                            Level = level.Item2,
+                            Owner = level.Item3,
+                            Record = new InventoryRecord { Type = type.Key, Number = name },
+                        });
+                    }
+                }
+            }
+
+            return result.OrderBy(i => i.Record.Number, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        // Türün bütün düzey klasörleri: (klasör, düzey, sahip adı).
+        private static IEnumerable<Tuple<string, InventoryLevel, string>> LevelFolders(string root, TypeDefinition type)
+        {
+            yield return Tuple.Create(LevelFolder(type, InventoryLevel.General, root, string.Empty), InventoryLevel.General, string.Empty);
+            foreach (var entry in FolderReader.ListChildren(root))
+            {
+                if (entry.Kind == FolderKind.Project)
+                {
+                    yield return Tuple.Create(LevelFolder(type, InventoryLevel.Project, root, entry.Path), InventoryLevel.Project, entry.Title);
+                    foreach (var stock in FolderReader.ListChildren(entry.Path).Where(c => c.Kind == FolderKind.Stock))
+                    {
+                        yield return Tuple.Create(LevelFolder(type, InventoryLevel.Stock, root, stock.Path), InventoryLevel.Stock, stock.Title);
+                    }
+                }
+                else if (entry.Kind == FolderKind.Stock)
+                {
+                    yield return Tuple.Create(LevelFolder(type, InventoryLevel.Stock, root, entry.Path), InventoryLevel.Stock, entry.Title);
+                }
             }
         }
 

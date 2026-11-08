@@ -49,6 +49,7 @@ namespace Pusula.Wpf.ViewModels
             AddModulesCommand = new RelayCommand(OpenAddModules);
             MarkAsStockCommand = new RelayCommand(() => OpenMark(true));
             MarkAsProjectCommand = new RelayCommand(() => OpenMark(false));
+            MarkAsInventoryCommand = new RelayCommand(OpenMarkInventory);
 
             settings = AppSettings.Load();
             rootPath = settings.RootPath ?? string.Empty;
@@ -95,6 +96,8 @@ namespace Pusula.Wpf.ViewModels
                     OnPropertyChanged(nameof(NewStockMenuText));
                     OnPropertyChanged(nameof(CanMarkAsStock));
                     OnPropertyChanged(nameof(CanMarkAsProject));
+                    OnPropertyChanged(nameof(CanMarkAsInventory));
+                    OnPropertyChanged(nameof(MarkInventoryMenuText));
                     Detail.Load(selectedNode, templates, types);
                     Inventory.Load(selectedNode, inventoryItems, types);
                 }
@@ -538,7 +541,7 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Seçili klasör stok olarak işaretlenebilir mi (işaretsiz klasör).</summary>
         public bool CanMarkAsStock
         {
-            get { return selectedNode != null && selectedNode.Kind == FolderKind.Plain; }
+            get { return selectedNode != null && selectedNode.Kind == FolderKind.Plain && !selectedNode.IsUnmarkedInventory; }
         }
 
         /// <summary>Seçili klasör proje olarak işaretlenebilir mi (kökün hemen altındaki işaretsiz klasör).</summary>

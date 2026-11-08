@@ -704,6 +704,18 @@ namespace Pusula.Wpf.Properties
         /// <summary>Kayıt sayfası: geçmiş başlığı.</summary>
         public static string Inv_History { get { return Get("Inv_History"); } }
 
+        /// <summary>Ağaçta kaydı olmayan klasörün eki.</summary>
+        public static string Inv_Unmarked { get { return Get("Inv_Unmarked"); } }
+
+        /// <summary>Sağ tık: elle açılmış klasörü kayıt yapar; {0} tür adı.</summary>
+        public static string Inv_MarkAs { get { return Get("Inv_MarkAs"); } }
+
+        /// <summary>İşaretlemede varsayılan durum (listede varsa).</summary>
+        public static string Inv_DefaultMarkStatus { get { return Get("Inv_DefaultMarkStatus"); } }
+
+        /// <summary>Yeni kayıt diyaloğunun notu.</summary>
+        public static string Inv_TemplateHint { get { return Get("Inv_TemplateHint"); } }
+
         #endregion
     }
 }

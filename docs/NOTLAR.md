@@ -37,6 +37,10 @@ Son güncelleme: 08.11.2026. Dal: `claude/pusula-project-setup-c6ce02` (push edi
   Durumlar: Talep → Hazırlanıyor → Teslim alındı → Kullanımda → Üretime teslim edildi; sıra dışı: Onarım / değişim gerekiyor, Çoğaltma isteniyor.
   Ağaçta Envanter bölümü (Kablolar, Jigler, kayıtlar); "+" menüsünde Yeni kablo / Yeni jig (düzey seçimi);
   kayıt sayfası: durum etiketi (menüden değiştir → tarih, kişi, konum, not), aşama çubuğu, Bilgiler, Geçmiş.
+  Kayıt uygulamadan açılır; klasör şablon alt klasörleriyle gelir (kablo `01_Belgeler`, `02_Fotograflar`;
+  jig `01_Cizimler`, `02_Belgeler`, `03_Fotograflar`; `turler.json` → `recordFolders`). Numara önerilmez, elle girilir.
+  Elle açılmış klasör ağaçta soluk "işaretsiz" görünür; sağ tık → "Jig/Kablo olarak işaretle" (numara ve tanım
+  klasör adından önerilir, durum seçilir, klasör yeniden adlandırılmaz).
 - Varsayılan şablonda `03_Test_Sonuclari` altında yalnızca sistemler (VNA, SATIMO, Yankisiz, CK); `SN01\Ham`, `SN01\Analiz` ölçümle açılır.
 
 ## Stok klasör yapısı (kararlaştırılan)
@@ -99,7 +103,7 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 - `00_Proje_Geneli` iç yapısı henüz kararlaştırılmadı (öneri: Sartname, Toplantilar, Yazismalar, Planlama).
 - Şablonda kullanılmayan modülü kütüphaneden tamamen silme yok (şimdilik listede kalır).
 - Test kütüphanesi seçilmedi (xUnit / NUnit / MSTest); `Pusula.Tests` projesi yok. Şimdilik denemeler
-  geçici klasörde PowerShell betikleriyle yapılıyor (şablon düzenleyici 32, özet 13, durum 28, işaretleme 18, test koşuları 17, envanter 22 + 18 kontrol).
+  geçici klasörde PowerShell betikleriyle yapılıyor (şablon düzenleyici 32, özet 13, durum 28, işaretleme 18, test koşuları 17, envanter 22 + 26 kontrol).
 - Git kullanıcı adı bu makinede tanımlı değil; commit'ler tek seferlik `-c user.name/user.email` ile atılıyor.
 
 ## Çalıştırma
