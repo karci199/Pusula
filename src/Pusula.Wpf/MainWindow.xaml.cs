@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using DesignKit.Controls;
+using Pusula.Core.Types;
 using Pusula.Wpf.ViewModels;
 using Pusula.Wpf.ViewModels.TemplateEditor;
 
@@ -257,6 +258,77 @@ namespace Pusula.Wpf
             }
         }
 
+        // Stok sayfası, Jig ve kablo: "Ekle" düğmesi genel / proje kayıtlarını menüde listeler, seçilen stoka bağlanır.
+        private void StockInvAdd_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            if (!(button?.Tag is TypeDefinition type))
+            {
+                return;
+            }
+
+            var menu = new ContextMenu { PlacementTarget = button, Placement = PlacementMode.Bottom };
+            var candidates = viewModel.LinkCandidates(type);
+            foreach (var candidate in candidates)
+            {
+                var number = candidate.Record.Number;
+                var item = new MenuItem
+                {
+                    Header = number + " · " + candidate.Record.Name + "  (" + InventoryDetailViewModel.LevelText(candidate) + ")",
+                };
+                item.Click += (s, args) => viewModel.SetStockLink(number, true);
+                menu.Items.Add(item);
+            }
+
+            if (candidates.Count == 0)
+            {
+                menu.Items.Add(new MenuItem { Header = Properties.Resources.StockInv_NoCandidates, IsEnabled = false });
+            }
+
+            menu.IsOpen = true;
+        }
+
+        private void StockInvNew_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is TypeDefinition type)
+            {
+                viewModel.OpenNewInventory(type);
+            }
+        }
+
+        private static InventoryRow? MenuRow(object sender)
+        {
+            var menu = (sender as MenuItem)?.Parent as ContextMenu;
+            return (menu?.PlacementTarget as ListView)?.SelectedItem as InventoryRow;
+        }
+
+        private void StockInvOpen_Click(object sender, RoutedEventArgs e)
+        {
+            var row = MenuRow(sender);
+            if (row != null && row.Folder.Length > 0)
+            {
+                viewModel.ShowInventory(row.Folder);
+            }
+        }
+
+        private void StockInvFolder_Click(object sender, RoutedEventArgs e)
+        {
+            var row = MenuRow(sender);
+            if (row != null && row.Folder.Length > 0)
+            {
+                viewModel.OpenPath(row.Folder);
+            }
+        }
+
+        private void StockInvUnlink_Click(object sender, RoutedEventArgs e)
+        {
+            var row = MenuRow(sender);
+            if (row != null && row.IsLinked)
+            {
+                viewModel.SetStockLink(row.Number, false);
+            }
+        }
+
         // Kayıt sayfası: klasör kutucuğu klasörü, fotoğraf resmi açar.
         private void RecordFolder_Click(object sender, RoutedEventArgs e)
         {
@@ -406,9 +478,9 @@ namespace Pusula.Wpf
                 source = VisualTreeHelper.GetParent(source);
             }
 
-            if ((source as ListViewItem)?.DataContext is InventoryRow row)
+            if ((source as ListViewItem)?.DataContext is InventoryRow row && row.Folder.Length > 0)
             {
-                viewModel.ShowInventory(row.Item.Folder);
+                viewModel.ShowInventory(row.Folder);
             }
         }
 

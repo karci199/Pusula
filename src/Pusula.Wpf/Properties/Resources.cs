@@ -744,5 +744,60 @@ namespace Pusula.Wpf.Properties
         public static string Inv_NoteFailed { get { return Get("Inv_NoteFailed"); } }
 
         #endregion
+
+        #region Stok envanteri
+
+        /// <summary>Stok sekmesi; {0} kayıt sayısı.</summary>
+        public static string Tab_Inventory { get { return Get("Tab_Inventory"); } }
+
+        /// <summary>Genel sekmesinde özet başlığı.</summary>
+        public static string StockInv_Section { get { return Get("StockInv_Section"); } }
+
+        /// <summary>Özet: sıra dışı durumdaki kayıt sayısı.</summary>
+        public static string StockInv_Attention { get { return Get("StockInv_Attention"); } }
+
+        /// <summary>Özet: bulunamayan bağ sayısı.</summary>
+        public static string StockInv_Missing { get { return Get("StockInv_Missing"); } }
+
+        /// <summary>Bağlı numaranın kaydı yok.</summary>
+        public static string Inv_LinkMissing { get { return Get("Inv_LinkMissing"); } }
+
+        /// <summary>Dikkat kartı; {0} tür adı.</summary>
+        public static string Alert_InvMissingTitle { get { return Get("Alert_InvMissingTitle"); } }
+
+        /// <summary>Genel / proje kaydını stoka bağlar.</summary>
+        public static string StockInv_AddExisting { get { return Get("StockInv_AddExisting"); } }
+
+        /// <summary>İpucu.</summary>
+        public static string StockInv_AddHint { get { return Get("StockInv_AddHint"); } }
+
+        /// <summary>Stok düzeyinde yeni kayıt açar.</summary>
+        public static string StockInv_New { get { return Get("StockInv_New"); } }
+
+        /// <summary>İpucu.</summary>
+        public static string StockInv_NewHint { get { return Get("StockInv_NewHint"); } }
+
+        /// <summary>Ekle menüsü boşsa.</summary>
+        public static string StockInv_NoCandidates { get { return Get("StockInv_NoCandidates"); } }
+
+        /// <summary>Boş bölüm ipucu.</summary>
+        public static string StockInv_Empty { get { return Get("StockInv_Empty"); } }
+
+        /// <summary>Satır menüsü.</summary>
+        public static string StockInv_OpenRecord { get { return Get("StockInv_OpenRecord"); } }
+
+        /// <summary>Satır menüsü; kayda dokunmaz.</summary>
+        public static string StockInv_Unlink { get { return Get("StockInv_Unlink"); } }
+
+        /// <summary>Durum çubuğu.</summary>
+        public static string StockInv_Linked { get { return Get("StockInv_Linked"); } }
+
+        /// <summary>Durum çubuğu.</summary>
+        public static string StockInv_Unlinked { get { return Get("StockInv_Unlinked"); } }
+
+        /// <summary>Durum çubuğu.</summary>
+        public static string StockInv_LinkFailed { get { return Get("StockInv_LinkFailed"); } }
+
+        #endregion
     }
 }

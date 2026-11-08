@@ -378,6 +378,47 @@ namespace Pusula.Wpf.ViewModels
             }
         }
 
+        /// <summary>
+        /// Seçili stoka bağlanabilecek kayıtlar: türün genel ve proje düzeyindeki kayıtlarından henüz bağlı olmayanlar.
+        /// </summary>
+        public List<InventoryItem> LinkCandidates(TypeDefinition type)
+        {
+            var stock = selectedNode;
+            if (stock == null || stock.Kind != FolderKind.Stock)
+            {
+                return new List<InventoryItem>();
+            }
+
+            var info = JsonFile.TryRead<StockInfo>(TrackingFiles.StockFile(stock.Path));
+            var links = info?.Inventory ?? new List<string>();
+            return inventoryItems
+                .Where(i => i.Level != InventoryLevel.Stock
+                    && string.Equals(i.Record.Type, type.Key, StringComparison.OrdinalIgnoreCase)
+                    && !links.Contains(i.Record.Number, StringComparer.OrdinalIgnoreCase))
+                .OrderBy(i => i.Level)
+                .ThenBy(i => i.Record.Number, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+
+        /// <summary>Seçili stoka kaydı bağlar ya da bağı kaldırır; kaydın klasörüne dokunulmaz.</summary>
+        public void SetStockLink(string number, bool linked)
+        {
+            var stock = selectedNode;
+            if (stock == null || stock.Kind != FolderKind.Stock)
+            {
+                return;
+            }
+
+            if (!InventoryService.SetStockLink(stock.Path, number, linked))
+            {
+                Status = Resources.StockInv_LinkFailed;
+                return;
+            }
+
+            Status = string.Format(linked ? Resources.StockInv_Linked : Resources.StockInv_Unlinked, number, stock.Title);
+            Detail.Reload();
+        }
+
         /// <summary>Seçili kaydın notunu (<c>&lt;numara&gt;.md</c>) oluşturur ve açar; varsa yalnızca açar.</summary>
         public async System.Threading.Tasks.Task CreateInventoryNoteAsync()
         {

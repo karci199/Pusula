@@ -19,6 +19,7 @@ namespace Pusula.Core.Tracking
             Status = string.Empty;
             StatusSince = string.Empty;
             StatusNote = string.Empty;
+            Inventory = new System.Collections.Generic.List<string>();
         }
 
         /// <summary>Dosya biçiminin sürümü.</summary>
@@ -48,6 +49,13 @@ namespace Pusula.Core.Tracking
         /// <summary>Durum notu (örn. Beklemede: numune gelmedi); boş olabilir.</summary>
         [DataMember(Name = "statusNote", Order = 6)]
         public string StatusNote { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Stokun kullandığı genel / proje düzeyindeki envanter kayıtlarının numaraları (bağ). Stok düzeyindeki
+        /// kayıtlar (<c>05_Jigler</c> …) zaten stokundur, burada tutulmaz.
+        /// </summary>
+        [DataMember(Name = "inventory", Order = 7, EmitDefaultValue = false)]
+        public System.Collections.Generic.List<string> Inventory { get; set; } = new System.Collections.Generic.List<string>();
 
         /// <summary>Durumu ve tarihini ayarlar.</summary>
         public void SetStatus(string status, string note, System.DateTime when)

@@ -98,6 +98,7 @@ namespace Pusula.Wpf.ViewModels
                     OnPropertyChanged(nameof(CanMarkAsProject));
                     OnPropertyChanged(nameof(CanMarkAsInventory));
                     OnPropertyChanged(nameof(MarkInventoryMenuText));
+                    Detail.InventoryItems = inventoryItems;
                     Detail.Load(selectedNode, templates, types);
                     Inventory.Load(selectedNode, inventoryItems, types);
                 }

@@ -624,4 +624,55 @@
   <data name="Inv_NoteFailed" xml:space="preserve">
     <value>Not oluşturulamadı.</value>
   </data>
+  <data name="Tab_Inventory" xml:space="preserve">
+    <value>Jig ve kablo · {0}</value>
+  </data>
+  <data name="StockInv_Section" xml:space="preserve">
+    <value>Jig ve kablo</value>
+  </data>
+  <data name="StockInv_Attention" xml:space="preserve">
+    <value>{0} dikkat</value>
+  </data>
+  <data name="StockInv_Missing" xml:space="preserve">
+    <value>{0} bulunamadı</value>
+  </data>
+  <data name="Inv_LinkMissing" xml:space="preserve">
+    <value>kayıt bulunamadı</value>
+  </data>
+  <data name="Alert_InvMissingTitle" xml:space="preserve">
+    <value>{0} bulunamadı</value>
+  </data>
+  <data name="StockInv_AddExisting" xml:space="preserve">
+    <value>Ekle</value>
+  </data>
+  <data name="StockInv_AddHint" xml:space="preserve">
+    <value>Genel ya da proje düzeyindeki bir kaydı bu stoka bağlar; kayıt taşınmaz.</value>
+  </data>
+  <data name="StockInv_New" xml:space="preserve">
+    <value>Yeni</value>
+  </data>
+  <data name="StockInv_NewHint" xml:space="preserve">
+    <value>Yeni kayıt açar (düzey seçilebilir).</value>
+  </data>
+  <data name="StockInv_NoCandidates" xml:space="preserve">
+    <value>Bağlanacak kayıt yok</value>
+  </data>
+  <data name="StockInv_Empty" xml:space="preserve">
+    <value>Henüz yok. Ekle ile genel / proje kaydı bağla ya da Yeni ile aç.</value>
+  </data>
+  <data name="StockInv_OpenRecord" xml:space="preserve">
+    <value>Kaydı aç</value>
+  </data>
+  <data name="StockInv_Unlink" xml:space="preserve">
+    <value>Bağı kaldır</value>
+  </data>
+  <data name="StockInv_Linked" xml:space="preserve">
+    <value>{0}, {1} stokuna bağlandı.</value>
+  </data>
+  <data name="StockInv_Unlinked" xml:space="preserve">
+    <value>{0} bağı {1} stokundan kaldırıldı.</value>
+  </data>
+  <data name="StockInv_LinkFailed" xml:space="preserve">
+    <value>Bağ kaydedilemedi.</value>
+  </data>
 </root>

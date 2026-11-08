@@ -99,9 +99,11 @@ namespace Pusula.Wpf.ViewModels
     public sealed class InventoryRow
     {
         /// <summary>Kayıttan satır oluşturur.</summary>
-        public InventoryRow(InventoryItem item, TypeDefinition type)
+        public InventoryRow(InventoryItem item, TypeDefinition type, bool isLinked = false)
         {
             Item = item;
+            IsLinked = isLinked;
+            Folder = item.Folder;
             Type = type;
             Number = item.Record.Number;
             Name = item.Record.Name;
@@ -112,11 +114,35 @@ namespace Pusula.Wpf.ViewModels
             Level = InventoryDetailViewModel.LevelText(item);
         }
 
-        /// <summary>Kayıt.</summary>
-        public InventoryItem Item { get; }
+        /// <summary>Kayıt; bulunamayan bağda <c>null</c>.</summary>
+        public InventoryItem? Item { get; }
+
+        /// <summary>Kayıt klasörü; bulunamayan bağda boş.</summary>
+        public string Folder { get; } = string.Empty;
+
+        /// <summary>Stok sayfasında: stoka bağla eklenmiş (genel / proje) kayıt mı; bağ kaldırılabilir.</summary>
+        public bool IsLinked { get; }
+
+        /// <summary>Stok sayfasında: bağlı numara bulunamadı.</summary>
+        public bool IsMissing { get; }
+
+        /// <summary>Bulunamayan bağ için satır ("JIG-1000-0099 · bulunamadı").</summary>
+        public InventoryRow(string number, TypeDefinition? type)
+        {
+            Type = type;
+            IsLinked = true;
+            IsMissing = true;
+            Number = number;
+            Name = Resources.Inv_LinkMissing;
+            TypeName = type?.Name ?? string.Empty;
+            SubType = "—";
+            Status = new StatusChip("—", StatusTone.None);
+            Location = "—";
+            Level = "—";
+        }
 
         /// <summary>Tür.</summary>
-        public TypeDefinition Type { get; }
+        public TypeDefinition? Type { get; }
 
         /// <summary>Stok (numara).</summary>
         public string Number { get; }

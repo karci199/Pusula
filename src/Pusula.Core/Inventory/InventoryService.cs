@@ -286,6 +286,67 @@ namespace Pusula.Core.Inventory
         }
 
         /// <summary>
+        /// Stokun kullandığı kayıtlar: stok klasöründekiler (<c>05_Jigler</c> …) ve <c>stok.json</c>'daki bağlar.
+        /// Bağlı olup bulunamayan numaralar <paramref name="missing"/> içine yazılır.
+        /// </summary>
+        public static List<InventoryItem> UsedByStock(string stockFolder, IEnumerable<string> links, IEnumerable<InventoryItem> all, out List<string> missing)
+        {
+            var items = all.ToList();
+            var prefix = stockFolder.TrimEnd('\\') + "\\";
+            var result = items.Where(i => i.Level == InventoryLevel.Stock && i.Folder.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)).ToList();
+            missing = new List<string>();
+            foreach (var number in links.Distinct(StringComparer.OrdinalIgnoreCase))
+            {
+                var linked = items.FirstOrDefault(i => i.Level != InventoryLevel.Stock && string.Equals(i.Record.Number, number, StringComparison.OrdinalIgnoreCase));
+                if (linked == null)
+                {
+                    missing.Add(number);
+                }
+                else if (!result.Contains(linked))
+                {
+                    result.Add(linked);
+                }
+            }
+
+            return result.OrderBy(i => i.Record.Number, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        /// <summary>
+        /// Stoka genel / proje kaydı bağlar ya da bağı kaldırır (<c>stok.json</c>, diğer alanlara dokunmaz).
+        /// Kaydın kendisine ve klasörüne dokunulmaz. Dosya yoksa ya da yazılamazsa <c>false</c>.
+        /// </summary>
+        public static bool SetStockLink(string stockFolder, string number, bool linked)
+        {
+            var path = TrackingFiles.StockFile(stockFolder);
+            var info = JsonFile.TryRead<StockInfo>(path);
+            if (info == null)
+            {
+                return false;
+            }
+
+            info.Inventory.RemoveAll(n => string.Equals(n, number, StringComparison.OrdinalIgnoreCase));
+            if (linked)
+            {
+                info.Inventory.Add(number);
+                info.Inventory.Sort(StringComparer.OrdinalIgnoreCase);
+            }
+
+            try
+            {
+                JsonFile.WriteAtomic(path, info);
+                return true;
+            }
+            catch (IOException)
+            {
+                return false;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Kaydın Obsidian notunu (<c>&lt;numara&gt;.md</c>) YAML bloğu ve başlıkla oluşturur. Not zaten varsa dokunmaz.
         /// Oluşan (ya da var olan) notun yolunu döndürür; yazılamazsa boş.
         /// </summary>

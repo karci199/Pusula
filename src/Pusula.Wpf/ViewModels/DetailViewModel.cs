@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Pusula.Core.Inventory;
 using Pusula.Core.Scanning;
 using Pusula.Core.Templates;
 using Pusula.Core.Testing;
@@ -148,6 +149,18 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Klasörler sekmesi: stokun klasör ağacı (üst düzey).</summary>
         public ObservableCollection<FolderTreeItem> FolderTree { get; } = new ObservableCollection<FolderTreeItem>();
 
+        /// <summary>Stokun jig, kablo … bölümleri (türe göre ayrı).</summary>
+        public ObservableCollection<StockInventoryGroup> InventoryGroups { get; } = new ObservableCollection<StockInventoryGroup>();
+
+        /// <summary>Bütün envanter kayıtları (ana görünüm modeli verir); stokun kullandıkları bunlardan seçilir.</summary>
+        public IEnumerable<InventoryItem> InventoryItems { get; set; } = new List<InventoryItem>();
+
+        /// <summary>Sekme başlığı: "Jig ve kablo · 3".</summary>
+        public string InventoryHeader
+        {
+            get { return string.Format(Resources.Tab_Inventory, InventoryGroups.Sum(g => g.Rows.Count)); }
+        }
+
         /// <summary>Sekme başlığı: "Testler · 4".</summary>
         public string TestsHeader
         {
@@ -255,6 +268,8 @@ namespace Pusula.Wpf.ViewModels
             DevelopmentRuns.Clear();
             QualificationRuns.Clear();
             FolderTree.Clear();
+            InventoryGroups.Clear();
+            OnPropertyChanged(nameof(InventoryHeader));
             NotifyTestHeaders();
             IsProject = false;
             IsStock = false;
@@ -311,6 +326,7 @@ namespace Pusula.Wpf.ViewModels
             {
                 ShowStock(summary, path);
                 ShowTests(runs);
+                ShowInventory(summary.Stock, path);
                 if (tree != null)
                 {
                     foreach (var child in tree.Children)
@@ -362,6 +378,39 @@ namespace Pusula.Wpf.ViewModels
             }
 
             NotifyTestHeaders();
+        }
+
+        // Stokun kullandığı kayıtlar: türe göre bölümler; sıra dışı durumdakiler ve bulunamayan bağlar "Dikkat"e eklenir.
+        private void ShowInventory(StockInfo? info, string path)
+        {
+            List<string> missing;
+            var links = info?.Inventory ?? new List<string>();
+            var used = InventoryService.UsedByStock(path, links, InventoryItems, out missing);
+            foreach (var type in types.InventoryTypes)
+            {
+                var rows = used.Where(i => string.Equals(i.Record.Type, type.Key, StringComparison.OrdinalIgnoreCase))
+                    .Select(i => new InventoryRow(i, type, i.Level != InventoryLevel.Stock))
+                    .Concat(missing.Where(type.AcceptsNumber).Select(n => new InventoryRow(n, type)))
+                    .ToList();
+                var group = new StockInventoryGroup(type, rows);
+                InventoryGroups.Add(group);
+                foreach (var row in group.Rows)
+                {
+                    if (row.IsMissing)
+                    {
+                        Alerts.Add(new AlertItem(AppIcons.Help, string.Format(Resources.Alert_InvMissingTitle, type.Name), row.Number + " · " + Resources.Inv_LinkMissing, StatusTone.Waiting));
+                    }
+                    else if (type.SideStatuses.Any(s => string.Equals(s.Name, row.Status.Name, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        var last = row.Item?.Record.LastEvent;
+                        var detail = row.Number + " · " + row.Status.Name + (last != null && last.Note.Length > 0 ? " · " + last.Note : string.Empty);
+                        Alerts.Add(new AlertItem(AppIcons.Repair, type.Name, detail, StatusTone.Waiting));
+                    }
+                }
+            }
+
+            OnPropertyChanged(nameof(InventoryHeader));
+            OnPropertyChanged(nameof(HasAlerts));
         }
 
         private void NotifyTestHeaders()
