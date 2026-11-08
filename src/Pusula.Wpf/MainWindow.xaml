@@ -61,7 +61,8 @@
                         <ContextMenu>
                             <MenuItem Header="{x:Static res:Resources.StockInv_OpenRecord}" Click="StockInvOpen_Click" />
                             <MenuItem Header="{x:Static res:Resources.Menu_OpenFolder}" Click="StockInvFolder_Click" />
-                            <MenuItem Header="{x:Static res:Resources.StockInv_Unlink}" Click="StockInvUnlink_Click"
+                            <MenuItem Header="{x:Static res:Resources.QuickNote_AddMenu}" Click="StockInvNote_Click" />
+                    <MenuItem Header="{x:Static res:Resources.StockInv_Unlink}" Click="StockInvUnlink_Click"
                                       Visibility="{Binding PlacementTarget.SelectedItem.IsLinked, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BoolToVis}, FallbackValue=Collapsed}" />
                         </ContextMenu>
                     </ListView.ContextMenu>
@@ -202,13 +203,13 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="{Binding Title}" FontWeight="SemiBold" VerticalAlignment="Center" />
-                            <ContentPresenter Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center"
+                            <ContentPresenter x:Name="ResultChip" Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center"
                                               Content="{Binding Result}" ContentTemplate="{DynamicResource StatusChipTemplate}" />
-                            <Button Grid.Column="3" Style="{DynamicResource IconButtonStyle}" Width="28" Height="28"
+                            <Button x:Name="NoteButton" Grid.Column="3" Style="{DynamicResource IconButtonStyle}" Width="28" Height="28"
                                     ToolTip="{x:Static res:Resources.Run_OpenNote}" Click="TimelineNote_Click">
                                 <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="13" />
                             </Button>
-                            <Button Grid.Column="4" Style="{DynamicResource IconButtonStyle}" Width="28" Height="28"
+                            <Button x:Name="FolderButton" Grid.Column="4" Style="{DynamicResource IconButtonStyle}" Width="28" Height="28"
                                     ToolTip="{x:Static res:Resources.Run_OpenFolder}" Click="TimelineFolder_Click">
                                 <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="13" />
                             </Button>
@@ -225,6 +226,12 @@
                 </Border>
             </Grid>
             <DataTemplate.Triggers>
+                <!-- Kısa not: sonuç etiketi ve not / klasör düğmeleri yok; nokta soluk -->
+                <DataTrigger Binding="{Binding IsQuickNote}" Value="True">
+                    <Setter TargetName="ResultChip" Property="Visibility" Value="Collapsed" />
+                    <Setter TargetName="NoteButton" Property="Visibility" Value="Collapsed" />
+                    <Setter TargetName="FolderButton" Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
                 <DataTrigger Binding="{Binding IsExpanded}" Value="True">
                     <Setter TargetName="Details" Property="Visibility" Value="Visible" />
                 </DataTrigger>
@@ -472,6 +479,13 @@
                     <controls:FontIcon Glyph="{x:Static local:AppIcons.Inventory}" />
                 </MenuItem.Icon>
             </MenuItem>
+        </ContextMenu>
+
+        <!-- Envanter listesi satırı: aç, klasör, not -->
+        <ContextMenu x:Key="InventoryRowMenu">
+            <MenuItem Header="{x:Static res:Resources.StockInv_OpenRecord}" Click="StockInvOpen_Click" />
+            <MenuItem Header="{x:Static res:Resources.Menu_OpenFolder}" Click="StockInvFolder_Click" />
+            <MenuItem Header="{x:Static res:Resources.QuickNote_AddMenu}" Click="StockInvNote_Click" />
         </ContextMenu>
 
         <ContextMenu x:Key="NodeMenu">
@@ -845,14 +859,58 @@
                                Text="{x:Static res:Resources.Detail_Loading}" />
                 </StackPanel>
 
-                <!-- Proje: stok tablosu -->
-                <ListView Grid.Row="3" Margin="0,16,0,0"
+                <!-- Proje: kısa notlar ve stok tablosu -->
+                <Grid Grid.Row="3" Margin="0,16,0,0" Visibility="{Binding Detail.IsProject, Converter={StaticResource BoolToVis}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Border Grid.Row="0" Margin="0,0,0,14" Padding="14,10" TextElement.FontWeight="Normal"
+                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                            CornerRadius="{DynamicResource OverlayCornerRadius}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.QuickNote_Section}" />
+                            <Grid Margin="0,0,0,6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Tag="Project" KeyDown="QuickNoteBox_KeyDown" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
+                                <Button Grid.Column="1" Margin="6,0,0,0" Tag="Project" Click="QuickNoteAdd_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
+                                        <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.QuickNote_Add}" />
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                            <ScrollViewer MaxHeight="150" VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding Detail.ProjectNotes}" ItemTemplate="{StaticResource HistoryTemplate}" />
+                            </ScrollViewer>
+                        </StackPanel>
+                    </Border>
+                <ListView Grid.Row="1"
                           ItemsSource="{Binding Detail.Rows}"
                           ItemContainerStyle="{StaticResource DetailRowStyle}"
-                          MouseDoubleClick="DetailList_MouseDoubleClick"
-                          Visibility="{Binding Detail.IsProject, Converter={StaticResource BoolToVis}}">
+                          MouseDoubleClick="DetailList_MouseDoubleClick">
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="{x:Static res:Resources.Row_Open}" Click="DetailRowOpen_Click" />
+                            <MenuItem Header="{x:Static res:Resources.Menu_OpenFolder}" Click="DetailRowFolder_Click" />
+                            <MenuItem Header="{x:Static res:Resources.QuickNote_AddMenu}" Click="DetailRowNote_Click" />
+                        </ContextMenu>
+                    </ListView.ContextMenu>
                     <ListView.View>
                         <GridView>
+                            <GridViewColumn Width="44">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Style="{DynamicResource IconButtonStyle}" Tag="{Binding Path}" Click="RowFolder_Click"
+                                                ToolTip="{x:Static res:Resources.Menu_OpenFolder}">
+                                            <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="13" />
+                                        </Button>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
                             <GridViewColumn Header="{x:Static res:Resources.Col_Stock}" Width="140" DisplayMemberBinding="{Binding Name}" />
                             <GridViewColumn Header="{x:Static res:Resources.Col_Status}" Width="160">
                                 <GridViewColumn.CellTemplate>
@@ -868,6 +926,7 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
+                </Grid>
 
                 <!-- Envanter kaydı: dosyalar, bilgiler, not ve geçmiş -->
                 <ScrollViewer Grid.Row="2" Grid.RowSpan="3" Margin="0,16,0,0" VerticalScrollBarVisibility="Auto"
@@ -989,7 +1048,19 @@
                             Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
                             CornerRadius="{DynamicResource OverlayCornerRadius}">
                         <StackPanel>
-                            <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.Inv_History}" />
+                            <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.Inv_History}" />                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Tag="Record" KeyDown="QuickNoteBox_KeyDown" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
+                                <Button Grid.Column="1" Margin="6,0,0,0" Tag="Record" Click="QuickNoteAdd_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
+                                        <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.QuickNote_Add}" />
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
                             <ItemsControl ItemsSource="{Binding Inventory.History}" ItemTemplate="{StaticResource HistoryTemplate}" />
                         </StackPanel>
                     </Border>
@@ -1026,11 +1097,21 @@
                         <TextBlock VerticalAlignment="Center" Margin="4,0,0,6" Style="{DynamicResource CaptionTextBlockStyle}"
                                    Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Inventory.FilterSummary}" />
                     </WrapPanel>
-    <ListView x:Name="InventoryList" Grid.Row="1" Margin="0,10,0,0"
+                    <ListView x:Name="InventoryList" Grid.Row="1" Margin="0,10,0,0" ContextMenu="{StaticResource InventoryRowMenu}"
                               ItemsSource="{Binding Inventory.Rows}"
                               MouseDoubleClick="InventoryList_MouseDoubleClick">
                         <ListView.View>
                             <GridView>
+                                <GridViewColumn Width="44">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Style="{DynamicResource IconButtonStyle}" Tag="{Binding Folder}" Click="RowFolder_Click"
+                                                    ToolTip="{x:Static res:Resources.Menu_OpenFolder}">
+                                                <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="13" />
+                                            </Button>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
                                 <GridViewColumn Header="{x:Static res:Resources.Inv_Number}" Width="120" DisplayMemberBinding="{Binding Number}" />
                                 <GridViewColumn Header="{x:Static res:Resources.Inv_Name}" Width="190" DisplayMemberBinding="{Binding Name}" />
                                 <GridViewColumn x:Name="InventoryTypeColumn" Header="{x:Static res:Resources.Inv_Type}" Width="60" DisplayMemberBinding="{Binding TypeName}" />
@@ -1103,6 +1184,19 @@
                                                     </StackPanel>
                                                 </Button>
                                             </StackPanel>
+                                            <Grid Margin="0,10,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBox Tag="Stock" KeyDown="QuickNoteBox_KeyDown" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
+                                                <Button Grid.Column="1" Margin="6,0,0,0" Tag="Stock" Click="QuickNoteAdd_Click">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
+                                                        <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.QuickNote_Add}" />
+                                                    </StackPanel>
+                                                </Button>
+                                            </Grid>
                                             <ItemsControl Margin="0,10,0,0" ItemsSource="{Binding Strip}">
                                                 <ItemsControl.ItemsPanel>
                                                     <ItemsPanelTemplate>
@@ -1457,6 +1551,16 @@
         </controls:ContentDialog>
 
         <!-- Durum notu (Beklemede gibi) -->
+        <controls:ContentDialog Grid.RowSpan="3"
+                                IsOpen="{Binding IsQuickNoteOpen, Mode=TwoWay}"
+                                Title="{Binding QuickNoteTitle}"
+                                PrimaryButtonText="{x:Static res:Resources.QuickNote_Add}"
+                                CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                PrimaryButtonClick="QuickNote_PrimaryButtonClick">
+            <TextBox MinWidth="380" MinHeight="70" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"
+                     Text="{Binding QuickNoteText, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+        </controls:ContentDialog>
+
         <controls:ContentDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsStatusNoteOpen, Mode=TwoWay}"
                                 Title="{Binding StatusNoteTitle}"

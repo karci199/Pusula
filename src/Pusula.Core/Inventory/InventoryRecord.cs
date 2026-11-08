@@ -29,6 +29,7 @@ namespace Pusula.Core.Inventory
             Note = string.Empty;
             Fields = new Dictionary<string, string>();
             Events = new List<InventoryEvent>();
+            Notes = new List<Tracking.QuickNote>();
         }
 
         /// <summary>Dosya biçiminin sürümü.</summary>
@@ -58,6 +59,10 @@ namespace Pusula.Core.Inventory
         /// <summary>Türe özel alanların değerleri (anahtar → değer); şimdilik kullanılmıyor.</summary>
         [DataMember(Name = "fields", Order = 6)]
         public Dictionary<string, string> Fields { get; set; } = new Dictionary<string, string>();
+
+        /// <summary>Uygulamadan yazılan kısa notlar (eskiden yeniye).</summary>
+        [DataMember(Name = "notes", Order = 20, EmitDefaultValue = false)]
+        public List<Tracking.QuickNote> Notes { get; set; } = new List<Tracking.QuickNote>();
 
         /// <summary>Durum olayları, eskiden yeniye.</summary>
         [DataMember(Name = "events", Order = 7)]

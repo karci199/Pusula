@@ -15,7 +15,12 @@ namespace Pusula.Core.Tracking
             SchemaVersion = 1;
             ProjectNo = string.Empty;
             Name = string.Empty;
+            Notes = new System.Collections.Generic.List<QuickNote>();
         }
+
+        /// <summary>Uygulamadan yazılan kısa notlar (eskiden yeniye).</summary>
+        [DataMember(Name = "notes", Order = 3, EmitDefaultValue = false)]
+        public System.Collections.Generic.List<QuickNote> Notes { get; set; } = new System.Collections.Generic.List<QuickNote>();
 
         /// <summary>Dosya biçiminin sürümü.</summary>
         [DataMember(Name = "schemaVersion", Order = 0)]

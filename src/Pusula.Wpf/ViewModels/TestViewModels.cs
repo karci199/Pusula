@@ -219,7 +219,30 @@ namespace Pusula.Wpf.ViewModels
             Photo = run.Photo;
             NotePath = run.NotePath;
             Folder = run.Folder;
+            SortDate = run.Date;
         }
+
+        /// <summary>Uygulamadan yazılan kısa nottan kart oluşturur; <paramref name="folder"/> stok klasörüdür.</summary>
+        public TimelineItem(Pusula.Core.Tracking.QuickNote note, string folder)
+        {
+            Title = Resources.QuickNote_Title;
+            Result = new StatusChip(Resources.QuickNote_Chip, Pusula.Core.Types.StatusTone.Neutral);
+            Summary = note.Text;
+            var date = note.DateValue.HasValue ? note.DateValue.Value.ToString(Resources.Format_DateTime) : note.Date;
+            Meta = note.Person.Length == 0 ? date : date + " · " + note.Person;
+            Detail = string.Empty;
+            Photo = string.Empty;
+            NotePath = string.Empty;
+            Folder = folder;
+            SortDate = note.DateValue ?? DateTime.MinValue;
+            IsQuickNote = true;
+        }
+
+        /// <summary>Sıralama tarihi (koşu tarihi ya da notun zamanı).</summary>
+        public DateTime SortDate { get; }
+
+        /// <summary>Uygulamadan yazılmış kısa not mu (koşu değil).</summary>
+        public bool IsQuickNote { get; }
 
         /// <summary>"SATIMO · SN01 · T2".</summary>
         public string Title { get; }

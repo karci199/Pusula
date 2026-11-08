@@ -994,5 +994,36 @@ namespace Pusula.Wpf.Properties
         public static string Filter_CountOf { get { return Get("Filter_CountOf"); } }
 
         #endregion
+
+        #region Kısa not
+
+        /// <summary>Zaman çizelgesi / geçmişte not etiketi.</summary>
+        public static string QuickNote_Chip { get { return Get("QuickNote_Chip"); } }
+
+        /// <summary>Kısa not düğmesi.</summary>
+        public static string QuickNote_Add { get { return Get("QuickNote_Add"); } }
+
+        /// <summary>Tablo sağ tık menüsü.</summary>
+        public static string QuickNote_AddMenu { get { return Get("QuickNote_AddMenu"); } }
+
+        /// <summary>Not kutusu ipucu.</summary>
+        public static string QuickNote_Hint { get { return Get("QuickNote_Hint"); } }
+
+        /// <summary>Proje sayfası kart başlığı.</summary>
+        public static string QuickNote_Section { get { return Get("QuickNote_Section"); } }
+
+        /// <summary>Diyalog başlığı.</summary>
+        public static string QuickNote_DialogTitle { get { return Get("QuickNote_DialogTitle"); } }
+
+        /// <summary>Durum çubuğu.</summary>
+        public static string QuickNote_Added { get { return Get("QuickNote_Added"); } }
+
+        /// <summary>Tablo sağ tık: sayfasına git.</summary>
+        public static string Row_Open { get { return Get("Row_Open"); } }
+
+        /// <summary>Zaman çizelgesinde notun başlığı.</summary>
+        public static string QuickNote_Title { get { return Get("QuickNote_Title"); } }
+
+        #endregion
     }
 }

@@ -451,6 +451,15 @@ namespace Pusula.Wpf
             }
         }
 
+        private void StockInvNote_Click(object sender, RoutedEventArgs e)
+        {
+            var row = MenuRow(sender);
+            if (row != null && row.Folder.Length > 0)
+            {
+                viewModel.OpenQuickNote(QuickNoteTarget.Record, row.Folder, row.Number);
+            }
+        }
+
         private void StockInvUnlink_Click(object sender, RoutedEventArgs e)
         {
             var row = MenuRow(sender);
@@ -632,8 +641,94 @@ namespace Pusula.Wpf
 
             if ((source as ListViewItem)?.DataContext is DetailRowViewModel row)
             {
+                OpenDetailRow(row);
+            }
+        }
+
+        // Proje tablosu: çift tık / "Aç" stokun sayfasına gider; ağaçta yoksa klasörü açar.
+        private void OpenDetailRow(DetailRowViewModel row)
+        {
+            viewModel.SelectNodeByPath(row.Path);
+            if (!string.Equals(viewModel.SelectedNode?.Path, row.Path, StringComparison.OrdinalIgnoreCase))
+            {
                 viewModel.OpenPath(row.Path);
             }
+        }
+
+        private static DetailRowViewModel? DetailMenuRow(object sender)
+        {
+            var menu = (sender as MenuItem)?.Parent as ContextMenu;
+            return (menu?.PlacementTarget as ListView)?.SelectedItem as DetailRowViewModel;
+        }
+
+        private void DetailRowOpen_Click(object sender, RoutedEventArgs e)
+        {
+            var row = DetailMenuRow(sender);
+            if (row != null)
+            {
+                OpenDetailRow(row);
+            }
+        }
+
+        private void DetailRowFolder_Click(object sender, RoutedEventArgs e)
+        {
+            var row = DetailMenuRow(sender);
+            if (row != null)
+            {
+                viewModel.OpenPath(row.Path);
+            }
+        }
+
+        private void DetailRowNote_Click(object sender, RoutedEventArgs e)
+        {
+            var row = DetailMenuRow(sender);
+            if (row != null)
+            {
+                viewModel.OpenQuickNote(QuickNoteTarget.Stock, row.Path, row.Name);
+            }
+        }
+
+        // Satır başındaki klasör düğmesi.
+        private void RowFolder_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is string path && path.Length > 0)
+            {
+                viewModel.OpenPath(path);
+            }
+        }
+
+        // Kısa not kutusu: Enter ya da "Not ekle" yazar; kutunun Tag'i nereye yazılacağını söyler (Project, Stock, Record).
+        private void QuickNoteBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter && sender is TextBox box)
+            {
+                SubmitQuickNote(box);
+                e.Handled = true;
+            }
+        }
+
+        private void QuickNoteAdd_Click(object sender, RoutedEventArgs e)
+        {
+            var grid = (sender as FrameworkElement)?.Parent as Panel;
+            var box = grid?.Children.OfType<TextBox>().FirstOrDefault();
+            if (box != null)
+            {
+                SubmitQuickNote(box);
+            }
+        }
+
+        private void SubmitQuickNote(TextBox box)
+        {
+            QuickNoteTarget target;
+            if (Enum.TryParse(box.Tag as string, out target) && viewModel.AddQuickNoteHere(target, box.Text))
+            {
+                box.Text = string.Empty;
+            }
+        }
+
+        private void QuickNote_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            viewModel.ConfirmQuickNote();
         }
 
         private void EditTemplates_Click(object sender, RoutedEventArgs e)

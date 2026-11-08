@@ -150,6 +150,9 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Klasörler sekmesi: stokun klasör ağacı (üst düzey).</summary>
         public ObservableCollection<FolderTreeItem> FolderTree { get; } = new ObservableCollection<FolderTreeItem>();
 
+        /// <summary>Projenin kısa notları (yeniden eskiye).</summary>
+        public ObservableCollection<HistoryRow> ProjectNotes { get; } = new ObservableCollection<HistoryRow>();
+
         /// <summary>Stokun notu ve fotoğrafları (Genel sekmesinin üstü).</summary>
         public StockCoverViewModel Cover { get; } = new StockCoverViewModel();
 
@@ -175,7 +178,7 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Hiç test koşusu var mı.</summary>
         public bool HasRuns
         {
-            get { return Timeline.Count > 0; }
+            get { return DevelopmentRuns.Count + QualificationRuns.Count > 0; }
         }
 
         /// <summary>Dikkat edilecek madde var mı.</summary>
@@ -269,6 +272,7 @@ namespace Pusula.Wpf.ViewModels
             FolderTree.Clear();
             InventoryGroups.Clear();
             Cover.Clear();
+            ProjectNotes.Clear();
             NotifyTestHeaders();
             IsProject = false;
             IsStock = false;
@@ -291,6 +295,7 @@ namespace Pusula.Wpf.ViewModels
             List<TestRun> runs = new List<TestRun>();
             FolderTreeNode? tree = null;
             StockCover? cover = null;
+            ProjectInfo? projectInfo = null;
             try
             {
                 summary = await Task.Run(
@@ -298,6 +303,7 @@ namespace Pusula.Wpf.ViewModels
                     {
                         if (kind == FolderKind.Project)
                         {
+                            projectInfo = JsonFile.TryRead<ProjectInfo>(TrackingFiles.ProjectFile(path));
                             return FolderSummary.ForProject(path, templates.ProjectFolders, source.Token);
                         }
 
@@ -323,6 +329,10 @@ namespace Pusula.Wpf.ViewModels
             if (kind == FolderKind.Project)
             {
                 ShowProject(summary);
+                foreach (var note in Enumerable.Reverse(projectInfo?.Notes ?? new List<QuickNote>()))
+                {
+                    ProjectNotes.Add(new HistoryRow(note));
+                }
             }
             else
             {
@@ -333,6 +343,7 @@ namespace Pusula.Wpf.ViewModels
                 }
 
                 ShowTests(runs);
+                AddNotesToTimeline(summary.Stock, path);
                 ShowInventory(summary.Stock, path);
                 if (tree != null)
                 {
@@ -417,6 +428,24 @@ namespace Pusula.Wpf.ViewModels
             }
 
             OnPropertyChanged(nameof(HasAlerts));
+        }
+
+        // Stokun kısa notları zaman çizelgesine tarih sırasıyla (yeniden eskiye) katılır.
+        private void AddNotesToTimeline(StockInfo? info, string path)
+        {
+            if (info == null || info.Notes.Count == 0)
+            {
+                return;
+            }
+
+            var all = Timeline.Concat(info.Notes.Select(n => new TimelineItem(n, path)))
+                .OrderByDescending(i => i.SortDate)
+                .ToList();
+            Timeline.Clear();
+            foreach (var item in all)
+            {
+                Timeline.Add(item);
+            }
         }
 
         private void NotifyTestHeaders()

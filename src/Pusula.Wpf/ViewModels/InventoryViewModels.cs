@@ -48,7 +48,21 @@ namespace Pusula.Wpf.ViewModels
             }
 
             Detail = string.Join(" · ", details);
+            SortDate = inventoryEvent.DateValue ?? DateTime.MinValue;
         }
+
+        /// <summary>Uygulamadan yazılan kısa nottan satır oluşturur ("Not" etiketiyle).</summary>
+        public HistoryRow(Pusula.Core.Tracking.QuickNote note)
+        {
+            Status = new StatusChip(Resources.QuickNote_Chip, StatusTone.Neutral);
+            var date = note.DateValue.HasValue ? note.DateValue.Value.ToString(Resources.Format_DateTime) : note.Date;
+            Meta = note.Person.Length == 0 ? date : date + " · " + note.Person;
+            Detail = note.Text;
+            SortDate = note.DateValue ?? DateTime.MinValue;
+        }
+
+        /// <summary>Sıralama tarihi.</summary>
+        public DateTime SortDate { get; }
 
         /// <summary>Durum etiketi (nokta rengi ve ad).</summary>
         public StatusChip Status { get; }
@@ -600,9 +614,16 @@ namespace Pusula.Wpf.ViewModels
             Facts.Add(new FactRow(Resources.Inv_Location, record.Location));
             Facts.Add(new FactRow(Resources.Inv_Note, record.Note));
 
-            foreach (var inventoryEvent in Enumerable.Reverse(record.Events))
+            // Geçmiş: durum olayları ve kısa notlar, yeniden eskiye (aynı gün: not olaydan sonra yazılmış sayılır).
+            var rows = record.Events.Select(e => new HistoryRow(e, shownType))
+                .Concat(record.Notes.Select(n => new HistoryRow(n)))
+                .Select((row, index) => new { row, index })
+                .OrderByDescending(x => x.row.SortDate)
+                .ThenByDescending(x => x.index)
+                .Select(x => x.row);
+            foreach (var row in rows)
             {
-                History.Add(new HistoryRow(inventoryEvent, shownType));
+                History.Add(row);
             }
 
             IsRecord = true;
