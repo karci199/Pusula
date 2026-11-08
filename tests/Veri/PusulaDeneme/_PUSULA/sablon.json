@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 3,
+  "projectFolders": [
+    "00_Proje_Geneli"
+  ],
+  "stockModules": [
+    {
+      "key": "00_Diger",
+      "name": "Diğer",
+      "folder": "00_Diger",
+      "subFolders": [
+        "Deneme"
+      ]
+    },
+    {
+      "key": "01_Dokumanlar",
+      "name": "Dokümanlar",
+      "folder": "01_Dokumanlar",
+      "subFolders": [ ]
+    },
+    {
+      "key": "testPlans",
+      "name": "Test planları",
+      "folder": "02_Test_Planlari",
+      "subFolders": [ ]
+    },
+    {
+      "key": "03_Test_Sonuclari",
+      "name": "Test sonuçları",
+      "folder": "03_Test_Sonuclari",
+      "subFolders": [ ]
+    },
+    {
+      "key": "qualification",
+      "name": "Kalifikasyon",
+      "folder": "04_Kalifikasyon",
+      "subFolders": [
+        "01_Isterler",
+        "02_Test_Plani",
+        "03_Test_Sonuclari",
+        "04_Rapor"
+      ]
+    },
+    {
+      "key": "jig",
+      "name": "Jigler (mekanik, kablaj)",
+      "folder": "05_Jigler",
+      "subFolders": [
+        "Mekanik",
+        "Kablaj"
+      ]
+    },
+    {
+      "key": "software",
+      "name": "Yazılımlar",
+      "folder": "06_Yazilimlar",
+      "subFolders": [ ]
+    },
+    {
+      "key": "07_Fotograflar",
+      "name": "Fotoğraflar",
+      "folder": "07_Fotograflar",
+      "subFolders": [ ]
+    },
+    {
+      "key": "_ARSIV",
+      "name": "Arşiv",
+      "folder": "_ARSIV",
+      "subFolders": [ ]
+    }
+  ],
+  "stockTemplates": [
+    {
+      "name": "Pasif anten",
+      "modules": [
+        "00_Diger",
+        "01_Dokumanlar",
+        "03_Test_Sonuclari",
+        "07_Fotograflar",
+        "_ARSIV"
+      ]
+    },
+    {
+      "name": "Döner anten",
+      "modules": [
+        "00_Diger",
+        "01_Dokumanlar",
+        "testPlans",
+        "03_Test_Sonuclari",
+        "qualification",
+        "jig",
+        "software",
+        "07_Fotograflar",
+        "_ARSIV"
+      ]
+    }
+  ]
+}

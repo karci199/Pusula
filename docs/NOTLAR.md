@@ -142,3 +142,5 @@ Deneme kökü: `C:\PusulaDeneme`.
 
 - Yapay zeka rehberi: docs/YAPAY_ZEKA_REHBERI.md (gerçek veri kökünde CLAUDE.md olarak durur; hatalar _PUSULA\GERI_BILDIRIM.md'ye). İlk açılışta kök yoksa Ayarlar kendiliğinden açılır.
 
+- Testler depoda: tests\Calistir.ps1 (-Derle), senaryolar tests\Senaryolar, deneme verisi tests\Veri (her senaryoya geçici kopya). Kök değişince eski açık düğümler sayılmıyor (Envanter kapalı açılıyordu).
+

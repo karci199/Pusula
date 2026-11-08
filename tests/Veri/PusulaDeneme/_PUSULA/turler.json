@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 1,
+  "types": [
+    {
+      "key": "project",
+      "name": "Proje",
+      "folder": "",
+      "numberFormats": [
+        {
+          "pattern": "####",
+          "label": "Proje numarası"
+        }
+      ],
+      "subTypes": [ ],
+      "statuses": [ ],
+      "sideStatuses": [ ]
+    },
+    {
+      "key": "stock",
+      "name": "Stok",
+      "folder": "",
+      "numberFormats": [
+        {
+          "pattern": "JY-####-####",
+          "label": "Geliştirme numarası"
+        },
+        {
+          "pattern": "@@-####-####",
+          "label": "Stok numarası"
+        },
+        {
+          "pattern": "####-####-####",
+          "label": "Stok numarası"
+        }
+      ],
+      "subTypes": [ ],
+      "statuses": [
+        {
+          "name": "Hazırlık",
+          "tone": "neutral"
+        },
+        {
+          "name": "Ölçüm bekliyor",
+          "tone": "waiting"
+        },
+        {
+          "name": "Testte",
+          "tone": "active"
+        },
+        {
+          "name": "Tamamlandı",
+          "tone": "done"
+        },
+        {
+          "name": "Üretime teslim edildi",
+          "tone": "done"
+        }
+      ],
+      "sideStatuses": [
+        {
+          "name": "Beklemede",
+          "tone": "warning",
+          "needsNote": true
+        }
+      ]
+    },
+    {
+      "key": "jig",
+      "name": "Jig",
+      "folder": "02_ENVANTER\\Jigler",
+      "numberFormats": [
+        {
+          "pattern": "JIG-####-####",
+          "label": "Jig numarası"
+        }
+      ],
+      "subTypes": [
+        "Mekanik",
+        "Elektriksel",
+        "Ölçüm adaptörü",
+        "Montaj"
+      ],
+      "statuses": [
+        {
+          "name": "Tasarımda",
+          "tone": "neutral"
+        },
+        {
+          "name": "Üretimde",
+          "tone": "active"
+        },
+        {
+          "name": "Hazır",
+          "tone": "done"
+        }
+      ],
+      "sideStatuses": [
+        {
+          "name": "Tamirde",
+          "tone": "warning",
+          "needsNote": true
+        },
+        {
+          "name": "Kalibrasyon bekliyor",
+          "tone": "warning"
+        },
+        {
+          "name": "Kullanım dışı",
+          "tone": "neutral"
+        }
+      ]
+    },
+    {
+      "key": "cable",
+      "name": "Kablo",
+      "folder": "02_ENVANTER\\Kablolar",
+      "numberFormats": [
+        {
+          "pattern": "KBL-####-####",
+          "label": "Kablo numarası"
+        }
+      ],
+      "subTypes": [
+        "RF kablo",
+        "EMC kablosu",
+        "Güç \/ veri kablosu"
+      ],
+      "statuses": [
+        {
+          "name": "Sipariş",
+          "tone": "neutral"
+        },
+        {
+          "name": "Geldi",
+          "tone": "active"
+        },
+        {
+          "name": "Kullanımda",
+          "tone": "done"
+        }
+      ],
+      "sideStatuses": [
+        {
+          "name": "Arızalı",
+          "tone": "warning",
+          "needsNote": true
+        },
+        {
+          "name": "Kalibrasyon bekliyor",
+          "tone": "warning"
+        }
+      ]
+    },
+    {
+      "key": "software",
+      "name": "Yazılım",
+      "folder": "02_ENVANTER\\Yazilimlar",
+      "numberFormats": [ ],
+      "subTypes": [
+        "Analiz aracı",
+        "Test betiği",
+        "Firmware",
+        "Kütüphane"
+      ],
+      "statuses": [
+        {
+          "name": "Geliştiriliyor",
+          "tone": "active"
+        },
+        {
+          "name": "Kullanımda",
+          "tone": "done"
+        }
+      ],
+      "sideStatuses": [
+        {
+          "name": "Kullanım dışı",
+          "tone": "neutral"
+        }
+      ]
+    }
+  ],
+  "tags": [
+    "SATIMO",
+    "VNA",
+    "Yankısız",
+    "ÇK",
+    "Kalifikasyon"
+  ]
+}

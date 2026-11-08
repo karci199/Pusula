@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "type": "cable",
+  "number": "JT-0001-0002",
+  "name": "RS422 test kablosu",
+  "subType": "Haberleşme",
+  "note": "DB9(F)–DB9(M) · 2 m · ekranlı · MOXA\/VSCOM pin",
+  "fields": [ ],
+  "events": [
+    {
+      "status": "Talep",
+      "date": "2026-09-02",
+      "person": "katan",
+      "location": "",
+      "note": "SATIMO kontrol bağlantısı"
+    },
+    {
+      "status": "Hazırlanıyor",
+      "date": "2026-09-05",
+      "person": "M. Yılmaz",
+      "location": "",
+      "note": ""
+    },
+    {
+      "status": "Teslim alındı",
+      "date": "2026-09-18",
+      "person": "katan",
+      "location": "Lab-A raf 3",
+      "note": "2 adet"
+    },
+    {
+      "status": "Kullanımda",
+      "date": "2026-09-20",
+      "person": "katan",
+      "location": "SATIMO odası",
+      "note": ""
+    },
+    {
+      "status": "Çoğaltma isteniyor",
+      "date": "2026-11-02",
+      "person": "a-demir",
+      "location": "",
+      "note": "2 adet daha; Brainbox için pin yapısı farklı olacak"
+    }
+  ]
+}

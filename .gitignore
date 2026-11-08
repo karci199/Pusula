@@ -21,3 +21,6 @@ TestResults/
 .claude/settings.local.json
 
 # Not: Dependencies/ altındaki DLL'ler bilerek repoya dahildir.
+
+# Test ekran görüntüleri
+tests/cikti/

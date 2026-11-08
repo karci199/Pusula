@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "stockNo": "AB-7000-0002",
+  "name": "TAKIM ANTEN BOYNUZ Y",
+  "template": "",
+  "status": "Ölçüm bekliyor",
+  "statusSince": "2026-11-08",
+  "statusNote": "",
+  "inventory": [ ],
+  "notes": [
+    {
+      "date": "2026-10-21 09:40",
+      "person": "katan",
+      "text": "SNP1 yan lob sorunu için kablo yolu değiştirilecek; a-demir ile konuşuldu."
+    },
+    {
+      "date": "2026-11-05 16:10",
+      "person": "katan",
+      "text": "Müşteri SN01 yan lob grafiğini rapora istiyor."
+    },
+    {
+      "date": "2026-11-08 10:05",
+      "person": "a-demir",
+      "text": "SN02 için jig Rev AC bekleniyor, mekanik atölye hafta sonu dedi."
+    }
+  ]
+}

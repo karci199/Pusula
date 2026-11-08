@@ -1,0 +1,298 @@
+﻿{
+  "Version": 2,
+  "Header": {
+    "PlanId": "7b0c2e51-3d4a-4f6e-9a2b-5c8d1e0f7002",
+    "OriginalName": "AB-7000-0002 SATIMO Hüzme ve Yan Lob",
+    "CopiedFrom": null,
+    "Revision": 0,
+    "SaveCount": 1,
+    "Created": {
+      "At": "2026-11-06T16:20:00+03:00",
+      "Person": "M. Yılmaz",
+      "RegistryNumber": "",
+      "Company": "",
+      "User": "myilmaz",
+      "Domain": "ORNEK",
+      "Machine": "SATIMO-PC",
+      "Os": "Windows 10 Pro 19045",
+      "Dotnet": "4.8.1",
+      "Software": "KIWI",
+      "SoftwareStock": "0000-0000",
+      "SoftwareVersion": "1.0.0"
+    },
+    "Modified": {
+      "At": "2026-11-06T16:20:00+03:00",
+      "Person": "M. Yılmaz",
+      "RegistryNumber": "",
+      "Company": "",
+      "User": "myilmaz",
+      "Domain": "ORNEK",
+      "Machine": "SATIMO-PC",
+      "Os": "Windows 10 Pro 19045",
+      "Dotnet": "4.8.1",
+      "Software": "KIWI",
+      "SoftwareStock": "0000-0000",
+      "SoftwareVersion": "1.0.0"
+    },
+    "Counts": {
+      "Groups": 0,
+      "Steps": 3,
+      "ConditionalSteps": 0,
+      "Limits": 3
+    }
+  },
+  "Name": "AB-7000-0002 SATIMO Hüzme ve Yan Lob",
+  "Description": "Örnek plan (Hüzme Deneme'den uyarlandı): SH2000 boynuz anten, SATIMO StarLab, JIG-1000-0009 ile. E (φ 90) ve H (φ 0) düzleminde 3 dB hüzme genişliği 50–70°, yan lob ≤ −10 dB; 2–6 GHz.",
+  "Nodes": [
+    {
+      "Name": "H Duzlem Huzme",
+      "IsGroup": false,
+      "Enabled": true,
+      "Children": [],
+      "Step": {
+        "Source": {
+          "Paths": [
+            "20261107_AB-7000-0002_SN01_P1_SATIMO_pattern.trx"
+          ]
+        },
+        "Adaptor": {
+          "Format": "trx",
+          "Content": "spherical",
+          "Ports": 0
+        },
+        "Axis": {
+          "Phi": [
+            "0"
+          ],
+          "Theta": [],
+          "Freq": []
+        },
+        "Columns": {
+          "Keys": [
+            "Ludwig-III ECo|DB"
+          ]
+        },
+        "Operations": [],
+        "Analysis": {
+          "Kind": "beamwidth",
+          "Name": "H Duzlem Huzme",
+          "Beamwidth": {
+            "Cut": "theta",
+            "Method": "drop",
+            "Drop": "3",
+            "Threshold": "",
+            "Dip": false,
+            "DipDepth": "1",
+            "DipWidth": "5",
+            "Width": "total",
+            "Window": false,
+            "Range": "-90:90",
+            "Interpolation": "curve",
+            "Resolution": "0,01",
+            "Co": "",
+            "Cross": "",
+            "XpdLevel": "15",
+            "CoFloor": "20",
+            "Difference": "signed",
+            "Statistic": "min",
+            "Region": "beam",
+            "RegionDrop": "3"
+          }
+        },
+        "Limits": [
+          {
+            "Kind": "value",
+            "Azimuth": "0",
+            "Elevation": "",
+            "Frequency": "",
+            "File": "",
+            "Bands": [
+              {
+                "Range": "2000:6000",
+                "Lines": [
+                  {
+                    "Percent": 100,
+                    "Lower": "50",
+                    "Upper": "70",
+                    "Curve": "flat"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "Output": {},
+        "Condition": null
+      }
+    },
+    {
+      "Name": "E Duzlem Huzme",
+      "IsGroup": false,
+      "Enabled": true,
+      "Children": [],
+      "Step": {
+        "Source": {
+          "Paths": [
+            "20261107_AB-7000-0002_SN01_P1_SATIMO_pattern.trx"
+          ]
+        },
+        "Adaptor": {
+          "Format": "trx",
+          "Content": "spherical",
+          "Ports": 0
+        },
+        "Axis": {
+          "Phi": [
+            "90"
+          ],
+          "Theta": [],
+          "Freq": []
+        },
+        "Columns": {
+          "Keys": [
+            "Ludwig-III ECo|DB"
+          ]
+        },
+        "Operations": [],
+        "Analysis": {
+          "Kind": "beamwidth",
+          "Name": "E Duzlem Huzme",
+          "Beamwidth": {
+            "Cut": "theta",
+            "Method": "drop",
+            "Drop": "3",
+            "Threshold": "",
+            "Dip": false,
+            "DipDepth": "1",
+            "DipWidth": "5",
+            "Width": "total",
+            "Window": false,
+            "Range": "-90:90",
+            "Interpolation": "curve",
+            "Resolution": "0,01",
+            "Co": "",
+            "Cross": "",
+            "XpdLevel": "15",
+            "CoFloor": "20",
+            "Difference": "signed",
+            "Statistic": "min",
+            "Region": "beam",
+            "RegionDrop": "3"
+          }
+        },
+        "Limits": [
+          {
+            "Kind": "value",
+            "Azimuth": "90",
+            "Elevation": "",
+            "Frequency": "",
+            "File": "",
+            "Bands": [
+              {
+                "Range": "2000:6000",
+                "Lines": [
+                  {
+                    "Percent": 100,
+                    "Lower": "50",
+                    "Upper": "70",
+                    "Curve": "flat"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "Output": {},
+        "Condition": null
+      }
+    },
+    {
+      "Name": "Yan Lob",
+      "IsGroup": false,
+      "Enabled": true,
+      "Children": [],
+      "Step": {
+        "Source": {
+          "Paths": [
+            "20261107_AB-7000-0002_SN01_P1_SATIMO_pattern.trx"
+          ]
+        },
+        "Adaptor": {
+          "Format": "trx",
+          "Content": "spherical",
+          "Ports": 0
+        },
+        "Axis": {
+          "Phi": [
+            "0",
+            "90"
+          ],
+          "Theta": [],
+          "Freq": []
+        },
+        "Columns": {
+          "Keys": [
+            "Ludwig-III ECo|DB"
+          ]
+        },
+        "Operations": [],
+        "Analysis": {
+          "Kind": "sidelobe",
+          "Name": "Yan Lob",
+          "Beamwidth": {
+            "Cut": "theta",
+            "Method": "drop",
+            "Drop": "3",
+            "Threshold": "",
+            "Dip": false,
+            "DipDepth": "1",
+            "DipWidth": "5",
+            "Width": "total",
+            "Window": true,
+            "Range": "-90:90",
+            "Interpolation": "curve",
+            "Resolution": "0,01",
+            "Co": "",
+            "Cross": "",
+            "XpdLevel": "15",
+            "CoFloor": "20",
+            "Difference": "signed",
+            "Statistic": "min",
+            "Region": "beam",
+            "RegionDrop": "3",
+            "OmniMethod": "peak-to-peak",
+            "OmniMean": "db",
+            "SquintTarget": "0",
+            "LobePick": "highest",
+            "LobeSide": "both"
+          }
+        },
+        "Limits": [
+          {
+            "Kind": "value",
+            "Azimuth": "",
+            "Elevation": "",
+            "Frequency": "",
+            "File": "",
+            "Bands": [
+              {
+                "Range": "2000:6000",
+                "Lines": [
+                  {
+                    "Percent": 100,
+                    "Lower": "",
+                    "Upper": "-10",
+                    "Curve": "flat"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "Output": {},
+        "Condition": null
+      }
+    }
+  ],
+  "History": []
+}

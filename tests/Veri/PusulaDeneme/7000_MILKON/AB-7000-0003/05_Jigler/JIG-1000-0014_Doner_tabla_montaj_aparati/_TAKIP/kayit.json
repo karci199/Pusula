@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "type": "jig",
+  "number": "JIG-1000-0014",
+  "name": "Döner tabla montaj aparatı",
+  "subType": "Montaj",
+  "note": "",
+  "fields": [ ],
+  "events": [
+    {
+      "status": "Talep",
+      "date": "2026-10-28",
+      "person": "katan",
+      "location": "",
+      "note": "DA400 döner tabla için"
+    },
+    {
+      "status": "Hazırlanıyor",
+      "date": "2026-10-30",
+      "person": "M. Yılmaz",
+      "location": "",
+      "note": ""
+    }
+  ]
+}

@@ -33,7 +33,10 @@ Pusula.sln
 └── src/Pusula.Wpf    ← WPF arayüz (MVVM, elle yazılmış), çıktı: Pusula.exe
 ```
 
-İleride: `Pusula.Tests` (test kütüphanesi henüz seçilmedi), `Pusula.Ai`.
+Testler: `tests\` (PowerShell senaryoları, kütüphanesiz; bkz. [tests/README.md](tests/README.md)).
+Her adımdan sonra `powershell -NoProfile -ExecutionPolicy Bypass -File tests\Calistir.ps1 -Derle` hepsi geçmeli.
+
+İleride: `Pusula.Ai`.
 
 ## Derleme
 

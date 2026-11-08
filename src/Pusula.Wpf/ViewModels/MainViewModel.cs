@@ -18,6 +18,7 @@ namespace Pusula.Wpf.ViewModels
     public sealed partial class MainViewModel : ViewModelBase
     {
         private string rootPath = string.Empty;
+        private string refreshedRoot = string.Empty;
         private TreeNodeViewModel? selectedNode;
         private string status = string.Empty;
 
@@ -240,8 +241,11 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Kök klasörden iki düzey okur: projeler (ve diğer klasörler) ile altlarındaki stoklar.</summary>
         public void Refresh()
         {
+            // Açık düğümler yenilemede korunur; kök değiştiyse eski kökün düğümleri sayılmaz.
             var expanded = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
-            var pending = new Stack<TreeNodeViewModel>(Nodes);
+            var sameRoot = string.Equals(refreshedRoot, rootPath, System.StringComparison.OrdinalIgnoreCase);
+            refreshedRoot = rootPath;
+            var pending = new Stack<TreeNodeViewModel>(sameRoot ? Nodes : Enumerable.Empty<TreeNodeViewModel>());
             while (pending.Count > 0)
             {
                 var node = pending.Pop();

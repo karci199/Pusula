@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "type": "cable",
+  "number": "JT-0001-0001",
+  "name": "SATIMO RF kablosu",
+  "subType": "RF",
+  "note": "SMA(F)–SMA(F) · 1 m · faz kararlı",
+  "fields": [ ],
+  "events": [
+    {
+      "status": "Talep",
+      "date": "2026-09-01",
+      "person": "katan",
+      "location": "",
+      "note": "SATIMO ölçümleri için"
+    },
+    {
+      "status": "Hazırlanıyor",
+      "date": "2026-09-03",
+      "person": "M. Yılmaz",
+      "location": "",
+      "note": "kablo atölyesi"
+    },
+    {
+      "status": "Teslim alındı",
+      "date": "2026-09-10",
+      "person": "katan",
+      "location": "Lab-A raf 3",
+      "note": ""
+    },
+    {
+      "status": "Kullanımda",
+      "date": "2026-09-12",
+      "person": "katan",
+      "location": "SATIMO odası",
+      "note": ""
+    }
+  ]
+}
