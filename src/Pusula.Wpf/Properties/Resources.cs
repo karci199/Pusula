@@ -971,6 +971,9 @@ namespace Pusula.Wpf.Properties
         /// <summary>Kapak kartı: fotoğraf klasörü düğmesi.</summary>
         public static string Stock_Photos { get { return Get("Stock_Photos"); } }
 
+        /// <summary>Kapak kartı: doküman klasörü düğmesi.</summary>
+        public static string Stock_Documents { get { return Get("Stock_Documents"); } }
+
         #endregion
     }
 }

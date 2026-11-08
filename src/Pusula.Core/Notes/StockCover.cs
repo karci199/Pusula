@@ -15,6 +15,15 @@ namespace Pusula.Core.Notes
         /// <summary>Fotoğraf klasörünün adı (numara öneki olmadan).</summary>
         public const string PhotosLabel = "Fotograflar";
 
+        /// <summary>Doküman klasörünün adı (numara öneki olmadan).</summary>
+        public const string DocumentsLabel = "Dokumanlar";
+
+        /// <summary>Doküman klasörü (<c>01_Dokumanlar</c>); yoksa boş.</summary>
+        public string DocumentsFolder { get; private set; } = string.Empty;
+
+        /// <summary>Doküman klasöründeki dosya sayısı (alt klasörler dahil).</summary>
+        public int DocumentCount { get; private set; }
+
         /// <summary>Kapak fotoğrafını belirten sözcük (örn. <c>SH2000_kapak.jpg</c>).</summary>
         public const string CoverWord = "kapak";
 
@@ -43,6 +52,9 @@ namespace Pusula.Core.Notes
             cover.NoteExcerpt = cover.NoteFile.Length == 0 ? string.Empty : Notes.NoteFile.Excerpt(cover.NoteFile);
             cover.PhotosFolder = RecordContents.FindFolder(stockFolder, PhotosLabel);
             cover.Photos = cover.PhotosFolder.Length == 0 ? new List<string>() : RecordContents.ImagesUnder(cover.PhotosFolder);
+
+            cover.DocumentsFolder = RecordContents.FindFolder(stockFolder, DocumentsLabel);
+            cover.DocumentCount = cover.DocumentsFolder.Length == 0 ? 0 : RecordContents.CountFiles(cover.DocumentsFolder);
 
             // Adında "kapak" geçen fotoğraf varsa kapak odur; yoksa ada göre ilki.
             var chosen = cover.Photos.FirstOrDefault(p => Path.GetFileNameWithoutExtension(p).IndexOf(CoverWord, System.StringComparison.OrdinalIgnoreCase) >= 0);

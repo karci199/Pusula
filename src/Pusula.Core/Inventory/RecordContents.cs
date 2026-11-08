@@ -153,6 +153,12 @@ namespace Pusula.Core.Inventory
                 : new List<string>();
         }
 
+        /// <summary>Klasördeki ve alt klasörlerindeki dosya sayısı (<c>_</c> ile başlayanlar hariç).</summary>
+        public static int CountFiles(string folder)
+        {
+            return Directory.Exists(folder) ? AllFiles(folder).Count() : 0;
+        }
+
         /// <summary>Kökte adı (numara öneki atılınca) verilen ada eşit ilk alt klasör ("07_Fotograflar" → "Fotograflar"); yoksa boş.</summary>
         public static string FindFolder(string root, string label)
         {

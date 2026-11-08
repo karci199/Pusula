@@ -336,6 +336,12 @@ namespace Pusula.Wpf
             viewModel.OpenPath(cover.HasPhotosFolder ? cover.PhotosFolder : cover.StockFolder);
         }
 
+        private void StockDocuments_Click(object sender, RoutedEventArgs e)
+        {
+            var cover = viewModel.Detail.Cover;
+            viewModel.OpenPath(cover.HasDocumentsFolder ? cover.DocumentsFolder : cover.StockFolder);
+        }
+
         private void StockPhoto_Click(object sender, RoutedEventArgs e)
         {
             if ((sender as FrameworkElement)?.Tag is string path)

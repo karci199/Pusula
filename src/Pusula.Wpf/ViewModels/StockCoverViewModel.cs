@@ -16,6 +16,8 @@ namespace Pusula.Wpf.ViewModels
         private string noteExcerpt = string.Empty;
         private string photosFolder = string.Empty;
         private string photosText = string.Empty;
+        private string documentsFolder = string.Empty;
+        private string documentsText = string.Empty;
 
         /// <summary>Stok klasörü.</summary>
         public string StockFolder
@@ -97,6 +99,32 @@ namespace Pusula.Wpf.ViewModels
             private set { SetProperty(ref photosText, value); }
         }
 
+        /// <summary>Doküman klasörü; yoksa boş.</summary>
+        public string DocumentsFolder
+        {
+            get { return documentsFolder; }
+            private set
+            {
+                if (SetProperty(ref documentsFolder, value))
+                {
+                    OnPropertyChanged(nameof(HasDocumentsFolder));
+                }
+            }
+        }
+
+        /// <summary>Doküman klasörü var mı.</summary>
+        public bool HasDocumentsFolder
+        {
+            get { return documentsFolder.Length > 0; }
+        }
+
+        /// <summary>"Dokümanlar · 2".</summary>
+        public string DocumentsText
+        {
+            get { return documentsText; }
+            private set { SetProperty(ref documentsText, value); }
+        }
+
         /// <summary>Kartı temizler.</summary>
         public void Clear()
         {
@@ -106,6 +134,8 @@ namespace Pusula.Wpf.ViewModels
             NoteExcerpt = string.Empty;
             PhotosFolder = string.Empty;
             PhotosText = string.Empty;
+            DocumentsFolder = string.Empty;
+            DocumentsText = string.Empty;
             Strip.Clear();
         }
 
@@ -124,6 +154,8 @@ namespace Pusula.Wpf.ViewModels
             }
 
             PhotosText = string.Format(Resources.Stock_Photos, read.Photos.Count);
+            DocumentsFolder = read.DocumentsFolder;
+            DocumentsText = string.Format(Resources.Stock_Documents, read.DocumentCount);
         }
     }
 }

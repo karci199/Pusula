@@ -1053,6 +1053,13 @@
                                                         <TextBlock Margin="8,0,0,0" Text="{Binding PhotosText}" />
                                                     </StackPanel>
                                                 </Button>
+                                                <Button Margin="6,0,0,0" Click="StockDocuments_Click" ToolTip="{Binding DocumentsFolder}"
+                                                        Visibility="{Binding HasDocumentsFolder, Converter={StaticResource BoolToVis}}">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" />
+                                                        <TextBlock Margin="8,0,0,0" Text="{Binding DocumentsText}" />
+                                                    </StackPanel>
+                                                </Button>
                                             </StackPanel>
                                             <ItemsControl Margin="0,10,0,0" ItemsSource="{Binding Strip}">
                                                 <ItemsControl.ItemsPanel>

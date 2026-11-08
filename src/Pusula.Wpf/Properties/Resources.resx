@@ -840,4 +840,7 @@
   <data name="Stock_Photos" xml:space="preserve">
     <value>Fotoğraflar · {0}</value>
   </data>
+  <data name="Stock_Documents" xml:space="preserve">
+    <value>Dokümanlar · {0}</value>
+  </data>
 </root>
