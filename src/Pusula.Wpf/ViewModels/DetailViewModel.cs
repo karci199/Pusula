@@ -299,23 +299,33 @@ namespace Pusula.Wpf.ViewModels
             List<EventNote> events = new List<EventNote>();
             try
             {
-                summary = await Task.Run(
-                    () =>
-                    {
-                        if (kind == FolderKind.Project)
+                if (kind == FolderKind.Project)
+                {
+                    summary = await Task.Run(
+                        () =>
                         {
                             projectInfo = JsonFile.TryRead<ProjectInfo>(TrackingFiles.ProjectFile(path));
                             return FolderSummary.ForProject(path, templates.ProjectFolders, source.Token);
-                        }
-
-                        runs = TestRunReader.ReadStock(path);
-                        tree = FolderTreeNode.Build(path, source.Token);
-                        var stockSummary = FolderSummary.ForStock(path, templates, source.Token);
-                        cover = StockCover.Read(path, stockSummary.Stock?.StockNo ?? Path.GetFileName(path));
-                        events = EventNote.ReadAll(path);
-                        return stockSummary;
-                    },
-                    source.Token);
+                        },
+                        source.Token);
+                }
+                else
+                {
+                    // Stok: okumalar birbirinden bağımsız; aynı anda yapılır (ağ paylaşımında bekleme süreleri üst üste biner).
+                    var token = source.Token;
+                    var currentTemplates = templates;
+                    var runsTask = Task.Run(() => TestRunReader.ReadStock(path), token);
+                    var treeTask = Task.Run(() => FolderTreeNode.Build(path, token), token);
+                    var summaryTask = Task.Run(() => FolderSummary.ForStock(path, currentTemplates, token), token);
+                    var coverTask = Task.Run(() => StockCover.Read(path, Path.GetFileName(path)), token);
+                    var eventsTask = Task.Run(() => EventNote.ReadAll(path), token);
+                    await Task.WhenAll(runsTask, treeTask, summaryTask, coverTask, eventsTask).ConfigureAwait(true);
+                    summary = summaryTask.Result;
+                    runs = runsTask.Result;
+                    tree = treeTask.Result;
+                    cover = coverTask.Result;
+                    events = eventsTask.Result;
+                }
             }
             catch (OperationCanceledException)
             {

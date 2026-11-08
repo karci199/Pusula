@@ -54,6 +54,8 @@ Son güncelleme: 08.11.2026. Dal: `claude/pusula-project-setup-c6ce02` (push edi
   tarih saat, kişi, metin). Stokta Genel kapağında kutu, notlar Zaman çizelgesine; kayıtta Geçmiş'e; projede "Kısa notlar" kartı.
   Tablolarda sağ tık → Not ekle… (diyalog). Obsidian notunun gövdesine yazılmaz.
 - **Tablolar:** çift tık sayfaya gider (projede stoka), satır başındaki klasör düğmesi klasörü açar; sağ tık Aç · Klasörde aç · Not ekle.
+- **Dosya türleri:** Ayarlar → Dosya türleri… (`turler.json` → `fileTypes`: ad, uzantılar, grup; varsayılan PDF, Word, Excel, Visio,
+  STEP, DWG, SolidWorks, Touchstone, CST, HFSS, MATLAB, Fotoğraf, Not, Arşiv). Jig/kablo klasör kutucuklarında "2 STEP · 1 PDF".
 - **Arama ve süzgeç:** ağacın üstünde arama (numara, ad, tanım; Türkçe i/ı farkı yok, eşleşenin üstleri açılır). Envanter listesinde
   arama (numara, tanım, konum, not) + Tür, Alt tür, Durum, Düzey (Genel / Proje / Stok) süzgeçleri; "8 kayıttan 2 tanesi".
 - **Ağaç:** Envanter bölümü projelerden boşlukla ayrılır; kayıt düğümünde yalnızca numara (tanım ipucunda), işaretsiz klasör soluk italik.
@@ -114,10 +116,8 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 
 ## Bekleyen işler
 
-- **İnceleme sonrası kalanlar (08.11.2026):** stok seçilince klasör 4 kez taranıyor (testler, ağaç, özet, olaylar) — tek taramada birleştirilmeli
-  (ağ paylaşımında yavaşlık). Kısa not / bağ / not oluşturma UI thread'inde eşzamanlı dosya yazıyor. JSON oku-değiştir-yaz kalıbı 4 yerde
+- **İnceleme sonrası kalanlar (08.11.2026):** stok seçilince 5 okuma artık aynı anda yapılıyor; tek taramada birleştirmek ileride. Kısa not / bağ / not oluşturma UI thread'inde eşzamanlı dosya yazıyor. JSON oku-değiştir-yaz kalıbı 4 yerde
   tekrar (`JsonFile.Update<T>` yapılmalı). Süzgeç kutularının "Tümü" düzeltmesi geçici çözüm.
-- **Dosya türleri:** uzantıya göre tanıma (Visio, WaveStudio, STEP, DWG, s1p …) — tür gibi tanımlanacak (kullanıcıyla konuşulacak).
 
 - **Jenerik test dokümanı üretme:** yeni stok açınca (ya da istenince) stok no/ad dolu test planı vb. doküman.
   Şablon modüllerine "başlangıç dosyaları" eklenebilir. DOCX üretimi için kullanıcının

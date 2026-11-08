@@ -963,6 +963,9 @@
                                                 <TextBlock Text="{Binding Label}" Style="{DynamicResource CaptionTextBlockStyle}"
                                                            Foreground="{DynamicResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis" />
                                                 <TextBlock x:Name="TileValue" Text="{Binding Value}" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding Kinds}" Style="{DynamicResource CaptionTextBlockStyle}" TextTrimming="CharacterEllipsis"
+                                           Foreground="{DynamicResource TextTertiaryBrush}" ToolTip="{Binding Kinds}"
+                                           Visibility="{Binding HasKinds, Converter={StaticResource BoolToVis}}" />
                                             </StackPanel>
                                         </Button>
                                         <DataTemplate.Triggers>

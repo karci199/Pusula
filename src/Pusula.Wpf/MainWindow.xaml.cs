@@ -367,9 +367,29 @@ namespace Pusula.Wpf
             var types = new MenuItem { Header = Properties.Resources.Button_EditTypes, Icon = new FontIcon { Glyph = AppIcons.Inventory } };
             types.Click += EditTypes_Click;
             var menu = new ContextMenu { PlacementTarget = sender as UIElement, Placement = PlacementMode.Bottom };
+            var fileTypes = new MenuItem { Header = Properties.Resources.Button_EditFileTypes, Icon = new FontIcon { Glyph = AppIcons.Note } };
+            fileTypes.Click += EditFileTypes_Click;
             menu.Items.Add(templates);
             menu.Items.Add(types);
+            menu.Items.Add(fileTypes);
             menu.IsOpen = true;
+        }
+
+        private void EditFileTypes_Click(object sender, RoutedEventArgs e)
+        {
+            if (!viewModel.CanEditTemplates())
+            {
+                return;
+            }
+
+            var editor = new FileTypesWindow(new ViewModels.TypeEditor.FileTypesViewModel(viewModel.RootPath, viewModel.Types))
+            {
+                Owner = this,
+            };
+            if (editor.ShowDialog() == true)
+            {
+                viewModel.ReloadTypes();
+            }
         }
 
         private void EditTypes_Click(object sender, RoutedEventArgs e)

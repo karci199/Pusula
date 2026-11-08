@@ -20,6 +20,9 @@ namespace Pusula.Core.Inventory
 
         /// <summary>Dosya adlarındaki en yüksek revizyon ("AC"); yoksa boş.</summary>
         public string LatestRevision { get; set; } = string.Empty;
+
+        /// <summary>İçindeki dosyalar (tür özeti için).</summary>
+        public List<string> Files { get; set; } = new List<string>();
     }
 
     /// <summary>
@@ -94,6 +97,7 @@ namespace Pusula.Core.Inventory
                     Label = LabelOf(name),
                     FileCount = files.Count,
                     LatestRevision = LatestRevision(files),
+                    Files = files,
                 });
                 result.Photos.AddRange(files.Where(IsImage).OrderBy(f => f, StringComparer.OrdinalIgnoreCase));
             }

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Pusula.Core.Templates;
 using Pusula.Core.Tracking;
 
@@ -50,6 +52,21 @@ namespace Pusula.Core.Types
             }
 
             return set;
+        }
+
+        /// <summary>
+        /// Dosyaların tür özeti: en çok olandan aza, "2 STEP · 1 Visio · 1 diğer". Tanımsız uzantılar "diğer" sayılır
+        /// (<paramref name="otherLabel"/>); hiç dosya yoksa boş.
+        /// </summary>
+        public static string DescribeFiles(TypeSet set, IEnumerable<string> files, string otherLabel)
+        {
+            var counts = files
+                .GroupBy(f => set.FindFileType(Path.GetExtension(f))?.Name ?? otherLabel)
+                .Select(g => new { Name = g.Key, Count = g.Count() })
+                .OrderBy(g => g.Name == otherLabel ? 1 : 0)
+                .ThenByDescending(g => g.Count)
+                .ThenBy(g => g.Name, StringComparer.CurrentCultureIgnoreCase);
+            return string.Join(" · ", counts.Select(g => g.Count.ToString(System.Globalization.CultureInfo.CurrentCulture) + " " + g.Name));
         }
 
         /// <summary>Türleri dosyaya yazar (geçici dosya + yeniden adlandırma). Yazılamazsa hata mesajı, başarıda boş döner.</summary>

@@ -906,4 +906,31 @@
   <data name="Types_ErrorFolder" xml:space="preserve">
     <value>İki tür aynı klasörü kullanıyor: {0}</value>
   </data>
+  <data name="Button_EditFileTypes" xml:space="preserve">
+    <value>Dosya türleri…</value>
+  </data>
+  <data name="FileTypes_Title" xml:space="preserve">
+    <value>Dosya türleri</value>
+  </data>
+  <data name="FileTypes_Hint" xml:space="preserve">
+    <value>Uzantıya göre tanınan dosyalar. Klasör kutucuklarında &quot;2 STEP · 1 Visio&quot; gibi sayılır; listede olmayan uzantı &quot;diğer&quot; sayılır. Yeni tür için en alttaki boş satıra yaz; uzantıları virgülle ayır (vsd, vsdx).</value>
+  </data>
+  <data name="FileTypes_Name" xml:space="preserve">
+    <value>Ad</value>
+  </data>
+  <data name="FileTypes_Extensions" xml:space="preserve">
+    <value>Uzantılar</value>
+  </data>
+  <data name="FileTypes_Group" xml:space="preserve">
+    <value>Grup</value>
+  </data>
+  <data name="FileTypes_ErrorRow" xml:space="preserve">
+    <value>&quot;{0}&quot; satırında ad ve en az bir uzantı olmalı.</value>
+  </data>
+  <data name="FileTypes_ErrorDuplicate" xml:space="preserve">
+    <value>.{0} uzantısı iki türde var: {1} ve {2}.</value>
+  </data>
+  <data name="FileType_Other" xml:space="preserve">
+    <value>diğer</value>
+  </data>
 </root>

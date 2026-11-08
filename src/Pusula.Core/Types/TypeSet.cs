@@ -25,6 +25,7 @@ namespace Pusula.Core.Types
             SchemaVersion = 1;
             Types = new List<TypeDefinition>();
             Tags = new List<string>();
+            FileTypes = new List<FileTypeDefinition>();
         }
 
         /// <summary>Dosya biçiminin sürümü.</summary>
@@ -38,6 +39,17 @@ namespace Pusula.Core.Types
         /// <summary>Ortak etiket listesi (nerede / ne için: SATIMO, VNA, ÇK …).</summary>
         [DataMember(Name = "tags", Order = 2)]
         public List<string> Tags { get; set; } = new List<string>();
+
+        /// <summary>Dosya türleri (uzantıya göre: Visio, STEP, Touchstone …); klasör kutucuklarında sayılır.</summary>
+        [DataMember(Name = "fileTypes", Order = 3, EmitDefaultValue = false)]
+        public List<FileTypeDefinition> FileTypes { get; set; } = new List<FileTypeDefinition>();
+
+        /// <summary>Uzantısı (".vsdx" ya da "vsdx") verilen dosya türü; tanımlı değilse <c>null</c>.</summary>
+        public FileTypeDefinition? FindFileType(string extension)
+        {
+            var ext = (extension ?? string.Empty).TrimStart('.');
+            return FileTypes.FirstOrDefault(f => f.Extensions.Any(e => string.Equals(e.TrimStart('.'), ext, StringComparison.OrdinalIgnoreCase)));
+        }
 
         /// <summary>Anahtarı verilen tür; yoksa <c>null</c>.</summary>
         public TypeDefinition? Find(string key)
@@ -106,6 +118,11 @@ namespace Pusula.Core.Types
                 }
             }
 
+            if (FileTypes.Count == 0)
+            {
+                FileTypes.AddRange(defaults.FileTypes);
+            }
+
             SchemaVersion = 2;
         }
 
@@ -150,12 +167,38 @@ namespace Pusula.Core.Types
                 },
             });
 
+            set.FileTypes.AddRange(new[]
+            {
+                FileType("PDF", "Belge", "pdf"),
+                FileType("Word", "Belge", "doc", "docx"),
+                FileType("Excel", "Tablo", "xls", "xlsx", "csv"),
+                FileType("PowerPoint", "Sunum", "ppt", "pptx"),
+                FileType("Visio", "Şema", "vsd", "vsdx"),
+                FileType("STEP", "Mekanik çizim", "step", "stp"),
+                FileType("DWG", "Mekanik çizim", "dwg", "dxf"),
+                FileType("SolidWorks", "Mekanik çizim", "sldprt", "sldasm", "slddrw"),
+                FileType("Touchstone", "Ölçüm", "s1p", "s2p", "s3p", "s4p"),
+                FileType("CST", "Simülasyon", "cst"),
+                FileType("HFSS", "Simülasyon", "aedt", "hfss"),
+                FileType("MATLAB", "Analiz", "m", "mat", "fig"),
+                FileType("Fotoğraf", "Fotoğraf", "jpg", "jpeg", "png", "bmp", "gif", "tif", "tiff"),
+                FileType("Not", "Not", "md"),
+                FileType("Arşiv", "Arşiv", "zip", "7z", "rar"),
+            });
+
             set.Types.Add(Inventory("cable", "Kablo", "Kablolar", "E703", "#F7A35C", "JT-####-####", "Kablo numarası", "Kablolar", "05_Kablolar",
                 new[] { "RF", "Haberleşme", "Güç / veri", "Kablaj" }, new[] { "01_Belgeler", "02_Fotograflar" }));
             set.Types.Add(Inventory("jig", "Jig", "Jigler", "E90F", "#B4A7F5", "JIG-####-####", "Jig numarası", "Jigler", "05_Jigler",
                 new[] { "Mekanik", "Ölçüm adaptörü", "Montaj", "Elektriksel" }, new[] { "01_Cizimler", "02_Belgeler", "03_Fotograflar" }));
 
             return set;
+        }
+
+        private static FileTypeDefinition FileType(string name, string group, params string[] extensions)
+        {
+            var type = new FileTypeDefinition { Name = name, Group = group };
+            type.Extensions.AddRange(extensions);
+            return type;
         }
 
         // Kablo ve jig ortak durumları: Talep → Hazırlanıyor → Teslim alındı → Kullanımda → Üretime teslim edildi;
@@ -313,6 +356,32 @@ namespace Pusula.Core.Types
         {
             get { return Statuses.Count == 0 ? string.Empty : Statuses[0].Name; }
         }
+    }
+
+    /// <summary>Uzantıya göre tanınan dosya türü (örn. Visio: vsd, vsdx · Şema).</summary>
+    [DataContract]
+    public sealed class FileTypeDefinition
+    {
+        /// <summary>Serileştirici kurucuyu çağırmaz; dosyada olmayan alanlar boş değerle başlar.</summary>
+        [OnDeserializing]
+        private void OnDeserializing(StreamingContext context)
+        {
+            Name = string.Empty;
+            Group = string.Empty;
+            Extensions = new List<string>();
+        }
+
+        /// <summary>Görünen ad ("Visio").</summary>
+        [DataMember(Name = "name", Order = 0)]
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>Uzantılar, noktasız ("vsd", "vsdx").</summary>
+        [DataMember(Name = "extensions", Order = 1)]
+        public List<string> Extensions { get; set; } = new List<string>();
+
+        /// <summary>Grup ("Şema", "Ölçüm"); boş olabilir.</summary>
+        [DataMember(Name = "group", Order = 2, EmitDefaultValue = false)]
+        public string Group { get; set; } = string.Empty;
     }
 
     /// <summary>Alan çeşitleri.</summary>

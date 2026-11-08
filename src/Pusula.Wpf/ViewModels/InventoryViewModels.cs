@@ -103,10 +103,11 @@ namespace Pusula.Wpf.ViewModels
     /// <summary>Kayıt sayfasında bir klasör kutucuğu ("Cizimler · 3 · Rev AC").</summary>
     public sealed class RecordFolderTile
     {
-        /// <summary>Özetten kutucuk oluşturur.</summary>
-        public RecordFolderTile(RecordFolderSummary summary)
+        /// <summary>Özetten kutucuk oluşturur; <paramref name="kinds"/> dosya türü özetidir ("2 STEP · 1 PDF").</summary>
+        public RecordFolderTile(RecordFolderSummary summary, string kinds)
         {
             Path = summary.Path;
+            Kinds = kinds;
             Label = summary.Label;
             IsEmpty = summary.FileCount == 0;
             Value = IsEmpty
@@ -127,6 +128,15 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Klasör boş mu (soluk gösterilir).</summary>
         public bool IsEmpty { get; }
+
+        /// <summary>Dosya türü özeti ("2 STEP · 1 PDF"); boş olabilir.</summary>
+        public string Kinds { get; }
+
+        /// <summary>Tür özeti var mı.</summary>
+        public bool HasKinds
+        {
+            get { return Kinds.Length > 0; }
+        }
     }
 
     /// <summary>Envanter listesinde (tür ya da bölüm seçiliyken) bir satır.</summary>
@@ -229,6 +239,7 @@ namespace Pusula.Wpf.ViewModels
         private string noteExcerpt = string.Empty;
         private string morePhotos = string.Empty;
         private int contentsVersion;
+        private TypeSet fileTypes = new TypeSet();
 
         /// <summary>Kayıt sayfası mı gösteriliyor.</summary>
         public bool IsRecord
@@ -357,6 +368,7 @@ namespace Pusula.Wpf.ViewModels
                 return;
             }
 
+            fileTypes = types;
             if (node.Item != null && node.Type != null)
             {
                 ShowRecord(node.Item, node.Type);
@@ -697,7 +709,7 @@ namespace Pusula.Wpf.ViewModels
 
             foreach (var folder in contents.Folders)
             {
-                FolderTiles.Add(new RecordFolderTile(folder));
+                FolderTiles.Add(new RecordFolderTile(folder, TypeStore.DescribeFiles(fileTypes, folder.Files, Resources.FileType_Other)));
             }
 
             foreach (var photo in contents.Photos.Take(PhotoStripCount))

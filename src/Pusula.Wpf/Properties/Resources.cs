@@ -1054,5 +1054,36 @@ namespace Pusula.Wpf.Properties
         public static string Types_ErrorFolder { get { return Get("Types_ErrorFolder"); } }
 
         #endregion
+
+        #region Dosya türleri
+
+        /// <summary>Ayarlar menüsü.</summary>
+        public static string Button_EditFileTypes { get { return Get("Button_EditFileTypes"); } }
+
+        /// <summary>Pencere başlığı.</summary>
+        public static string FileTypes_Title { get { return Get("FileTypes_Title"); } }
+
+        /// <summary>Pencere ipucu.</summary>
+        public static string FileTypes_Hint { get { return Get("FileTypes_Hint"); } }
+
+        /// <summary>Sütun.</summary>
+        public static string FileTypes_Name { get { return Get("FileTypes_Name"); } }
+
+        /// <summary>Sütun.</summary>
+        public static string FileTypes_Extensions { get { return Get("FileTypes_Extensions"); } }
+
+        /// <summary>Sütun.</summary>
+        public static string FileTypes_Group { get { return Get("FileTypes_Group"); } }
+
+        /// <summary>Hata.</summary>
+        public static string FileTypes_ErrorRow { get { return Get("FileTypes_ErrorRow"); } }
+
+        /// <summary>Hata.</summary>
+        public static string FileTypes_ErrorDuplicate { get { return Get("FileTypes_ErrorDuplicate"); } }
+
+        /// <summary>Tanımsız uzantılar.</summary>
+        public static string FileType_Other { get { return Get("FileType_Other"); } }
+
+        #endregion
     }
 }
