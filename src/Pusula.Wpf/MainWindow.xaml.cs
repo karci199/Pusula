@@ -257,6 +257,38 @@ namespace Pusula.Wpf
             }
         }
 
+        // Kayıt sayfası: klasör kutucuğu klasörü, fotoğraf resmi açar.
+        private void RecordFolder_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is string path)
+            {
+                viewModel.OpenPath(path);
+            }
+        }
+
+        private void RecordPhoto_Click(object sender, RoutedEventArgs e)
+        {
+            var shown = viewModel.Inventory.Item;
+            if ((sender as FrameworkElement)?.Tag is string path && shown != null)
+            {
+                viewModel.OpenNoteOrFolder(path, shown.Folder);
+            }
+        }
+
+        private void RecordNote_Click(object sender, RoutedEventArgs e)
+        {
+            var shown = viewModel.Inventory.Item;
+            if (shown != null)
+            {
+                viewModel.OpenNoteOrFolder(viewModel.Inventory.NoteFile, shown.Folder);
+            }
+        }
+
+        private async void RecordCreateNote_Click(object sender, RoutedEventArgs e)
+        {
+            await viewModel.CreateInventoryNoteAsync().ConfigureAwait(true);
+        }
+
         // Klasör ağacında çift tıklayınca klasörü açar.
         private void FolderTreeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

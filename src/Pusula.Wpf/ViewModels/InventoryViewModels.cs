@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Pusula.Core.Inventory;
 using Pusula.Core.Types;
 using Pusula.Wpf.Mvvm;
@@ -65,6 +66,35 @@ namespace Pusula.Wpf.ViewModels
         }
     }
 
+    /// <summary>Kayıt sayfasında bir klasör kutucuğu ("Cizimler · 3 · Rev AC").</summary>
+    public sealed class RecordFolderTile
+    {
+        /// <summary>Özetten kutucuk oluşturur.</summary>
+        public RecordFolderTile(RecordFolderSummary summary)
+        {
+            Path = summary.Path;
+            Label = summary.Label;
+            IsEmpty = summary.FileCount == 0;
+            Value = IsEmpty
+                ? Resources.Inv_FolderEmpty
+                : summary.LatestRevision.Length == 0
+                    ? summary.FileCount.ToString(System.Globalization.CultureInfo.CurrentCulture)
+                    : string.Format(Resources.Inv_FilesWithRevision, summary.FileCount, summary.LatestRevision);
+        }
+
+        /// <summary>Klasörün yolu (tıklayınca açılır).</summary>
+        public string Path { get; }
+
+        /// <summary>Klasör adı.</summary>
+        public string Label { get; }
+
+        /// <summary>"3 · Rev AC", "5" ya da "boş".</summary>
+        public string Value { get; }
+
+        /// <summary>Klasör boş mu (soluk gösterilir).</summary>
+        public bool IsEmpty { get; }
+    }
+
     /// <summary>Envanter listesinde (tür ya da bölüm seçiliyken) bir satır.</summary>
     public sealed class InventoryRow
     {
@@ -119,8 +149,14 @@ namespace Pusula.Wpf.ViewModels
         private bool isList;
         private InventoryItem? item;
         private TypeDefinition? type;
+        private const int PhotoStripCount = 4;
         private StatusChip status = new StatusChip("—", StatusTone.Neutral);
         private string statusInfo = string.Empty;
+        private string cover = string.Empty;
+        private string noteFile = string.Empty;
+        private string noteExcerpt = string.Empty;
+        private string morePhotos = string.Empty;
+        private int contentsVersion;
 
         /// <summary>Kayıt sayfası mı gösteriliyor.</summary>
         public bool IsRecord
@@ -171,6 +207,64 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Geçmiş (yeniden eskiye).</summary>
         public ObservableCollection<HistoryRow> History { get; } = new ObservableCollection<HistoryRow>();
 
+        /// <summary>Kayıt klasörünün alt klasörleri.</summary>
+        public ObservableCollection<RecordFolderTile> FolderTiles { get; } = new ObservableCollection<RecordFolderTile>();
+
+        /// <summary>Fotoğraf şeridi (en çok dört).</summary>
+        public ObservableCollection<string> Photos { get; } = new ObservableCollection<string>();
+
+        /// <summary>Şeride sığmayan fotoğraflar ("+2"); yoksa boş.</summary>
+        public string MorePhotos
+        {
+            get { return morePhotos; }
+            private set { SetProperty(ref morePhotos, value); }
+        }
+
+        /// <summary>Kapak fotoğrafı; yoksa boş.</summary>
+        public string Cover
+        {
+            get { return cover; }
+            private set
+            {
+                if (SetProperty(ref cover, value))
+                {
+                    OnPropertyChanged(nameof(HasCover));
+                }
+            }
+        }
+
+        /// <summary>Kapak fotoğrafı var mı.</summary>
+        public bool HasCover
+        {
+            get { return cover.Length > 0; }
+        }
+
+        /// <summary>Obsidian notunun yolu; yoksa boş.</summary>
+        public string NoteFile
+        {
+            get { return noteFile; }
+            private set
+            {
+                if (SetProperty(ref noteFile, value))
+                {
+                    OnPropertyChanged(nameof(HasNote));
+                }
+            }
+        }
+
+        /// <summary>Not var mı.</summary>
+        public bool HasNote
+        {
+            get { return noteFile.Length > 0; }
+        }
+
+        /// <summary>Not gövdesinin başı; boşsa "Not boş" yazılır.</summary>
+        public string NoteExcerpt
+        {
+            get { return noteExcerpt; }
+            private set { SetProperty(ref noteExcerpt, value); }
+        }
+
         /// <summary>Liste satırları.</summary>
         public ObservableCollection<InventoryRow> Rows { get; } = new ObservableCollection<InventoryRow>();
 
@@ -183,6 +277,7 @@ namespace Pusula.Wpf.ViewModels
             Facts.Clear();
             History.Clear();
             Rows.Clear();
+            ClearContents();
             item = null;
             type = null;
             if (node == null || !node.IsInventory)
@@ -254,6 +349,51 @@ namespace Pusula.Wpf.ViewModels
             }
 
             IsRecord = true;
+            var unused = LoadContentsAsync(shown);
+        }
+
+        /// <summary>Kayıt klasörünü yeniden okur (not oluşturulunca vb.).</summary>
+        public Task ReloadContentsAsync()
+        {
+            return item == null ? Task.FromResult(0) : LoadContentsAsync(item);
+        }
+
+        private void ClearContents()
+        {
+            contentsVersion++;
+            FolderTiles.Clear();
+            Photos.Clear();
+            MorePhotos = string.Empty;
+            Cover = string.Empty;
+            NoteFile = string.Empty;
+            NoteExcerpt = string.Empty;
+        }
+
+        // Klasörü arka planda okur; bu arada başka kayıt seçildiyse sonucu atar.
+        private async Task LoadContentsAsync(InventoryItem shown)
+        {
+            ClearContents();
+            var version = contentsVersion;
+            var contents = await Task.Run(() => RecordContents.Read(shown.Folder, shown.Record.Number)).ConfigureAwait(true);
+            if (version != contentsVersion)
+            {
+                return;
+            }
+
+            foreach (var folder in contents.Folders)
+            {
+                FolderTiles.Add(new RecordFolderTile(folder));
+            }
+
+            foreach (var photo in contents.Photos.Take(PhotoStripCount))
+            {
+                Photos.Add(photo);
+            }
+
+            MorePhotos = contents.Photos.Count > PhotoStripCount ? "+" + (contents.Photos.Count - PhotoStripCount).ToString(System.Globalization.CultureInfo.CurrentCulture) : string.Empty;
+            Cover = contents.Cover;
+            NoteFile = contents.NoteFile;
+            NoteExcerpt = contents.NoteFile.Length == 0 ? string.Empty : contents.NoteExcerpt.Length == 0 ? Resources.Inv_NoteEmpty : contents.NoteExcerpt;
         }
 
         private static string EventText(InventoryEvent? inventoryEvent)

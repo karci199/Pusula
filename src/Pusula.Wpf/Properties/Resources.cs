@@ -716,6 +716,33 @@ namespace Pusula.Wpf.Properties
         /// <summary>Yeni kayıt diyaloğunun notu.</summary>
         public static string Inv_TemplateHint { get { return Get("Inv_TemplateHint"); } }
 
+        /// <summary>Kayıt sayfası: alt klasör kutucukları başlığı.</summary>
+        public static string Inv_Files { get { return Get("Inv_Files"); } }
+
+        /// <summary>Kutucukta dosyası olmayan klasör.</summary>
+        public static string Inv_FolderEmpty { get { return Get("Inv_FolderEmpty"); } }
+
+        /// <summary>Kutucuk: dosya sayısı ve son revizyon.</summary>
+        public static string Inv_FilesWithRevision { get { return Get("Inv_FilesWithRevision"); } }
+
+        /// <summary>Kayıt sayfası: not kartı başlığı.</summary>
+        public static string Inv_NoteTitle { get { return Get("Inv_NoteTitle"); } }
+
+        /// <summary>Notun gövdesi boşsa.</summary>
+        public static string Inv_NoteEmpty { get { return Get("Inv_NoteEmpty"); } }
+
+        /// <summary>Klasörde md notu yoksa.</summary>
+        public static string Inv_NoNote { get { return Get("Inv_NoNote"); } }
+
+        /// <summary>Notu Obsidian'da (varsayılan uygulamada) açar.</summary>
+        public static string Inv_OpenNote { get { return Get("Inv_OpenNote"); } }
+
+        /// <summary>Kaydın md notunu YAML bloğuyla oluşturur.</summary>
+        public static string Inv_CreateNote { get { return Get("Inv_CreateNote"); } }
+
+        /// <summary>Durum çubuğu.</summary>
+        public static string Inv_NoteFailed { get { return Get("Inv_NoteFailed"); } }
+
         #endregion
     }
 }

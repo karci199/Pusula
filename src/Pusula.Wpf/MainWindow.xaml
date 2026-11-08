@@ -766,15 +766,72 @@
                     </ListView.View>
                 </ListView>
 
-                <!-- Envanter kaydı: bilgiler ve geçmiş -->
-                <Grid Grid.Row="2" Grid.RowSpan="3" Margin="0,16,0,0" TextElement.FontWeight="Normal"
-                      Visibility="{Binding Inventory.IsRecord, Converter={StaticResource BoolToVis}}">
+                <!-- Envanter kaydı: dosyalar, bilgiler, not ve geçmiş -->
+                <ScrollViewer Grid.Row="2" Grid.RowSpan="3" Margin="0,16,0,0" VerticalScrollBarVisibility="Auto"
+                              Visibility="{Binding Inventory.IsRecord, Converter={StaticResource BoolToVis}}">
+                <Grid TextElement.FontWeight="Normal">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="16" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" VerticalAlignment="Top" Padding="16,12"
+                    <StackPanel Grid.Column="0">
+                    <!-- Dosyalar: alt klasör kutucukları ve fotoğraf şeridi -->
+                    <Border Padding="16,12" Margin="0,0,0,16"
+                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                            CornerRadius="{DynamicResource OverlayCornerRadius}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.Inv_Files}" />
+                            <ItemsControl ItemsSource="{Binding Inventory.FolderTiles}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Rows="1" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Margin="0,0,6,0" Padding="10,6" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                                Tag="{Binding Path}" Click="RecordFolder_Click" ToolTip="{Binding Path}">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Label}" Style="{DynamicResource CaptionTextBlockStyle}"
+                                                           Foreground="{DynamicResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock x:Name="TileValue" Text="{Binding Value}" FontWeight="SemiBold" />
+                                            </StackPanel>
+                                        </Button>
+                                        <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding IsEmpty}" Value="True">
+                                                <Setter TargetName="TileValue" Property="FontWeight" Value="Normal" />
+                                                <Setter TargetName="TileValue" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+                                            </DataTrigger>
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Grid Margin="0,10,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ItemsControl ItemsSource="{Binding Inventory.Photos}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Rows="1" Columns="4" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Margin="0,0,6,0" Padding="0" Height="72" Tag="{Binding}" Click="RecordPhoto_Click" ToolTip="{Binding}">
+                                                <Image Source="{Binding Converter={StaticResource PathToImage}}" Stretch="UniformToFill" />
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="4,0,0,0"
+                                           Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Inventory.MorePhotos}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                    <Border VerticalAlignment="Top" Padding="16,12"
                             Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
                             CornerRadius="{DynamicResource OverlayCornerRadius}">
                         <StackPanel>
@@ -795,7 +852,37 @@
                             </ItemsControl>
                         </StackPanel>
                     </Border>
-                    <Border Grid.Column="2" VerticalAlignment="Top" Padding="16,12"
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                    <!-- Obsidian notu: ilk satırlar; yoksa "Not oluştur" -->
+                    <Border Padding="16,12" Margin="0,0,0,16"
+                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                            CornerRadius="{DynamicResource OverlayCornerRadius}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.Inv_NoteTitle}" />
+                            <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}"
+                                       Text="{Binding Inventory.NoteExcerpt}"
+                                       Visibility="{Binding Inventory.HasNote, Converter={StaticResource BoolToVis}}" />
+                            <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}"
+                                       Text="{x:Static res:Resources.Inv_NoNote}"
+                                       Visibility="{Binding Inventory.HasNote, Converter={StaticResource InverseBoolToVis}}" />
+                            <Button Margin="0,10,0,0" HorizontalAlignment="Left" Click="RecordNote_Click"
+                                    Visibility="{Binding Inventory.HasNote, Converter={StaticResource BoolToVis}}">
+                                <StackPanel Orientation="Horizontal">
+                                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
+                                    <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Inv_OpenNote}" />
+                                </StackPanel>
+                            </Button>
+                            <Button Margin="0,10,0,0" HorizontalAlignment="Left" Click="RecordCreateNote_Click"
+                                    Visibility="{Binding Inventory.HasNote, Converter={StaticResource InverseBoolToVis}}">
+                                <StackPanel Orientation="Horizontal">
+                                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="14" />
+                                    <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Inv_CreateNote}" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                    <Border VerticalAlignment="Top" Padding="16,12"
                             Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
                             CornerRadius="{DynamicResource OverlayCornerRadius}">
                         <StackPanel>
@@ -803,7 +890,9 @@
                             <ItemsControl ItemsSource="{Binding Inventory.History}" ItemTemplate="{StaticResource HistoryTemplate}" />
                         </StackPanel>
                     </Border>
+                    </StackPanel>
                 </Grid>
+                </ScrollViewer>
 
                 <!-- Envanter: liste (tür ya da bölüm seçiliyken) -->
                 <ListView Grid.Row="2" Grid.RowSpan="3" Margin="0,16,0,0" TextElement.FontWeight="Normal"

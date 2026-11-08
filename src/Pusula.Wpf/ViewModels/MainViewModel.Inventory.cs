@@ -378,6 +378,26 @@ namespace Pusula.Wpf.ViewModels
             }
         }
 
+        /// <summary>Seçili kaydın notunu (<c>&lt;numara&gt;.md</c>) oluşturur ve açar; varsa yalnızca açar.</summary>
+        public async System.Threading.Tasks.Task CreateInventoryNoteAsync()
+        {
+            var shown = Inventory.Item;
+            if (shown == null)
+            {
+                return;
+            }
+
+            var note = InventoryService.CreateNote(shown.Folder, shown.Record);
+            if (note.Length == 0)
+            {
+                Status = Resources.Inv_NoteFailed;
+                return;
+            }
+
+            await Inventory.ReloadContentsAsync().ConfigureAwait(true);
+            OpenNoteOrFolder(note, shown.Folder);
+        }
+
         #endregion
 
         #region Durum olayı

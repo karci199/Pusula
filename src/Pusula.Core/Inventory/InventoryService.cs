@@ -124,6 +124,7 @@ namespace Pusula.Core.Inventory
                 JsonFile.WriteAtomic(RecordFile(folder), record);
                 TrackingFiles.HideTrackingFolder(folder);
                 ProjectService.AddFolders(folder, type.RecordFolders);
+                CreateNote(folder, record);
                 return CreateResult.Success(folder);
             }
             catch (IOException ex)
@@ -281,6 +282,43 @@ namespace Pusula.Core.Inventory
                 {
                     yield return Tuple.Create(LevelFolder(type, InventoryLevel.Stock, root, entry.Path), InventoryLevel.Stock, entry.Title);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Kaydın Obsidian notunu (<c>&lt;numara&gt;.md</c>) YAML bloğu ve başlıkla oluşturur. Not zaten varsa dokunmaz.
+        /// Oluşan (ya da var olan) notun yolunu döndürür; yazılamazsa boş.
+        /// </summary>
+        public static string CreateNote(string folder, InventoryRecord record)
+        {
+            var path = RecordContents.NotePath(folder, record.Number);
+            if (File.Exists(path))
+            {
+                return path;
+            }
+
+            var text = new StringBuilder();
+            text.Append("---\r\n");
+            text.Append("tur: ").Append(record.Type).Append("\r\n");
+            text.Append("numara: ").Append(record.Number).Append("\r\n");
+            text.Append("tanim: ").Append(record.Name).Append("\r\n");
+            text.Append("alt_tur: ").Append(record.SubType).Append("\r\n");
+            text.Append("---\r\n\r\n");
+            text.Append("# ").Append(record.Number).Append(' ').Append(record.Name).Append("\r\n\r\n");
+            var temp = path + ".tmp";
+            try
+            {
+                File.WriteAllText(temp, text.ToString(), new UTF8Encoding(false));
+                File.Move(temp, path);
+                return path;
+            }
+            catch (IOException)
+            {
+                return File.Exists(path) ? path : string.Empty;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return string.Empty;
             }
         }
 

@@ -597,4 +597,31 @@
   <data name="Inv_TemplateHint" xml:space="preserve">
     <value>Kayıt klasörü şablondaki alt klasörlerle birlikte açılır.</value>
   </data>
+  <data name="Inv_Files" xml:space="preserve">
+    <value>Dosyalar</value>
+  </data>
+  <data name="Inv_FolderEmpty" xml:space="preserve">
+    <value>boş</value>
+  </data>
+  <data name="Inv_FilesWithRevision" xml:space="preserve">
+    <value>{0} · Rev {1}</value>
+  </data>
+  <data name="Inv_NoteTitle" xml:space="preserve">
+    <value>Not</value>
+  </data>
+  <data name="Inv_NoteEmpty" xml:space="preserve">
+    <value>Not henüz boş.</value>
+  </data>
+  <data name="Inv_NoNote" xml:space="preserve">
+    <value>Bu kaydın notu yok.</value>
+  </data>
+  <data name="Inv_OpenNote" xml:space="preserve">
+    <value>Notu aç</value>
+  </data>
+  <data name="Inv_CreateNote" xml:space="preserve">
+    <value>Not oluştur</value>
+  </data>
+  <data name="Inv_NoteFailed" xml:space="preserve">
+    <value>Not oluşturulamadı.</value>
+  </data>
 </root>
