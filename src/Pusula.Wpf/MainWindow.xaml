@@ -574,12 +574,21 @@
 
                     <!-- Ağaç başlığı: Projeler + ekle + yenile -->
                     <Grid Grid.Row="0" Margin="16,8,8,4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
+                        <!-- Ağaçta ara: numara, ad, tanım -->
+                        <controls:SearchBox Grid.Row="1" Grid.ColumnSpan="4" Margin="-4,8,0,0"
+                                            PlaceholderText="{x:Static res:Resources.Tree_Search}"
+                                            Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                            Visibility="{Binding HasRoot, Converter={StaticResource BoolToVis}}" />
                         <TextBlock Grid.Column="0"
                                    Style="{DynamicResource CaptionTextBlockStyle}"
                                    Foreground="{DynamicResource TextSecondaryBrush}"
@@ -637,10 +646,11 @@
                                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                                 <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                                 <Setter Property="ContextMenu" Value="{StaticResource NodeMenu}" />
+                                <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource BoolToVis}}" />
                                 <Style.Triggers>
                                     <!-- Envanter bölümü projelerden boşlukla ayrılır (vurgu kutusunun dışında) -->
                                     <DataTrigger Binding="{Binding Kind}" Value="{x:Static core:FolderKind.InventoryGroup}">
-                                        <Setter Property="Margin" Value="0,18,0,0" />
+                                        <Setter Property="Margin" Value="0,6,0,0" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -986,29 +996,57 @@
                 </Grid>
                 </ScrollViewer>
 
-                <!-- Envanter: liste (tür ya da bölüm seçiliyken) -->
-                <ListView Grid.Row="2" Grid.RowSpan="3" Margin="0,16,0,0" TextElement.FontWeight="Normal"
-                          ItemsSource="{Binding Inventory.Rows}"
-                          MouseDoubleClick="InventoryList_MouseDoubleClick"
-                          Visibility="{Binding Inventory.IsList, Converter={StaticResource BoolToVis}}">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="{x:Static res:Resources.Inv_Number}" Width="130" DisplayMemberBinding="{Binding Number}" />
-                            <GridViewColumn Header="{x:Static res:Resources.Inv_Name}" Width="220" DisplayMemberBinding="{Binding Name}" />
-                            <GridViewColumn Header="{x:Static res:Resources.Inv_Type}" Width="70" DisplayMemberBinding="{Binding TypeName}" />
-                            <GridViewColumn Header="{x:Static res:Resources.Inv_SubType}" Width="110" DisplayMemberBinding="{Binding SubType}" />
-                            <GridViewColumn Header="{x:Static res:Resources.Col_Status}" Width="190">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <ContentPresenter Content="{Binding Status}" ContentTemplate="{DynamicResource StatusChipTemplate}" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Header="{x:Static res:Resources.Inv_Location}" Width="140" DisplayMemberBinding="{Binding Location}" />
-                            <GridViewColumn Header="{x:Static res:Resources.Inv_Level}" Width="160" DisplayMemberBinding="{Binding Level}" />
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                <!-- Envanter: liste (tür ya da bölüm seçiliyken); üstte süzgeçler -->
+                <Grid Grid.Row="2" Grid.RowSpan="3" Margin="0,16,0,0" TextElement.FontWeight="Normal"
+                      Visibility="{Binding Inventory.IsList, Converter={StaticResource BoolToVis}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <WrapPanel Grid.Row="0" Orientation="Horizontal">
+                        <controls:SearchBox Width="220" Margin="0,0,8,6" PlaceholderText="{x:Static res:Resources.Filter_Search}"
+                                            Text="{Binding Inventory.FilterText, UpdateSourceTrigger=PropertyChanged}" />
+                        <StackPanel Orientation="Horizontal" Margin="0,0,8,6" Visibility="{Binding Inventory.ShowTypeFilter, Converter={StaticResource BoolToVis}}">
+                            <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Inv_Type}" />
+                            <ComboBox MinWidth="110" ItemsSource="{Binding Inventory.TypeOptions}" SelectedItem="{Binding Inventory.FilterType, Mode=TwoWay}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,8,6">
+                            <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Inv_SubType}" />
+                            <ComboBox MinWidth="130" ItemsSource="{Binding Inventory.SubTypeOptions}" SelectedItem="{Binding Inventory.FilterSubType, Mode=TwoWay}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,8,6">
+                            <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Col_Status}" />
+                            <ComboBox MinWidth="150" ItemsSource="{Binding Inventory.StatusOptions}" SelectedItem="{Binding Inventory.FilterStatus, Mode=TwoWay}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,8,6">
+                            <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Inv_Level}" />
+                            <ComboBox MinWidth="100" ItemsSource="{Binding Inventory.LevelOptions}" SelectedItem="{Binding Inventory.FilterLevel, Mode=TwoWay}" />
+                        </StackPanel>
+                        <TextBlock VerticalAlignment="Center" Margin="4,0,0,6" Style="{DynamicResource CaptionTextBlockStyle}"
+                                   Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Inventory.FilterSummary}" />
+                    </WrapPanel>
+    <ListView Grid.Row="1" Margin="0,10,0,0"
+                              ItemsSource="{Binding Inventory.Rows}"
+                              MouseDoubleClick="InventoryList_MouseDoubleClick">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="{x:Static res:Resources.Inv_Number}" Width="120" DisplayMemberBinding="{Binding Number}" />
+                                <GridViewColumn Header="{x:Static res:Resources.Inv_Name}" Width="190" DisplayMemberBinding="{Binding Name}" />
+                                <GridViewColumn Header="{x:Static res:Resources.Inv_Type}" Width="60" DisplayMemberBinding="{Binding TypeName}" />
+                                <GridViewColumn Header="{x:Static res:Resources.Inv_SubType}" Width="120" DisplayMemberBinding="{Binding SubType}" />
+                                <GridViewColumn Header="{x:Static res:Resources.Col_Status}" Width="175">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ContentPresenter Content="{Binding Status}" ContentTemplate="{DynamicResource StatusChipTemplate}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="{x:Static res:Resources.Inv_Location}" Width="120" DisplayMemberBinding="{Binding Location}" />
+                                <GridViewColumn Header="{x:Static res:Resources.Inv_Level}" Width="145" DisplayMemberBinding="{Binding Level}" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
 
                 <!-- Stok: sekmeler -->
                 <TabControl x:Name="StockTabs" Grid.Row="3" Grid.RowSpan="2" Margin="0,14,0,0"

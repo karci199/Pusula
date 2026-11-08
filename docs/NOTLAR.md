@@ -46,7 +46,9 @@ Son güncelleme: 08.11.2026. Dal: `claude/pusula-project-setup-c6ce02` (push edi
   tıkla aç), fotoğraf şeridi (kök + alt klasörler, ilk 4 + "+n"). Örnekler A–F `C:\PusulaDeneme` içinde (betik: make-record-files.ps1).
 - **Stok kapağı (Genel sekmesinin üstü):** stok kökündeki `<stok no>.md` notunun ilk satırları (yoksa "Not oluştur": YAML stok, ad,
   proje, şablon), `07_Fotograflar` (alt klasörler dahil) fotoğrafları; adında "kapak" geçen resim kapak olur. Örnek: SH2000 (AB-7000-0002).
-- **Ağaç:** Envanter bölümü projelerden çizgiyle ayrılır; kayıt düğümünde yalnızca numara (tanım ipucunda), işaretsiz klasör soluk italik.
+- **Arama ve süzgeç:** ağacın üstünde arama (numara, ad, tanım; Türkçe i/ı farkı yok, eşleşenin üstleri açılır). Envanter listesinde
+  arama (numara, tanım, konum, not) + Tür, Alt tür, Durum, Düzey (Genel / Proje / Stok) süzgeçleri; "8 kayıttan 2 tanesi".
+- **Ağaç:** Envanter bölümü projelerden boşlukla ayrılır; kayıt düğümünde yalnızca numara (tanım ipucunda), işaretsiz klasör soluk italik.
 - Varsayılan şablonda `03_Test_Sonuclari` altında yalnızca sistemler (VNA, SATIMO, Yankisiz, CK); `SN01\Ham`, `SN01\Analiz` ölçümle açılır.
 
 ## Stok klasör yapısı (kararlaştırılan)
@@ -111,7 +113,7 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 - `00_Proje_Geneli` iç yapısı henüz kararlaştırılmadı (öneri: Sartname, Toplantilar, Yazismalar, Planlama).
 - Şablonda kullanılmayan modülü kütüphaneden tamamen silme yok (şimdilik listede kalır).
 - Test kütüphanesi seçilmedi (xUnit / NUnit / MSTest); `Pusula.Tests` projesi yok. Şimdilik denemeler
-  geçici klasörde PowerShell betikleriyle yapılıyor (şablon düzenleyici 32, özet 13, durum 28, işaretleme 18, test koşuları 17, envanter 22 + 26, kayıt dosyaları 18, stok envanteri 13, türler 14, stok kapağı 7 kontrol).
+  geçici klasörde PowerShell betikleriyle yapılıyor (şablon düzenleyici 32, özet 13, durum 28, işaretleme 18, test koşuları 17, envanter 22 + 26, kayıt dosyaları 18, stok envanteri 13, türler 14, stok kapağı 7, arama 12 kontrol).
 - Git kullanıcı adı bu makinede tanımlı değil; commit'ler tek seferlik `-c user.name/user.email` ile atılıyor.
 
 ## Çalıştırma

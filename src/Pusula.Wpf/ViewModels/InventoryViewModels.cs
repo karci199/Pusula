@@ -112,6 +112,7 @@ namespace Pusula.Wpf.ViewModels
             Status = StatusChip.For(type, item.Record.CurrentStatus);
             Location = item.Record.Location.Length == 0 ? "—" : item.Record.Location;
             Level = InventoryDetailViewModel.LevelText(item);
+            LevelName = InventoryDetailViewModel.LevelName(item.Level);
         }
 
         /// <summary>Kayıt; bulunamayan bağda <c>null</c>.</summary>
@@ -164,6 +165,9 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Düzey ("Genel", "Proje · 7000_MILKON", "Stok · AB-7000-0003").</summary>
         public string Level { get; }
+
+        /// <summary>Düzeyin yalın adı ("Genel", "Proje", "Stok"); süzgeç için.</summary>
+        public string LevelName { get; } = string.Empty;
     }
 
     /// <summary>
@@ -178,6 +182,14 @@ namespace Pusula.Wpf.ViewModels
         private const int PhotoStripCount = 4;
         private StatusChip status = new StatusChip("—", StatusTone.Neutral);
         private string statusInfo = string.Empty;
+        private readonly List<InventoryRow> allRows = new List<InventoryRow>();
+        private bool showTypeFilter;
+        private string filterType = string.Empty;
+        private string filterSubType = string.Empty;
+        private string filterStatus = string.Empty;
+        private string filterLevel = string.Empty;
+        private string filterText = string.Empty;
+        private string filterSummary = string.Empty;
         private string cover = string.Empty;
         private string noteFile = string.Empty;
         private string noteExcerpt = string.Empty;
@@ -318,16 +330,176 @@ namespace Pusula.Wpf.ViewModels
             }
 
             var filter = node.Type;
+            allRows.Clear();
             foreach (var entry in allItems)
             {
                 var entryType = types.Find(entry.Record.Type);
                 if (entryType != null && (filter == null || entryType.Key == filter.Key))
                 {
-                    Rows.Add(new InventoryRow(entry, entryType));
+                    allRows.Add(new InventoryRow(entry, entryType));
                 }
             }
 
+            // Filtre seçenekleri listedeki kayıtlardan; tür seçeneği yalnızca bölüm seçiliyken anlamlı.
+            ShowTypeFilter = filter == null;
+            FillOptions(TypeOptions, allRows.Select(r => r.TypeName));
+            FillOptions(StatusOptions, allRows.Select(r => r.Status.Name));
+            LevelOptions.Clear();
+            LevelOptions.Add(Resources.Filter_All);
+            foreach (var level in new[] { InventoryLevel.General, InventoryLevel.Project, InventoryLevel.Stock })
+            {
+                LevelOptions.Add(LevelName(level));
+            }
+
+            filterLevel = Resources.Filter_All;
+            OnPropertyChanged(nameof(FilterLevel));
+            filterType = Resources.Filter_All;
+            filterStatus = Resources.Filter_All;
+            filterSubType = Resources.Filter_All;
+            filterText = string.Empty;
+            OnPropertyChanged(nameof(FilterText));
+            RefreshSubTypes();
+            OnPropertyChanged(nameof(FilterType));
+            OnPropertyChanged(nameof(FilterStatus));
+            ApplyFilter();
             IsList = true;
+        }
+
+        /// <summary>Bölüm seçiliyken tür süzgeci gösterilsin mi (tür düğümünde tür zaten belli).</summary>
+        public bool ShowTypeFilter
+        {
+            get { return showTypeFilter; }
+            private set { SetProperty(ref showTypeFilter, value); }
+        }
+
+        /// <summary>Tür seçenekleri ("Tümü", "Jig", "Kablo").</summary>
+        public ObservableCollection<string> TypeOptions { get; } = new ObservableCollection<string>();
+
+        /// <summary>Alt tür seçenekleri (seçili türe göre).</summary>
+        public ObservableCollection<string> SubTypeOptions { get; } = new ObservableCollection<string>();
+
+        /// <summary>Durum seçenekleri.</summary>
+        public ObservableCollection<string> StatusOptions { get; } = new ObservableCollection<string>();
+
+        /// <summary>Seçili tür süzgeci.</summary>
+        public string FilterType
+        {
+            get { return filterType; }
+            set
+            {
+                if (SetProperty(ref filterType, value ?? Resources.Filter_All))
+                {
+                    filterSubType = Resources.Filter_All;
+                    RefreshSubTypes();
+                    ApplyFilter();
+                }
+            }
+        }
+
+        /// <summary>Seçili alt tür süzgeci.</summary>
+        public string FilterSubType
+        {
+            get { return filterSubType; }
+            set
+            {
+                if (SetProperty(ref filterSubType, value ?? Resources.Filter_All))
+                {
+                    ApplyFilter();
+                }
+            }
+        }
+
+        /// <summary>Düzey seçenekleri ("Tümü", "Genel", "Proje", "Stok").</summary>
+        public ObservableCollection<string> LevelOptions { get; } = new ObservableCollection<string>();
+
+        /// <summary>Seçili düzey süzgeci (stoka özgü kayıtlar için "Stok").</summary>
+        public string FilterLevel
+        {
+            get { return filterLevel; }
+            set
+            {
+                if (SetProperty(ref filterLevel, value ?? Resources.Filter_All))
+                {
+                    ApplyFilter();
+                }
+            }
+        }
+
+        /// <summary>Seçili durum süzgeci.</summary>
+        public string FilterStatus
+        {
+            get { return filterStatus; }
+            set
+            {
+                if (SetProperty(ref filterStatus, value ?? Resources.Filter_All))
+                {
+                    ApplyFilter();
+                }
+            }
+        }
+
+        /// <summary>Aranan metin: numara, tanım, alt tür, konum, not (örn. "SATIMO").</summary>
+        public string FilterText
+        {
+            get { return filterText; }
+            set
+            {
+                if (SetProperty(ref filterText, value ?? string.Empty))
+                {
+                    ApplyFilter();
+                }
+            }
+        }
+
+        /// <summary>"8 kayıttan 3'ü" ya da "8 kayıt".</summary>
+        public string FilterSummary
+        {
+            get { return filterSummary; }
+            private set { SetProperty(ref filterSummary, value); }
+        }
+
+        private static void FillOptions(ObservableCollection<string> target, IEnumerable<string> values)
+        {
+            target.Clear();
+            target.Add(Resources.Filter_All);
+            foreach (var value in values.Where(v => v.Length > 0 && v != "—").Distinct(StringComparer.CurrentCultureIgnoreCase).OrderBy(v => v, StringComparer.CurrentCultureIgnoreCase))
+            {
+                target.Add(value);
+            }
+        }
+
+        private void RefreshSubTypes()
+        {
+            FillOptions(SubTypeOptions, allRows.Where(MatchesType).Select(r => r.SubType));
+            OnPropertyChanged(nameof(FilterSubType));
+        }
+
+        private bool MatchesType(InventoryRow row)
+        {
+            return filterType == Resources.Filter_All || string.Equals(row.TypeName, filterType, StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        private void ApplyFilter()
+        {
+            var text = filterText.Trim();
+            Rows.Clear();
+            foreach (var row in allRows)
+            {
+                var record = row.Item?.Record;
+                var haystack = string.Join(" ", row.Number, row.Name, row.SubType, row.Location, row.Level, record?.Note ?? string.Empty);
+                if (MatchesType(row)
+                    && (filterSubType == Resources.Filter_All || string.Equals(row.SubType, filterSubType, StringComparison.CurrentCultureIgnoreCase))
+                    && (filterLevel == Resources.Filter_All || row.LevelName == filterLevel)
+                    && (filterStatus == Resources.Filter_All || string.Equals(row.Status.Name, filterStatus, StringComparison.CurrentCultureIgnoreCase))
+                    && (text.Length == 0 || SearchMatch.Contains(haystack, text)))
+                {
+                    Rows.Add(row);
+                }
+            }
+
+            FilterSummary = Rows.Count == allRows.Count
+                ? string.Format(Resources.Filter_Count, allRows.Count)
+                : string.Format(Resources.Filter_CountOf, allRows.Count, Rows.Count);
         }
 
         private void ShowRecord(InventoryItem shown, TypeDefinition shownType)
@@ -431,6 +603,20 @@ namespace Pusula.Wpf.ViewModels
 
             var date = inventoryEvent.DateValue?.ToString(Resources.Format_Date) ?? inventoryEvent.Date;
             return inventoryEvent.Person.Length == 0 ? date : date + " · " + inventoryEvent.Person;
+        }
+
+        /// <summary>Düzeyin yalın adı.</summary>
+        public static string LevelName(InventoryLevel level)
+        {
+            switch (level)
+            {
+                case InventoryLevel.Project:
+                    return Resources.Kind_Project;
+                case InventoryLevel.Stock:
+                    return Resources.Kind_Stock;
+                default:
+                    return Resources.Inv_LevelGeneral;
+            }
         }
 
         /// <summary>Düzey metni.</summary>

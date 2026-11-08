@@ -975,5 +975,24 @@ namespace Pusula.Wpf.Properties
         public static string Stock_Documents { get { return Get("Stock_Documents"); } }
 
         #endregion
+
+        #region Süzgeç
+
+        /// <summary>Ağaç arama kutusu.</summary>
+        public static string Tree_Search { get { return Get("Tree_Search"); } }
+
+        /// <summary>Envanter listesi arama kutusu.</summary>
+        public static string Filter_Search { get { return Get("Filter_Search"); } }
+
+        /// <summary>Süzgeçte her şey.</summary>
+        public static string Filter_All { get { return Get("Filter_All"); } }
+
+        /// <summary>Liste sayısı.</summary>
+        public static string Filter_Count { get { return Get("Filter_Count"); } }
+
+        /// <summary>Süzülmüş liste sayısı.</summary>
+        public static string Filter_CountOf { get { return Get("Filter_CountOf"); } }
+
+        #endregion
     }
 }

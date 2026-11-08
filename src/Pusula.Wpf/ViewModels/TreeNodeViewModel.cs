@@ -16,6 +16,7 @@ namespace Pusula.Wpf.ViewModels
     {
         private bool isExpanded;
         private bool isSelected;
+        private bool isVisible = true;
 
         /// <summary>Düğümü bir klasör kaydından oluşturur.</summary>
         public TreeNodeViewModel(FolderEntry entry)
@@ -144,6 +145,59 @@ namespace Pusula.Wpf.ViewModels
         {
             get { return isSelected; }
             set { SetProperty(ref isSelected, value); }
+        }
+
+        /// <summary>Aramada görünür mü.</summary>
+        public bool IsVisible
+        {
+            get { return isVisible; }
+            private set { SetProperty(ref isVisible, value); }
+        }
+
+        /// <summary>
+        /// Arama uygular: düğüm, adı / ek bilgisi aranan metni içeriyorsa ya da bir alt düğümü eşleşiyorsa görünür.
+        /// Eşleşen alt düğümü olan düğüm açılır. Boş metin her şeyi gösterir. Kendisi ya da altı eşleşirse <c>true</c>.
+        /// </summary>
+        public bool ApplySearch(string text)
+        {
+            var anyChild = false;
+            foreach (var child in Children)
+            {
+                anyChild |= child.ApplySearch(text);
+            }
+
+            if (text.Length == 0)
+            {
+                IsVisible = true;
+                return true;
+            }
+
+            var self = SearchMatch.Contains(ToolTipText, text);
+            if (self && !anyChild)
+            {
+                // Düğümün kendisi eşleşiyorsa altı da görünsün (proje bulunca stokları).
+                foreach (var child in Children)
+                {
+                    child.ShowAll();
+                }
+            }
+
+            if (anyChild)
+            {
+                IsExpanded = true;
+            }
+
+            IsVisible = self || anyChild;
+            return IsVisible;
+        }
+
+        private void ShowAll()
+        {
+            IsVisible = true;
+            foreach (var child in Children)
+            {
+                child.ShowAll();
+            }
         }
 
         /// <summary>Alt düğümler.</summary>

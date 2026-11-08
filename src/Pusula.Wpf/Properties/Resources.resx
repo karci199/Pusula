@@ -843,4 +843,19 @@
   <data name="Stock_Documents" xml:space="preserve">
     <value>Dokümanlar · {0}</value>
   </data>
+  <data name="Tree_Search" xml:space="preserve">
+    <value>Ara: numara, ad…</value>
+  </data>
+  <data name="Filter_Search" xml:space="preserve">
+    <value>Ara: numara, tanım, konum, not…</value>
+  </data>
+  <data name="Filter_All" xml:space="preserve">
+    <value>Tümü</value>
+  </data>
+  <data name="Filter_Count" xml:space="preserve">
+    <value>{0} kayıt</value>
+  </data>
+  <data name="Filter_CountOf" xml:space="preserve">
+    <value>{0} kayıttan {1} tanesi</value>
+  </data>
 </root>

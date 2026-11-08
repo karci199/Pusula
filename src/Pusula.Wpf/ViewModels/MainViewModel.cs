@@ -60,6 +60,8 @@ namespace Pusula.Wpf.ViewModels
 
         #region Kök ve ağaç
 
+        private string searchText = string.Empty;
+
         /// <summary>Projelerin durduğu kök klasör. Değişince ağaç yeniden okunur.</summary>
         public string RootPath
         {
@@ -239,6 +241,29 @@ namespace Pusula.Wpf.ViewModels
             }
 
             AddInventoryNodes(expanded);
+            ApplySearch();
+        }
+
+        /// <summary>Ağaçta aranan metin (numara, ad, tanım); boşsa hepsi görünür.</summary>
+        public string SearchText
+        {
+            get { return searchText; }
+            set
+            {
+                if (SetProperty(ref searchText, value ?? string.Empty))
+                {
+                    ApplySearch();
+                }
+            }
+        }
+
+        private void ApplySearch()
+        {
+            var text = searchText.Trim();
+            foreach (var node in Nodes)
+            {
+                node.ApplySearch(text);
+            }
         }
 
         #endregion
