@@ -1,0 +1,124 @@
+﻿<controls:ChromeWindow x:Class="Pusula.Wpf.ModuleWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:DesignKit.Controls;assembly=DesignKit.Wpf"
+        xmlns:local="clr-namespace:Pusula.Wpf"
+        xmlns:res="clr-namespace:Pusula.Wpf.Properties"
+        Title="{Binding Title}"
+        Width="520" Height="560"
+        MinWidth="440" MinHeight="420"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        ResizeMode="CanResize"
+        FontFamily="{DynamicResource AppFont}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        Background="{DynamicResource SurfaceBaseBrush}">
+
+    <Grid Margin="24,12,24,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Style="{DynamicResource SubtitleTextBlockStyle}" Text="{Binding Title}" Margin="0,0,0,12" />
+
+        <controls:FormField Grid.Row="1" Header="{x:Static res:Resources.Editor_Name}" LabelWidth="70" IsRequired="True">
+            <TextBox x:Name="NameBox" Text="{Binding Working.Name, UpdateSourceTrigger=PropertyChanged}" />
+        </controls:FormField>
+
+        <controls:FormField Grid.Row="2" Header="{x:Static res:Resources.Editor_Folder}" LabelWidth="70" Margin="0,8,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" Text="{Binding Working.Number, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox Grid.Column="1" Margin="8,0,0,0" Text="{Binding Working.FolderName, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+        </controls:FormField>
+
+        <TextBlock Grid.Row="3" Margin="78,4,0,0"
+                   Style="{DynamicResource CaptionTextBlockStyle}"
+                   Foreground="{DynamicResource TextTertiaryBrush}"
+                   Text="{Binding FolderPreview}" />
+
+        <!-- Alt klasörler -->
+        <Grid Grid.Row="4" Margin="0,16,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid Margin="0,0,0,6">
+                <TextBlock Style="{DynamicResource CaptionTextBlockStyle}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           VerticalAlignment="Center"
+                           Text="{x:Static res:Resources.Editor_SubFoldersOptional}" />
+                <Button HorizontalAlignment="Right" Command="{Binding Working.AddSubFolderCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
+                        <TextBlock Text="{x:Static res:Resources.Editor_AddSubFolder}" Margin="6,0,0,0" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+            <Border Grid.Row="1"
+                    Background="{DynamicResource LayerBrush}"
+                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{DynamicResource OverlayCornerRadius}"
+                    Padding="6">
+                <TreeView ItemsSource="{Binding Working.SubFolders}" Background="Transparent" BorderThickness="0">
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="TreeViewItem" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                            <Setter Property="IsExpanded" Value="True" />
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                            <StackPanel Orientation="Horizontal">
+                                <controls:FontIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="13"
+                                                   Foreground="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" />
+                                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="190" Margin="8,0,0,0" />
+                                <Button Style="{DynamicResource IconButtonStyle}"
+                                        Command="{Binding AddChildCommand}"
+                                        ToolTip="{x:Static res:Resources.Editor_AddChild}"
+                                        Margin="4,0,0,0">
+                                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" />
+                                </Button>
+                                <Button Style="{DynamicResource IconButtonStyle}"
+                                        Command="{Binding DeleteCommand}"
+                                        ToolTip="{x:Static res:Resources.Editor_Delete}">
+                                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Delete}" FontSize="12" />
+                                </Button>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </Border>
+        </Grid>
+
+        <TextBlock Grid.Row="5" Margin="0,8,0,0"
+                   Style="{DynamicResource CaptionTextBlockStyle}"
+                   Foreground="{DynamicResource TextTertiaryBrush}"
+                   TextWrapping="Wrap"
+                   Text="{x:Static res:Resources.ModuleDialog_Hint}" />
+
+        <Grid Grid.Row="6" Margin="0,12,0,0">
+            <TextBlock VerticalAlignment="Center" Margin="0,0,200,0" TextWrapping="Wrap"
+                       Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+                       Text="{Binding Error}" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="{x:Static res:Resources.Dialog_Cancel}" IsCancel="True" Click="Cancel_Click" />
+                <Button Content="{Binding ConfirmText}"
+                        Style="{DynamicResource AccentButtonStyle}"
+                        Margin="8,0,0,0"
+                        Click="Confirm_Click" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+
+</controls:ChromeWindow>

@@ -346,11 +346,6 @@
                                     Margin="0,8,0,0">
                     <ItemsControl ItemsSource="{Binding StockModules}" ItemTemplate="{StaticResource ModuleOptionTemplate}" />
                 </controls:FormField>
-                <TextBlock Style="{DynamicResource CaptionTextBlockStyle}"
-                           Foreground="{DynamicResource TextTertiaryBrush}"
-                           TextWrapping="Wrap"
-                           Margin="0,12,0,0"
-                           Text="{Binding CoreFoldersText}" />
             </StackPanel>
         </controls:ContentDialog>
 

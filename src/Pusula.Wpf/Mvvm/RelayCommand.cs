@@ -4,14 +4,20 @@ using System.Windows.Input;
 namespace Pusula.Wpf.Mvvm
 {
     /// <summary>
-    /// Bir eylemi çalıştıran basit <see cref="ICommand"/>.
+    /// Bir eylemi çalıştıran basit <see cref="ICommand"/>. İsterse komut parametresini alır.
     /// </summary>
     public sealed class RelayCommand : ICommand
     {
-        private readonly Action execute;
+        private readonly Action<object?> execute;
 
-        /// <summary>Komutu oluşturur.</summary>
+        /// <summary>Parametresiz komut oluşturur.</summary>
         public RelayCommand(Action execute)
+        {
+            this.execute = _ => execute();
+        }
+
+        /// <summary>Komut parametresini alan komut oluşturur.</summary>
+        public RelayCommand(Action<object?> execute)
         {
             this.execute = execute;
         }
@@ -32,7 +38,7 @@ namespace Pusula.Wpf.Mvvm
         /// <inheritdoc />
         public void Execute(object? parameter)
         {
-            execute();
+            execute(parameter);
         }
     }
 }

@@ -12,14 +12,14 @@ using Pusula.Wpf.Properties;
 namespace Pusula.Wpf.ViewModels.TemplateEditor
 {
     /// <summary>
-    /// Şablonlar penceresinin durumu. Şablon dosyasının bir kopyası üzerinde çalışır;
-    /// yalnızca <see cref="Save"/> başarılı olursa dosya değişir.
+    /// Şablonlar penceresinin durumu: solda şablonlar, sağda seçili şablonun modülleri.
+    /// Şablon dosyasının bir kopyası üzerinde çalışır; yalnızca <see cref="Save"/> başarılı olursa dosya değişir.
     /// </summary>
     public sealed class TemplateEditorViewModel : ViewModelBase
     {
         private readonly string root;
         private readonly List<string> projectFolders;
-        private ModuleEditViewModel? selectedModule;
+        private TemplateEditViewModel? selectedTemplate;
         private string error = string.Empty;
 
         /// <summary>Verilen kökün şablonlarıyla düzenleyiciyi hazırlar.</summary>
@@ -28,21 +28,21 @@ namespace Pusula.Wpf.ViewModels.TemplateEditor
             this.root = root;
             projectFolders = new List<string>(source.ProjectFolders);
 
-            foreach (var module in source.Modules)
+            foreach (var module in TemplateSet.Sorted(source.Modules))
             {
-                Modules.Add(new ModuleEditViewModel(module));
+                Library.Add(new ModuleEditViewModel(module));
             }
 
             foreach (var preset in source.Templates)
             {
-                Templates.Add(CreateTemplate(preset.Name, preset.Modules));
+                var keys = new HashSet<string>(preset.Modules, StringComparer.OrdinalIgnoreCase);
+                Templates.Add(new TemplateEditViewModel(preset.Name, Library.Where(m => keys.Contains(m.Key))));
             }
 
-            RebuildFlags();
-            AddModuleCommand = new RelayCommand(AddModule);
-            DeleteModuleCommand = new RelayCommand(DeleteModule);
             AddTemplateCommand = new RelayCommand(AddTemplate);
-            SelectedModule = Modules.FirstOrDefault();
+            DeleteTemplateCommand = new RelayCommand(DeleteTemplate);
+            RemoveModuleCommand = new RelayCommand(RemoveModule);
+            SelectedTemplate = Templates.FirstOrDefault();
         }
 
         /// <summary>Şablon dosyasının yolu (bilgi metni).</summary>
@@ -51,29 +51,56 @@ namespace Pusula.Wpf.ViewModels.TemplateEditor
             get { return string.Format(Resources.Editor_SharedNote, TemplateStore.FilePath(root)); }
         }
 
-        /// <summary>Modüller.</summary>
-        public ObservableCollection<ModuleEditViewModel> Modules { get; } = new ObservableCollection<ModuleEditViewModel>();
+        /// <summary>Modül kütüphanesi: tüm şablonların seçebildiği modüller.</summary>
+        public ObservableCollection<ModuleEditViewModel> Library { get; } = new ObservableCollection<ModuleEditViewModel>();
 
-        /// <summary>Şablonlar.</summary>
+        /// <summary>Şablonlar (sol liste).</summary>
         public ObservableCollection<TemplateEditViewModel> Templates { get; } = new ObservableCollection<TemplateEditViewModel>();
 
-        /// <summary>Sağda düzenlenen modül.</summary>
-        public ModuleEditViewModel? SelectedModule
+        /// <summary>Sağda düzenlenen şablon.</summary>
+        public TemplateEditViewModel? SelectedTemplate
         {
-            get { return selectedModule; }
+            get { return selectedTemplate; }
             set
             {
-                if (SetProperty(ref selectedModule, value))
+                if (selectedTemplate != null)
+                {
+                    selectedTemplate.PropertyChanged -= OnTemplateChanged;
+                }
+
+                if (SetProperty(ref selectedTemplate, value))
                 {
                     OnPropertyChanged(nameof(HasSelection));
+                    OnPropertyChanged(nameof(UsageText));
+                }
+
+                if (selectedTemplate != null)
+                {
+                    selectedTemplate.PropertyChanged += OnTemplateChanged;
                 }
             }
         }
 
-        /// <summary>Bir modül seçili mi.</summary>
+        /// <summary>Bir şablon seçili mi.</summary>
         public bool HasSelection
         {
-            get { return selectedModule != null; }
+            get { return selectedTemplate != null; }
+        }
+
+        /// <summary>Seçili modülün kaç şablonda kullanıldığı (değişikliğin hepsine yansıdığı uyarısı).</summary>
+        public string UsageText
+        {
+            get
+            {
+                var module = selectedTemplate?.SelectedModule;
+                if (module == null)
+                {
+                    return string.Empty;
+                }
+
+                var count = Templates.Count(t => t.Modules.Contains(module));
+                return string.Format(Resources.Editor_ModuleUsage, module.Name, count);
+            }
         }
 
         /// <summary>Kaydetme hatası; boşsa gizlidir.</summary>
@@ -83,19 +110,99 @@ namespace Pusula.Wpf.ViewModels.TemplateEditor
             private set { SetProperty(ref error, value); }
         }
 
-        /// <summary>Yeni modül ekler (sıradaki boş numarayla).</summary>
-        public ICommand AddModuleCommand { get; }
-
-        /// <summary>Seçili modülü şablondan çıkarır (klasörlere dokunmaz).</summary>
-        public ICommand DeleteModuleCommand { get; }
-
-        /// <summary>Yeni şablon ekler.</summary>
+        /// <summary>Yeni şablon ekler (temel modüllerle).</summary>
         public ICommand AddTemplateCommand { get; }
 
-        private void AddModule()
+        /// <summary>Seçili şablonu siler (klasörlere dokunmaz).</summary>
+        public ICommand DeleteTemplateCommand { get; }
+
+        /// <summary>Parametre olarak verilen modülü seçili şablondan çıkarır.</summary>
+        public ICommand RemoveModuleCommand { get; }
+
+        private void OnTemplateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(TemplateEditViewModel.SelectedModule))
+            {
+                OnPropertyChanged(nameof(UsageText));
+            }
+        }
+
+        private void AddTemplate()
+        {
+            var basic = new HashSet<string>(TemplateSet.BasicModuleKeys, StringComparer.OrdinalIgnoreCase);
+            var name = Resources.Editor_NewTemplate;
+            var suffix = 2;
+            while (Templates.Any(t => string.Equals(t.Name.Trim(), name, StringComparison.OrdinalIgnoreCase)))
+            {
+                name = Resources.Editor_NewTemplate + " " + suffix++;
+            }
+
+            var created = new TemplateEditViewModel(name, Library.Where(m => basic.Contains(m.Key)));
+            Templates.Add(created);
+            SelectedTemplate = created;
+        }
+
+        private void DeleteTemplate()
+        {
+            if (selectedTemplate == null)
+            {
+                return;
+            }
+
+            var index = Templates.IndexOf(selectedTemplate);
+            Templates.Remove(selectedTemplate);
+            SelectedTemplate = Templates.Count == 0 ? null : Templates[Math.Min(index, Templates.Count - 1)];
+        }
+
+        private void RemoveModule(object? parameter)
+        {
+            var module = parameter as ModuleEditViewModel;
+            if (selectedTemplate == null || module == null)
+            {
+                return;
+            }
+
+            selectedTemplate.Modules.Remove(module);
+            if (selectedTemplate.SelectedModule == module)
+            {
+                selectedTemplate.SelectedModule = null;
+            }
+        }
+
+        /// <summary>Seçili şablonda olmayan kütüphane modülleri ("Modül ekle" listesi).</summary>
+        public IReadOnlyList<ModuleEditViewModel> AvailableModules()
+        {
+            if (selectedTemplate == null)
+            {
+                return new List<ModuleEditViewModel>();
+            }
+
+            return Library.Where(m => !selectedTemplate.Modules.Contains(m)).ToList();
+        }
+
+        /// <summary>Kütüphanedeki bir modülü seçili şablona ekler.</summary>
+        public void AddToSelected(ModuleEditViewModel module)
+        {
+            selectedTemplate?.Add(module);
+            OnPropertyChanged(nameof(UsageText));
+        }
+
+        /// <summary>Yeni modül penceresi için boş bir tanım hazırlar (numara ayrıca <see cref="NextNumber"/> ile verilir).</summary>
+        public ModuleDefinition NewModuleDraft()
+        {
+            return new ModuleDefinition
+            {
+                Key = "m" + Guid.NewGuid().ToString("N").Substring(0, 8),
+                Name = string.Empty,
+                Folder = string.Empty,
+            };
+        }
+
+        /// <summary>Kütüphanede kullanılmayan en küçük klasör numarası (örn. 08).</summary>
+        public string NextNumber()
         {
             var used = new HashSet<int>();
-            foreach (var module in Modules)
+            foreach (var module in Library)
             {
                 int n;
                 if (int.TryParse(module.Number, out n))
@@ -110,58 +217,68 @@ namespace Pusula.Wpf.ViewModels.TemplateEditor
                 next++;
             }
 
-            var definition = new ModuleDefinition
-            {
-                Key = "m" + Guid.NewGuid().ToString("N").Substring(0, 8),
-                Name = Resources.Editor_NewModule,
-                Folder = next.ToString("00") + "_" + Resources.Editor_NewFolder,
-            };
-            var created = new ModuleEditViewModel(definition);
-            created.RebuildFlags(Templates);
-            Modules.Add(created);
-            SelectedModule = created;
+            return next.ToString("00");
         }
 
-        private void DeleteModule()
+        /// <summary>Modül penceresinde oluşturulan modülü kütüphaneye ve seçili şablona ekler.</summary>
+        public void AddNewModule(ModuleDefinition definition)
         {
-            if (selectedModule == null)
+            var created = new ModuleEditViewModel(definition);
+            var index = 0;
+            while (index < Library.Count && string.Compare(Library[index].Folder, created.Folder, StringComparison.OrdinalIgnoreCase) < 0 && !Library[index].Folder.StartsWith("_", StringComparison.Ordinal))
             {
-                return;
+                index++;
             }
 
-            var index = Modules.IndexOf(selectedModule);
+            Library.Insert(index, created);
+            AddToSelected(created);
+        }
+
+        /// <summary>Modül penceresinde düzenlenen değerleri kütüphanedeki modüle uygular.</summary>
+        public void ApplyModuleEdit(ModuleEditViewModel target, ModuleDefinition edited)
+        {
+            target.Load(edited);
             foreach (var template in Templates)
             {
-                template.ModuleKeys.Remove(selectedModule.Key);
+                template.Resort();
             }
 
-            Modules.Remove(selectedModule);
-            SelectedModule = Modules.Count == 0 ? null : Modules[Math.Min(index, Modules.Count - 1)];
+            OnPropertyChanged(nameof(UsageText));
         }
 
-        private void AddTemplate()
+        /// <summary>
+        /// Modül penceresindeki değerleri doğrular. Boş dönerse geçerlidir; değilse hata metnidir.
+        /// <paramref name="original"/> düzenlenen modüldür (yeni modülde <c>null</c>).
+        /// </summary>
+        public string ValidateModule(ModuleDefinition candidate, ModuleEditViewModel? original)
         {
-            Templates.Add(CreateTemplate(Resources.Editor_NewTemplate, Enumerable.Empty<string>()));
-            RebuildFlags();
-        }
-
-        private TemplateEditViewModel CreateTemplate(string name, IEnumerable<string> keys)
-        {
-            TemplateEditViewModel? created = null;
-            created = new TemplateEditViewModel(name, keys, new RelayCommand(() =>
+            if (candidate.Name.Trim().Length == 0)
             {
-                Templates.Remove(created!);
-                RebuildFlags();
-            }));
-            return created;
-        }
-
-        private void RebuildFlags()
-        {
-            foreach (var module in Modules)
-            {
-                module.RebuildFlags(Templates);
+                return Resources.Editor_ErrorModuleName;
             }
+
+            if (!IsSingleSegment(candidate.Folder) || ModuleDefinition.SplitFolder(candidate.Folder).Item2.Length == 0)
+            {
+                return string.Format(Resources.Editor_ErrorFolder, candidate.Folder);
+            }
+
+            if (Library.Any(m => m != original && string.Equals(m.Folder, candidate.Folder, StringComparison.OrdinalIgnoreCase)))
+            {
+                return string.Format(Resources.Editor_ErrorDuplicateFolder, candidate.Folder);
+            }
+
+            foreach (var sub in candidate.SubFolders)
+            {
+                foreach (var part in sub.Split('\\'))
+                {
+                    if (!IsSingleSegment(part))
+                    {
+                        return string.Format(Resources.Editor_ErrorSubFolder, candidate.Folder, part);
+                    }
+                }
+            }
+
+            return string.Empty;
         }
 
         /// <summary>
@@ -169,17 +286,20 @@ namespace Pusula.Wpf.ViewModels.TemplateEditor
         /// </summary>
         public bool Save()
         {
-            var problem = Validate();
-            if (problem.Length > 0)
+            var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var template in Templates)
             {
-                Error = problem;
-                return false;
+                if (template.Name.Trim().Length == 0 || !names.Add(template.Name.Trim()))
+                {
+                    SelectedTemplate = template;
+                    Error = Resources.Editor_ErrorTemplateName;
+                    return false;
+                }
             }
 
             var set = new TemplateSet();
             set.ProjectFolders.AddRange(projectFolders);
-            var optionalKeys = new HashSet<string>(Modules.Where(m => !m.Core).Select(m => m.Key), StringComparer.OrdinalIgnoreCase);
-            foreach (var module in Modules)
+            foreach (var module in Library)
             {
                 set.Modules.Add(module.ToDefinition());
             }
@@ -189,7 +309,7 @@ namespace Pusula.Wpf.ViewModels.TemplateEditor
                 set.Templates.Add(new TemplatePreset
                 {
                     Name = template.Name.Trim(),
-                    Modules = template.ModuleKeys.Where(optionalKeys.Contains).ToList(),
+                    Modules = template.Modules.Select(m => m.Key).ToList(),
                 });
             }
 
@@ -210,47 +330,6 @@ namespace Pusula.Wpf.ViewModels.TemplateEditor
 
             Error = string.Empty;
             return true;
-        }
-
-        private string Validate()
-        {
-            var folders = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var module in Modules)
-            {
-                if (module.Name.Trim().Length == 0)
-                {
-                    return Resources.Editor_ErrorModuleName;
-                }
-
-                if (!IsSingleSegment(module.Folder))
-                {
-                    return string.Format(Resources.Editor_ErrorFolder, module.Folder);
-                }
-
-                if (!folders.Add(module.Folder))
-                {
-                    return string.Format(Resources.Editor_ErrorDuplicateFolder, module.Folder);
-                }
-
-                foreach (var node in FolderNodeViewModel.All(module.SubFolders))
-                {
-                    if (!IsSingleSegment(node.Name.Trim()))
-                    {
-                        return string.Format(Resources.Editor_ErrorSubFolder, module.Folder, node.Name);
-                    }
-                }
-            }
-
-            var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var template in Templates)
-            {
-                if (template.Name.Trim().Length == 0 || !names.Add(template.Name.Trim()))
-                {
-                    return Resources.Editor_ErrorTemplateName;
-                }
-            }
-
-            return string.Empty;
         }
 
         private static bool IsSingleSegment(string name)

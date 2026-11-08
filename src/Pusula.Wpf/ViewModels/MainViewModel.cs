@@ -277,12 +277,6 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Yeni stok diyaloğundaki modül onay kutuları.</summary>
         public ObservableCollection<ModuleOptionViewModel> StockModules { get; } = new ObservableCollection<ModuleOptionViewModel>();
 
-        /// <summary>Her stokta açılan klasörlerin listesi (bilgi metni).</summary>
-        public string CoreFoldersText
-        {
-            get { return string.Format(Resources.Dialog_AlwaysCreated, string.Join(", ", templates.CoreModules.Select(m => m.Folder))); }
-        }
-
         /// <summary>Diyalogdaki hata metni; boşsa gizlidir.</summary>
         public string StockError
         {
@@ -306,7 +300,7 @@ namespace Pusula.Wpf.ViewModels
             StockError = string.Empty;
 
             StockModules.Clear();
-            foreach (var module in templates.OptionalModules)
+            foreach (var module in templates.Modules)
             {
                 StockModules.Add(new ModuleOptionViewModel(module, false));
             }
@@ -317,7 +311,6 @@ namespace Pusula.Wpf.ViewModels
                 TemplateNames.Add(preset.Name);
             }
 
-            OnPropertyChanged(nameof(CoreFoldersText));
             selectedTemplate = string.Empty;
             SelectedTemplate = TemplateNames.FirstOrDefault() ?? string.Empty;
             IsStockDialogOpen = true;

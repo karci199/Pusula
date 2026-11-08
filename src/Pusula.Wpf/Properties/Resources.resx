@@ -132,9 +132,6 @@
   <data name="Field_Modules" xml:space="preserve">
     <value>Modüller</value>
   </data>
-  <data name="Dialog_AlwaysCreated" xml:space="preserve">
-    <value>Her stokta açılır: {0}</value>
-  </data>
   <data name="Module_Exists" xml:space="preserve">
     <value>var</value>
   </data>
@@ -171,29 +168,11 @@
   <data name="Editor_Modules" xml:space="preserve">
     <value>Modüller</value>
   </data>
-  <data name="Editor_AddModule" xml:space="preserve">
-    <value>Modül</value>
-  </data>
-  <data name="Editor_DeleteModule" xml:space="preserve">
-    <value>Modülü sil</value>
-  </data>
-  <data name="Editor_CoreBadge" xml:space="preserve">
-    <value>her stokta</value>
-  </data>
   <data name="Editor_Name" xml:space="preserve">
     <value>Ad</value>
   </data>
   <data name="Editor_Folder" xml:space="preserve">
     <value>Klasör</value>
-  </data>
-  <data name="Editor_Core" xml:space="preserve">
-    <value>Her stokta</value>
-  </data>
-  <data name="Editor_CoreHint" xml:space="preserve">
-    <value>Her yeni stokta açılır, seçilemez</value>
-  </data>
-  <data name="Editor_InTemplates" xml:space="preserve">
-    <value>Şablonlarda</value>
   </data>
   <data name="Editor_SubFolders" xml:space="preserve">
     <value>Alt klasörler</value>
@@ -215,12 +194,6 @@
   </data>
   <data name="Editor_AddTemplate" xml:space="preserve">
     <value>Şablon</value>
-  </data>
-  <data name="Editor_TemplatesHint" xml:space="preserve">
-    <value>Bir şablonda hangi modüllerin işaretli geleceğini modülün kendi sayfasından seçin.</value>
-  </data>
-  <data name="Editor_NewModule" xml:space="preserve">
-    <value>Yeni modül</value>
   </data>
   <data name="Editor_NewTemplate" xml:space="preserve">
     <value>Yeni şablon</value>
@@ -245,5 +218,50 @@
   </data>
   <data name="Editor_ErrorTemplateName" xml:space="preserve">
     <value>Şablon adı boş ya da tekrarlı olamaz.</value>
+  </data>
+  <data name="Editor_AddModule" xml:space="preserve">
+    <value>Modül ekle</value>
+  </data>
+  <data name="Editor_DeleteTemplate" xml:space="preserve">
+    <value>Şablonu sil</value>
+  </data>
+  <data name="Editor_SelectTemplate" xml:space="preserve">
+    <value>Soldan bir şablon seçin ya da yeni şablon ekleyin.</value>
+  </data>
+  <data name="Editor_EditModule" xml:space="preserve">
+    <value>Modülü düzenle</value>
+  </data>
+  <data name="Editor_RemoveFromTemplate" xml:space="preserve">
+    <value>Şablondan çıkar</value>
+  </data>
+  <data name="Editor_ModuleUsage" xml:space="preserve">
+    <value>{0} · {1} şablonda kullanılıyor; değişiklik hepsine yansır.</value>
+  </data>
+  <data name="Editor_SubFolderCount" xml:space="preserve">
+    <value>{0} alt klasör</value>
+  </data>
+  <data name="Editor_NoMoreModules" xml:space="preserve">
+    <value>Eklenecek başka modül yok</value>
+  </data>
+  <data name="Editor_CreateModule" xml:space="preserve">
+    <value>Yeni modül oluştur…</value>
+  </data>
+  <data name="Editor_SubFoldersOptional" xml:space="preserve">
+    <value>Alt klasörler (isteğe bağlı)</value>
+  </data>
+  <data name="ModuleDialog_NewTitle" xml:space="preserve">
+    <value>Yeni modül</value>
+  </data>
+  <data name="ModuleDialog_EditTitle" xml:space="preserve">
+    <value>Modülü düzenle</value>
+  </data>
+  <data name="ModuleDialog_FolderPreview" xml:space="preserve">
+    <value>Stokta açılacak: {0}</value>
+  </data>
+  <data name="ModuleDialog_Apply" xml:space="preserve">
+    <value>Tamam</value>
+  </data>
+  <data name="ModuleDialog_Hint" xml:space="preserve">
+    <value>Değişiklik bu modülü kullanan tüm şablonlara yansır; var olan stok klasörlerine dokunulmaz.</value>
   </data>
 </root>

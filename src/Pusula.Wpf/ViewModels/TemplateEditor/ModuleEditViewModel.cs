@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 using Pusula.Core.Templates;
 using Pusula.Wpf.Mvvm;
@@ -8,26 +8,21 @@ using Pusula.Wpf.Properties;
 namespace Pusula.Wpf.ViewModels.TemplateEditor
 {
     /// <summary>
-    /// Düzenleyicide bir modül: ad, numara, klasör adı, her stokta mı, alt klasör ağacı, şablon bayrakları.
+    /// Bir modülün düzenlenebilir hali: ad, numara, klasör adı, alt klasör ağacı.
+    /// Hem kütüphanedeki modül hem de modül penceresindeki çalışma kopyası için kullanılır.
     /// </summary>
     public sealed class ModuleEditViewModel : ViewModelBase
     {
-        private string name;
-        private string number;
-        private string folderName;
-        private bool core;
+        private string name = string.Empty;
+        private string number = string.Empty;
+        private string folderName = string.Empty;
 
-        /// <summary>Var olan bir modül tanımından oluşturur.</summary>
+        /// <summary>Modül tanımından oluşturur.</summary>
         public ModuleEditViewModel(ModuleDefinition module)
         {
             Key = module.Key;
-            name = module.Name;
-            var parts = ModuleDefinition.SplitFolder(module.Folder);
-            number = parts.Item1;
-            folderName = parts.Item2;
-            core = module.Core;
-            FolderNodeViewModel.BuildTree(module.SubFolders, SubFolders);
             AddSubFolderCommand = new RelayCommand(AddSubFolder);
+            Load(module);
         }
 
         /// <summary>Değişmez anahtar (şablonlar bununla bağlanır).</summary>
@@ -72,30 +67,18 @@ namespace Pusula.Wpf.ViewModels.TemplateEditor
             get { return number.Length == 0 ? folderName : number + "_" + folderName; }
         }
 
-        /// <summary>Her yeni stokta açılır mı.</summary>
-        public bool Core
-        {
-            get { return core; }
-            set
-            {
-                if (SetProperty(ref core, value))
-                {
-                    OnPropertyChanged(nameof(IsOptional));
-                }
-            }
-        }
-
-        /// <summary>Seçilebilen modül mü (şablon bayrakları yalnızca bunlarda anlamlı).</summary>
-        public bool IsOptional
-        {
-            get { return !core; }
-        }
-
         /// <summary>Alt klasör ağacının kökleri.</summary>
         public ObservableCollection<FolderNodeViewModel> SubFolders { get; } = new ObservableCollection<FolderNodeViewModel>();
 
-        /// <summary>Bu modülün hangi şablonlarda işaretli geldiği.</summary>
-        public ObservableCollection<TemplateFlagViewModel> Flags { get; } = new ObservableCollection<TemplateFlagViewModel>();
+        /// <summary>Alt klasör sayısı metni (şablon listesinde gösterilir).</summary>
+        public string SubFolderText
+        {
+            get
+            {
+                var count = FolderNodeViewModel.All(SubFolders).Count();
+                return count == 0 ? string.Empty : string.Format(Resources.Editor_SubFolderCount, count);
+            }
+        }
 
         /// <summary>Modül klasörünün hemen altına klasör ekler.</summary>
         public ICommand AddSubFolderCommand { get; }
@@ -103,16 +86,6 @@ namespace Pusula.Wpf.ViewModels.TemplateEditor
         private void AddSubFolder()
         {
             SubFolders.Add(new FolderNodeViewModel(Resources.Editor_NewFolder, SubFolders));
-        }
-
-        /// <summary>Şablon listesine göre bayrakları yeniden kurar.</summary>
-        public void RebuildFlags(IEnumerable<TemplateEditViewModel> templates)
-        {
-            Flags.Clear();
-            foreach (var template in templates)
-            {
-                Flags.Add(new TemplateFlagViewModel(template, Key));
-            }
         }
 
         /// <summary>Düzenlenen değerlerle modül tanımı üretir.</summary>
@@ -123,9 +96,20 @@ namespace Pusula.Wpf.ViewModels.TemplateEditor
                 Key = Key,
                 Name = name.Trim(),
                 Folder = Folder,
-                Core = core,
                 SubFolders = FolderNodeViewModel.Flatten(SubFolders),
             };
+        }
+
+        /// <summary>Değerleri bir tanımdan (örn. modül penceresindeki kopyadan) yükler.</summary>
+        public void Load(ModuleDefinition module)
+        {
+            Name = module.Name;
+            var parts = ModuleDefinition.SplitFolder(module.Folder);
+            Number = parts.Item1;
+            FolderName = parts.Item2;
+            SubFolders.Clear();
+            FolderNodeViewModel.BuildTree(module.SubFolders, SubFolders);
+            OnPropertyChanged(nameof(SubFolderText));
         }
     }
 }

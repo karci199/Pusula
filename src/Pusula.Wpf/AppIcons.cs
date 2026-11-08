@@ -13,10 +13,10 @@
         public const string Stock = "";
 
         /// <summary>İşaretsiz klasör.</summary>
-        public const string Folder = "";
+        public const string Folder = "";
 
         /// <summary>Klasörü aç.</summary>
-        public const string OpenFolder = "";
+        public const string OpenFolder = "";
 
         /// <summary>Ekle.</summary>
         public const string Add = "";
@@ -29,5 +29,14 @@
 
         /// <summary>Ayarlar / şablonlar.</summary>
         public const string Settings = "";
+
+        /// <summary>Şablon (sayfa).</summary>
+        public const string Template = "";
+
+        /// <summary>Düzenle (kalem).</summary>
+        public const string Edit = "";
+
+        /// <summary>Listeden çıkar (✕).</summary>
+        public const string Remove = "";
     }
 }

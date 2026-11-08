@@ -195,9 +195,6 @@ namespace Pusula.Wpf.Properties
         /// <summary>Modül onay kutularının başlığı.</summary>
         public static string Field_Modules { get { return Get("Field_Modules"); } }
 
-        /// <summary>Çekirdek klasörlerin bilgi metni; {0} liste.</summary>
-        public static string Dialog_AlwaysCreated { get { return Get("Dialog_AlwaysCreated"); } }
-
         /// <summary>Stokta zaten bulunan modülün etiketi.</summary>
         public static string Module_Exists { get { return Get("Module_Exists"); } }
 
@@ -238,29 +235,11 @@ namespace Pusula.Wpf.Properties
         /// <summary>Modül listesi başlığı.</summary>
         public static string Editor_Modules { get { return Get("Editor_Modules"); } }
 
-        /// <summary>Modül ekle düğmesi.</summary>
-        public static string Editor_AddModule { get { return Get("Editor_AddModule"); } }
-
-        /// <summary>Modül silme düğmesi.</summary>
-        public static string Editor_DeleteModule { get { return Get("Editor_DeleteModule"); } }
-
-        /// <summary>Her stokta açılan modülün etiketi.</summary>
-        public static string Editor_CoreBadge { get { return Get("Editor_CoreBadge"); } }
-
         /// <summary>Modül adı alanı.</summary>
         public static string Editor_Name { get { return Get("Editor_Name"); } }
 
         /// <summary>Modül klasörü alanı (numara ve ad).</summary>
         public static string Editor_Folder { get { return Get("Editor_Folder"); } }
-
-        /// <summary>Her stokta açılır seçeneği.</summary>
-        public static string Editor_Core { get { return Get("Editor_Core"); } }
-
-        /// <summary>Her stokta seçeneğinin açıklaması.</summary>
-        public static string Editor_CoreHint { get { return Get("Editor_CoreHint"); } }
-
-        /// <summary>Modülün işaretli geldiği şablonlar.</summary>
-        public static string Editor_InTemplates { get { return Get("Editor_InTemplates"); } }
 
         /// <summary>Alt klasör ağacının başlığı.</summary>
         public static string Editor_SubFolders { get { return Get("Editor_SubFolders"); } }
@@ -282,12 +261,6 @@ namespace Pusula.Wpf.Properties
 
         /// <summary>Şablon ekle düğmesi.</summary>
         public static string Editor_AddTemplate { get { return Get("Editor_AddTemplate"); } }
-
-        /// <summary>Şablon bölümünün açıklaması.</summary>
-        public static string Editor_TemplatesHint { get { return Get("Editor_TemplatesHint"); } }
-
-        /// <summary>Yeni modülün varsayılan adı.</summary>
-        public static string Editor_NewModule { get { return Get("Editor_NewModule"); } }
 
         /// <summary>Yeni şablonun varsayılan adı.</summary>
         public static string Editor_NewTemplate { get { return Get("Editor_NewTemplate"); } }
@@ -312,6 +285,55 @@ namespace Pusula.Wpf.Properties
 
         /// <summary>Geçersiz şablon adı.</summary>
         public static string Editor_ErrorTemplateName { get { return Get("Editor_ErrorTemplateName"); } }
+
+        /// <summary>Şablona modül ekleme düğmesi.</summary>
+        public static string Editor_AddModule { get { return Get("Editor_AddModule"); } }
+
+        /// <summary>Şablon silme düğmesi.</summary>
+        public static string Editor_DeleteTemplate { get { return Get("Editor_DeleteTemplate"); } }
+
+        /// <summary>Şablon seçili değilken.</summary>
+        public static string Editor_SelectTemplate { get { return Get("Editor_SelectTemplate"); } }
+
+        /// <summary>Modül düzenle düğmesinin ipucu.</summary>
+        public static string Editor_EditModule { get { return Get("Editor_EditModule"); } }
+
+        /// <summary>Modülü şablondan çıkaran düğmenin ipucu.</summary>
+        public static string Editor_RemoveFromTemplate { get { return Get("Editor_RemoveFromTemplate"); } }
+
+        /// <summary>Seçili modülün kullanım bilgisi; {0} ad, {1} sayı.</summary>
+        public static string Editor_ModuleUsage { get { return Get("Editor_ModuleUsage"); } }
+
+        /// <summary>Modülün alt klasör sayısı.</summary>
+        public static string Editor_SubFolderCount { get { return Get("Editor_SubFolderCount"); } }
+
+        /// <summary>Modül ekle menüsü boşken.</summary>
+        public static string Editor_NoMoreModules { get { return Get("Editor_NoMoreModules"); } }
+
+        /// <summary>Modül ekle menüsünün son öğesi.</summary>
+        public static string Editor_CreateModule { get { return Get("Editor_CreateModule"); } }
+
+        /// <summary>Modül penceresindeki alt klasör başlığı.</summary>
+        public static string Editor_SubFoldersOptional { get { return Get("Editor_SubFoldersOptional"); } }
+
+        #endregion
+
+        #region Modül penceresi
+
+        /// <summary>Yeni modül penceresinin başlığı.</summary>
+        public static string ModuleDialog_NewTitle { get { return Get("ModuleDialog_NewTitle"); } }
+
+        /// <summary>Modül düzenleme penceresinin başlığı.</summary>
+        public static string ModuleDialog_EditTitle { get { return Get("ModuleDialog_EditTitle"); } }
+
+        /// <summary>Oluşacak klasör adı; {0} klasör.</summary>
+        public static string ModuleDialog_FolderPreview { get { return Get("ModuleDialog_FolderPreview"); } }
+
+        /// <summary>Modül düzenlemesini uygulayan düğme.</summary>
+        public static string ModuleDialog_Apply { get { return Get("ModuleDialog_Apply"); } }
+
+        /// <summary>Modül penceresinin açıklaması.</summary>
+        public static string ModuleDialog_Hint { get { return Get("ModuleDialog_Hint"); } }
 
         #endregion
     }
