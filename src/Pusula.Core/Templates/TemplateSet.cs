@@ -136,7 +136,8 @@ namespace Pusula.Core.Templates
                 Key = "testResults",
                 Name = "Test sonuçları",
                 Folder = "03_Test_Sonuclari",
-                SubFolders = new List<string> { "VNA", "SATIMO", @"SATIMO\Ham", @"SATIMO\Analiz", "Yankisiz", "CK" },
+                // Yalnızca ölçüm sistemleri; SN01\Ham, SN01\Analiz gibi klasörler ölçüm geldikçe açılır.
+                SubFolders = new List<string> { "VNA", "SATIMO", "Yankisiz", "CK" },
             });
             set.Modules.Add(new ModuleDefinition
             {

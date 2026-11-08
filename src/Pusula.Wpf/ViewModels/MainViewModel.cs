@@ -46,6 +46,8 @@ namespace Pusula.Wpf.ViewModels
             NewStockCommand = new RelayCommand(OpenNewStock);
             OpenFolderCommand = new RelayCommand(OpenSelectedFolder);
             AddModulesCommand = new RelayCommand(OpenAddModules);
+            MarkAsStockCommand = new RelayCommand(() => OpenMark(true));
+            MarkAsProjectCommand = new RelayCommand(() => OpenMark(false));
 
             settings = AppSettings.Load();
             rootPath = settings.RootPath ?? string.Empty;
@@ -90,6 +92,8 @@ namespace Pusula.Wpf.ViewModels
                 {
                     OnPropertyChanged(nameof(HasSelection));
                     OnPropertyChanged(nameof(NewStockMenuText));
+                    OnPropertyChanged(nameof(CanMarkAsStock));
+                    OnPropertyChanged(nameof(CanMarkAsProject));
                     Detail.Load(selectedNode, templates, types);
                 }
             }
@@ -447,6 +451,157 @@ namespace Pusula.Wpf.ViewModels
 
         #endregion
 
+        #region İşaretle (elle açılmış klasörler)
+
+        private bool isMarkDialogOpen;
+        private bool markIsStock;
+        private string markFolder = string.Empty;
+        private string markNumber = string.Empty;
+        private string markName = string.Empty;
+        private string markError = string.Empty;
+
+        /// <summary>Seçili klasör stok olarak işaretlenebilir mi (işaretsiz klasör).</summary>
+        public bool CanMarkAsStock
+        {
+            get { return selectedNode != null && selectedNode.Kind == FolderKind.Plain; }
+        }
+
+        /// <summary>Seçili klasör proje olarak işaretlenebilir mi (kökün hemen altındaki işaretsiz klasör).</summary>
+        public bool CanMarkAsProject
+        {
+            get
+            {
+                return CanMarkAsStock
+                    && string.Equals(Path.GetDirectoryName(selectedNode!.Path), rootPath.TrimEnd('\\'), System.StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
+        /// <summary>Seçili klasörü stok olarak işaretleme diyaloğunu açar.</summary>
+        public ICommand MarkAsStockCommand { get; }
+
+        /// <summary>Seçili klasörü proje olarak işaretleme diyaloğunu açar.</summary>
+        public ICommand MarkAsProjectCommand { get; }
+
+        /// <summary>İşaretleme diyaloğu açık mı.</summary>
+        public bool IsMarkDialogOpen
+        {
+            get { return isMarkDialogOpen; }
+            set { SetProperty(ref isMarkDialogOpen, value); }
+        }
+
+        /// <summary>Diyalog stok için mi (değilse proje).</summary>
+        public bool MarkIsStock
+        {
+            get { return markIsStock; }
+            private set { SetProperty(ref markIsStock, value); }
+        }
+
+        /// <summary>Diyalog başlığı.</summary>
+        public string MarkTitle
+        {
+            get { return string.Format(markIsStock ? Resources.Mark_StockTitle : Resources.Mark_ProjectTitle, Path.GetFileName(markFolder)); }
+        }
+
+        /// <summary>Numara alanının başlığı.</summary>
+        public string MarkNumberLabel
+        {
+            get { return markIsStock ? Resources.Field_StockNo : Resources.Field_ProjectNo; }
+        }
+
+        /// <summary>Ad alanının başlığı.</summary>
+        public string MarkNameLabel
+        {
+            get { return markIsStock ? Resources.Field_StockName : Resources.Field_ProjectName; }
+        }
+
+        /// <summary>Girilen numara.</summary>
+        public string MarkNumber
+        {
+            get { return markNumber; }
+            set { SetProperty(ref markNumber, value ?? string.Empty); }
+        }
+
+        /// <summary>Girilen ad.</summary>
+        public string MarkName
+        {
+            get { return markName; }
+            set { SetProperty(ref markName, value ?? string.Empty); }
+        }
+
+        /// <summary>Diyalogdaki hata; boşsa gizlidir.</summary>
+        public string MarkError
+        {
+            get { return markError; }
+            private set { SetProperty(ref markError, value); }
+        }
+
+        private void OpenMark(bool asStock)
+        {
+            if (selectedNode == null || selectedNode.Kind != FolderKind.Plain || (!asStock && !CanMarkAsProject))
+            {
+                return;
+            }
+
+            markFolder = selectedNode.Path;
+            MarkIsStock = asStock;
+            var folderName = Path.GetFileName(markFolder);
+            if (asStock)
+            {
+                MarkNumber = folderName;
+                MarkName = string.Empty;
+            }
+            else
+            {
+                var match = System.Text.RegularExpressions.Regex.Match(folderName, @"^(\d+)_(.+)$");
+                MarkNumber = match.Success ? match.Groups[1].Value : string.Empty;
+                MarkName = match.Success ? match.Groups[2].Value : folderName;
+            }
+
+            MarkError = string.Empty;
+            OnPropertyChanged(nameof(MarkTitle));
+            OnPropertyChanged(nameof(MarkNumberLabel));
+            OnPropertyChanged(nameof(MarkNameLabel));
+            OnPropertyChanged(nameof(StockNumberHint));
+            IsMarkDialogOpen = true;
+        }
+
+        /// <summary>
+        /// Klasörü işaretler. Başarısızsa <c>false</c> döner ve hata metnini doldurur; çağıran diyaloğu yeniden açar.
+        /// </summary>
+        public bool ConfirmMark()
+        {
+            if (markIsStock && !types.Stock.AcceptsNumber(MarkNumber))
+            {
+                MarkError = string.Format(Resources.Error_StockNumberFormat, StockNumberHint);
+                return false;
+            }
+
+            var result = markIsStock
+                ? ProjectService.MarkAsStock(markFolder, MarkNumber, MarkName, types.Stock.InitialStatus)
+                : ProjectService.MarkAsProject(markFolder, MarkNumber, MarkName);
+            if (!result.Succeeded)
+            {
+                MarkError = ErrorText(result);
+                return false;
+            }
+
+            var parent = Path.GetDirectoryName(markFolder) ?? string.Empty;
+            Refresh();
+            foreach (var node in Nodes)
+            {
+                if (string.Equals(node.Path, parent, System.StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(node.Path, markFolder, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    node.IsExpanded = true;
+                }
+            }
+
+            Status = string.Format(markIsStock ? Resources.Status_MarkedStock : Resources.Status_MarkedProject, markFolder);
+            return true;
+        }
+
+        #endregion
+
         #region Durum
 
         /// <summary>Geçerli kökün tür kalıpları.</summary>
@@ -613,6 +768,8 @@ namespace Pusula.Wpf.ViewModels
                     return Resources.Error_NameEmpty;
                 case CreateError.InvalidCharacters:
                     return Resources.Error_InvalidCharacters;
+                case CreateError.AlreadyMarked:
+                    return Resources.Error_AlreadyMarked;
                 case CreateError.AlreadyExists:
                     return string.Format(Resources.Error_AlreadyExists, result.Folder);
                 default:

@@ -25,6 +25,9 @@
 
         /// <summary>Disk hatası (izin, yol uzunluğu vb.).</summary>
         IoFailure,
+
+        /// <summary>Klasör zaten proje ya da stok olarak işaretli.</summary>
+        AlreadyMarked,
     }
 
     /// <summary>

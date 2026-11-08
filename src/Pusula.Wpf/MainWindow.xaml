@@ -155,6 +155,20 @@
                     <controls:FontIcon Glyph="{x:Static local:AppIcons.Stock}" Foreground="{DynamicResource AccentBrush}" />
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.Menu_MarkAsProject}"
+                      Command="{Binding MarkAsProjectCommand}"
+                      Visibility="{Binding CanMarkAsProject, Converter={StaticResource BoolToVis}}">
+                <MenuItem.Icon>
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Project}" Foreground="{DynamicResource Pusula.ProjectIconBrush}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.Menu_MarkAsStock}"
+                      Command="{Binding MarkAsStockCommand}"
+                      Visibility="{Binding CanMarkAsStock, Converter={StaticResource BoolToVis}}">
+                <MenuItem.Icon>
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Stock}" Foreground="{DynamicResource AccentBrush}" />
+                </MenuItem.Icon>
+            </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Menu_AddModules}" Command="{Binding AddModulesCommand}">
                 <MenuItem.Icon>
                     <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" />
@@ -564,6 +578,39 @@
                 <controls:FormField Header="{x:Static res:Resources.Field_Modules}" LabelWidth="90"
                                     Margin="0,8,0,0">
                     <ItemsControl ItemsSource="{Binding StockModules}" ItemTemplate="{StaticResource ModuleOptionTemplate}" />
+                </controls:FormField>
+            </StackPanel>
+        </controls:ContentDialog>
+
+        <!-- Elle açılmış klasörü proje / stok olarak işaretle -->
+        <controls:ContentDialog Grid.RowSpan="3"
+                                IsOpen="{Binding IsMarkDialogOpen, Mode=TwoWay}"
+                                Title="{Binding MarkTitle}"
+                                PrimaryButtonText="{x:Static res:Resources.Mark_Confirm}"
+                                CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                PrimaryButtonClick="MarkDialog_PrimaryButtonClick">
+            <StackPanel MinWidth="340">
+                <TextBlock Style="{DynamicResource CaptionTextBlockStyle}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           TextWrapping="Wrap"
+                           MaxWidth="380"
+                           HorizontalAlignment="Left"
+                           Margin="0,0,0,12"
+                           Text="{x:Static res:Resources.Mark_Hint}" />
+                <controls:FormField Header="{Binding MarkNumberLabel}" IsRequired="True" LabelWidth="90">
+                    <TextBox Text="{Binding MarkNumber, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+                </controls:FormField>
+                <TextBlock Margin="98,4,0,0"
+                           MaxWidth="320"
+                           HorizontalAlignment="Left"
+                           TextWrapping="Wrap"
+                           Style="{DynamicResource CaptionTextBlockStyle}"
+                           Foreground="{DynamicResource TextTertiaryBrush}"
+                           Text="{Binding StockNumberHint}"
+                           Visibility="{Binding MarkIsStock, Converter={StaticResource BoolToVis}}" />
+                <controls:FormField Header="{Binding MarkNameLabel}" LabelWidth="90" Margin="0,8,0,0"
+                                    ErrorText="{Binding MarkError}">
+                    <TextBox Text="{Binding MarkName, UpdateSourceTrigger=PropertyChanged}" />
                 </controls:FormField>
             </StackPanel>
         </controls:ContentDialog>

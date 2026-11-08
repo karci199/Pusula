@@ -464,5 +464,36 @@ namespace Pusula.Wpf.Properties
         public static string Status_SinceToday { get { return Get("Status_SinceToday"); } }
 
         #endregion
+
+        #region İşaretle
+
+        /// <summary>Elle açılmış klasörü proje yapar.</summary>
+        public static string Menu_MarkAsProject { get { return Get("Menu_MarkAsProject"); } }
+
+        /// <summary>Elle açılmış klasörü stok yapar.</summary>
+        public static string Menu_MarkAsStock { get { return Get("Menu_MarkAsStock"); } }
+
+        /// <summary>Diyalog başlığı; {0} klasör.</summary>
+        public static string Mark_ProjectTitle { get { return Get("Mark_ProjectTitle"); } }
+
+        /// <summary>Diyalog başlığı; {0} klasör.</summary>
+        public static string Mark_StockTitle { get { return Get("Mark_StockTitle"); } }
+
+        /// <summary>İşaretleme açıklaması.</summary>
+        public static string Mark_Hint { get { return Get("Mark_Hint"); } }
+
+        /// <summary>İşaretle düğmesi.</summary>
+        public static string Mark_Confirm { get { return Get("Mark_Confirm"); } }
+
+        /// <summary>Proje işaretlenince; {0} yol.</summary>
+        public static string Status_MarkedProject { get { return Get("Status_MarkedProject"); } }
+
+        /// <summary>Stok işaretlenince; {0} yol.</summary>
+        public static string Status_MarkedStock { get { return Get("Status_MarkedStock"); } }
+
+        /// <summary>Zaten işaretli klasör.</summary>
+        public static string Error_AlreadyMarked { get { return Get("Error_AlreadyMarked"); } }
+
+        #endregion
     }
 }

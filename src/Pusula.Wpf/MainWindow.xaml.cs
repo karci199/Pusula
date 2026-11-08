@@ -119,6 +119,14 @@ namespace Pusula.Wpf
             return item;
         }
 
+        private void MarkDialog_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (!viewModel.ConfirmMark())
+            {
+                Dispatcher.BeginInvoke(new Action(() => viewModel.IsMarkDialogOpen = true));
+            }
+        }
+
         private void StatusNote_PrimaryButtonClick(object sender, RoutedEventArgs e)
         {
             viewModel.ConfirmStatusNote();

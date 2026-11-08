@@ -57,6 +57,78 @@ namespace Pusula.Core.Tracking
         }
 
         /// <summary>
+        /// Elle açılmış bir klasörü proje olarak işaretler: yalnızca gizli <c>_TAKIP\proje.json</c> eklenir,
+        /// klasördeki hiçbir şeye dokunulmaz.
+        /// </summary>
+        public static CreateResult MarkAsProject(string folder, string projectNo, string name)
+        {
+            projectNo = (projectNo ?? string.Empty).Trim();
+            name = (name ?? string.Empty).Trim();
+            if (projectNo.Length == 0)
+            {
+                return CreateResult.Fail(CreateError.NumberEmpty, folder);
+            }
+
+            if (name.Length == 0)
+            {
+                return CreateResult.Fail(CreateError.NameEmpty, folder);
+            }
+
+            var info = new ProjectInfo { ProjectNo = projectNo, Name = name };
+            return Mark(folder, () => JsonFile.WriteAtomic(TrackingFiles.ProjectFile(folder), info));
+        }
+
+        /// <summary>
+        /// Elle açılmış bir klasörü stok olarak işaretler: yalnızca gizli <c>_TAKIP\stok.json</c> eklenir,
+        /// klasördeki hiçbir şeye dokunulmaz. Şablon boş kalır (klasörler elle açılmıştır).
+        /// </summary>
+        public static CreateResult MarkAsStock(string folder, string stockNo, string name, string initialStatus)
+        {
+            stockNo = (stockNo ?? string.Empty).Trim();
+            name = (name ?? string.Empty).Trim();
+            if (stockNo.Length == 0)
+            {
+                return CreateResult.Fail(CreateError.NumberEmpty, folder);
+            }
+
+            var info = new StockInfo { StockNo = stockNo, Name = name };
+            if (!string.IsNullOrEmpty(initialStatus))
+            {
+                info.SetStatus(initialStatus, string.Empty, DateTime.Today);
+            }
+
+            return Mark(folder, () => JsonFile.WriteAtomic(TrackingFiles.StockFile(folder), info));
+        }
+
+        private static CreateResult Mark(string folder, Action writeMarker)
+        {
+            if (string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder))
+            {
+                return CreateResult.Fail(CreateError.ParentMissing, string.Empty);
+            }
+
+            if (FolderReader.KindOf(folder) != FolderKind.Plain)
+            {
+                return CreateResult.Fail(CreateError.AlreadyMarked, folder);
+            }
+
+            try
+            {
+                writeMarker();
+                TrackingFiles.HideTrackingFolder(folder);
+                return CreateResult.Success(folder);
+            }
+            catch (IOException ex)
+            {
+                return CreateResult.Fail(CreateError.IoFailure, folder, ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return CreateResult.Fail(CreateError.IoFailure, folder, ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Stokun durumunu <c>stok.json</c> içine yazar (diğer alanlara dokunmaz). Dosya yoksa ya da yazılamazsa <c>false</c>.
         /// </summary>
         public static bool SetStockStatus(string stockFolder, string status, string note)

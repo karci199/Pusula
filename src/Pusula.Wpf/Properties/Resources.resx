@@ -372,4 +372,31 @@
   <data name="Status_SinceToday" xml:space="preserve">
     <value>bugünden beri</value>
   </data>
+  <data name="Menu_MarkAsProject" xml:space="preserve">
+    <value>Proje olarak işaretle</value>
+  </data>
+  <data name="Menu_MarkAsStock" xml:space="preserve">
+    <value>Stok olarak işaretle</value>
+  </data>
+  <data name="Mark_ProjectTitle" xml:space="preserve">
+    <value>Proje olarak işaretle · {0}</value>
+  </data>
+  <data name="Mark_StockTitle" xml:space="preserve">
+    <value>Stok olarak işaretle · {0}</value>
+  </data>
+  <data name="Mark_Hint" xml:space="preserve">
+    <value>Klasördeki dosyalara dokunulmaz; yalnızca gizli _TAKIP bilgi dosyası eklenir.</value>
+  </data>
+  <data name="Mark_Confirm" xml:space="preserve">
+    <value>İşaretle</value>
+  </data>
+  <data name="Status_MarkedProject" xml:space="preserve">
+    <value>Proje olarak işaretlendi: {0}</value>
+  </data>
+  <data name="Status_MarkedStock" xml:space="preserve">
+    <value>Stok olarak işaretlendi: {0}</value>
+  </data>
+  <data name="Error_AlreadyMarked" xml:space="preserve">
+    <value>Bu klasör zaten proje ya da stok olarak işaretli.</value>
+  </data>
 </root>
