@@ -467,6 +467,11 @@
                     <controls:FontIcon Glyph="{x:Static local:AppIcons.Settings}" />
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.Button_EditTypes}" Click="EditTypes_Click">
+                <MenuItem.Icon>
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Inventory}" />
+                </MenuItem.Icon>
+            </MenuItem>
         </ContextMenu>
 
         <ContextMenu x:Key="NodeMenu">
@@ -595,8 +600,8 @@
                         </Button>
                         <Button Grid.Column="3"
                                 Style="{DynamicResource IconButtonStyle}"
-                                Click="EditTemplates_Click"
-                                ToolTip="{x:Static res:Resources.Button_EditTemplates}">
+                                Click="Settings_Click"
+                                ToolTip="{x:Static res:Resources.Button_Settings}">
                             <controls:FontIcon Glyph="{x:Static local:AppIcons.Settings}" FontSize="14" />
                         </Button>
                     </Grid>

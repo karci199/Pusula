@@ -318,6 +318,36 @@ namespace Pusula.Wpf
             }
         }
 
+        // Ayarlar düğmesi: Şablonlar ve Türler.
+        private void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            var templates = new MenuItem { Header = Properties.Resources.Button_EditTemplates, Icon = new FontIcon { Glyph = AppIcons.Template } };
+            templates.Click += EditTemplates_Click;
+            var types = new MenuItem { Header = Properties.Resources.Button_EditTypes, Icon = new FontIcon { Glyph = AppIcons.Inventory } };
+            types.Click += EditTypes_Click;
+            var menu = new ContextMenu { PlacementTarget = sender as UIElement, Placement = PlacementMode.Bottom };
+            menu.Items.Add(templates);
+            menu.Items.Add(types);
+            menu.IsOpen = true;
+        }
+
+        private void EditTypes_Click(object sender, RoutedEventArgs e)
+        {
+            if (!viewModel.CanEditTemplates())
+            {
+                return;
+            }
+
+            var editor = new TypeEditorWindow(new ViewModels.TypeEditor.TypeEditorViewModel(viewModel.RootPath, viewModel.Types))
+            {
+                Owner = this,
+            };
+            if (editor.ShowDialog() == true)
+            {
+                viewModel.ReloadTypes();
+            }
+        }
+
         // Stok sayfası, Jig ve kablo: "Ekle" düğmesi genel / proje kayıtlarını menüde listeler, seçilen stoka bağlanır.
         private void StockInvAdd_Click(object sender, RoutedEventArgs e)
         {

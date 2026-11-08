@@ -672,4 +672,166 @@
   <data name="StockInv_LinkFailed" xml:space="preserve">
     <value>Bağ kaydedilemedi.</value>
   </data>
+  <data name="Button_Settings" xml:space="preserve">
+    <value>Ayarlar</value>
+  </data>
+  <data name="Button_EditTypes" xml:space="preserve">
+    <value>Türler…</value>
+  </data>
+  <data name="Status_TypesSaved" xml:space="preserve">
+    <value>Türler kaydedildi.</value>
+  </data>
+  <data name="Types_Title" xml:space="preserve">
+    <value>Türler</value>
+  </data>
+  <data name="Types_List" xml:space="preserve">
+    <value>Envanter türleri</value>
+  </data>
+  <data name="Types_Add" xml:space="preserve">
+    <value>Tür ekle</value>
+  </data>
+  <data name="Types_ListHint" xml:space="preserve">
+    <value>Her tür stok sayfasında kendi sekmesinde görünür. Stok ve proje türleri burada düzenlenmez.</value>
+  </data>
+  <data name="Types_NewName" xml:space="preserve">
+    <value>Yeni tür</value>
+  </data>
+  <data name="Types_NewPlural" xml:space="preserve">
+    <value>Yeni türler</value>
+  </data>
+  <data name="Types_Name" xml:space="preserve">
+    <value>Ad</value>
+  </data>
+  <data name="Types_Plural" xml:space="preserve">
+    <value>Çoğul (sekme başlığı)</value>
+  </data>
+  <data name="Types_Icon" xml:space="preserve">
+    <value>Simge</value>
+  </data>
+  <data name="Types_Color" xml:space="preserve">
+    <value>Renk</value>
+  </data>
+  <data name="Types_Formats" xml:space="preserve">
+    <value>Numara biçimleri · # rakam, @ harf; numara en az birine uymalı</value>
+  </data>
+  <data name="Types_Pattern" xml:space="preserve">
+    <value>Biçim</value>
+  </data>
+  <data name="Types_Label" xml:space="preserve">
+    <value>Etiket</value>
+  </data>
+  <data name="Types_Try" xml:space="preserve">
+    <value>Dene</value>
+  </data>
+  <data name="Types_TryMatch" xml:space="preserve">
+    <value>✓ {0}</value>
+  </data>
+  <data name="Types_TryNoMatch" xml:space="preserve">
+    <value>✗ hiçbir biçime uymuyor</value>
+  </data>
+  <data name="Types_SubTypes" xml:space="preserve">
+    <value>Alt türler</value>
+  </data>
+  <data name="Types_SubType" xml:space="preserve">
+    <value>Alt tür</value>
+  </data>
+  <data name="Types_RecordFolders" xml:space="preserve">
+    <value>Şablon klasörleri · yeni kayıtta açılır</value>
+  </data>
+  <data name="Types_Folder" xml:space="preserve">
+    <value>Klasör</value>
+  </data>
+  <data name="Types_Fields" xml:space="preserve">
+    <value>Alanlar · kayıt sayfasında doldurulur</value>
+  </data>
+  <data name="Types_FieldName" xml:space="preserve">
+    <value>Ad</value>
+  </data>
+  <data name="Types_FieldKind" xml:space="preserve">
+    <value>Çeşit</value>
+  </data>
+  <data name="Types_FieldUnit" xml:space="preserve">
+    <value>Birim</value>
+  </data>
+  <data name="Types_FieldChoices" xml:space="preserve">
+    <value>Seçenekler (liste için, virgülle)</value>
+  </data>
+  <data name="Types_FieldSubTypes" xml:space="preserve">
+    <value>Alt türler (boş = hepsi)</value>
+  </data>
+  <data name="Types_FieldsHint" xml:space="preserve">
+    <value>Örnek: Konnektör A · Listeden seç · DB9, SMA, N.  Uzunluk · Sayı · m.  Faz kararlı · Evet / hayır · RF.</value>
+  </data>
+  <data name="Types_Statuses" xml:space="preserve">
+    <value>Durumlar · sıralılar aşama çubuğunu oluşturur</value>
+  </data>
+  <data name="Types_StatusName" xml:space="preserve">
+    <value>Durum</value>
+  </data>
+  <data name="Types_StatusTone" xml:space="preserve">
+    <value>Renk</value>
+  </data>
+  <data name="Types_StatusSide" xml:space="preserve">
+    <value>Sıra dışı</value>
+  </data>
+  <data name="Types_StatusNote" xml:space="preserve">
+    <value>Not ister</value>
+  </data>
+  <data name="Types_StatusesHint" xml:space="preserve">
+    <value>Yeni durum en alttaki boş satıra yazılır. Var olan durumun adı değiştirilemez ve silinemez; kayıtların geçmişi bu adlara bağlı.</value>
+  </data>
+  <data name="Types_LevelFolders" xml:space="preserve">
+    <value>Düzey klasörleri</value>
+  </data>
+  <data name="Types_LevelFoldersHint" xml:space="preserve">
+    <value>Kayıtlar bu klasörlerde durduğu için yalnızca yeni türde değiştirilebilir.</value>
+  </data>
+  <data name="Types_ErrorName" xml:space="preserve">
+    <value>Türün adı boş olamaz.</value>
+  </data>
+  <data name="Types_ErrorPattern" xml:space="preserve">
+    <value>{0}: biçimde boşluk olamaz ({1}).</value>
+  </data>
+  <data name="Types_ErrorField" xml:space="preserve">
+    <value>{0}: “{1}” alanı iki kez var.</value>
+  </data>
+  <data name="Types_ErrorStatus" xml:space="preserve">
+    <value>{0}: en az bir sıralı durum gerekli.</value>
+  </data>
+  <data name="Types_ErrorDuplicate" xml:space="preserve">
+    <value>“{0}” adında iki tür var.</value>
+  </data>
+  <data name="Types_ErrorSave" xml:space="preserve">
+    <value>Kaydedilemedi: {0}</value>
+  </data>
+  <data name="FieldKind_Text" xml:space="preserve">
+    <value>Metin</value>
+  </data>
+  <data name="FieldKind_Number" xml:space="preserve">
+    <value>Sayı</value>
+  </data>
+  <data name="FieldKind_YesNo" xml:space="preserve">
+    <value>Evet / hayır</value>
+  </data>
+  <data name="FieldKind_Choice" xml:space="preserve">
+    <value>Listeden seç</value>
+  </data>
+  <data name="Tone_Neutral" xml:space="preserve">
+    <value>Gri (başlamadı)</value>
+  </data>
+  <data name="Tone_Waiting" xml:space="preserve">
+    <value>Sarı (bekliyor)</value>
+  </data>
+  <data name="Tone_Active" xml:space="preserve">
+    <value>Mavi (sürüyor)</value>
+  </data>
+  <data name="Tone_Done" xml:space="preserve">
+    <value>Yeşil (bitti)</value>
+  </data>
+  <data name="Tone_Warning" xml:space="preserve">
+    <value>Turuncu (dikkat)</value>
+  </data>
+  <data name="Tone_Failed" xml:space="preserve">
+    <value>Kırmızı (başarısız)</value>
+  </data>
 </root>

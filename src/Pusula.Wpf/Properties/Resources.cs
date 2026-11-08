@@ -796,5 +796,171 @@ namespace Pusula.Wpf.Properties
         public static string StockInv_LinkFailed { get { return Get("StockInv_LinkFailed"); } }
 
         #endregion
+
+        #region Türler
+
+        /// <summary>Ayarlar düğmesi ipucu.</summary>
+        public static string Button_Settings { get { return Get("Button_Settings"); } }
+
+        /// <summary>Türler penceresini açar.</summary>
+        public static string Button_EditTypes { get { return Get("Button_EditTypes"); } }
+
+        /// <summary>Durum çubuğu.</summary>
+        public static string Status_TypesSaved { get { return Get("Status_TypesSaved"); } }
+
+        /// <summary>Pencere başlığı.</summary>
+        public static string Types_Title { get { return Get("Types_Title"); } }
+
+        /// <summary>Sol liste başlığı.</summary>
+        public static string Types_List { get { return Get("Types_List"); } }
+
+        /// <summary>Yeni tür.</summary>
+        public static string Types_Add { get { return Get("Types_Add"); } }
+
+        /// <summary>Sol alt ipucu.</summary>
+        public static string Types_ListHint { get { return Get("Types_ListHint"); } }
+
+        /// <summary>Yeni türün başlangıç adı.</summary>
+        public static string Types_NewName { get { return Get("Types_NewName"); } }
+
+        /// <summary>Yeni türün başlangıç çoğul adı.</summary>
+        public static string Types_NewPlural { get { return Get("Types_NewPlural"); } }
+
+        /// <summary>Tür adı.</summary>
+        public static string Types_Name { get { return Get("Types_Name"); } }
+
+        /// <summary>Çoğul ad.</summary>
+        public static string Types_Plural { get { return Get("Types_Plural"); } }
+
+        /// <summary>Simge.</summary>
+        public static string Types_Icon { get { return Get("Types_Icon"); } }
+
+        /// <summary>Renk.</summary>
+        public static string Types_Color { get { return Get("Types_Color"); } }
+
+        /// <summary>Bölüm başlığı.</summary>
+        public static string Types_Formats { get { return Get("Types_Formats"); } }
+
+        /// <summary>Sütun.</summary>
+        public static string Types_Pattern { get { return Get("Types_Pattern"); } }
+
+        /// <summary>Sütun.</summary>
+        public static string Types_Label { get { return Get("Types_Label"); } }
+
+        /// <summary>Numara deneme kutusu.</summary>
+        public static string Types_Try { get { return Get("Types_Try"); } }
+
+        /// <summary>Numara uyan biçim; {0} etiket.</summary>
+        public static string Types_TryMatch { get { return Get("Types_TryMatch"); } }
+
+        /// <summary>Numara uymuyor.</summary>
+        public static string Types_TryNoMatch { get { return Get("Types_TryNoMatch"); } }
+
+        /// <summary>Bölüm başlığı.</summary>
+        public static string Types_SubTypes { get { return Get("Types_SubTypes"); } }
+
+        /// <summary>Sütun.</summary>
+        public static string Types_SubType { get { return Get("Types_SubType"); } }
+
+        /// <summary>Bölüm başlığı.</summary>
+        public static string Types_RecordFolders { get { return Get("Types_RecordFolders"); } }
+
+        /// <summary>Sütun.</summary>
+        public static string Types_Folder { get { return Get("Types_Folder"); } }
+
+        /// <summary>Bölüm başlığı.</summary>
+        public static string Types_Fields { get { return Get("Types_Fields"); } }
+
+        /// <summary>Sütun.</summary>
+        public static string Types_FieldName { get { return Get("Types_FieldName"); } }
+
+        /// <summary>Sütun.</summary>
+        public static string Types_FieldKind { get { return Get("Types_FieldKind"); } }
+
+        /// <summary>Sütun.</summary>
+        public static string Types_FieldUnit { get { return Get("Types_FieldUnit"); } }
+
+        /// <summary>Sütun.</summary>
+        public static string Types_FieldChoices { get { return Get("Types_FieldChoices"); } }
+
+        /// <summary>Sütun.</summary>
+        public static string Types_FieldSubTypes { get { return Get("Types_FieldSubTypes"); } }
+
+        /// <summary>Alan ipucu.</summary>
+        public static string Types_FieldsHint { get { return Get("Types_FieldsHint"); } }
+
+        /// <summary>Bölüm başlığı.</summary>
+        public static string Types_Statuses { get { return Get("Types_Statuses"); } }
+
+        /// <summary>Sütun.</summary>
+        public static string Types_StatusName { get { return Get("Types_StatusName"); } }
+
+        /// <summary>Sütun.</summary>
+        public static string Types_StatusTone { get { return Get("Types_StatusTone"); } }
+
+        /// <summary>Sütun.</summary>
+        public static string Types_StatusSide { get { return Get("Types_StatusSide"); } }
+
+        /// <summary>Sütun.</summary>
+        public static string Types_StatusNote { get { return Get("Types_StatusNote"); } }
+
+        /// <summary>Durum ipucu.</summary>
+        public static string Types_StatusesHint { get { return Get("Types_StatusesHint"); } }
+
+        /// <summary>Bölüm başlığı.</summary>
+        public static string Types_LevelFolders { get { return Get("Types_LevelFolders"); } }
+
+        /// <summary>İpucu.</summary>
+        public static string Types_LevelFoldersHint { get { return Get("Types_LevelFoldersHint"); } }
+
+        /// <summary>Hata.</summary>
+        public static string Types_ErrorName { get { return Get("Types_ErrorName"); } }
+
+        /// <summary>Hata.</summary>
+        public static string Types_ErrorPattern { get { return Get("Types_ErrorPattern"); } }
+
+        /// <summary>Hata.</summary>
+        public static string Types_ErrorField { get { return Get("Types_ErrorField"); } }
+
+        /// <summary>Hata.</summary>
+        public static string Types_ErrorStatus { get { return Get("Types_ErrorStatus"); } }
+
+        /// <summary>Hata.</summary>
+        public static string Types_ErrorDuplicate { get { return Get("Types_ErrorDuplicate"); } }
+
+        /// <summary>Hata.</summary>
+        public static string Types_ErrorSave { get { return Get("Types_ErrorSave"); } }
+
+        /// <summary>Alan çeşidi.</summary>
+        public static string FieldKind_Text { get { return Get("FieldKind_Text"); } }
+
+        /// <summary>Alan çeşidi.</summary>
+        public static string FieldKind_Number { get { return Get("FieldKind_Number"); } }
+
+        /// <summary>Alan çeşidi.</summary>
+        public static string FieldKind_YesNo { get { return Get("FieldKind_YesNo"); } }
+
+        /// <summary>Alan çeşidi.</summary>
+        public static string FieldKind_Choice { get { return Get("FieldKind_Choice"); } }
+
+        /// <summary>Durum rengi.</summary>
+        public static string Tone_Neutral { get { return Get("Tone_Neutral"); } }
+
+        /// <summary>Durum rengi.</summary>
+        public static string Tone_Waiting { get { return Get("Tone_Waiting"); } }
+
+        /// <summary>Durum rengi.</summary>
+        public static string Tone_Active { get { return Get("Tone_Active"); } }
+
+        /// <summary>Durum rengi.</summary>
+        public static string Tone_Done { get { return Get("Tone_Done"); } }
+
+        /// <summary>Durum rengi.</summary>
+        public static string Tone_Warning { get { return Get("Tone_Warning"); } }
+
+        /// <summary>Durum rengi.</summary>
+        public static string Tone_Failed { get { return Get("Tone_Failed"); } }
+
+        #endregion
     }
 }

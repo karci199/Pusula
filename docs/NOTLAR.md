@@ -77,9 +77,10 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 3c. ~~Stokta Jigler / Kablolar sekmeleri~~ (yapıldı): stok düzeyindeki kayıtlar + `stok.json` → `inventory` bağları; her tür
     kendi sekmesinde (türlerden kurulur; ileride Yazılımlar, Diğer, Arşiv), Ekle (genel / proje kaydını bağlar), Yeni, satır menüsü (Kaydı aç, Klasörde aç, Bağı kaldır). Genel'de özet kartları,
     sıra dışı durum ve bulunamayan bağ Dikkat'e düşer. Kalan: kaydın sayfasında "kullanan stoklar".
-3f. **Tür tanımlama ekranı:** ikonlu tür listesi, kilitli genel alanlar, türe özel alanlar (metin, sayı, tarih, seçim,
-    evet/hayır; birim), alt türler, durumlar, numara biçimleri, düzey klasörleri.
-3g. **Türe özel alanlar:** kablo (konnektör A/B, uzunluk, faz kararlı, protokol, ekran, pin yapısı), jig; foto, blok şema.
+3f. ~~Tür tanımlama ekranı~~ (yapıldı): Ayarlar → Türler…; envanter türlerinin adı, çoğulu, simgesi, rengi, numara biçimleri
+    (birden çok: JIG, JT, JX …; Dene kutusu), alt türler, alanlar (metin / sayı+birim / evet-hayır / listeden seç; alt türe göre),
+    durumlar (yeni eklenir, var olanın adı kilitli), şablon klasörleri, düzey klasörleri (yalnızca yeni türde). `turler.json`'a yazar.
+3g. **Türe özel alanlar (sıradaki):** kayıt sayfasında doldurma; değerler `kayit.json` → `fields` ve notun YAML bloğuna da yazılır. kablo (konnektör A/B, uzunluk, faz kararlı, protokol, ekran, pin yapısı), jig; foto, blok şema.
     Özellikler ortak listeden etiket gibi seçilecek.
 3h. Düzeyler arası aktarma (stok → proje → genel), adet / seri no, zimmet.
 3d. **"+ Test koşusu":** sistem + SN seç, sıradaki tur, klasör + dolu test.md üret.
@@ -107,7 +108,7 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 - `00_Proje_Geneli` iç yapısı henüz kararlaştırılmadı (öneri: Sartname, Toplantilar, Yazismalar, Planlama).
 - Şablonda kullanılmayan modülü kütüphaneden tamamen silme yok (şimdilik listede kalır).
 - Test kütüphanesi seçilmedi (xUnit / NUnit / MSTest); `Pusula.Tests` projesi yok. Şimdilik denemeler
-  geçici klasörde PowerShell betikleriyle yapılıyor (şablon düzenleyici 32, özet 13, durum 28, işaretleme 18, test koşuları 17, envanter 22 + 26, kayıt dosyaları 18, stok envanteri 12 kontrol).
+  geçici klasörde PowerShell betikleriyle yapılıyor (şablon düzenleyici 32, özet 13, durum 28, işaretleme 18, test koşuları 17, envanter 22 + 26, kayıt dosyaları 18, stok envanteri 13, türler 14 kontrol).
 - Git kullanıcı adı bu makinede tanımlı değil; commit'ler tek seferlik `-c user.name/user.email` ile atılıyor.
 
 ## Çalıştırma

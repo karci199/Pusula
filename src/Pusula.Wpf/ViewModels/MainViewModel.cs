@@ -515,6 +515,13 @@ namespace Pusula.Wpf.ViewModels
             }
         }
 
+        /// <summary>Türler kaydedildikten sonra ağacı ve sayfayı yeniden kurar.</summary>
+        public void ReloadTypes()
+        {
+            Refresh();
+            Status = Resources.Status_TypesSaved;
+        }
+
         /// <summary>Şablon düzenleyici açılabilir mi; değilse durum metnini doldurur.</summary>
         public bool CanEditTemplates()
         {

@@ -51,5 +51,24 @@ namespace Pusula.Core.Types
 
             return set;
         }
+
+        /// <summary>Türleri dosyaya yazar (geçici dosya + yeniden adlandırma). Yazılamazsa hata mesajı, başarıda boş döner.</summary>
+        public static string Save(string root, TypeSet set)
+        {
+            try
+            {
+                Directory.CreateDirectory(Path.Combine(root, TemplateStore.FolderName));
+                JsonFile.WriteAtomic(FilePath(root), set);
+                return string.Empty;
+            }
+            catch (IOException ex)
+            {
+                return ex.Message;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return ex.Message;
+            }
+        }
     }
 }

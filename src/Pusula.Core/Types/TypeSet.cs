@@ -217,6 +217,7 @@ namespace Pusula.Core.Types
             SubTypes = new List<string>();
             Statuses = new List<StatusDefinition>();
             SideStatuses = new List<StatusDefinition>();
+            Fields = new List<FieldDefinition>();
         }
 
         /// <summary>Değişmez anahtar (örn. stock, jig).</summary>
@@ -279,6 +280,16 @@ namespace Pusula.Core.Types
         [DataMember(Name = "recordFolders", Order = 14, EmitDefaultValue = false)]
         public List<string> RecordFolders { get; set; } = new List<string>();
 
+        /// <summary>Türe özel alanlar (konnektör, uzunluk …); kayıt sayfasında doldurulur.</summary>
+        [DataMember(Name = "fields", Order = 15, EmitDefaultValue = false)]
+        public List<FieldDefinition> Fields { get; set; } = new List<FieldDefinition>();
+
+        /// <summary>Alt türe göre geçerli alanlar (alanın alt tür listesi boşsa her alt türde geçerlidir).</summary>
+        public IEnumerable<FieldDefinition> FieldsFor(string subType)
+        {
+            return Fields.Where(f => f.SubTypes.Count == 0 || f.SubTypes.Any(s => string.Equals(s, subType, StringComparison.OrdinalIgnoreCase)));
+        }
+
         /// <summary>Numaraya uyan ilk biçim; uymuyorsa <c>null</c>.</summary>
         public NumberFormat? MatchNumber(string number)
         {
@@ -301,6 +312,88 @@ namespace Pusula.Core.Types
         public string InitialStatus
         {
             get { return Statuses.Count == 0 ? string.Empty : Statuses[0].Name; }
+        }
+    }
+
+    /// <summary>Alan çeşitleri.</summary>
+    public static class FieldKind
+    {
+        /// <summary>Serbest metin.</summary>
+        public const string Text = "text";
+
+        /// <summary>Sayı (birimi olabilir).</summary>
+        public const string Number = "number";
+
+        /// <summary>Evet / hayır.</summary>
+        public const string YesNo = "yesno";
+
+        /// <summary>Listeden seçim.</summary>
+        public const string Choice = "choice";
+
+        /// <summary>Bütün çeşitler, ekrandaki sırayla.</summary>
+        public static readonly string[] All = { Text, Number, YesNo, Choice };
+    }
+
+    /// <summary>Türe özel bir alanın tanımı (örn. Uzunluk, sayı, m; yalnızca RF alt türünde).</summary>
+    [DataContract]
+    public sealed class FieldDefinition
+    {
+        /// <summary>Serileştirici kurucuyu çağırmaz; dosyada olmayan alanlar boş değerle başlar.</summary>
+        [OnDeserializing]
+        private void OnDeserializing(StreamingContext context)
+        {
+            Key = string.Empty;
+            Name = string.Empty;
+            Kind = FieldKind.Text;
+            Unit = string.Empty;
+            Choices = new List<string>();
+            SubTypes = new List<string>();
+        }
+
+        /// <summary>Değişmez anahtar (<c>kayit.json</c> ve YAML'da kullanılır, örn. <c>konnektor_a</c>).</summary>
+        [DataMember(Name = "key", Order = 0)]
+        public string Key { get; set; } = string.Empty;
+
+        /// <summary>Görünen ad ("Konnektör A").</summary>
+        [DataMember(Name = "name", Order = 1)]
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>Çeşit: text, number, yesno, choice (<see cref="FieldKind"/>).</summary>
+        [DataMember(Name = "kind", Order = 2)]
+        public string Kind { get; set; } = FieldKind.Text;
+
+        /// <summary>Birim (sayı için, örn. "m"); boş olabilir.</summary>
+        [DataMember(Name = "unit", Order = 3, EmitDefaultValue = false)]
+        public string Unit { get; set; } = string.Empty;
+
+        /// <summary>Seçenekler (liste çeşidi için).</summary>
+        [DataMember(Name = "choices", Order = 4, EmitDefaultValue = false)]
+        public List<string> Choices { get; set; } = new List<string>();
+
+        /// <summary>Geçerli olduğu alt türler; boşsa hepsi.</summary>
+        [DataMember(Name = "subTypes", Order = 5, EmitDefaultValue = false)]
+        public List<string> SubTypes { get; set; } = new List<string>();
+
+        /// <summary>Addan anahtar üretir: küçük harf, Türkçe harfler sadeleşir, boşluk yerine alt çizgi ("Konnektör A" → "konnektor_a").</summary>
+        public static string KeyFrom(string name)
+        {
+            var map = new Dictionary<char, char> { { 'ç', 'c' }, { 'ğ', 'g' }, { 'ı', 'i' }, { 'ö', 'o' }, { 'ş', 's' }, { 'ü', 'u' } };
+            var builder = new System.Text.StringBuilder();
+            foreach (var raw in (name ?? string.Empty).Trim().ToLower(new System.Globalization.CultureInfo("tr-TR")))
+            {
+                char mapped;
+                var c = map.TryGetValue(raw, out mapped) ? mapped : raw;
+                if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))
+                {
+                    builder.Append(c);
+                }
+                else if (builder.Length > 0 && builder[builder.Length - 1] != '_')
+                {
+                    builder.Append('_');
+                }
+            }
+
+            return builder.ToString().Trim('_');
         }
     }
 
