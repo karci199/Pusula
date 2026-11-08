@@ -345,4 +345,31 @@
   <data name="Format_Today" xml:space="preserve">
     <value>bugün {0}</value>
   </data>
+  <data name="Col_Status" xml:space="preserve">
+    <value>Durum</value>
+  </data>
+  <data name="Status_None" xml:space="preserve">
+    <value>durumsuz</value>
+  </data>
+  <data name="Status_Since" xml:space="preserve">
+    <value>{0} tarihinden beri</value>
+  </data>
+  <data name="Status_ChangeHint" xml:space="preserve">
+    <value>Durumu değiştir</value>
+  </data>
+  <data name="Status_StatusChanged" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="Field_StatusNote" xml:space="preserve">
+    <value>Not</value>
+  </data>
+  <data name="Error_StockNumberFormat" xml:space="preserve">
+    <value>Stok numarası tanımlı biçimlere uymuyor. Biçimler: {0}</value>
+  </data>
+  <data name="Format_TodayOnly" xml:space="preserve">
+    <value>bugün</value>
+  </data>
+  <data name="Status_SinceToday" xml:space="preserve">
+    <value>bugünden beri</value>
+  </data>
 </root>

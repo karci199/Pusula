@@ -37,7 +37,7 @@ namespace Pusula.Core.Tracking
         /// <c>&lt;projeKlasörü&gt;\&lt;stokNo&gt;</c> klasörünü, <c>_TAKIP\stok.json</c> dosyasını
         /// ve şablondan gelen alt klasörleri oluşturur. Ad boş olabilir.
         /// </summary>
-        public static CreateResult CreateStock(string projectFolder, string stockNo, string name, string template, IEnumerable<string> subFolders)
+        public static CreateResult CreateStock(string projectFolder, string stockNo, string name, string template, IEnumerable<string> subFolders, string initialStatus = "")
         {
             stockNo = (stockNo ?? string.Empty).Trim();
             name = (name ?? string.Empty).Trim();
@@ -48,7 +48,40 @@ namespace Pusula.Core.Tracking
             }
 
             var info = new StockInfo { StockNo = stockNo, Name = name, Template = template ?? string.Empty };
+            if (!string.IsNullOrEmpty(initialStatus))
+            {
+                info.SetStatus(initialStatus, string.Empty, DateTime.Today);
+            }
+
             return CreateFolder(projectFolder, stockNo, subFolders, folder => JsonFile.WriteAtomic(TrackingFiles.StockFile(folder), info));
+        }
+
+        /// <summary>
+        /// Stokun durumunu <c>stok.json</c> içine yazar (diğer alanlara dokunmaz). Dosya yoksa ya da yazılamazsa <c>false</c>.
+        /// </summary>
+        public static bool SetStockStatus(string stockFolder, string status, string note)
+        {
+            var path = TrackingFiles.StockFile(stockFolder);
+            var info = JsonFile.TryRead<StockInfo>(path);
+            if (info == null)
+            {
+                return false;
+            }
+
+            info.SetStatus(status, note, DateTime.Today);
+            try
+            {
+                JsonFile.WriteAtomic(path, info);
+                return true;
+            }
+            catch (IOException)
+            {
+                return false;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
         }
 
         /// <summary>

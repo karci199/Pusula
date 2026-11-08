@@ -62,6 +62,69 @@
             </Style.Triggers>
         </Style>
 
+        <!-- Durum etiketi: renk, durumun anlamına göre (neutral, waiting, active, done, warning). -->
+        <DataTemplate x:Key="StatusChipTemplate">
+            <Border x:Name="Chip"
+                    CornerRadius="10"
+                    Padding="10,2"
+                    BorderThickness="1"
+                    Background="{DynamicResource ControlFillColorSecondaryBrush}"
+                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+                <TextBlock x:Name="ChipText"
+                           Text="{Binding Name}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Tone}" Value="waiting">
+                    <Setter TargetName="ChipText" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Tone}" Value="active">
+                    <Setter TargetName="Chip" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                    <Setter TargetName="ChipText" Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Tone}" Value="done">
+                    <Setter TargetName="Chip" Property="Background" Value="{DynamicResource SystemFillColorSuccessBackgroundBrush}" />
+                    <Setter TargetName="Chip" Property="BorderBrush" Value="Transparent" />
+                    <Setter TargetName="ChipText" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Tone}" Value="warning">
+                    <Setter TargetName="Chip" Property="Background" Value="{DynamicResource SystemFillColorCautionBackgroundBrush}" />
+                    <Setter TargetName="Chip" Property="BorderBrush" Value="Transparent" />
+                    <Setter TargetName="ChipText" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <!-- Aşama çubuğunda bir adım: geçilmiş, şu an, gelecek. -->
+        <DataTemplate x:Key="StatusStepTemplate">
+            <Border x:Name="Step"
+                    Margin="0,0,4,0"
+                    Padding="4,5"
+                    CornerRadius="{DynamicResource ControlCornerRadius}"
+                    Background="{DynamicResource ControlFillColorSecondaryBrush}">
+                <TextBlock x:Name="StepText"
+                           Text="{Binding Name}"
+                           FontSize="11"
+                           HorizontalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"
+                           Foreground="{DynamicResource TextTertiaryBrush}" />
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding State}" Value="past">
+                    <Setter TargetName="Step" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                    <Setter TargetName="StepText" Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding State}" Value="current">
+                    <Setter TargetName="Step" Property="Background" Value="{DynamicResource AccentBrush}" />
+                    <Setter TargetName="StepText" Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <!-- Durum menüsü: her açılışta tür kalıbından kurulur (MainWindow.xaml.cs). -->
+        <ContextMenu x:Key="StatusMenu" Opened="StatusMenu_Opened" />
+
         <!-- Menüler ağaçla aynı DataContext'i kod tarafında alır (MainWindow.xaml.cs). -->
         <ContextMenu x:Key="AddMenu">
             <MenuItem Header="{Binding NewStockMenuText}"
@@ -272,6 +335,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -290,7 +354,24 @@
                         <TextBlock Style="{DynamicResource CaptionTextBlockStyle}"
                                    Foreground="{DynamicResource TextSecondaryBrush}"
                                    Text="{Binding DataContext.Detail.Subtitle, RelativeSource={RelativeSource AncestorType=Window}}" />
-                        <TextBlock Style="{DynamicResource SubtitleTextBlockStyle}" Text="{Binding Title}" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{DynamicResource SubtitleTextBlockStyle}" Text="{Binding Title}" VerticalAlignment="Center" />
+                            <controls:DropDownButton Margin="14,0,0,0"
+                                                     Padding="4,2"
+                                                     VerticalAlignment="Center"
+                                                     Menu="{StaticResource StatusMenu}"
+                                                     ToolTip="{x:Static res:Resources.Status_ChangeHint}"
+                                                     Visibility="{Binding DataContext.Detail.IsStock, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}">
+                                <ContentPresenter Content="{Binding DataContext.Detail.Status, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                  ContentTemplate="{StaticResource StatusChipTemplate}" />
+                            </controls:DropDownButton>
+                            <TextBlock Margin="10,0,0,0"
+                                       VerticalAlignment="Center"
+                                       Style="{DynamicResource CaptionTextBlockStyle}"
+                                       Foreground="{DynamicResource TextTertiaryBrush}"
+                                       Text="{Binding DataContext.Detail.StatusInfo, RelativeSource={RelativeSource AncestorType=Window}}"
+                                       Visibility="{Binding DataContext.Detail.IsStock, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
+                        </StackPanel>
                         <TextBlock Style="{DynamicResource CaptionTextBlockStyle}"
                                    Foreground="{DynamicResource TextTertiaryBrush}"
                                    TextTrimming="CharacterEllipsis"
@@ -306,8 +387,36 @@
                     </Button>
                 </Grid>
 
+                <!-- Stok: aşama çubuğu -->
+                <ItemsControl Grid.Row="1" Margin="0,14,0,0"
+                              ItemsSource="{Binding Detail.Steps}"
+                              ItemTemplate="{StaticResource StatusStepTemplate}"
+                              Visibility="{Binding Detail.IsStock, Converter={StaticResource BoolToVis}}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="1" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+                <!-- Proje: durum dağılımı -->
+                <ItemsControl Grid.Row="1" Margin="0,14,0,0"
+                              ItemsSource="{Binding Detail.Distribution}"
+                              Visibility="{Binding Detail.IsProject, Converter={StaticResource BoolToVis}}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource StatusChipTemplate}" Margin="0,0,6,0" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
                 <!-- Özet kutucukları -->
-                <ItemsControl Grid.Row="1" Margin="0,16,0,0" ItemsSource="{Binding Detail.Tiles}">
+                <ItemsControl Grid.Row="2" Margin="0,16,0,0" ItemsSource="{Binding Detail.Tiles}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <UniformGrid Rows="1" />
@@ -336,7 +445,7 @@
                 </ItemsControl>
 
                 <!-- Hesaplanıyor -->
-                <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,16,0,0"
+                <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,16,0,0"
                             Visibility="{Binding Detail.IsLoading, Converter={StaticResource BoolToVis}}">
                     <controls:ProgressRing Width="16" Height="16" IsActive="True" />
                     <TextBlock Margin="8,0,0,0" Foreground="{DynamicResource TextSecondaryBrush}"
@@ -344,24 +453,31 @@
                 </StackPanel>
 
                 <!-- Proje: stok tablosu -->
-                <ListView Grid.Row="2" Margin="0,16,0,0"
+                <ListView Grid.Row="3" Margin="0,16,0,0"
                           ItemsSource="{Binding Detail.Rows}"
                           ItemContainerStyle="{StaticResource DetailRowStyle}"
                           MouseDoubleClick="DetailList_MouseDoubleClick"
                           Visibility="{Binding Detail.IsProject, Converter={StaticResource BoolToVis}}">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="{x:Static res:Resources.Col_Stock}" Width="200" DisplayMemberBinding="{Binding Name}" />
-                            <GridViewColumn Header="{x:Static res:Resources.Col_Template}" Width="150" DisplayMemberBinding="{Binding Template}" />
+                            <GridViewColumn Header="{x:Static res:Resources.Col_Stock}" Width="140" DisplayMemberBinding="{Binding Name}" />
+                            <GridViewColumn Header="{x:Static res:Resources.Col_Status}" Width="160">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ContentPresenter Content="{Binding Status}" ContentTemplate="{StaticResource StatusChipTemplate}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="{x:Static res:Resources.Col_Template}" Width="130" DisplayMemberBinding="{Binding Template}" />
                             <GridViewColumn Header="{x:Static res:Resources.Col_Files}" Width="80" DisplayMemberBinding="{Binding FileCount}" />
                             <GridViewColumn Header="{x:Static res:Resources.Col_Size}" Width="100" DisplayMemberBinding="{Binding Size}" />
-                            <GridViewColumn Header="{x:Static res:Resources.Col_LastChange}" Width="170" DisplayMemberBinding="{Binding LastChange}" />
+                            <GridViewColumn Header="{x:Static res:Resources.Col_LastChange}" Width="150" DisplayMemberBinding="{Binding LastChange}" />
                         </GridView>
                     </ListView.View>
                 </ListView>
 
                 <!-- Stok: klasör tablosu -->
-                <ListView Grid.Row="2" Margin="0,16,0,0"
+                <ListView Grid.Row="3" Margin="0,16,0,0"
                           ItemsSource="{Binding Detail.Rows}"
                           ItemContainerStyle="{StaticResource DetailRowStyle}"
                           MouseDoubleClick="DetailList_MouseDoubleClick"
@@ -382,7 +498,7 @@
                     </ListView.View>
                 </ListView>
 
-                <TextBlock Grid.Row="3" Margin="0,8,0,0"
+                <TextBlock Grid.Row="4" Margin="0,8,0,0"
                            Style="{DynamicResource CaptionTextBlockStyle}"
                            Foreground="{DynamicResource TextTertiaryBrush}"
                            Text="{Binding Detail.Note}" />
@@ -428,6 +544,13 @@
                     <TextBox Text="{Binding NewStockNo, UpdateSourceTrigger=PropertyChanged}"
                              IsVisibleChanged="FocusWhenVisible" />
                 </controls:FormField>
+                <TextBlock Margin="98,4,0,0"
+                           MaxWidth="320"
+                           HorizontalAlignment="Left"
+                           TextWrapping="Wrap"
+                           Style="{DynamicResource CaptionTextBlockStyle}"
+                           Foreground="{DynamicResource TextTertiaryBrush}"
+                           Text="{Binding StockNumberHint}" />
                 <controls:FormField Header="{x:Static res:Resources.Field_StockName}" LabelWidth="90"
                                     Margin="0,8,0,0"
                                     ErrorText="{Binding StockError}">
@@ -443,6 +566,18 @@
                     <ItemsControl ItemsSource="{Binding StockModules}" ItemTemplate="{StaticResource ModuleOptionTemplate}" />
                 </controls:FormField>
             </StackPanel>
+        </controls:ContentDialog>
+
+        <!-- Durum notu (Beklemede gibi) -->
+        <controls:ContentDialog Grid.RowSpan="3"
+                                IsOpen="{Binding IsStatusNoteOpen, Mode=TwoWay}"
+                                Title="{Binding StatusNoteTitle}"
+                                PrimaryButtonText="{x:Static res:Resources.ModuleDialog_Apply}"
+                                CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                PrimaryButtonClick="StatusNote_PrimaryButtonClick">
+            <controls:FormField MinWidth="320" Header="{x:Static res:Resources.Field_StatusNote}" LabelWidth="60">
+                <TextBox Text="{Binding StatusNoteText, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+            </controls:FormField>
         </controls:ContentDialog>
 
         <!-- Modül ekle -->

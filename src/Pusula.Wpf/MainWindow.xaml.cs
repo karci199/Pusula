@@ -71,6 +71,59 @@ namespace Pusula.Wpf
             }
         }
 
+        // Durum menüsü her açılışta tür kalıbından kurulur: sıralı durumlar, ayraç, sıra dışı durumlar.
+        private void StatusMenu_Opened(object sender, RoutedEventArgs e)
+        {
+            var menu = (ContextMenu)sender;
+            menu.Items.Clear();
+            var type = viewModel.Types.Stock;
+            var current = viewModel.Detail.Status.Name;
+
+            foreach (var status in type.Statuses)
+            {
+                menu.Items.Add(CreateStatusItem(status, current));
+            }
+
+            if (type.SideStatuses.Count > 0)
+            {
+                menu.Items.Add(new Separator());
+                foreach (var status in type.SideStatuses)
+                {
+                    menu.Items.Add(CreateStatusItem(status, current));
+                }
+            }
+        }
+
+        private MenuItem CreateStatusItem(Core.Types.StatusDefinition status, string current)
+        {
+            var item = new MenuItem
+            {
+                Header = status.NeedsNote ? status.Name + "…" : status.Name,
+            };
+            if (string.Equals(status.Name, current, StringComparison.OrdinalIgnoreCase))
+            {
+                item.Icon = new FontIcon { Glyph = AppIcons.Check };
+            }
+
+            item.Click += (s, args) =>
+            {
+                if (status.NeedsNote)
+                {
+                    viewModel.AskStatusNote(status.Name);
+                }
+                else
+                {
+                    viewModel.SetStockStatus(status.Name, string.Empty);
+                }
+            };
+            return item;
+        }
+
+        private void StatusNote_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            viewModel.ConfirmStatusNote();
+        }
+
         // Özet tablosunda satıra çift tıklayınca o klasör açılır.
         private void DetailList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

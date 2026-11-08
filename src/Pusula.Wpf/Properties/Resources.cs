@@ -425,5 +425,44 @@ namespace Pusula.Wpf.Properties
         public static string Format_Today { get { return Get("Format_Today"); } }
 
         #endregion
+
+        #region Durum
+
+        /// <summary>Sütun: durum.</summary>
+        public static string Col_Status { get { return Get("Col_Status"); } }
+
+        /// <summary>Durumu verilmemiş stoklar (dağılımda).</summary>
+        public static string Status_None { get { return Get("Status_None"); } }
+
+        /// <summary>Durumun verildiği tarih; {0} tarih.</summary>
+        public static string Status_Since { get { return Get("Status_Since"); } }
+
+        /// <summary>Durum etiketinin ipucu.</summary>
+        public static string Status_ChangeHint { get { return Get("Status_ChangeHint"); } }
+
+        /// <summary>Durum değişince alt çubuk; {0} stok, {1} durum.</summary>
+        public static string Status_StatusChanged { get { return Get("Status_StatusChanged"); } }
+
+        /// <summary>Durum notu alanı.</summary>
+        public static string Field_StatusNote { get { return Get("Field_StatusNote"); } }
+
+        /// <summary>Biçime uymayan stok numarası; {0} biçimler.</summary>
+        public static string Error_StockNumberFormat { get { return Get("Error_StockNumberFormat"); } }
+
+        #endregion
+
+        #region Biçim
+
+        /// <summary>Saatsiz bugünkü tarih.</summary>
+        public static string Format_TodayOnly { get { return Get("Format_TodayOnly"); } }
+
+        #endregion
+
+        #region Durum
+
+        /// <summary>Durum bugün verildiyse.</summary>
+        public static string Status_SinceToday { get { return Get("Status_SinceToday"); } }
+
+        #endregion
     }
 }

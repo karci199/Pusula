@@ -12,7 +12,7 @@ namespace Pusula.Core.Scanning
     public sealed class SummaryRow
     {
         /// <summary>Satırı oluşturur.</summary>
-        public SummaryRow(string name, string path, string template, FolderStats stats, bool isSpecial, bool isMissing)
+        public SummaryRow(string name, string path, string template, FolderStats stats, bool isSpecial, bool isMissing, string status = "")
         {
             Name = name;
             Path = path;
@@ -20,6 +20,7 @@ namespace Pusula.Core.Scanning
             Stats = stats;
             IsSpecial = isSpecial;
             IsMissing = isMissing;
+            Status = status ?? string.Empty;
         }
 
         /// <summary>Klasör adı.</summary>
@@ -39,19 +40,23 @@ namespace Pusula.Core.Scanning
 
         /// <summary>Şablonda var ama diskte yok.</summary>
         public bool IsMissing { get; }
+
+        /// <summary>Stok satırında ana durum; diğerlerinde boş.</summary>
+        public string Status { get; }
     }
 
     /// <summary>Bir proje ya da stok için özet: satırlar ve toplam.</summary>
     public sealed class FolderSummary
     {
         /// <summary>Özeti oluşturur.</summary>
-        public FolderSummary(IReadOnlyList<SummaryRow> rows, FolderStats total, int stockCount, string template, FolderStats general)
+        public FolderSummary(IReadOnlyList<SummaryRow> rows, FolderStats total, int stockCount, string template, FolderStats general, StockInfo? stock = null)
         {
             Rows = rows;
             Total = total;
             StockCount = stockCount;
             Template = template;
             General = general;
+            Stock = stock;
         }
 
         /// <summary>Satırlar (projede stoklar, stokta klasörler).</summary>
@@ -68,6 +73,9 @@ namespace Pusula.Core.Scanning
 
         /// <summary>Projede proje geneli klasörlerin toplamı; stokta boş.</summary>
         public FolderStats General { get; }
+
+        /// <summary>Stok özetinde <c>stok.json</c> içeriği (durum dahil); projede <c>null</c>.</summary>
+        public StockInfo? Stock { get; }
 
         /// <summary>
         /// Proje özeti: içindeki her stok için istatistik ve şablon; proje geneli klasörler ayrı toplanır.
@@ -104,7 +112,7 @@ namespace Pusula.Core.Scanning
                 if (FolderReader.KindOf(child) == FolderKind.Stock)
                 {
                     var info = JsonFile.TryRead<StockInfo>(TrackingFiles.StockFile(child));
-                    rows.Add(new SummaryRow(name, child, info?.Template ?? string.Empty, stats, special, false));
+                    rows.Add(new SummaryRow(name, child, info?.Template ?? string.Empty, stats, special, false, info?.Status ?? string.Empty));
                 }
             }
 
@@ -160,7 +168,7 @@ namespace Pusula.Core.Scanning
                 .OrderBy(r => r.Name.StartsWith("_", StringComparison.Ordinal))
                 .ThenBy(r => r.Name, StringComparer.OrdinalIgnoreCase)
                 .ToList();
-            return new FolderSummary(rows, total, 0, template, FolderStats.Empty);
+            return new FolderSummary(rows, total, 0, template, FolderStats.Empty, info);
         }
 
         private static IEnumerable<string> SafeDirectories(string folder)

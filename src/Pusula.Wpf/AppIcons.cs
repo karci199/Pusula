@@ -36,6 +36,9 @@
         /// <summary>Düzenle (kalem).</summary>
         public const string Edit = "";
 
+        /// <summary>Seçili (onay işareti).</summary>
+        public const string Check = "";
+
         /// <summary>Listeden çıkar (✕).</summary>
         public const string Remove = "";
     }

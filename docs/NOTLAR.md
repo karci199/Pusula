@@ -15,6 +15,12 @@ Son güncelleme: 08.11.2026. Dal: `claude/pusula-project-setup-c6ce02` (push edi
 - **Sağ panel özeti:** proje seçilince stok tablosu (şablon, dosya, boyut, son değişiklik) ve proje geneli dosya sayısı;
   stok seçilince klasör tablosu (dosya, boyut, son değişen dosya), boş/eksik/özel klasörler soluk. Sayım arka planda.
   `_` ile başlayan klasörler (`_ARSIV`, `_TAKIP`) toplamlara girmez. Satıra çift tıklayınca klasör açılır.
+- **Tür kalıbı:** kökte gizli `_PUSULA\turler.json`. Her tür (Proje, Stok, Jig, Kablo, Yazılım): numara biçimleri
+  (`#` rakam, `@` harf; örn. `@@-####-####`, `JY-####-####` geliştirme), alt türler, sıralı ve sıra dışı durumlar
+  (renk anlamı: neutral/waiting/active/done/warning, not isteyen durum). Ortak etiket listesi. Yeni tür = dosyaya blok.
+- **Stok durumu:** Hazırlık → Ölçüm bekliyor → Testte → Tamamlandı → Üretime teslim edildi; sıra dışı Beklemede (not ister).
+  Başlıkta durum etiketi (tıkla, değiştir), aşama çubuğu, "… tarihinden beri · not". `stok.json` içine status/statusSince/statusNote.
+  Yeni stok "Hazırlık" ile başlar. Biçime uymayan stok numarası kabul edilmez. Proje tablosunda Durum sütunu ve durum dağılımı.
 
 ## Stok klasör yapısı (kararlaştırılan)
 
@@ -37,11 +43,20 @@ Kural: kalifikasyona ait her şey `04_Kalifikasyon` altında; geri kalanı tür�
 ## Sıradaki adımlar (kullanıcıyla konuşulan sıra)
 
 1. ~~Sağ panel özeti~~ (yapıldı).
-2. **Durum:** stoka basit bir durum (örn. Planlandı / Testte / Bitti). Ayrıntıya girmeden.
-3. **Genel durum özetleri:** proje, stok ve kök düzeyinde "ÇK testleri ne durumda, diğer testler, jigi olanlar" gibi
+2. ~~Durum~~ (yapıldı: tür kalıbı + stok durumu).
+3. **Test kalemleri:** ÇK, İşlevsel, Kalifikasyon; alt kalemler (RE102, CS114 …); her biri Başlamadı / Devam ediyor /
+   Geçti / Kaldı / Gerek yok. Ana durum ürünü anlatır, uzun süren ÇK kendi satırında ilerler ("1 açık test: ÇK").
+   İçeriği kullanıcıyla ayrıca konuşulacak.
+4. **Envanter türleri:** "+" menüsünden Yeni jig / kablo / yazılım (tür kalıbından); alt tür (tek seçim) + etiketler
+   (çoklu: SATIMO, VNA, ÇK …) + durum. Ağaçta Envanter bölümü.
+5. **Seri numaraları ve tekrar eden testler:** bir stokun aynı ya da farklı SN'leri birkaç kez test edilir.
+6. **Yazılım sürümleri:** bir yazılımın birden çok sürümü; git tam entegre değil, elle sürüm kaydı da olmalı.
+7. **Tür düzenleyici ekranı** (Şablonlar penceresine benzer; önce mock).
+8. **Genel durum özetleri:** proje, stok ve kök düzeyinde "ÇK testleri ne durumda, diğer testler, jigi olanlar" gibi
    basit özet listeleri (sağ paneldeki tablolar gibi).
-4. Eski stoklara eksik alt klasörleri ekleme ("Eksikleri tamamla").
-5. Envanter (jig, kablo, cihaz) ve Kişi türleri.
+9. Eski stoklara eksik alt klasörleri ekleme ("Eksikleri tamamla").
+10. Kişi türü.
+11. Otomatik öneriler (karar kullanıcıda): "3 haftadır dosya değişmedi ama Testte", "kalibrasyon geçti", "SATIMO'ya sonuç geldi".
 
 ## Bekleyen işler
 
@@ -52,7 +67,7 @@ Kural: kalifikasyona ait her şey `04_Kalifikasyon` altında; geri kalanı tür�
 - `00_Proje_Geneli` iç yapısı henüz kararlaştırılmadı (öneri: Sartname, Toplantilar, Yazismalar, Planlama).
 - Şablonda kullanılmayan modülü kütüphaneden tamamen silme yok (şimdilik listede kalır).
 - Test kütüphanesi seçilmedi (xUnit / NUnit / MSTest); `Pusula.Tests` projesi yok. Şimdilik denemeler
-  geçici klasörde PowerShell betikleriyle yapılıyor (şablon düzenleyici 32, özet 13 kontrol).
+  geçici klasörde PowerShell betikleriyle yapılıyor (şablon düzenleyici 32, özet 13, durum 28 kontrol).
 - Git kullanıcı adı bu makinede tanımlı değil; commit'ler tek seferlik `-c user.name/user.email` ile atılıyor.
 
 ## Çalıştırma

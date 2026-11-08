@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Input;
 using Pusula.Core.Templates;
 using Pusula.Core.Tracking;
+using Pusula.Core.Types;
 using Pusula.Wpf.Mvvm;
 using Pusula.Wpf.Properties;
 
@@ -35,6 +36,7 @@ namespace Pusula.Wpf.ViewModels
         private string moduleStockFolder = string.Empty;
 
         private TemplateSet templates = TemplateSet.CreateDefault();
+        private TypeSet types = TypeSet.CreateDefault();
 
         /// <summary>Komutları hazırlar.</summary>
         public MainViewModel()
@@ -88,7 +90,7 @@ namespace Pusula.Wpf.ViewModels
                 {
                     OnPropertyChanged(nameof(HasSelection));
                     OnPropertyChanged(nameof(NewStockMenuText));
-                    Detail.Load(selectedNode, templates);
+                    Detail.Load(selectedNode, templates, types);
                 }
             }
         }
@@ -142,6 +144,7 @@ namespace Pusula.Wpf.ViewModels
             }
 
             templates = TemplateStore.LoadOrCreate(rootPath);
+            types = TypeStore.LoadOrCreate(rootPath);
             foreach (var entry in FolderReader.ListChildren(rootPath))
             {
                 var node = new TreeNodeViewModel(entry);
@@ -257,6 +260,16 @@ namespace Pusula.Wpf.ViewModels
             }
         }
 
+        /// <summary>Kabul edilen stok numarası biçimleri (örnekle): "AA-0000-0000 · JY-0000-0000".</summary>
+        public string StockNumberHint
+        {
+            get
+            {
+                var examples = types.Stock.NumberFormats.Select(f => NumberPattern.Example(f.Pattern) + " (" + f.Label + ")");
+                return string.Join(" · ", examples);
+            }
+        }
+
         /// <summary>Girilen stok numarası.</summary>
         public string NewStockNo
         {
@@ -311,6 +324,7 @@ namespace Pusula.Wpf.ViewModels
             NewStockNo = string.Empty;
             NewStockName = string.Empty;
             StockError = string.Empty;
+            OnPropertyChanged(nameof(StockNumberHint));
 
             StockModules.Clear();
             foreach (var module in templates.Modules)
@@ -334,12 +348,19 @@ namespace Pusula.Wpf.ViewModels
         /// </summary>
         public bool ConfirmNewStock()
         {
+            if (!types.Stock.AcceptsNumber(NewStockNo))
+            {
+                StockError = string.Format(Resources.Error_StockNumberFormat, StockNumberHint);
+                return false;
+            }
+
             var result = ProjectService.CreateStock(
                 stockParentFolder,
                 NewStockNo,
                 NewStockName,
                 SelectedTemplate,
-                templates.StockFoldersFor(StockModules.Where(m => m.IsChecked).Select(m => m.Module.Key)));
+                templates.StockFoldersFor(StockModules.Where(m => m.IsChecked).Select(m => m.Module.Key)),
+                types.Stock.InitialStatus);
             if (!result.Succeeded)
             {
                 StockError = ErrorText(result);
@@ -422,6 +443,75 @@ namespace Pusula.Wpf.ViewModels
 
             templates = TemplateStore.LoadOrCreate(rootPath);
             return true;
+        }
+
+        #endregion
+
+        #region Durum
+
+        /// <summary>Geçerli kökün tür kalıpları.</summary>
+        public TypeSet Types
+        {
+            get { return types; }
+        }
+
+        private bool isStatusNoteOpen;
+        private string pendingStatus = string.Empty;
+        private string statusNoteText = string.Empty;
+
+        /// <summary>Not isteyen durum (Beklemede gibi) seçilince açılan diyalog.</summary>
+        public bool IsStatusNoteOpen
+        {
+            get { return isStatusNoteOpen; }
+            set { SetProperty(ref isStatusNoteOpen, value); }
+        }
+
+        /// <summary>Not diyaloğunun başlığı.</summary>
+        public string StatusNoteTitle
+        {
+            get { return pendingStatus; }
+        }
+
+        /// <summary>Girilen not.</summary>
+        public string StatusNoteText
+        {
+            get { return statusNoteText; }
+            set { SetProperty(ref statusNoteText, value ?? string.Empty); }
+        }
+
+        /// <summary>Not isteyen bir durum seçildi: not diyaloğunu açar.</summary>
+        public void AskStatusNote(string status)
+        {
+            pendingStatus = status;
+            OnPropertyChanged(nameof(StatusNoteTitle));
+            StatusNoteText = string.Empty;
+            IsStatusNoteOpen = true;
+        }
+
+        /// <summary>Not diyaloğu onaylandı: durumu notla birlikte yazar.</summary>
+        public void ConfirmStatusNote()
+        {
+            SetStockStatus(pendingStatus, StatusNoteText.Trim());
+        }
+
+        /// <summary>Gösterilen stokun durumunu değiştirir ve özeti yeniler.</summary>
+        public void SetStockStatus(string status, string note)
+        {
+            var path = Detail.StockPath;
+            if (path.Length == 0)
+            {
+                return;
+            }
+
+            if (ProjectService.SetStockStatus(path, status, note))
+            {
+                Status = string.Format(Resources.Status_StatusChanged, Path.GetFileName(path), status);
+                Detail.Reload();
+            }
+            else
+            {
+                Status = string.Format(Resources.Error_Io, path);
+            }
         }
 
         #endregion
