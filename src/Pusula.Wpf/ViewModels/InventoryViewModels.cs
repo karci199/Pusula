@@ -342,25 +342,19 @@ namespace Pusula.Wpf.ViewModels
 
             // Filtre seçenekleri listedeki kayıtlardan; tür seçeneği yalnızca bölüm seçiliyken anlamlı.
             ShowTypeFilter = filter == null;
+
+            // Önce seçimler "Tümü"ye döner, sonra seçenekler yenilenir: seçili seçenek silinip kutu boş kalmasın.
+            filterType = Resources.Filter_All;
+            filterSubType = Resources.Filter_All;
+            filterStatus = Resources.Filter_All;
+            filterLevel = Resources.Filter_All;
+            filterText = string.Empty;
+            NotifyFilters();
             FillOptions(TypeOptions, allRows.Select(r => r.TypeName));
             FillOptions(StatusOptions, allRows.Select(r => r.Status.Name));
-            LevelOptions.Clear();
-            LevelOptions.Add(Resources.Filter_All);
-            foreach (var level in new[] { InventoryLevel.General, InventoryLevel.Project, InventoryLevel.Stock })
-            {
-                LevelOptions.Add(LevelName(level));
-            }
-
-            filterLevel = Resources.Filter_All;
-            OnPropertyChanged(nameof(FilterLevel));
-            filterType = Resources.Filter_All;
-            filterStatus = Resources.Filter_All;
-            filterSubType = Resources.Filter_All;
-            filterText = string.Empty;
-            OnPropertyChanged(nameof(FilterText));
+            FillOptions(LevelOptions, new[] { InventoryLevel.General, InventoryLevel.Project, InventoryLevel.Stock }.Select(LevelName));
             RefreshSubTypes();
-            OnPropertyChanged(nameof(FilterType));
-            OnPropertyChanged(nameof(FilterStatus));
+            NotifyFilters();
             ApplyFilter();
             IsList = true;
         }
@@ -387,7 +381,14 @@ namespace Pusula.Wpf.ViewModels
             get { return filterType; }
             set
             {
-                if (SetProperty(ref filterType, value ?? Resources.Filter_All))
+                // Seçenekler yenilenirken açılır kutu boş (null) yazar; yok sayıp seçimi geri göster.
+                if (value == null)
+                {
+                    RenotifyLater(nameof(FilterType));
+                    return;
+                }
+
+                if (SetProperty(ref filterType, value))
                 {
                     filterSubType = Resources.Filter_All;
                     RefreshSubTypes();
@@ -402,7 +403,14 @@ namespace Pusula.Wpf.ViewModels
             get { return filterSubType; }
             set
             {
-                if (SetProperty(ref filterSubType, value ?? Resources.Filter_All))
+                // Seçenekler yenilenirken açılır kutu boş (null) yazar; yok sayıp seçimi geri göster.
+                if (value == null)
+                {
+                    RenotifyLater(nameof(FilterSubType));
+                    return;
+                }
+
+                if (SetProperty(ref filterSubType, value))
                 {
                     ApplyFilter();
                 }
@@ -418,7 +426,14 @@ namespace Pusula.Wpf.ViewModels
             get { return filterLevel; }
             set
             {
-                if (SetProperty(ref filterLevel, value ?? Resources.Filter_All))
+                // Seçenekler yenilenirken açılır kutu boş (null) yazar; yok sayıp seçimi geri göster.
+                if (value == null)
+                {
+                    RenotifyLater(nameof(FilterLevel));
+                    return;
+                }
+
+                if (SetProperty(ref filterLevel, value))
                 {
                     ApplyFilter();
                 }
@@ -431,7 +446,14 @@ namespace Pusula.Wpf.ViewModels
             get { return filterStatus; }
             set
             {
-                if (SetProperty(ref filterStatus, value ?? Resources.Filter_All))
+                // Seçenekler yenilenirken açılır kutu boş (null) yazar; yok sayıp seçimi geri göster.
+                if (value == null)
+                {
+                    RenotifyLater(nameof(FilterStatus));
+                    return;
+                }
+
+                if (SetProperty(ref filterStatus, value))
                 {
                     ApplyFilter();
                 }
@@ -458,10 +480,25 @@ namespace Pusula.Wpf.ViewModels
             private set { SetProperty(ref filterSummary, value); }
         }
 
+        // Açılır kutu seçimi boşalttıktan sonra değeri yeniden bildirir (kutu "Tümü"yü yeniden seçer).
+        private void RenotifyLater(string propertyName)
+        {
+            System.Windows.Application.Current?.Dispatcher.BeginInvoke(new Action(() => OnPropertyChanged(propertyName)), System.Windows.Threading.DispatcherPriority.Background);
+        }
+
         private static void FillOptions(ObservableCollection<string> target, IEnumerable<string> values)
         {
-            target.Clear();
-            target.Add(Resources.Filter_All);
+            // "Tümü" hep ilk sırada kalır, silinmez: açılır kutunun seçimi boşa düşmesin.
+            if (target.Count == 0 || target[0] != Resources.Filter_All)
+            {
+                target.Clear();
+                target.Add(Resources.Filter_All);
+            }
+
+            while (target.Count > 1)
+            {
+                target.RemoveAt(target.Count - 1);
+            }
             foreach (var value in values.Where(v => v.Length > 0 && v != "—").Distinct(StringComparer.CurrentCultureIgnoreCase).OrderBy(v => v, StringComparer.CurrentCultureIgnoreCase))
             {
                 target.Add(value);
@@ -470,8 +507,18 @@ namespace Pusula.Wpf.ViewModels
 
         private void RefreshSubTypes()
         {
+            OnPropertyChanged(nameof(FilterSubType));
             FillOptions(SubTypeOptions, allRows.Where(MatchesType).Select(r => r.SubType));
             OnPropertyChanged(nameof(FilterSubType));
+        }
+
+        private void NotifyFilters()
+        {
+            OnPropertyChanged(nameof(FilterType));
+            OnPropertyChanged(nameof(FilterSubType));
+            OnPropertyChanged(nameof(FilterStatus));
+            OnPropertyChanged(nameof(FilterLevel));
+            OnPropertyChanged(nameof(FilterText));
         }
 
         private bool MatchesType(InventoryRow row)
