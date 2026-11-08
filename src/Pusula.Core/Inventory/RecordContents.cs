@@ -33,6 +33,9 @@ namespace Pusula.Core.Inventory
         // "RevAC", "Rev_B", "REV-2"; harf revizyonu büyük harf olmalı ki "Review" sayılmasın.
         private static readonly Regex Revision = new Regex(@"(?:^|[_\-\s\.])(?i:rev)[_\-\s]?([A-Z]{1,3}|\d{1,3})(?=$|[_\-\s\.])", RegexOptions.CultureInvariant);
 
+        /// <summary>Olay notlarının durduğu klasörün adı; kutucuk olarak gösterilmez.</summary>
+        public const string NotesLabel = "Notlar";
+
         /// <summary>Notun tam yolu; yoksa boş.</summary>
         public string NoteFile { get; private set; } = string.Empty;
 
@@ -78,7 +81,8 @@ namespace Pusula.Core.Inventory
             foreach (var sub in SafeDirectories(folder).OrderBy(d => d, StringComparer.OrdinalIgnoreCase))
             {
                 var name = System.IO.Path.GetFileName(sub);
-                if (name.StartsWith("_", StringComparison.Ordinal))
+                // Notlar klasörü kutucuk olmaz: içindeki olay notları Geçmiş'te görünür.
+                if (name.StartsWith("_", StringComparison.Ordinal) || string.Equals(LabelOf(name), NotesLabel, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
