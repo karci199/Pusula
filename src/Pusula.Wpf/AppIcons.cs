@@ -36,7 +36,23 @@
         /// <summary>Düzenle (kalem).</summary>
         public const string Edit = "";
 
+        /// <summary>Saat (açık test).</summary>
+        public const string Clock = "";
+
+        /// <summary>Hata (kalan test).</summary>
+        public const string Error = "";
+
+        /// <summary>Tamir / jig.</summary>
+        public const string Repair = "";
+
+        /// <summary>Soru (bilinmeyen).</summary>
+        public const string Help = "";
+
+        /// <summary>Not / doküman.</summary>
+        public const string Note = "";
+
         /// <summary>Seçili (onay işareti).</summary>
+
         public const string Check = "";
 
         /// <summary>Listeden çıkar (✕).</summary>

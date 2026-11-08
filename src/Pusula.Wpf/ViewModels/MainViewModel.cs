@@ -136,6 +136,13 @@ namespace Pusula.Wpf.ViewModels
 
             SetProperty(ref field, value, propertyName);
         }
+        /// <summary>Klasörün altındaki <paramref name="sub"/> klasörünü açar; yoksa klasörün kendisini.</summary>
+        public void OpenSubFolderOrFolder(string folder, string sub)
+        {
+            var path = Path.Combine(folder, sub);
+            OpenPath(Directory.Exists(path) ? path : folder);
+        }
+
         /// <summary>Notu varsayılan programla açar (Obsidian ya da metin düzenleyici); not yoksa klasörü açar.</summary>
         public void OpenNoteOrFolder(string notePath, string folder)
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -173,6 +174,85 @@ namespace Pusula.Wpf
             if ((source as ListViewItem)?.DataContext is TestRunRow run)
             {
                 viewModel.OpenNoteOrFolder(run.NotePath, run.Folder);
+            }
+        }
+
+        // Zaman çizelgesi kartına tıklayınca ayrıntı açılır / kapanır (karttaki düğmeler hariç).
+        private void TimelineCard_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var source = e.OriginalSource as DependencyObject;
+            while (source != null && source != sender)
+            {
+                if (source is ButtonBase)
+                {
+                    return;
+                }
+
+                source = VisualTreeHelper.GetParent(source);
+            }
+
+            if ((sender as FrameworkElement)?.DataContext is TimelineItem item && item.HasDetail)
+            {
+                item.IsExpanded = !item.IsExpanded;
+            }
+        }
+
+        private void TimelineNote_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is TimelineItem item)
+            {
+                viewModel.OpenNoteOrFolder(item.NotePath, item.Folder);
+            }
+        }
+
+        private void TimelineFolder_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is TimelineItem item)
+            {
+                viewModel.OpenPath(item.Folder);
+            }
+        }
+
+        // Testler / Kalifikasyon sağ tık menüsü: seçili koşu üzerinde.
+        private static TestRunRow? SelectedRun(object sender)
+        {
+            var menu = (sender as MenuItem)?.Parent as ContextMenu;
+            return (menu?.PlacementTarget as ListView)?.SelectedItem as TestRunRow;
+        }
+
+        private void RunMenuNote_Click(object sender, RoutedEventArgs e)
+        {
+            var run = SelectedRun(sender);
+            if (run != null)
+            {
+                viewModel.OpenNoteOrFolder(run.NotePath, run.Folder);
+            }
+        }
+
+        private void RunMenuFolder_Click(object sender, RoutedEventArgs e)
+        {
+            var run = SelectedRun(sender);
+            if (run != null)
+            {
+                viewModel.OpenPath(run.Folder);
+            }
+        }
+
+        private void RunMenuRaw_Click(object sender, RoutedEventArgs e)
+        {
+            var run = SelectedRun(sender);
+            if (run != null)
+            {
+                viewModel.OpenSubFolderOrFolder(run.Folder, "Ham");
+            }
+        }
+
+        private void RunMenuPhotos_Click(object sender, RoutedEventArgs e)
+        {
+            var run = SelectedRun(sender);
+            if (run != null)
+            {
+                viewModel.OpenSubFolderOrFolder(run.Folder, "Foto");
             }
         }
 

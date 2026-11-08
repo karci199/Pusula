@@ -575,20 +575,67 @@ namespace Pusula.Wpf.Properties
         /// <summary>Kalifikasyon sistemi; {0} sistem.</summary>
         public static string Test_QualificationSystem { get { return Get("Test_QualificationSystem"); } }
 
-        /// <summary>Dikkat: açık test; {0} sistem, {1} SN, {2} tur.</summary>
-        public static string Alert_Open { get { return Get("Alert_Open"); } }
-
-        /// <summary>Dikkat: son tur kaldı; {0} sistem, {1} SN, {2} tur.</summary>
-        public static string Alert_Failed { get { return Get("Alert_Failed"); } }
-
-        /// <summary>Dikkat: jig revizyonu; {0} jig, {1} revizyonlar.</summary>
-        public static string Alert_JigRevision { get { return Get("Alert_JigRevision"); } }
-
-        /// <summary>Dikkat: sonucu girilmemiş koşu sayısı.</summary>
-        public static string Alert_Unknown { get { return Get("Alert_Unknown"); } }
-
         /// <summary>Ağaçta dosya sayısı.</summary>
         public static string Tree_FileCount { get { return Get("Tree_FileCount"); } }
+
+        #endregion
+
+        #region Genel
+
+        /// <summary>Özet kartı: koşu sayısı.</summary>
+        public static string Kpi_Runs { get { return Get("Kpi_Runs"); } }
+
+        /// <summary>Özet kartı: geçen.</summary>
+        public static string Kpi_Passed { get { return Get("Kpi_Passed"); } }
+
+        /// <summary>Özet kartı: kalan.</summary>
+        public static string Kpi_Failed { get { return Get("Kpi_Failed"); } }
+
+        /// <summary>Özet kartı: son koşu.</summary>
+        public static string Kpi_Last { get { return Get("Kpi_Last"); } }
+
+        /// <summary>Dikkat kartı başlığı: açık test.</summary>
+        public static string Alert_OpenTitle { get { return Get("Alert_OpenTitle"); } }
+
+        /// <summary>Açık test açıklamasının sonu.</summary>
+        public static string Alert_OpenSuffix { get { return Get("Alert_OpenSuffix"); } }
+
+        /// <summary>Dikkat kartı başlığı: kalan son tur.</summary>
+        public static string Alert_FailedTitle { get { return Get("Alert_FailedTitle"); } }
+
+        /// <summary>Dikkat kartı başlığı: jig revizyonu.</summary>
+        public static string Alert_JigTitle { get { return Get("Alert_JigTitle"); } }
+
+        /// <summary>Dikkat kartı başlığı: sonucu olmayan koşular.</summary>
+        public static string Alert_UnknownTitle { get { return Get("Alert_UnknownTitle"); } }
+
+        /// <summary>Sonucu olmayan koşu sayısı.</summary>
+        public static string Alert_UnknownDetail { get { return Get("Alert_UnknownDetail"); } }
+
+        /// <summary>Açılan kartta plan satırı.</summary>
+        public static string Timeline_Plan { get { return Get("Timeline_Plan"); } }
+
+        /// <summary>Açılan kartta jig satırı.</summary>
+        public static string Timeline_Jig { get { return Get("Timeline_Jig"); } }
+
+        /// <summary>Koşunun notunu açar.</summary>
+        public static string Run_OpenNote { get { return Get("Run_OpenNote"); } }
+
+        /// <summary>Koşunun klasörünü açar.</summary>
+        public static string Run_OpenFolder { get { return Get("Run_OpenFolder"); } }
+
+        /// <summary>Koşunun Ham klasörünü açar.</summary>
+        public static string Run_OpenRaw { get { return Get("Run_OpenRaw"); } }
+
+        /// <summary>Koşunun Foto klasörünü açar.</summary>
+        public static string Run_OpenPhotos { get { return Get("Run_OpenPhotos"); } }
+
+        #endregion
+
+        #region Biçim
+
+        /// <summary>Gün.ay biçimi.</summary>
+        public static string Format_DayMonth { get { return Get("Format_DayMonth"); } }
 
         #endregion
     }

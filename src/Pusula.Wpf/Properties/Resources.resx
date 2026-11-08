@@ -468,19 +468,58 @@
   <data name="Test_QualificationSystem" xml:space="preserve">
     <value>{0} (kal.)</value>
   </data>
-  <data name="Alert_Open" xml:space="preserve">
-    <value>Açık test: {0} · {1} · T{2} devam ediyor</value>
-  </data>
-  <data name="Alert_Failed" xml:space="preserve">
-    <value>Son tur kaldı: {0} · {1} · T{2}</value>
-  </data>
-  <data name="Alert_JigRevision" xml:space="preserve">
-    <value>{0}: Rev {1} · koşular farklı jig revizyonlarıyla alındı</value>
-  </data>
-  <data name="Alert_Unknown" xml:space="preserve">
-    <value>{0} koşunun sonucu girilmedi</value>
-  </data>
   <data name="Tree_FileCount" xml:space="preserve">
     <value>{0} dosya</value>
+  </data>
+  <data name="Kpi_Runs" xml:space="preserve">
+    <value>Koşu</value>
+  </data>
+  <data name="Kpi_Passed" xml:space="preserve">
+    <value>Geçti</value>
+  </data>
+  <data name="Kpi_Failed" xml:space="preserve">
+    <value>Kaldı</value>
+  </data>
+  <data name="Kpi_Last" xml:space="preserve">
+    <value>Son koşu</value>
+  </data>
+  <data name="Alert_OpenTitle" xml:space="preserve">
+    <value>Açık test</value>
+  </data>
+  <data name="Alert_OpenSuffix" xml:space="preserve">
+    <value>devam ediyor</value>
+  </data>
+  <data name="Alert_FailedTitle" xml:space="preserve">
+    <value>Son tur kaldı</value>
+  </data>
+  <data name="Alert_JigTitle" xml:space="preserve">
+    <value>Jig revizyonu değişti</value>
+  </data>
+  <data name="Alert_UnknownTitle" xml:space="preserve">
+    <value>Sonuç girilmedi</value>
+  </data>
+  <data name="Alert_UnknownDetail" xml:space="preserve">
+    <value>{0} koşunun sonucu yok</value>
+  </data>
+  <data name="Timeline_Plan" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="Timeline_Jig" xml:space="preserve">
+    <value>Jig</value>
+  </data>
+  <data name="Run_OpenNote" xml:space="preserve">
+    <value>Notu aç</value>
+  </data>
+  <data name="Run_OpenFolder" xml:space="preserve">
+    <value>Klasörü aç</value>
+  </data>
+  <data name="Run_OpenRaw" xml:space="preserve">
+    <value>Ham veriyi aç</value>
+  </data>
+  <data name="Run_OpenPhotos" xml:space="preserve">
+    <value>Fotoğrafları göster</value>
+  </data>
+  <data name="Format_DayMonth" xml:space="preserve">
+    <value>dd.MM</value>
   </data>
 </root>

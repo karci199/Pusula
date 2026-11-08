@@ -124,6 +124,9 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Stokta aşama çubuğu.</summary>
         public ObservableCollection<StatusStep> Steps { get; } = new ObservableCollection<StatusStep>();
 
+        /// <summary>Genel sekmesi: üstteki özet kartları (koşu, geçti, kaldı, son koşu).</summary>
+        public ObservableCollection<TestKpi> TestKpis { get; } = new ObservableCollection<TestKpi>();
+
         /// <summary>Genel sekmesi: dikkat maddeleri.</summary>
         public ObservableCollection<AlertItem> Alerts { get; } = new ObservableCollection<AlertItem>();
 
@@ -245,6 +248,7 @@ namespace Pusula.Wpf.ViewModels
             Steps.Clear();
             Distribution.Clear();
             Alerts.Clear();
+            TestKpis.Clear();
             MatrixHeaders.Clear();
             MatrixRows.Clear();
             Timeline.Clear();
@@ -320,6 +324,15 @@ namespace Pusula.Wpf.ViewModels
         private void ShowTests(List<TestRun> runs)
         {
             var overview = TestOverview.Build(runs);
+            if (runs.Count > 0)
+            {
+                var last = overview.Timeline[0];
+                TestKpis.Add(new TestKpi(Resources.Kpi_Runs, runs.Count.ToString(), StatusTone.Neutral));
+                TestKpis.Add(new TestKpi(Resources.Kpi_Passed, runs.Count(r => r.Result == TestResult.Passed).ToString(), StatusTone.Done));
+                TestKpis.Add(new TestKpi(Resources.Kpi_Failed, runs.Count(r => r.Result == TestResult.Failed).ToString(), StatusTone.Failed));
+                TestKpis.Add(new TestKpi(Resources.Kpi_Last, (last.Date == DateTime.MinValue ? "—" : last.Date.ToString(Resources.Format_DayMonth)) + " · " + last.System, TestResultChip.For(last.Result).Tone));
+            }
+
             foreach (var alert in overview.Alerts)
             {
                 Alerts.Add(AlertItem.From(alert));

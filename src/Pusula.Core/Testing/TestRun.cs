@@ -72,6 +72,12 @@ namespace Pusula.Core.Testing
         /// <summary>Kısa açıklama (notun "Sonuç:" satırından ya da ilk paragrafından).</summary>
         public string Summary { get; set; } = string.Empty;
 
+        /// <summary>Notun gövdesi (YAML hariç, ham markdown); not yoksa boş.</summary>
+        public string Body { get; set; } = string.Empty;
+
+        /// <summary>Koşunun ilk fotoğrafı (<c>Foto\</c> ya da koşu klasöründeki ilk resim); yoksa boş.</summary>
+        public string Photo { get; set; } = string.Empty;
+
         /// <summary>Açılacak not (test.md ya da _kosu.md); yoksa boş.</summary>
         public string NotePath { get; set; } = string.Empty;
 

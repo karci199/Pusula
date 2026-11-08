@@ -75,6 +75,8 @@ namespace Pusula.Core.Testing
                         run.Source = TestRunSource.Folder;
                     }
 
+                    run.Photo = FirstPhoto(runFolder);
+
                     runs.Add(run);
                 }
             }
@@ -99,6 +101,7 @@ namespace Pusula.Core.Testing
             run.Plan = Get(fields, "plan");
             run.Jig = Get(fields, "jig");
             run.Summary = SummaryOf(body);
+            run.Body = body.Trim();
 
             DateTime date;
             if (DateTime.TryParseExact(Get(fields, "tarih", "date"), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
@@ -229,6 +232,40 @@ namespace Pusula.Core.Testing
 
             var first = lines.FirstOrDefault(l => !l.StartsWith("#", StringComparison.Ordinal) && !l.StartsWith("![[", StringComparison.Ordinal) && !l.StartsWith("**Sonuç", StringComparison.OrdinalIgnoreCase));
             return (first ?? string.Empty).TrimStart('-', ' ');
+        }
+
+        private static readonly string[] PhotoExtensions = { ".png", ".jpg", ".jpeg", ".bmp" };
+
+        /// <summary>Koşunun ilk fotoğrafı: önce <c>Foto\</c>, sonra koşu klasörünün kendisi; ada göre ilk.</summary>
+        public static string FirstPhoto(string runFolder)
+        {
+            foreach (var folder in new[] { Path.Combine(runFolder, "Foto"), runFolder })
+            {
+                try
+                {
+                    if (!Directory.Exists(folder))
+                    {
+                        continue;
+                    }
+
+                    var photo = Directory.GetFiles(folder)
+                        .Where(f => PhotoExtensions.Contains(Path.GetExtension(f).ToLowerInvariant()))
+                        .OrderBy(f => f, StringComparer.OrdinalIgnoreCase)
+                        .FirstOrDefault();
+                    if (photo != null)
+                    {
+                        return photo;
+                    }
+                }
+                catch (IOException)
+                {
+                }
+                catch (UnauthorizedAccessException)
+                {
+                }
+            }
+
+            return string.Empty;
         }
 
         private static string Get(Dictionary<string, string> fields, params string[] keys)

@@ -104,37 +104,71 @@ namespace Pusula.Wpf.ViewModels
         public string Folder { get; }
     }
 
-    /// <summary>Genel sekmesinde bir dikkat maddesi.</summary>
+    /// <summary>Genel sekmesinde bir dikkat kartı: ikon, başlık, açıklama, renk.</summary>
     public sealed class AlertItem
     {
-        /// <summary>Maddeyi oluşturur.</summary>
-        public AlertItem(string text, string tone)
+        /// <summary>Kartı oluşturur.</summary>
+        public AlertItem(string glyph, string title, string detail, string tone)
         {
-            Text = text;
+            Glyph = glyph;
+            Title = title;
+            Detail = detail;
             Tone = tone;
         }
 
-        /// <summary>Metin.</summary>
-        public string Text { get; }
+        /// <summary>İkon.</summary>
+        public string Glyph { get; }
+
+        /// <summary>Başlık ("Açık test").</summary>
+        public string Title { get; }
+
+        /// <summary>Açıklama ("ÇK (kal.) · SN01 · T1 devam ediyor").</summary>
+        public string Detail { get; }
 
         /// <summary>Renk anlamı.</summary>
         public string Tone { get; }
 
-        /// <summary>Core dikkat maddesini metne çevirir.</summary>
+        /// <summary>Core dikkat maddesini karta çevirir.</summary>
         public static AlertItem From(TestAlert alert)
         {
             switch (alert.Kind)
             {
                 case TestAlertKind.Open:
-                    return new AlertItem(string.Format(Resources.Alert_Open, TestResultChip.SystemLabel(alert.Run!.System, alert.Run.IsQualification), alert.Run.SerialNo, alert.Run.Round), StatusTone.Waiting);
+                    return new AlertItem(AppIcons.Clock, Resources.Alert_OpenTitle, RunText(alert.Run!) + " " + Resources.Alert_OpenSuffix, StatusTone.Waiting);
                 case TestAlertKind.Failed:
-                    return new AlertItem(string.Format(Resources.Alert_Failed, TestResultChip.SystemLabel(alert.Run!.System, alert.Run.IsQualification), alert.Run.SerialNo, alert.Run.Round), StatusTone.Failed);
+                    return new AlertItem(AppIcons.Error, Resources.Alert_FailedTitle, RunText(alert.Run!), StatusTone.Failed);
                 case TestAlertKind.JigRevision:
-                    return new AlertItem(string.Format(Resources.Alert_JigRevision, alert.Jig, string.Join(" → ", alert.Revisions)), StatusTone.Neutral);
+                    return new AlertItem(AppIcons.Repair, Resources.Alert_JigTitle, alert.Jig + " · Rev " + string.Join(" → ", alert.Revisions), StatusTone.Neutral);
                 default:
-                    return new AlertItem(string.Format(Resources.Alert_Unknown, alert.Count), StatusTone.Neutral);
+                    return new AlertItem(AppIcons.Help, Resources.Alert_UnknownTitle, string.Format(Resources.Alert_UnknownDetail, alert.Count), StatusTone.Neutral);
             }
         }
+
+        private static string RunText(TestRun run)
+        {
+            return TestResultChip.SystemLabel(run.System, run.IsQualification) + " · " + run.SerialNo + " · T" + run.Round;
+        }
+    }
+
+    /// <summary>Genel sekmesinin üstündeki özet kartı.</summary>
+    public sealed class TestKpi
+    {
+        /// <summary>Kartı oluşturur.</summary>
+        public TestKpi(string label, string value, string tone)
+        {
+            Label = label;
+            Value = value;
+            Tone = tone;
+        }
+
+        /// <summary>Etiket.</summary>
+        public string Label { get; }
+
+        /// <summary>Değer.</summary>
+        public string Value { get; }
+
+        /// <summary>Değerin rengi (done yeşil, failed kırmızı, diğerleri normal).</summary>
+        public string Tone { get; }
     }
 
     /// <summary>"Son sonuçlar" tablosunun bir satırı: SN ve sistem başına hücreler.</summary>
@@ -154,22 +188,38 @@ namespace Pusula.Wpf.ViewModels
         public List<StatusChip> Cells { get; }
     }
 
-    /// <summary>Zaman çizelgesinde bir satır.</summary>
-    public sealed class TimelineItem
+    /// <summary>
+    /// Zaman çizelgesinde bir kart. Kapalıyken tek satır özet; tıklanınca notun metni, plan, jig ve ilk fotoğraf açılır.
+    /// </summary>
+    public sealed class TimelineItem : ViewModelBase
     {
-        /// <summary>Koşudan satır oluşturur.</summary>
+        private bool isExpanded;
+
+        /// <summary>Koşudan kart oluşturur.</summary>
         public TimelineItem(TestRun run)
         {
-            DateText = run.Date == DateTime.MinValue ? "—" : Formats.ShortDate(run.Date.Date);
             Title = TestResultChip.SystemLabel(run.System, run.IsQualification) + " · " + run.SerialNo + " · T" + run.Round;
             Result = TestResultChip.For(run.Result);
             Summary = run.Summary;
+            var date = run.Date == DateTime.MinValue ? "—" : run.Date.ToString(Resources.Format_Date);
+            Meta = run.Person.Length == 0 ? date : date + " · " + run.Person;
+            var extra = new List<string>();
+            if (run.Plan.Length > 0)
+            {
+                extra.Add(Resources.Timeline_Plan + ": " + run.Plan);
+            }
+
+            if (run.Jig.Length > 0)
+            {
+                extra.Add(Resources.Timeline_Jig + ": " + run.Jig);
+            }
+
+            var body = MarkdownText.Simplify(run.Body, run.Summary);
+            Detail = string.Join(Environment.NewLine, extra.Concat(body.Length > 0 ? new[] { body } : new string[0]));
+            Photo = run.Photo;
             NotePath = run.NotePath;
             Folder = run.Folder;
         }
-
-        /// <summary>Tarih.</summary>
-        public string DateText { get; }
 
         /// <summary>"SATIMO · SN01 · T2".</summary>
         public string Title { get; }
@@ -177,14 +227,86 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Sonuç (nokta rengi ve etiket).</summary>
         public StatusChip Result { get; }
 
-        /// <summary>Kısa açıklama.</summary>
+        /// <summary>Tek satır özet.</summary>
         public string Summary { get; }
+
+        /// <summary>"07.11.2026 · katan".</summary>
+        public string Meta { get; }
+
+        /// <summary>Açılınca görünen metin (plan, jig, notun sadeleştirilmiş gövdesi).</summary>
+        public string Detail { get; }
+
+        /// <summary>İlk fotoğraf; yoksa boş.</summary>
+        public string Photo { get; }
+
+        /// <summary>Fotoğraf var mı.</summary>
+        public bool HasPhoto
+        {
+            get { return Photo.Length > 0; }
+        }
+
+        /// <summary>Açılınca gösterilecek bir şey var mı.</summary>
+        public bool HasDetail
+        {
+            get { return Detail.Length > 0 || HasPhoto; }
+        }
+
+        /// <summary>Kart açık mı.</summary>
+        public bool IsExpanded
+        {
+            get { return isExpanded; }
+            set { SetProperty(ref isExpanded, value); }
+        }
 
         /// <summary>Açılacak not.</summary>
         public string NotePath { get; }
 
         /// <summary>Koşu klasörü.</summary>
         public string Folder { get; }
+    }
+
+    /// <summary>Notun markdown gövdesini kartta göstermek için sadeleştirir.</summary>
+    public static class MarkdownText
+    {
+        /// <summary>
+        /// Başlık işaretlerini, kalın yazıyı, resim gömmelerini ve viki bağlarını sadeleştirir; özetle aynı satırı ve
+        /// "Sonuç:" satırını atlar; en çok 10 satır döner.
+        /// </summary>
+        public static string Simplify(string markdown, string summary)
+        {
+            var lines = new List<string>();
+            foreach (var raw in (markdown ?? string.Empty).Replace("\r\n", "\n").Split('\n'))
+            {
+                var line = raw.Trim();
+                if (line.Length == 0 || line.StartsWith("![[", StringComparison.Ordinal) || line.StartsWith("**Sonuç", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                if (line.StartsWith("# ", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                line = line.TrimStart('#', ' ');
+                line = line.Replace("**", string.Empty).Replace("`", string.Empty);
+                line = System.Text.RegularExpressions.Regex.Replace(line, @"\[\[([^\]|]+)(\|[^\]]+)?\]\]", "$1");
+                line = line.Replace("- [ ]", "☐").Replace("- [x]", "☑");
+                line = System.Text.RegularExpressions.Regex.Replace(line, @"\s#\w+", string.Empty);
+                if (line == summary)
+                {
+                    continue;
+                }
+
+                lines.Add(line.StartsWith("- ", StringComparison.Ordinal) ? "• " + line.Substring(2) : line);
+                if (lines.Count == 10)
+                {
+                    break;
+                }
+            }
+
+            return string.Join(Environment.NewLine, lines);
+        }
     }
 
     /// <summary>Klasörler sekmesindeki ağacın bir düğümü.</summary>

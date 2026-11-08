@@ -22,6 +22,7 @@
     <controls:ChromeWindow.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <local:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
+        <local:PathToImageConverter x:Key="PathToImage" />
 
         <Style x:Key="PaneLabel" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
             <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
@@ -56,46 +57,113 @@
             </Border>
         </DataTemplate>
 
-        <!-- Genel sekmesi: dikkat maddesi -->
+        <!-- Genel sekmesi: dikkat kartı (ikon, başlık, açıklama) -->
         <DataTemplate x:Key="AlertTemplate">
-            <Border x:Name="Box" Margin="0,0,0,6" Padding="10,6" CornerRadius="{DynamicResource ControlCornerRadius}"
-                    Background="{DynamicResource ControlFillColorSecondaryBrush}">
-                <TextBlock x:Name="BoxText" Text="{Binding Text}" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" />
+            <Border x:Name="Box" Margin="0,0,0,8" Padding="12,9" CornerRadius="{DynamicResource OverlayCornerRadius}" BorderThickness="1"
+                    Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <controls:FontIcon x:Name="Icon" Glyph="{Binding Glyph}" FontSize="16" Margin="0,1,10,0" VerticalAlignment="Top"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <StackPanel Grid.Column="1">
+                        <TextBlock x:Name="Title" Text="{Binding Title}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock Text="{Binding Detail}" TextWrapping="Wrap" Style="{DynamicResource CaptionTextBlockStyle}"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </StackPanel>
+                </Grid>
             </Border>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding Tone}" Value="waiting">
                     <Setter TargetName="Box" Property="Background" Value="{DynamicResource SystemFillColorCautionBackgroundBrush}" />
-                    <Setter TargetName="BoxText" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                    <Setter TargetName="Box" Property="BorderBrush" Value="Transparent" />
+                    <Setter TargetName="Icon" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                    <Setter TargetName="Title" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Tone}" Value="failed">
                     <Setter TargetName="Box" Property="Background" Value="{DynamicResource SystemFillColorCriticalBackgroundBrush}" />
-                    <Setter TargetName="BoxText" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                    <Setter TargetName="Box" Property="BorderBrush" Value="Transparent" />
+                    <Setter TargetName="Icon" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                    <Setter TargetName="Title" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
 
-        <!-- Genel sekmesi: zaman çizelgesi satırı -->
+        <!-- Genel sekmesi: özet kartı -->
+        <DataTemplate x:Key="KpiTemplate">
+            <Border Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                    CornerRadius="{DynamicResource OverlayCornerRadius}" Padding="12,8" Margin="0,0,10,0">
+                <StackPanel>
+                    <TextBlock Text="{Binding Label}" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <TextBlock x:Name="Value" Text="{Binding Value}" Style="{DynamicResource SubtitleTextBlockStyle}" TextTrimming="CharacterEllipsis"
+                               ToolTip="{Binding Value}" />
+                </StackPanel>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Tone}" Value="done">
+                    <Setter TargetName="Value" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Tone}" Value="failed">
+                    <Setter TargetName="Value" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Tone}" Value="waiting">
+                    <Setter TargetName="Value" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <!-- Genel sekmesi: zaman çizelgesi kartı (dikey çizgi + renkli nokta; tıklayınca açılır) -->
         <DataTemplate x:Key="TimelineTemplate">
-            <Grid Margin="0,0,0,8">
+            <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="64" />
-                    <ColumnDefinition Width="18" />
+                    <ColumnDefinition Width="22" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="{Binding DateText}" HorizontalAlignment="Right"
-                           Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" Margin="0,2,0,0" />
-                <Ellipse x:Name="Dot" Grid.Column="1" Width="8" Height="8" Margin="0,6,0,0" VerticalAlignment="Top" HorizontalAlignment="Center"
-                         Fill="{DynamicResource TextTertiaryBrush}" />
-                <StackPanel Grid.Column="2">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" VerticalAlignment="Center" />
-                        <ContentPresenter Margin="8,0,0,0" Content="{Binding Result}" ContentTemplate="{DynamicResource StatusChipTemplate}" />
+                <Rectangle Grid.Column="0" Width="2" HorizontalAlignment="Center" Fill="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                <Ellipse x:Name="Dot" Grid.Column="0" Width="12" Height="12" Margin="0,13,0,0" VerticalAlignment="Top" HorizontalAlignment="Center"
+                         Stroke="{DynamicResource LayerBrush}" StrokeThickness="2" Fill="{DynamicResource TextTertiaryBrush}" />
+                <Border Grid.Column="1" Margin="6,0,0,10" Padding="12,8" Cursor="Hand"
+                        Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                        CornerRadius="{DynamicResource OverlayCornerRadius}"
+                        MouseLeftButtonUp="TimelineCard_MouseLeftButtonUp">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding Title}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            <ContentPresenter Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center"
+                                              Content="{Binding Result}" ContentTemplate="{DynamicResource StatusChipTemplate}" />
+                            <Button Grid.Column="3" Style="{DynamicResource IconButtonStyle}" Width="28" Height="28"
+                                    ToolTip="{x:Static res:Resources.Run_OpenNote}" Click="TimelineNote_Click">
+                                <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="13" />
+                            </Button>
+                            <Button Grid.Column="4" Style="{DynamicResource IconButtonStyle}" Width="28" Height="28"
+                                    ToolTip="{x:Static res:Resources.Run_OpenFolder}" Click="TimelineFolder_Click">
+                                <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="13" />
+                            </Button>
+                        </Grid>
+                        <TextBlock Text="{Binding Summary}" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding Meta}" Margin="0,2,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" />
+                        <StackPanel x:Name="Details" Visibility="Collapsed" Margin="0,8,0,0">
+                            <TextBlock Text="{Binding Detail}" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" />
+                            <Image Source="{Binding Photo, Converter={StaticResource PathToImage}}" MaxHeight="220" Margin="0,8,0,0"
+                                   HorizontalAlignment="Left" Stretch="Uniform"
+                                   Visibility="{Binding HasPhoto, Converter={StaticResource BoolToVis}}" />
+                        </StackPanel>
                     </StackPanel>
-                    <TextBlock Text="{Binding Summary}" TextTrimming="CharacterEllipsis"
-                               Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" />
-                </StackPanel>
+                </Border>
             </Grid>
             <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsExpanded}" Value="True">
+                    <Setter TargetName="Details" Property="Visibility" Value="Visible" />
+                </DataTrigger>
                 <DataTrigger Binding="{Binding Result.Tone}" Value="done">
                     <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" />
                 </DataTrigger>
@@ -248,6 +316,22 @@
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
+
+        <!-- Testler / Kalifikasyon satırı sağ tık menüsü -->
+        <ContextMenu x:Key="RunMenu">
+            <MenuItem Header="{x:Static res:Resources.Run_OpenNote}" Click="RunMenuNote_Click">
+                <MenuItem.Icon>
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.Run_OpenFolder}" Click="RunMenuFolder_Click">
+                <MenuItem.Icon>
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.Run_OpenRaw}" Click="RunMenuRaw_Click" />
+            <MenuItem Header="{x:Static res:Resources.Run_OpenPhotos}" Click="RunMenuPhotos_Click" />
+        </ContextMenu>
 
         <!-- Durum menüsü: her açılışta tür kalıbından kurulur (MainWindow.xaml.cs). -->
         <ContextMenu x:Key="StatusMenu" Opened="StatusMenu_Opened" />
@@ -604,67 +688,82 @@
                             Visibility="{Binding Detail.IsStock, Converter={StaticResource BoolToVis}}">
                     <!-- Genel -->
                     <TabItem Header="{x:Static res:Resources.Tab_General}">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,12,0,0" TextElement.FontWeight="Normal">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="24" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.General_Attention}" />
-                                    <ItemsControl ItemsSource="{Binding Detail.Alerts}" ItemTemplate="{StaticResource AlertTemplate}" />
-                                    <TextBlock Style="{StaticResource HintText}" Text="{x:Static res:Resources.General_NoAttention}"
-                                               Visibility="{Binding Detail.HasAlerts, Converter={StaticResource InverseBoolToVis}}" />
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,14,0,0" TextElement.FontWeight="Normal">
+                            <StackPanel>
+                                <ItemsControl ItemsSource="{Binding Detail.TestKpis}" ItemTemplate="{StaticResource KpiTemplate}" Margin="0,0,-10,16"
+                                              Visibility="{Binding Detail.HasRuns, Converter={StaticResource BoolToVis}}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Rows="1" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="9*" />
+                                        <ColumnDefinition Width="24" />
+                                        <ColumnDefinition Width="11*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.General_Attention}" />
+                                        <ItemsControl ItemsSource="{Binding Detail.Alerts}" ItemTemplate="{StaticResource AlertTemplate}" />
+                                        <TextBlock Style="{StaticResource HintText}" Text="{x:Static res:Resources.General_NoAttention}"
+                                                   Visibility="{Binding Detail.HasAlerts, Converter={StaticResource InverseBoolToVis}}" />
 
-                                    <TextBlock Style="{StaticResource PaneLabel}" Margin="0,18,0,6" Text="{x:Static res:Resources.General_Latest}" />
-                                    <StackPanel Visibility="{Binding Detail.HasRuns, Converter={StaticResource BoolToVis}}">
-                                        <StackPanel Orientation="Horizontal">
-                                            <Border Width="72" />
-                                            <ItemsControl ItemsSource="{Binding Detail.MatrixHeaders}">
-                                                <ItemsControl.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <StackPanel Orientation="Horizontal" />
-                                                    </ItemsPanelTemplate>
-                                                </ItemsControl.ItemsPanel>
+                                        <TextBlock Style="{StaticResource PaneLabel}" Margin="0,16,0,8" Text="{x:Static res:Resources.General_Latest}" />
+                                        <StackPanel Visibility="{Binding Detail.HasRuns, Converter={StaticResource BoolToVis}}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Border Width="64" />
+                                                <ItemsControl ItemsSource="{Binding Detail.MatrixHeaders}">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <StackPanel Orientation="Horizontal" />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Width="132" TextAlignment="Center" Text="{Binding}" Style="{DynamicResource CaptionTextBlockStyle}"
+                                                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                            <ItemsControl ItemsSource="{Binding Detail.MatrixRows}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
-                                                        <TextBlock Width="130" Text="{Binding}" Style="{DynamicResource CaptionTextBlockStyle}"
-                                                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                                                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                                            <TextBlock Width="64" Text="{Binding Serial}" VerticalAlignment="Center" FontWeight="SemiBold" />
+                                                            <ItemsControl ItemsSource="{Binding Cells}">
+                                                                <ItemsControl.ItemsPanel>
+                                                                    <ItemsPanelTemplate>
+                                                                        <StackPanel Orientation="Horizontal" />
+                                                                    </ItemsPanelTemplate>
+                                                                </ItemsControl.ItemsPanel>
+                                                                <ItemsControl.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <Border Width="126" Height="34" Margin="0,0,6,0"
+                                                                                Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                                                                BorderThickness="1" CornerRadius="{DynamicResource ControlCornerRadius}">
+                                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                                                              Content="{Binding}" ContentTemplate="{DynamicResource StatusChipTemplate}" />
+                                                                        </Border>
+                                                                    </DataTemplate>
+                                                                </ItemsControl.ItemTemplate>
+                                                            </ItemsControl>
+                                                        </StackPanel>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
                                         </StackPanel>
-                                        <ItemsControl ItemsSource="{Binding Detail.MatrixRows}">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                                                        <TextBlock Width="72" Text="{Binding Serial}" VerticalAlignment="Center" FontWeight="SemiBold" />
-                                                        <ItemsControl ItemsSource="{Binding Cells}">
-                                                            <ItemsControl.ItemsPanel>
-                                                                <ItemsPanelTemplate>
-                                                                    <StackPanel Orientation="Horizontal" />
-                                                                </ItemsPanelTemplate>
-                                                            </ItemsControl.ItemsPanel>
-                                                            <ItemsControl.ItemTemplate>
-                                                                <DataTemplate>
-                                                                    <ContentPresenter Width="130" HorizontalAlignment="Left" Content="{Binding}" ContentTemplate="{DynamicResource StatusChipTemplate}" />
-                                                                </DataTemplate>
-                                                            </ItemsControl.ItemTemplate>
-                                                        </ItemsControl>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
+                                        <TextBlock Style="{StaticResource HintText}" TextWrapping="Wrap" Text="{x:Static res:Resources.General_NoRuns}"
+                                                   Visibility="{Binding Detail.HasRuns, Converter={StaticResource InverseBoolToVis}}" />
                                     </StackPanel>
-                                    <TextBlock Style="{StaticResource HintText}" TextWrapping="Wrap" Text="{x:Static res:Resources.General_NoRuns}"
-                                               Visibility="{Binding Detail.HasRuns, Converter={StaticResource InverseBoolToVis}}" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="2">
-                                    <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.General_Timeline}" />
-                                    <ItemsControl ItemsSource="{Binding Detail.Timeline}" ItemTemplate="{StaticResource TimelineTemplate}" />
-                                </StackPanel>
-                            </Grid>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.General_Timeline}" />
+                                        <ItemsControl ItemsSource="{Binding Detail.Timeline}" ItemTemplate="{StaticResource TimelineTemplate}" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
                         </ScrollViewer>
                     </TabItem>
 
@@ -674,7 +773,8 @@
                                   ItemsSource="{Binding Detail.DevelopmentRuns}"
                                   View="{StaticResource RunsGridView}"
                                   GridViewColumnHeader.Click="RunsHeader_Click"
-                                  MouseDoubleClick="RunsList_MouseDoubleClick" />
+                                  MouseDoubleClick="RunsList_MouseDoubleClick"
+                                  ContextMenu="{StaticResource RunMenu}" />
                     </TabItem>
 
                     <!-- Kalifikasyon -->
@@ -683,7 +783,8 @@
                                   ItemsSource="{Binding Detail.QualificationRuns}"
                                   View="{StaticResource RunsGridView}"
                                   GridViewColumnHeader.Click="RunsHeader_Click"
-                                  MouseDoubleClick="RunsList_MouseDoubleClick" />
+                                  MouseDoubleClick="RunsList_MouseDoubleClick"
+                                  ContextMenu="{StaticResource RunMenu}" />
                     </TabItem>
 
                     <!-- Klasörler -->
