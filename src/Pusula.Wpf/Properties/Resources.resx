@@ -535,7 +535,7 @@
     <value>Durum → {0}</value>
   </data>
   <data name="Inv_Number" xml:space="preserve">
-    <value>Stok</value>
+    <value>Numara</value>
   </data>
   <data name="Inv_Name" xml:space="preserve">
     <value>Tanım</value>
@@ -833,5 +833,11 @@
   </data>
   <data name="Tone_Failed" xml:space="preserve">
     <value>Kırmızı (başarısız)</value>
+  </data>
+  <data name="Stock_NoNote" xml:space="preserve">
+    <value>Bu stokun notu yok. Not oluştur ile stok klasörüne &lt;stok no&gt;.md açılır; Obsidian&apos;da yazarsın, burada ilk satırları görünür.</value>
+  </data>
+  <data name="Stock_Photos" xml:space="preserve">
+    <value>Fotoğraflar · {0}</value>
   </data>
 </root>

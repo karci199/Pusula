@@ -50,6 +50,12 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Adın yanında soluk ek bilgi (kaydın tanımı, türdeki kayıt sayısı); boş olabilir.</summary>
         public string Subtitle { get; } = string.Empty;
 
+        /// <summary>Üzerine gelince: ad ve ek bilgi ("JIG-1000-0009 · SATIMO adaptör plakası").</summary>
+        public string ToolTipText
+        {
+            get { return Subtitle.Length == 0 ? Title : Title + " · " + Subtitle; }
+        }
+
         /// <summary>Klasörün tam yolu.</summary>
         public string Path
         {

@@ -318,6 +318,32 @@ namespace Pusula.Wpf
             }
         }
 
+        // Stok Genel kapağı: not, fotoğraf klasörü, tek fotoğraf.
+        private void StockNote_Click(object sender, RoutedEventArgs e)
+        {
+            var cover = viewModel.Detail.Cover;
+            viewModel.OpenNoteOrFolder(cover.NoteFile, cover.StockFolder);
+        }
+
+        private void StockCreateNote_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.CreateStockNote();
+        }
+
+        private void StockPhotos_Click(object sender, RoutedEventArgs e)
+        {
+            var cover = viewModel.Detail.Cover;
+            viewModel.OpenPath(cover.HasPhotosFolder ? cover.PhotosFolder : cover.StockFolder);
+        }
+
+        private void StockPhoto_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is string path)
+            {
+                viewModel.OpenNoteOrFolder(path, viewModel.Detail.Cover.PhotosFolder);
+            }
+        }
+
         // Ayarlar düğmesi: Şablonlar ve Türler.
         private void Settings_Click(object sender, RoutedEventArgs e)
         {

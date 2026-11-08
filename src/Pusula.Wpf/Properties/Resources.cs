@@ -962,5 +962,15 @@ namespace Pusula.Wpf.Properties
         public static string Tone_Failed { get { return Get("Tone_Failed"); } }
 
         #endregion
+
+        #region Stok
+
+        /// <summary>Kapak kartı.</summary>
+        public static string Stock_NoNote { get { return Get("Stock_NoNote"); } }
+
+        /// <summary>Kapak kartı: fotoğraf klasörü düğmesi.</summary>
+        public static string Stock_Photos { get { return Get("Stock_Photos"); } }
+
+        #endregion
     }
 }

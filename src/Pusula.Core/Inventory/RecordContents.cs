@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using Pusula.Core.Testing;
 
 namespace Pusula.Core.Inventory
 {
@@ -69,16 +67,11 @@ namespace Pusula.Core.Inventory
             }
 
             // Not: önce <numara>.md, yoksa kökteki ilk .md.
-            var note = NotePath(folder, number);
-            if (!File.Exists(note))
-            {
-                note = SafeFiles(folder, "*.md").OrderBy(f => f, StringComparer.OrdinalIgnoreCase).FirstOrDefault() ?? string.Empty;
-            }
-
+            var note = Notes.NoteFile.Find(folder, number);
             if (note.Length > 0)
             {
                 result.NoteFile = note;
-                result.NoteExcerpt = Excerpt(note);
+                result.NoteExcerpt = Notes.NoteFile.Excerpt(note);
             }
 
             result.Photos.AddRange(SafeFiles(folder, "*").Where(IsImage).OrderBy(f => f, StringComparer.OrdinalIgnoreCase));
@@ -152,45 +145,20 @@ namespace Pusula.Core.Inventory
             return a.Length != b.Length ? a.Length.CompareTo(b.Length) : string.CompareOrdinal(a, b);
         }
 
-        private static string Excerpt(string note)
+        /// <summary>Klasördeki ve alt klasörlerindeki fotoğraflar (<c>_</c> ile başlayanlar hariç), ada göre sıralı.</summary>
+        public static List<string> ImagesUnder(string folder)
         {
-            string text;
-            try
-            {
-                text = File.ReadAllText(note, Encoding.UTF8);
-            }
-            catch (IOException)
-            {
-                return string.Empty;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return string.Empty;
-            }
+            return Directory.Exists(folder)
+                ? AllFiles(folder).Where(IsImage).OrderBy(f => f, StringComparer.OrdinalIgnoreCase).ToList()
+                : new List<string>();
+        }
 
-            string body;
-            FrontMatter.Parse(text, out body);
-            var parts = new List<string>();
-            var length = 0;
-            foreach (var raw in body.Replace("\r\n", "\n").Split('\n'))
-            {
-                var line = raw.Trim();
-                if (line.Length == 0 || line.StartsWith("#", StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                line = line.TrimStart('-', '*', ' ');
-                parts.Add(line);
-                length += line.Length + 1;
-                if (length >= 240)
-                {
-                    break;
-                }
-            }
-
-            var joined = string.Join(" ", parts);
-            return joined.Length > 240 ? joined.Substring(0, 237) + "…" : joined;
+        /// <summary>Kökte adı (numara öneki atılınca) verilen ada eşit ilk alt klasör ("07_Fotograflar" → "Fotograflar"); yoksa boş.</summary>
+        public static string FindFolder(string root, string label)
+        {
+            return SafeDirectories(root)
+                .OrderBy(d => d, StringComparer.OrdinalIgnoreCase)
+                .FirstOrDefault(d => string.Equals(LabelOf(System.IO.Path.GetFileName(d)), label, StringComparison.OrdinalIgnoreCase)) ?? string.Empty;
         }
 
         private static bool IsImage(string file)

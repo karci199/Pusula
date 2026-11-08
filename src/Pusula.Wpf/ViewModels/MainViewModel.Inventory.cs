@@ -419,6 +419,28 @@ namespace Pusula.Wpf.ViewModels
             Detail.Reload();
         }
 
+        /// <summary>Seçili stokun notunu (<c>&lt;stok no&gt;.md</c>) oluşturur ve açar; varsa yalnızca açar.</summary>
+        public void CreateStockNote()
+        {
+            var stock = selectedNode;
+            if (stock == null || stock.Kind != FolderKind.Stock)
+            {
+                return;
+            }
+
+            var info = JsonFile.TryRead<StockInfo>(TrackingFiles.StockFile(stock.Path)) ?? new StockInfo { StockNo = stock.Title };
+            var project = Path.GetFileName(Path.GetDirectoryName(stock.Path) ?? string.Empty);
+            var note = Pusula.Core.Notes.StockCover.CreateNote(stock.Path, info, project);
+            if (note.Length == 0)
+            {
+                Status = Resources.Inv_NoteFailed;
+                return;
+            }
+
+            Detail.Reload();
+            OpenNoteOrFolder(note, stock.Path);
+        }
+
         /// <summary>Seçili kaydın notunu (<c>&lt;numara&gt;.md</c>) oluşturur ve açar; varsa yalnızca açar.</summary>
         public async System.Threading.Tasks.Task CreateInventoryNoteAsync()
         {

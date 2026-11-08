@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Pusula.Core.Inventory;
+using Pusula.Core.Notes;
 using Pusula.Core.Scanning;
 using Pusula.Core.Templates;
 using Pusula.Core.Testing;
@@ -149,6 +150,9 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Klasörler sekmesi: stokun klasör ağacı (üst düzey).</summary>
         public ObservableCollection<FolderTreeItem> FolderTree { get; } = new ObservableCollection<FolderTreeItem>();
 
+        /// <summary>Stokun notu ve fotoğrafları (Genel sekmesinin üstü).</summary>
+        public StockCoverViewModel Cover { get; } = new StockCoverViewModel();
+
         /// <summary>Stokun jig, kablo … bölümleri (türe göre ayrı).</summary>
         public ObservableCollection<StockInventoryGroup> InventoryGroups { get; } = new ObservableCollection<StockInventoryGroup>();
 
@@ -264,6 +268,7 @@ namespace Pusula.Wpf.ViewModels
             QualificationRuns.Clear();
             FolderTree.Clear();
             InventoryGroups.Clear();
+            Cover.Clear();
             NotifyTestHeaders();
             IsProject = false;
             IsStock = false;
@@ -285,6 +290,7 @@ namespace Pusula.Wpf.ViewModels
             FolderSummary summary;
             List<TestRun> runs = new List<TestRun>();
             FolderTreeNode? tree = null;
+            StockCover? cover = null;
             try
             {
                 summary = await Task.Run(
@@ -297,7 +303,9 @@ namespace Pusula.Wpf.ViewModels
 
                         runs = TestRunReader.ReadStock(path);
                         tree = FolderTreeNode.Build(path, source.Token);
-                        return FolderSummary.ForStock(path, templates, source.Token);
+                        var stockSummary = FolderSummary.ForStock(path, templates, source.Token);
+                        cover = StockCover.Read(path, stockSummary.Stock?.StockNo ?? Path.GetFileName(path));
+                        return stockSummary;
                     },
                     source.Token);
             }
@@ -319,6 +327,11 @@ namespace Pusula.Wpf.ViewModels
             else
             {
                 ShowStock(summary, path);
+                if (cover != null)
+                {
+                    Cover.Show(cover, path);
+                }
+
                 ShowTests(runs);
                 ShowInventory(summary.Stock, path);
                 if (tree != null)

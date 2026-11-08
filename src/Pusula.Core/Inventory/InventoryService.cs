@@ -352,37 +352,15 @@ namespace Pusula.Core.Inventory
         /// </summary>
         public static string CreateNote(string folder, InventoryRecord record)
         {
-            var path = RecordContents.NotePath(folder, record.Number);
-            if (File.Exists(path))
+            var fields = new List<KeyValuePair<string, string>>
             {
-                return path;
-            }
-
-            var text = new StringBuilder();
-            text.Append("---\r\n");
-            text.Append("tur: ").Append(record.Type).Append("\r\n");
-            text.Append("numara: ").Append(record.Number).Append("\r\n");
-            text.Append("tanim: ").Append(record.Name).Append("\r\n");
-            text.Append("alt_tur: ").Append(record.SubType).Append("\r\n");
-            text.Append("---\r\n\r\n");
-            text.Append("# ").Append(record.Number).Append(' ').Append(record.Name).Append("\r\n\r\n");
-            var temp = path + ".tmp";
-            try
-            {
-                File.WriteAllText(temp, text.ToString(), new UTF8Encoding(false));
-                File.Move(temp, path);
-                return path;
-            }
-            catch (IOException)
-            {
-                return File.Exists(path) ? path : string.Empty;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return string.Empty;
-            }
+                new KeyValuePair<string, string>("tur", record.Type),
+                new KeyValuePair<string, string>("numara", record.Number),
+                new KeyValuePair<string, string>("tanim", record.Name),
+                new KeyValuePair<string, string>("alt_tur", record.SubType),
+            };
+            return Notes.NoteFile.Create(RecordContents.NotePath(folder, record.Number), fields, record.Number + " " + record.Name);
         }
-
         /// <summary>Kayda bir durum olayı ekler (diğer alanlara dokunmaz). Okunamaz ya da yazılamazsa <c>false</c>.</summary>
         public static bool AddEvent(string folder, InventoryEvent inventoryEvent)
         {

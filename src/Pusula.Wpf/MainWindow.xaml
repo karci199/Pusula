@@ -641,15 +641,35 @@
                         </TreeView.ItemContainerStyle>
                         <TreeView.ItemTemplate>
                             <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                                <StackPanel Orientation="Horizontal" Margin="0,2">
-                                    <controls:FontIcon Glyph="{Binding Glyph}" FontSize="16"
-                                                       Style="{StaticResource KindIconStyle}"
-                                                       VerticalAlignment="Center" />
-                                    <TextBlock Text="{Binding Title}" Margin="10,0,0,0" VerticalAlignment="Center" />
-                                    <TextBlock Text="{Binding Subtitle}" Margin="8,0,0,0" VerticalAlignment="Center" MaxWidth="150" TextWrapping="NoWrap"
-                                               TextTrimming="CharacterEllipsis"
-                                               Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" />
+                                <StackPanel>
+                                    <!-- Envanter bölümü projelerden çizgiyle ayrılır -->
+                                    <Border x:Name="SectionLine" Height="1" Margin="-28,10,0,10" Visibility="Collapsed"
+                                            Background="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                                    <StackPanel x:Name="Row" Orientation="Horizontal" Margin="0,1" ToolTip="{Binding ToolTipText}">
+                                        <controls:FontIcon x:Name="Icon" Glyph="{Binding Glyph}" FontSize="15"
+                                                           Style="{StaticResource KindIconStyle}"
+                                                           VerticalAlignment="Center" />
+                                        <TextBlock x:Name="Title" Text="{Binding Title}" Margin="9,0,0,0" VerticalAlignment="Center" />
+                                        <TextBlock x:Name="Subtitle" Text="{Binding Subtitle}" Margin="8,0,0,0" VerticalAlignment="Center" MaxWidth="120" TextWrapping="NoWrap"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" />
+                                    </StackPanel>
                                 </StackPanel>
+                                <HierarchicalDataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding Kind}" Value="{x:Static core:FolderKind.InventoryGroup}">
+                                        <Setter TargetName="SectionLine" Property="Visibility" Value="Visible" />
+                                        <Setter TargetName="Title" Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+                                        <Setter TargetName="Title" Property="FontWeight" Value="SemiBold" />
+                                        <Setter TargetName="Icon" Property="FontSize" Value="14" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Kind}" Value="{x:Static core:FolderKind.InventoryItem}">
+                                        <Setter TargetName="Subtitle" Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsUnmarkedInventory}" Value="True">
+                                        <Setter TargetName="Title" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+                                        <Setter TargetName="Title" Property="FontStyle" Value="Italic" />
+                                    </DataTrigger>
+                                </HierarchicalDataTemplate.Triggers>
                             </HierarchicalDataTemplate>
                         </TreeView.ItemTemplate>
                     </TreeView>
@@ -994,6 +1014,64 @@
                     <TabItem Header="{x:Static res:Resources.Tab_General}">
                         <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,14,0,0" TextElement.FontWeight="Normal">
                             <StackPanel>
+                                <!-- Kapak: fotoğraf + not -->
+                                <Border Margin="0,0,0,16" Padding="12" DataContext="{Binding Detail.Cover}"
+                                        Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                                        CornerRadius="{DynamicResource OverlayCornerRadius}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="0" Width="220" Height="146" Padding="0" Margin="0,0,16,0" VerticalAlignment="Top"
+                                                Click="StockPhotos_Click" ToolTip="{Binding PhotosFolder}"
+                                                Visibility="{Binding HasCover, Converter={StaticResource BoolToVis}}">
+                                            <Image Source="{Binding CoverPhoto, Converter={StaticResource PathToImage}}" Stretch="UniformToFill" />
+                                        </Button>
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.Inv_NoteTitle}" />
+                                            <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding NoteExcerpt}"
+                                                       Visibility="{Binding HasNote, Converter={StaticResource BoolToVis}}" />
+                                            <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Stock_NoNote}"
+                                                       Visibility="{Binding HasNote, Converter={StaticResource InverseBoolToVis}}" />
+                                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                                <Button Click="StockNote_Click" Visibility="{Binding HasNote, Converter={StaticResource BoolToVis}}">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
+                                                        <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Inv_OpenNote}" />
+                                                    </StackPanel>
+                                                </Button>
+                                                <Button Click="StockCreateNote_Click" Visibility="{Binding HasNote, Converter={StaticResource InverseBoolToVis}}">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="14" />
+                                                        <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Inv_CreateNote}" />
+                                                    </StackPanel>
+                                                </Button>
+                                                <Button Margin="6,0,0,0" Click="StockPhotos_Click" Visibility="{Binding HasPhotosFolder, Converter={StaticResource BoolToVis}}">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" />
+                                                        <TextBlock Margin="8,0,0,0" Text="{Binding PhotosText}" />
+                                                    </StackPanel>
+                                                </Button>
+                                            </StackPanel>
+                                            <ItemsControl Margin="0,10,0,0" ItemsSource="{Binding Strip}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <StackPanel Orientation="Horizontal" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Width="84" Height="56" Padding="0" Margin="0,0,6,0" Tag="{Binding}" Click="StockPhoto_Click" ToolTip="{Binding}">
+                                                            <Image Source="{Binding Converter={StaticResource PathToImage}}" Stretch="UniformToFill" />
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
                                 <ItemsControl ItemsSource="{Binding Detail.TestKpis}" ItemTemplate="{StaticResource KpiTemplate}" Margin="0,0,-10,16"
                                               Visibility="{Binding Detail.HasRuns, Converter={StaticResource BoolToVis}}">
                                     <ItemsControl.ItemsPanel>
@@ -1299,8 +1377,8 @@
                                     ErrorText="{Binding InventoryError}">
                     <TextBox Text="{Binding NewInventoryNote, UpdateSourceTrigger=PropertyChanged}" />
                 </controls:FormField>
-                <TextBlock Margin="98,6,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
-                           TextWrapping="Wrap" MaxWidth="300" HorizontalAlignment="Left"
+                <TextBlock Margin="98,8,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
+                           TextWrapping="Wrap" Width="220" HorizontalAlignment="Left"
                            Text="{x:Static res:Resources.Inv_TemplateHint}"
                            Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}" />
             </StackPanel>
