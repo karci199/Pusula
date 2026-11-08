@@ -133,6 +133,59 @@ namespace Pusula.Wpf
             viewModel.ConfirmStatusNote();
         }
 
+        // Testler / Kalifikasyon: sütun başlığına tıklayınca o sütuna göre sıralar (ikinci tık ters çevirir).
+        private void RunsHeader_Click(object sender, RoutedEventArgs e)
+        {
+            var header = e.OriginalSource as GridViewColumnHeader;
+            var property = header?.Tag as string;
+            var list = sender as ListView;
+            if (property == null || list?.ItemsSource == null)
+            {
+                return;
+            }
+
+            var view = System.Windows.Data.CollectionViewSource.GetDefaultView(list.ItemsSource);
+            var direction = System.ComponentModel.ListSortDirection.Ascending;
+            if (view.SortDescriptions.Count > 0 && view.SortDescriptions[0].PropertyName == property
+                && view.SortDescriptions[0].Direction == System.ComponentModel.ListSortDirection.Ascending)
+            {
+                direction = System.ComponentModel.ListSortDirection.Descending;
+            }
+
+            view.SortDescriptions.Clear();
+            view.SortDescriptions.Add(new System.ComponentModel.SortDescription(property, direction));
+        }
+
+        // Koşuya çift tıklayınca notu (test.md / _kosu.md) varsayılan programla açar; not yoksa klasörü açar.
+        private void RunsList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton != MouseButton.Left || viewModel.IsDialogBusy)
+            {
+                return;
+            }
+
+            var source = e.OriginalSource as DependencyObject;
+            while (source != null && !(source is ListViewItem))
+            {
+                source = VisualTreeHelper.GetParent(source);
+            }
+
+            if ((source as ListViewItem)?.DataContext is TestRunRow run)
+            {
+                viewModel.OpenNoteOrFolder(run.NotePath, run.Folder);
+            }
+        }
+
+        // Klasör ağacında çift tıklayınca klasörü açar.
+        private void FolderTreeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left && !viewModel.IsDialogBusy && (sender as TreeView)?.SelectedItem is FolderTreeItem item)
+            {
+                viewModel.OpenPath(item.Path);
+                e.Handled = true;
+            }
+        }
+
         // Özet tablosunda satıra çift tıklayınca o klasör açılır.
         private void DetailList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

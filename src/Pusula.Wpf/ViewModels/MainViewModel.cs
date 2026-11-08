@@ -136,6 +136,25 @@ namespace Pusula.Wpf.ViewModels
 
             SetProperty(ref field, value, propertyName);
         }
+        /// <summary>Notu varsayılan programla açar (Obsidian ya da metin düzenleyici); not yoksa klasörü açar.</summary>
+        public void OpenNoteOrFolder(string notePath, string folder)
+        {
+            if (!string.IsNullOrEmpty(notePath) && File.Exists(notePath))
+            {
+                try
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(notePath) { UseShellExecute = true });
+                    return;
+                }
+                catch (System.ComponentModel.Win32Exception)
+                {
+                    // .md için ilişkili program yoksa klasörü açarız.
+                }
+            }
+
+            OpenPath(folder);
+        }
+
         /// <summary>Bir satırın klasörünü Windows Gezgini'nde açar (yoksa bir şey yapmaz).</summary>
         public void OpenPath(string path)
         {

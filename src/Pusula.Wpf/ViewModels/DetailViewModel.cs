@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Pusula.Core.Scanning;
 using Pusula.Core.Templates;
+using Pusula.Core.Testing;
 using Pusula.Core.Tracking;
 using Pusula.Core.Types;
 using Pusula.Wpf.Mvvm;
@@ -122,6 +124,51 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Stokta aşama çubuğu.</summary>
         public ObservableCollection<StatusStep> Steps { get; } = new ObservableCollection<StatusStep>();
 
+        /// <summary>Genel sekmesi: dikkat maddeleri.</summary>
+        public ObservableCollection<AlertItem> Alerts { get; } = new ObservableCollection<AlertItem>();
+
+        /// <summary>Genel sekmesi: "son sonuçlar" tablosunun sütun başlıkları.</summary>
+        public ObservableCollection<string> MatrixHeaders { get; } = new ObservableCollection<string>();
+
+        /// <summary>Genel sekmesi: "son sonuçlar" tablosunun satırları.</summary>
+        public ObservableCollection<MatrixRow> MatrixRows { get; } = new ObservableCollection<MatrixRow>();
+
+        /// <summary>Genel sekmesi: zaman çizelgesi.</summary>
+        public ObservableCollection<TimelineItem> Timeline { get; } = new ObservableCollection<TimelineItem>();
+
+        /// <summary>Testler sekmesi: geliştirme koşuları.</summary>
+        public ObservableCollection<TestRunRow> DevelopmentRuns { get; } = new ObservableCollection<TestRunRow>();
+
+        /// <summary>Kalifikasyon sekmesi: kalifikasyon koşuları.</summary>
+        public ObservableCollection<TestRunRow> QualificationRuns { get; } = new ObservableCollection<TestRunRow>();
+
+        /// <summary>Klasörler sekmesi: stokun klasör ağacı (üst düzey).</summary>
+        public ObservableCollection<FolderTreeItem> FolderTree { get; } = new ObservableCollection<FolderTreeItem>();
+
+        /// <summary>Sekme başlığı: "Testler · 4".</summary>
+        public string TestsHeader
+        {
+            get { return string.Format(Resources.Tab_Tests, DevelopmentRuns.Count); }
+        }
+
+        /// <summary>Sekme başlığı: "Kalifikasyon · 1".</summary>
+        public string QualificationHeader
+        {
+            get { return string.Format(Resources.Tab_Qualification, QualificationRuns.Count); }
+        }
+
+        /// <summary>Hiç test koşusu var mı.</summary>
+        public bool HasRuns
+        {
+            get { return Timeline.Count > 0; }
+        }
+
+        /// <summary>Dikkat edilecek madde var mı.</summary>
+        public bool HasAlerts
+        {
+            get { return Alerts.Count > 0; }
+        }
+
         /// <summary>Projede durum dağılımı ("2 Testte" …).</summary>
         public ObservableCollection<StatusChip> Distribution { get; } = new ObservableCollection<StatusChip>();
 
@@ -197,6 +244,14 @@ namespace Pusula.Wpf.ViewModels
             Rows.Clear();
             Steps.Clear();
             Distribution.Clear();
+            Alerts.Clear();
+            MatrixHeaders.Clear();
+            MatrixRows.Clear();
+            Timeline.Clear();
+            DevelopmentRuns.Clear();
+            QualificationRuns.Clear();
+            FolderTree.Clear();
+            NotifyTestHeaders();
             IsProject = false;
             IsStock = false;
             Note = string.Empty;
@@ -215,12 +270,22 @@ namespace Pusula.Wpf.ViewModels
             var path = selected.Path;
             var kind = selected.Kind;
             FolderSummary summary;
+            List<TestRun> runs = new List<TestRun>();
+            FolderTreeNode? tree = null;
             try
             {
                 summary = await Task.Run(
-                    () => kind == FolderKind.Project
-                        ? FolderSummary.ForProject(path, templates.ProjectFolders, source.Token)
-                        : FolderSummary.ForStock(path, templates, source.Token),
+                    () =>
+                    {
+                        if (kind == FolderKind.Project)
+                        {
+                            return FolderSummary.ForProject(path, templates.ProjectFolders, source.Token);
+                        }
+
+                        runs = TestRunReader.ReadStock(path);
+                        tree = FolderTreeNode.Build(path, source.Token);
+                        return FolderSummary.ForStock(path, templates, source.Token);
+                    },
                     source.Token);
             }
             catch (OperationCanceledException)
@@ -241,7 +306,57 @@ namespace Pusula.Wpf.ViewModels
             else
             {
                 ShowStock(summary, path);
+                ShowTests(runs);
+                if (tree != null)
+                {
+                    foreach (var child in tree.Children)
+                    {
+                        FolderTree.Add(new FolderTreeItem(child, 0));
+                    }
+                }
             }
+        }
+
+        private void ShowTests(List<TestRun> runs)
+        {
+            var overview = TestOverview.Build(runs);
+            foreach (var alert in overview.Alerts)
+            {
+                Alerts.Add(AlertItem.From(alert));
+            }
+
+            foreach (var column in overview.Columns)
+            {
+                MatrixHeaders.Add(TestResultChip.SystemLabel(column.Item1, column.Item2));
+            }
+
+            foreach (var serial in overview.Serials)
+            {
+                var cells = overview.Columns.Select(c =>
+                {
+                    TestRun? last;
+                    return overview.Latest.TryGetValue(TestOverview.Key(c.Item1, c.Item2, serial), out last)
+                        ? TestResultChip.For(last.Result, "T" + last.Round)
+                        : new StatusChip("—", StatusTone.None);
+                });
+                MatrixRows.Add(new MatrixRow(serial, cells));
+            }
+
+            foreach (var run in overview.Timeline)
+            {
+                Timeline.Add(new TimelineItem(run));
+                (run.IsQualification ? QualificationRuns : DevelopmentRuns).Add(new TestRunRow(run));
+            }
+
+            NotifyTestHeaders();
+        }
+
+        private void NotifyTestHeaders()
+        {
+            OnPropertyChanged(nameof(TestsHeader));
+            OnPropertyChanged(nameof(QualificationHeader));
+            OnPropertyChanged(nameof(HasRuns));
+            OnPropertyChanged(nameof(HasAlerts));
         }
 
         private void ShowProject(FolderSummary summary)

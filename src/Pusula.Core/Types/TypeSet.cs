@@ -258,6 +258,12 @@ namespace Pusula.Core.Types
 
         /// <summary>Dikkat (beklemede, arızalı …).</summary>
         public const string Warning = "warning";
+
+        /// <summary>Başarısız (test kaldı).</summary>
+        public const string Failed = "failed";
+
+        /// <summary>Değer yok (tabloda "—").</summary>
+        public const string None = "none";
     }
 
     /// <summary>Bir durum: ad, renk, not gerekip gerekmediği.</summary>

@@ -402,4 +402,85 @@
   <data name="Gesture_Refresh" xml:space="preserve">
     <value>F5</value>
   </data>
+  <data name="Tab_General" xml:space="preserve">
+    <value>Genel</value>
+  </data>
+  <data name="Tab_Tests" xml:space="preserve">
+    <value>Testler · {0}</value>
+  </data>
+  <data name="Tab_Qualification" xml:space="preserve">
+    <value>Kalifikasyon · {0}</value>
+  </data>
+  <data name="Tab_Folders" xml:space="preserve">
+    <value>Klasörler</value>
+  </data>
+  <data name="General_Attention" xml:space="preserve">
+    <value>Dikkat</value>
+  </data>
+  <data name="General_NoAttention" xml:space="preserve">
+    <value>Dikkat edilecek bir şey yok.</value>
+  </data>
+  <data name="General_Latest" xml:space="preserve">
+    <value>Son sonuçlar · her SN&apos;in son turu</value>
+  </data>
+  <data name="General_Timeline" xml:space="preserve">
+    <value>Zaman çizelgesi</value>
+  </data>
+  <data name="General_NoRuns" xml:space="preserve">
+    <value>Henüz test koşusu yok. Koşular 03_Test_Sonuclari\&lt;SİSTEM&gt;\SN01_T1 gibi klasörlerden okunur.</value>
+  </data>
+  <data name="Folders_Hint" xml:space="preserve">
+    <value>Çift tık: klasörü aç. Alt çizgiyle başlayan klasörler sayılara girmez.</value>
+  </data>
+  <data name="Col_Serial" xml:space="preserve">
+    <value>SN</value>
+  </data>
+  <data name="Col_Round" xml:space="preserve">
+    <value>Tur</value>
+  </data>
+  <data name="Col_System" xml:space="preserve">
+    <value>Sistem</value>
+  </data>
+  <data name="Col_Result" xml:space="preserve">
+    <value>Sonuç</value>
+  </data>
+  <data name="Col_Date" xml:space="preserve">
+    <value>Tarih</value>
+  </data>
+  <data name="Col_Person" xml:space="preserve">
+    <value>Kişi</value>
+  </data>
+  <data name="Col_Note" xml:space="preserve">
+    <value>Not</value>
+  </data>
+  <data name="Result_Passed" xml:space="preserve">
+    <value>Geçti</value>
+  </data>
+  <data name="Result_Failed" xml:space="preserve">
+    <value>Kaldı</value>
+  </data>
+  <data name="Result_InProgress" xml:space="preserve">
+    <value>Devam ediyor</value>
+  </data>
+  <data name="Result_Unknown" xml:space="preserve">
+    <value>Girilmedi</value>
+  </data>
+  <data name="Test_QualificationSystem" xml:space="preserve">
+    <value>{0} (kal.)</value>
+  </data>
+  <data name="Alert_Open" xml:space="preserve">
+    <value>Açık test: {0} · {1} · T{2} devam ediyor</value>
+  </data>
+  <data name="Alert_Failed" xml:space="preserve">
+    <value>Son tur kaldı: {0} · {1} · T{2}</value>
+  </data>
+  <data name="Alert_JigRevision" xml:space="preserve">
+    <value>{0}: Rev {1} · koşular farklı jig revizyonlarıyla alındı</value>
+  </data>
+  <data name="Alert_Unknown" xml:space="preserve">
+    <value>{0} koşunun sonucu girilmedi</value>
+  </data>
+  <data name="Tree_FileCount" xml:space="preserve">
+    <value>{0} dosya</value>
+  </data>
 </root>

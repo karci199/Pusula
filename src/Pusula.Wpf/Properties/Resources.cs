@@ -502,5 +502,94 @@ namespace Pusula.Wpf.Properties
         public static string Gesture_Refresh { get { return Get("Gesture_Refresh"); } }
 
         #endregion
+
+        #region Sekmeler
+
+        /// <summary>Sekme: genel.</summary>
+        public static string Tab_General { get { return Get("Tab_General"); } }
+
+        /// <summary>Sekme: testler; {0} koşu sayısı.</summary>
+        public static string Tab_Tests { get { return Get("Tab_Tests"); } }
+
+        /// <summary>Sekme: kalifikasyon; {0} koşu sayısı.</summary>
+        public static string Tab_Qualification { get { return Get("Tab_Qualification"); } }
+
+        /// <summary>Sekme: klasörler.</summary>
+        public static string Tab_Folders { get { return Get("Tab_Folders"); } }
+
+        /// <summary>Genel: dikkat başlığı.</summary>
+        public static string General_Attention { get { return Get("General_Attention"); } }
+
+        /// <summary>Genel: dikkat maddesi yokken.</summary>
+        public static string General_NoAttention { get { return Get("General_NoAttention"); } }
+
+        /// <summary>Genel: son sonuçlar başlığı.</summary>
+        public static string General_Latest { get { return Get("General_Latest"); } }
+
+        /// <summary>Genel: zaman çizelgesi başlığı.</summary>
+        public static string General_Timeline { get { return Get("General_Timeline"); } }
+
+        /// <summary>Genel: koşu yokken.</summary>
+        public static string General_NoRuns { get { return Get("General_NoRuns"); } }
+
+        /// <summary>Klasörler sekmesinin notu.</summary>
+        public static string Folders_Hint { get { return Get("Folders_Hint"); } }
+
+        #endregion
+
+        #region Testler
+
+        /// <summary>Sütun: seri numarası.</summary>
+        public static string Col_Serial { get { return Get("Col_Serial"); } }
+
+        /// <summary>Sütun: tur.</summary>
+        public static string Col_Round { get { return Get("Col_Round"); } }
+
+        /// <summary>Sütun: sistem.</summary>
+        public static string Col_System { get { return Get("Col_System"); } }
+
+        /// <summary>Sütun: sonuç.</summary>
+        public static string Col_Result { get { return Get("Col_Result"); } }
+
+        /// <summary>Sütun: tarih.</summary>
+        public static string Col_Date { get { return Get("Col_Date"); } }
+
+        /// <summary>Sütun: kişi.</summary>
+        public static string Col_Person { get { return Get("Col_Person"); } }
+
+        /// <summary>Sütun: not.</summary>
+        public static string Col_Note { get { return Get("Col_Note"); } }
+
+        /// <summary>Sonuç: geçti.</summary>
+        public static string Result_Passed { get { return Get("Result_Passed"); } }
+
+        /// <summary>Sonuç: kaldı.</summary>
+        public static string Result_Failed { get { return Get("Result_Failed"); } }
+
+        /// <summary>Sonuç: devam ediyor.</summary>
+        public static string Result_InProgress { get { return Get("Result_InProgress"); } }
+
+        /// <summary>Sonuç girilmemiş.</summary>
+        public static string Result_Unknown { get { return Get("Result_Unknown"); } }
+
+        /// <summary>Kalifikasyon sistemi; {0} sistem.</summary>
+        public static string Test_QualificationSystem { get { return Get("Test_QualificationSystem"); } }
+
+        /// <summary>Dikkat: açık test; {0} sistem, {1} SN, {2} tur.</summary>
+        public static string Alert_Open { get { return Get("Alert_Open"); } }
+
+        /// <summary>Dikkat: son tur kaldı; {0} sistem, {1} SN, {2} tur.</summary>
+        public static string Alert_Failed { get { return Get("Alert_Failed"); } }
+
+        /// <summary>Dikkat: jig revizyonu; {0} jig, {1} revizyonlar.</summary>
+        public static string Alert_JigRevision { get { return Get("Alert_JigRevision"); } }
+
+        /// <summary>Dikkat: sonucu girilmemiş koşu sayısı.</summary>
+        public static string Alert_Unknown { get { return Get("Alert_Unknown"); } }
+
+        /// <summary>Ağaçta dosya sayısı.</summary>
+        public static string Tree_FileCount { get { return Get("Tree_FileCount"); } }
+
+        #endregion
     }
 }

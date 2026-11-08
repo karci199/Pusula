@@ -23,6 +23,12 @@ Son güncelleme: 08.11.2026. Dal: `claude/pusula-project-setup-c6ce02` (push edi
   Yeni stok "Hazırlık" ile başlar. Biçime uymayan stok numarası kabul edilmez. Proje tablosunda Durum sütunu ve durum dağılımı.
 - **Proje / stok olarak işaretle:** elle açılmış klasöre sağ tık; yalnızca gizli `_TAKIP` dosyası eklenir, dosyalara dokunulmaz.
   Proje no/ad klasör adından (`7000_MILKON`), stok no klasör adından doldurulur; stok numarası biçim kontrolünden geçer.
+- **Stok sekmeleri (Win11 düzeni):** Genel (dikkat, her SN'in son turu tablosu, zaman çizelgesi), Testler (SN, Tur, Sistem,
+  Sonuç, Tarih, Kişi, Not; başlığa tıkla sırala, çift tık notu aç), Kalifikasyon (aynı tablo), Klasörler (kutucuklar + ağaç).
+- **Test koşusu yapısı:** `03_Test_Sonuclari\<SİSTEM>\<SN>_T<tur>\` (kalifikasyon: `04_Kalifikasyon\03_Test_Sonuclari\...`).
+  SN: `SN01` seri, `SNP1` prototip; T = tur (deneme sırası; `_P1` de okunur). İçinde `test.md` (Obsidian notu, YAML: sistem, sn,
+  tur, tarih, sonuc, kisi, plan, jig, etiketler), `Ham\`, `Analiz\`, `Foto\`. Sonuç sırası: test.md → KIWI `_kosu.md` → girilmedi.
+  Jig alanı "JIG-1000-0009 Rev AC" biçimindeyse revizyon değişikliği Genel'de uyarı olur.
 - Varsayılan şablonda `03_Test_Sonuclari` altında yalnızca sistemler (VNA, SATIMO, Yankisiz, CK); `SN01\Ham`, `SN01\Analiz` ölçümle açılır.
 
 ## Stok klasör yapısı (kararlaştırılan)
@@ -45,14 +51,17 @@ Kural: kalifikasyona ait her şey `04_Kalifikasyon` altında; geri kalanı tür�
 
 ## Sıradaki adımlar (kullanıcıyla konuşulan sıra)
 
-**Örnek veri:** `C:\Projeler\Veri\Pusula-Ornek` (AB-7000-0002, SH2000; KIWI koşusu, ATD planı, jig ve düzenek görseli).
+**Örnek veri (deneme kökü, 4 stok, 12 koşu: prototip, tekrar, jig değişikliği, devam eden ÇK):** üretici betikler scratchpad'de. Asıl örnek: `C:\Projeler\Veri\Pusula-Ornek` (AB-7000-0002, SH2000; KIWI koşusu, ATD planı, jig ve düzenek görseli).
 Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI her koşuda `_kosu.md` yazar
 (Genel sonuç, adımlar, kişi, tarih); test koşuları buradan otomatik okunabilir.
 
 1. ~~Sağ panel özeti~~ (yapıldı).
 2. ~~Durum~~ (yapıldı: tür kalıbı + stok durumu).
-3. **Test koşuları tablosu (sıradaki):** stokta `03_Test_Sonuclari\**\_kosu.md` okunur: tarih, sistem, SN, P, plan, sonuç, kişi.
-   Sonra **kalifikasyon** eklenecek.
+3. ~~Test koşuları, Genel / Testler / Kalifikasyon / Klasörler sekmeleri~~ (yapıldı).
+3a. **Fotoğraflar sekmesi (sıradaki):** 07_Fotograflar + koşuların Foto\ klasörleri, küçük resim ızgarası, tıkla büyüt.
+3c. **Jigler sekmesi:** jig kaydıyla birlikte (Talep → Tasarım → Üretim → Teslim alındı), kim yaptı, revizyon geçmişi.
+3d. **"+ Test koşusu":** sistem + SN seç, sıradaki tur, klasör + dolu test.md üret.
+3e. **Otomatik günlük:** dosya ve durum değişikliklerinden zaman çizelgesi.
 3b. **Test kalemleri:** ÇK, İşlevsel, Kalifikasyon; alt kalemler (RE102, CS114 …); her biri Başlamadı / Devam ediyor /
    Geçti / Kaldı / Gerek yok. Ana durum ürünü anlatır, uzun süren ÇK kendi satırında ilerler ("1 açık test: ÇK").
    İçeriği kullanıcıyla ayrıca konuşulacak.
@@ -76,7 +85,7 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 - `00_Proje_Geneli` iç yapısı henüz kararlaştırılmadı (öneri: Sartname, Toplantilar, Yazismalar, Planlama).
 - Şablonda kullanılmayan modülü kütüphaneden tamamen silme yok (şimdilik listede kalır).
 - Test kütüphanesi seçilmedi (xUnit / NUnit / MSTest); `Pusula.Tests` projesi yok. Şimdilik denemeler
-  geçici klasörde PowerShell betikleriyle yapılıyor (şablon düzenleyici 32, özet 13, durum 28, işaretleme 18 kontrol).
+  geçici klasörde PowerShell betikleriyle yapılıyor (şablon düzenleyici 32, özet 13, durum 28, işaretleme 18, test koşuları 17 kontrol).
 - Git kullanıcı adı bu makinede tanımlı değil; commit'ler tek seferlik `-c user.name/user.email` ile atılıyor.
 
 ## Çalıştırma
