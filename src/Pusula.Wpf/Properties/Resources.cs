@@ -1085,5 +1085,54 @@ namespace Pusula.Wpf.Properties
         public static string FileType_Other { get { return Get("FileType_Other"); } }
 
         #endregion
+
+        #region Ayarlar
+
+        /// <summary>Ayarlar penceresinin başlığı.</summary>
+        public static string Settings_Title { get { return Get("Settings_Title"); } }
+
+        /// <summary>Kök klasör başlığı.</summary>
+        public static string Settings_Root { get { return Get("Settings_Root"); } }
+
+        /// <summary>Kök klasör açıklaması.</summary>
+        public static string Settings_RootHint { get { return Get("Settings_RootHint"); } }
+
+        /// <summary>Tema başlığı.</summary>
+        public static string Settings_Theme { get { return Get("Settings_Theme"); } }
+
+        /// <summary>Şablon, tür ve dosya türü düğmelerinin başlığı.</summary>
+        public static string Settings_Definitions { get { return Get("Settings_Definitions"); } }
+
+        /// <summary>Kapat düğmesi.</summary>
+        public static string Settings_Close { get { return Get("Settings_Close"); } }
+
+        /// <summary>Tema adı.</summary>
+        public static string Theme_FluentLight { get { return Get("Theme_FluentLight"); } }
+
+        /// <summary>Tema adı.</summary>
+        public static string Theme_FluentDark { get { return Get("Theme_FluentDark"); } }
+
+        /// <summary>Tema adı.</summary>
+        public static string Theme_Night { get { return Get("Theme_Night"); } }
+
+        /// <summary>Tema adı.</summary>
+        public static string Theme_Amber { get { return Get("Theme_Amber"); } }
+
+        /// <summary>Tema adı.</summary>
+        public static string Theme_Forest { get { return Get("Theme_Forest"); } }
+
+        /// <summary>Tema adı.</summary>
+        public static string Theme_Plum { get { return Get("Theme_Plum"); } }
+
+        /// <summary>Tema adı.</summary>
+        public static string Theme_Glacier { get { return Get("Theme_Glacier"); } }
+
+        /// <summary>Tema adı.</summary>
+        public static string Theme_Sand { get { return Get("Theme_Sand"); } }
+
+        /// <summary>Tema adı.</summary>
+        public static string Theme_Mint { get { return Get("Theme_Mint"); } }
+
+        #endregion
     }
 }

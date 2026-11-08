@@ -561,14 +561,6 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Üst çubuk: yalnızca kök klasör -->
-        <controls:FilePickerRow Grid.Row="0"
-                                Margin="{DynamicResource PadCard}"
-                                Mode="Folder"
-                                SelectedPath="{Binding RootPath, Mode=TwoWay}"
-                                PlaceholderText="{x:Static res:Resources.Root_Placeholder}"
-                                BrowseText="{x:Static res:Resources.Root_Browse}"
-                                DialogTitle="{x:Static res:Resources.Root_DialogTitle}" />
 
         <!-- Gövde: solda ağaç, sağda seçili düğüm -->
         <Grid Grid.Row="1">

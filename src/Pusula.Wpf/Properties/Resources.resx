@@ -28,7 +28,7 @@
     <value>Projeler</value>
   </data>
   <data name="Tree_NoRoot" xml:space="preserve">
-    <value>Başlamak için yukarıdan projeler klasörünü seçin.</value>
+    <value>Başlamak için sağ üstteki Ayarlar düğmesinden projeler klasörünü seçin.</value>
   </data>
   <data name="Button_Add" xml:space="preserve">
     <value>Ekle</value>
@@ -932,5 +932,50 @@
   </data>
   <data name="FileType_Other" xml:space="preserve">
     <value>diğer</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Ayarlar</value>
+  </data>
+  <data name="Settings_Root" xml:space="preserve">
+    <value>Kök klasör</value>
+  </data>
+  <data name="Settings_RootHint" xml:space="preserve">
+    <value>Projelerin ve envanterin durduğu klasör; ağaç buradan taranır.</value>
+  </data>
+  <data name="Settings_Theme" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="Settings_Definitions" xml:space="preserve">
+    <value>Tanımlar</value>
+  </data>
+  <data name="Settings_Close" xml:space="preserve">
+    <value>Kapat</value>
+  </data>
+  <data name="Theme_FluentLight" xml:space="preserve">
+    <value>Fluent Açık</value>
+  </data>
+  <data name="Theme_FluentDark" xml:space="preserve">
+    <value>Fluent Koyu</value>
+  </data>
+  <data name="Theme_Night" xml:space="preserve">
+    <value>Gece Mavisi</value>
+  </data>
+  <data name="Theme_Amber" xml:space="preserve">
+    <value>Grafit Kehribar</value>
+  </data>
+  <data name="Theme_Forest" xml:space="preserve">
+    <value>Orman</value>
+  </data>
+  <data name="Theme_Plum" xml:space="preserve">
+    <value>Mürdüm</value>
+  </data>
+  <data name="Theme_Glacier" xml:space="preserve">
+    <value>Buzul</value>
+  </data>
+  <data name="Theme_Sand" xml:space="preserve">
+    <value>Kum</value>
+  </data>
+  <data name="Theme_Mint" xml:space="preserve">
+    <value>Nane</value>
   </data>
 </root>

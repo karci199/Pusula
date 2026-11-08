@@ -5,12 +5,13 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <!-- Pusula'ya özgü varsayılan renkler; seçilen tema (Themes.cs) bunları ezer. -->
+                <ResourceDictionary>
+                    <SolidColorBrush x:Key="Pusula.ProjectIconBrush" Color="#E8B04B" />
+                </ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/DesignKit.Wpf;component/DesignKit.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/DesignKit.Wpf;component/Themes/Fluent/Fluent.Dark.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
-            <!-- Pusula'ya özgü tür renkleri (koyu tema için). Stok DesignKit'in AccentBrush'ını kullanır. -->
-            <SolidColorBrush x:Key="Pusula.ProjectIconBrush" Color="#E8B04B" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

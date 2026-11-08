@@ -369,23 +369,23 @@ namespace Pusula.Wpf
             }
         }
 
-        // Ayarlar düğmesi: Şablonlar ve Türler.
-        private void Settings_Click(object sender, RoutedEventArgs e)
+        private void EditTemplates_Click(object sender, RoutedEventArgs e)
         {
-            var templates = new MenuItem { Header = Properties.Resources.Button_EditTemplates, Icon = new FontIcon { Glyph = AppIcons.Template } };
-            templates.Click += EditTemplates_Click;
-            var types = new MenuItem { Header = Properties.Resources.Button_EditTypes, Icon = new FontIcon { Glyph = AppIcons.Inventory } };
-            types.Click += EditTypes_Click;
-            var menu = new ContextMenu { PlacementTarget = sender as UIElement, Placement = PlacementMode.Bottom };
-            var fileTypes = new MenuItem { Header = Properties.Resources.Button_EditFileTypes, Icon = new FontIcon { Glyph = AppIcons.Note } };
-            fileTypes.Click += EditFileTypes_Click;
-            menu.Items.Add(templates);
-            menu.Items.Add(types);
-            menu.Items.Add(fileTypes);
-            menu.IsOpen = true;
+            EditTemplates(this);
         }
 
-        private void EditFileTypes_Click(object sender, RoutedEventArgs e)
+        private void EditTypes_Click(object sender, RoutedEventArgs e)
+        {
+            EditTypes(this);
+        }
+        // Ayarlar düğmesi: kök klasör, tema, tanımlar (şablon, tür, dosya türü).
+        private void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            new SettingsWindow(this, viewModel) { Owner = this }.ShowDialog();
+        }
+
+        /// <summary>Dosya türleri penceresini açar.</summary>
+        internal void EditFileTypes(Window owner)
         {
             if (!viewModel.CanEditTemplates())
             {
@@ -394,7 +394,7 @@ namespace Pusula.Wpf
 
             var editor = new FileTypesWindow(new ViewModels.TypeEditor.FileTypesViewModel(viewModel.RootPath, viewModel.Types))
             {
-                Owner = this,
+                Owner = owner,
             };
             if (editor.ShowDialog() == true)
             {
@@ -402,7 +402,8 @@ namespace Pusula.Wpf
             }
         }
 
-        private void EditTypes_Click(object sender, RoutedEventArgs e)
+        /// <summary>Türler penceresini açar.</summary>
+        internal void EditTypes(Window owner)
         {
             if (!viewModel.CanEditTemplates())
             {
@@ -411,7 +412,7 @@ namespace Pusula.Wpf
 
             var editor = new TypeEditorWindow(new ViewModels.TypeEditor.TypeEditorViewModel(viewModel.RootPath, viewModel.Types))
             {
-                Owner = this,
+                Owner = owner,
             };
             if (editor.ShowDialog() == true)
             {
@@ -770,7 +771,8 @@ namespace Pusula.Wpf
             viewModel.ConfirmQuickNote();
         }
 
-        private void EditTemplates_Click(object sender, RoutedEventArgs e)
+        /// <summary>Şablonlar penceresini açar.</summary>
+        internal void EditTemplates(Window owner)
         {
             if (!viewModel.CanEditTemplates())
             {
@@ -779,7 +781,7 @@ namespace Pusula.Wpf
 
             var editor = new TemplateEditorWindow(new TemplateEditorViewModel(viewModel.RootPath, viewModel.Templates))
             {
-                Owner = this,
+                Owner = owner,
             };
             if (editor.ShowDialog() == true)
             {

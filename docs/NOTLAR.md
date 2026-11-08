@@ -137,3 +137,6 @@ src\Pusula.Wpf\bin\x64\Debug\net48\Pusula.exe
 ```
 
 Deneme kökü: `C:\PusulaDeneme`.
+
+- Ayarlar penceresi (⚙): kök klasör (üst çubuktan taşındı), tema (KIWI'nin 9 teması, ayarlar.json'da `theme`), Şablonlar / Türler / Dosya türleri düğmeleri. Sol ağaçta envanter ayrı bölmede, projelerin hemen altında.
+

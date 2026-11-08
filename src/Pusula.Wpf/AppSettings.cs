@@ -16,11 +16,16 @@ namespace Pusula.Wpf
         private void OnDeserializing(StreamingContext context)
         {
             RootPath = string.Empty;
+            Theme = string.Empty;
         }
 
         /// <summary>Son seçilen projeler klasörü.</summary>
         [DataMember(Name = "rootPath", Order = 0)]
         public string RootPath { get; set; } = string.Empty;
+
+        /// <summary>Seçili tema anahtarı (bkz. <see cref="Themes"/>); boşsa varsayılan.</summary>
+        [DataMember(Name = "theme", Order = 1)]
+        public string Theme { get; set; } = string.Empty;
 
         private static string FilePath
         {

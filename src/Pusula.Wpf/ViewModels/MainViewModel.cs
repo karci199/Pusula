@@ -77,6 +77,30 @@ namespace Pusula.Wpf.ViewModels
             }
         }
 
+        /// <summary>Seçili tema; değişince uygulanır ve ayarlara yazılır.</summary>
+        public Palette Theme
+        {
+            get { return Themes.Current ?? Themes.Find(settings.Theme); }
+            set
+            {
+                if (value == null || ReferenceEquals(value, Themes.Current))
+                {
+                    return;
+                }
+
+                Themes.Apply(value);
+                settings.Theme = value.Key;
+                settings.Save();
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>Seçilebilen temalar.</summary>
+        public Palette[] AllThemes
+        {
+            get { return Themes.All; }
+        }
+
         /// <summary>Ağacın üst düzey düğümleri.</summary>
         public ObservableCollection<TreeNodeViewModel> Nodes { get; } = new ObservableCollection<TreeNodeViewModel>();
 
