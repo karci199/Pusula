@@ -28,6 +28,9 @@
 
         /// <summary>Klasör zaten proje ya da stok olarak işaretli.</summary>
         AlreadyMarked,
+
+        /// <summary>Numara türün biçimlerine uymuyor.</summary>
+        NumberFormat,
     }
 
     /// <summary>

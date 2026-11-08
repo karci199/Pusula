@@ -1,0 +1,376 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using Pusula.Core.Inventory;
+using Pusula.Core.Tracking;
+using Pusula.Core.Types;
+using Pusula.Wpf.Properties;
+
+namespace Pusula.Wpf.ViewModels
+{
+    /// <summary>Yeni kayıt diyaloğunda düzey seçeneği.</summary>
+    public sealed class LevelOption
+    {
+        /// <summary>Seçeneği oluşturur.</summary>
+        public LevelOption(string label, InventoryLevel level, string owner)
+        {
+            Label = label;
+            Level = level;
+            Owner = owner;
+        }
+
+        /// <summary>Görünen metin.</summary>
+        public string Label { get; }
+
+        /// <summary>Düzey.</summary>
+        public InventoryLevel Level { get; }
+
+        /// <summary>Proje / stok klasörü (genelde boş).</summary>
+        public string Owner { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Label;
+        }
+    }
+
+    /// <summary>Ana pencere: envanter (kablo, jig …) — ağaç düğümleri, kayıt sayfası, yeni kayıt ve durum olayı.</summary>
+    public sealed partial class MainViewModel
+    {
+        private List<InventoryItem> inventoryItems = new List<InventoryItem>();
+
+        private bool isInventoryDialogOpen;
+        private TypeDefinition? newInventoryType;
+        private LevelOption? newInventoryLevel;
+        private string newInventoryNumber = string.Empty;
+        private string newInventoryName = string.Empty;
+        private string newInventorySubType = string.Empty;
+        private string newInventoryNote = string.Empty;
+        private string inventoryError = string.Empty;
+
+        private bool isEventDialogOpen;
+        private string eventStatus = string.Empty;
+        private DateTime eventDate = DateTime.Today;
+        private string eventPerson = string.Empty;
+        private string eventLocation = string.Empty;
+        private string eventNote = string.Empty;
+
+        /// <summary>Envanter seçiliyken sağ panel.</summary>
+        public InventoryDetailViewModel Inventory { get; } = new InventoryDetailViewModel();
+
+        /// <summary>Oturum açmış kullanıcı (olaylarda varsayılan kişi).</summary>
+        public static string CurrentUser
+        {
+            get { return Environment.UserName; }
+        }
+
+        #region Ağaç
+
+        // Genel düzey kök klasörü (örn. "ENVANTER"): ağaçta klasör olarak değil, Envanter bölümü olarak görünür.
+        private bool IsGeneralInventoryRoot(string path)
+        {
+            return types.InventoryTypes
+                .Select(t => t.GeneralFolder.Split('\\', '/').FirstOrDefault() ?? string.Empty)
+                .Where(first => first.Length > 0)
+                .Any(first => string.Equals(Path.GetFileName(path), first, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // Envanter bölümü: bölüm → türler (Kablolar, Jigler) → kayıtlar (üç düzeyden).
+        private void AddInventoryNodes(HashSet<string> expanded)
+        {
+            var inventoryTypes = types.InventoryTypes.ToList();
+            inventoryItems = InventoryService.ReadAll(rootPath, inventoryTypes);
+            if (inventoryTypes.Count == 0)
+            {
+                return;
+            }
+
+            var groupPath = Path.Combine(rootPath, inventoryTypes[0].GeneralFolder.Split('\\', '/')[0]);
+            var group = new TreeNodeViewModel(new FolderEntry(groupPath, FolderKind.InventoryGroup, Resources.Tree_Inventory), null, null, string.Empty);
+            foreach (var type in inventoryTypes)
+            {
+                var items = inventoryItems.Where(i => string.Equals(i.Record.Type, type.Key, StringComparison.OrdinalIgnoreCase)).ToList();
+                var typePath = InventoryService.LevelFolder(type, InventoryLevel.General, rootPath, string.Empty);
+                var typeNode = new TreeNodeViewModel(
+                    new FolderEntry(typePath, FolderKind.InventoryType, type.PluralName.Length > 0 ? type.PluralName : type.Name),
+                    type,
+                    null,
+                    items.Count.ToString());
+                foreach (var entry in items)
+                {
+                    typeNode.Children.Add(new TreeNodeViewModel(new FolderEntry(entry.Folder, FolderKind.InventoryItem, entry.Record.Number), type, entry, entry.Record.Name));
+                }
+
+                typeNode.IsExpanded = expanded.Contains(typePath);
+                group.Children.Add(typeNode);
+            }
+
+            group.IsExpanded = expanded.Count == 0 || expanded.Contains(groupPath);
+            Nodes.Add(group);
+        }
+
+        #endregion
+
+        #region Yeni kayıt
+
+        /// <summary>"Yeni kablo" gibi menü / başlık metni (tür adı küçük harfle).</summary>
+        public static string NewMenuText(TypeDefinition? type)
+        {
+            var name = type?.Name ?? string.Empty;
+            return string.Format(Resources.Inv_NewTitle, name.ToLower(System.Globalization.CultureInfo.GetCultureInfo("tr-TR")));
+        }
+
+        /// <summary>"+" menüsünde gösterilecek envanter türleri.</summary>
+        public IEnumerable<TypeDefinition> InventoryTypes
+        {
+            get { return types.InventoryTypes; }
+        }
+
+        /// <summary>Yeni kayıt diyaloğu açık mı.</summary>
+        public bool IsInventoryDialogOpen
+        {
+            get { return isInventoryDialogOpen; }
+            set { SetDialogOpen(ref isInventoryDialogOpen, value); }
+        }
+
+        /// <summary>Diyalog başlığı ("Yeni kablo").</summary>
+        public string InventoryDialogTitle
+        {
+            get { return NewMenuText(newInventoryType); }
+        }
+
+        /// <summary>Düzey seçenekleri (Genel; seçime göre proje ve stok).</summary>
+        public ObservableCollection<LevelOption> InventoryLevels { get; } = new ObservableCollection<LevelOption>();
+
+        /// <summary>Seçili düzey.</summary>
+        public LevelOption? NewInventoryLevel
+        {
+            get { return newInventoryLevel; }
+            set { SetProperty(ref newInventoryLevel, value); }
+        }
+
+        /// <summary>Alt tür seçenekleri.</summary>
+        public ObservableCollection<string> InventorySubTypes { get; } = new ObservableCollection<string>();
+
+        /// <summary>Girilen numara.</summary>
+        public string NewInventoryNumber
+        {
+            get { return newInventoryNumber; }
+            set { SetProperty(ref newInventoryNumber, value ?? string.Empty); }
+        }
+
+        /// <summary>Girilen tanım.</summary>
+        public string NewInventoryName
+        {
+            get { return newInventoryName; }
+            set { SetProperty(ref newInventoryName, value ?? string.Empty); }
+        }
+
+        /// <summary>Seçilen alt tür.</summary>
+        public string NewInventorySubType
+        {
+            get { return newInventorySubType; }
+            set { SetProperty(ref newInventorySubType, value ?? string.Empty); }
+        }
+
+        /// <summary>Girilen not.</summary>
+        public string NewInventoryNote
+        {
+            get { return newInventoryNote; }
+            set { SetProperty(ref newInventoryNote, value ?? string.Empty); }
+        }
+
+        /// <summary>Kabul edilen numara biçimleri (örnekle).</summary>
+        public string InventoryNumberHint
+        {
+            get
+            {
+                if (newInventoryType == null)
+                {
+                    return string.Empty;
+                }
+
+                return string.Join(" · ", newInventoryType.NumberFormats.Select(f => NumberPattern.Example(f.Pattern)));
+            }
+        }
+
+        /// <summary>Diyalogdaki hata; boşsa gizlidir.</summary>
+        public string InventoryError
+        {
+            get { return inventoryError; }
+            private set { SetProperty(ref inventoryError, value); }
+        }
+
+        /// <summary>Verilen tür için yeni kayıt diyaloğunu açar; düzey seçenekleri seçime göre kurulur.</summary>
+        public void OpenNewInventory(TypeDefinition type)
+        {
+            if (!HasRoot)
+            {
+                Status = Resources.Status_SelectRootFirst;
+                return;
+            }
+
+            newInventoryType = type;
+            InventoryLevels.Clear();
+            InventoryLevels.Add(new LevelOption(Resources.Inv_LevelGeneral, InventoryLevel.General, string.Empty));
+            var project = SelectedProjectFolder();
+            if (project.Length > 0)
+            {
+                InventoryLevels.Add(new LevelOption(string.Format(Resources.Inv_LevelProject, Path.GetFileName(project)), InventoryLevel.Project, project));
+            }
+
+            if (selectedNode != null && selectedNode.Kind == FolderKind.Stock)
+            {
+                InventoryLevels.Add(new LevelOption(string.Format(Resources.Inv_LevelStock, selectedNode.Title), InventoryLevel.Stock, selectedNode.Path));
+            }
+
+            InventorySubTypes.Clear();
+            foreach (var subType in type.SubTypes)
+            {
+                InventorySubTypes.Add(subType);
+            }
+
+            NewInventoryLevel = InventoryLevels.Last();
+            NewInventoryNumber = string.Empty;
+            NewInventoryName = string.Empty;
+            NewInventorySubType = InventorySubTypes.FirstOrDefault() ?? string.Empty;
+            NewInventoryNote = string.Empty;
+            InventoryError = string.Empty;
+            OnPropertyChanged(nameof(InventoryDialogTitle));
+            OnPropertyChanged(nameof(InventoryNumberHint));
+            IsInventoryDialogOpen = true;
+        }
+
+        /// <summary>Kaydı açar. Başarısızsa <c>false</c> döner ve hata metnini doldurur; çağıran diyaloğu yeniden açar.</summary>
+        public bool ConfirmNewInventory()
+        {
+            if (newInventoryType == null || newInventoryLevel == null)
+            {
+                return true;
+            }
+
+            var result = InventoryService.Create(rootPath, newInventoryType, newInventoryLevel.Level, newInventoryLevel.Owner,
+                NewInventoryNumber, NewInventoryName, NewInventorySubType, NewInventoryNote, CurrentUser);
+            if (!result.Succeeded)
+            {
+                InventoryError = result.Error == CreateError.NumberFormat
+                    ? string.Format(Resources.Error_StockNumberFormat, InventoryNumberHint)
+                    : ErrorText(result);
+                return false;
+            }
+
+            Refresh();
+            ShowInventory(result.Folder);
+            Status = string.Format(Resources.Inv_Created, result.Folder);
+            return true;
+        }
+
+        /// <summary>Ağaçta kaydı bulur, türünü açar ve seçer.</summary>
+        public void ShowInventory(string folder)
+        {
+            foreach (var group in Nodes.Where(n => n.Kind == FolderKind.InventoryGroup))
+            {
+                group.IsExpanded = true;
+                foreach (var typeNode in group.Children)
+                {
+                    var match = typeNode.Children.FirstOrDefault(c => string.Equals(c.Path, folder, StringComparison.OrdinalIgnoreCase));
+                    if (match != null)
+                    {
+                        typeNode.IsExpanded = true;
+                        match.IsSelected = true;
+                        SelectedNode = match;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region Durum olayı
+
+        /// <summary>Durum değiştirme diyaloğu açık mı.</summary>
+        public bool IsEventDialogOpen
+        {
+            get { return isEventDialogOpen; }
+            set { SetDialogOpen(ref isEventDialogOpen, value); }
+        }
+
+        /// <summary>Diyalog başlığı ("Durum → Kullanımda").</summary>
+        public string EventTitle
+        {
+            get { return string.Format(Resources.Inv_EventTitle, eventStatus); }
+        }
+
+        /// <summary>Olay tarihi.</summary>
+        public DateTime EventDate
+        {
+            get { return eventDate; }
+            set { SetProperty(ref eventDate, value); }
+        }
+
+        /// <summary>Olaydaki kişi.</summary>
+        public string EventPerson
+        {
+            get { return eventPerson; }
+            set { SetProperty(ref eventPerson, value ?? string.Empty); }
+        }
+
+        /// <summary>Olaydaki konum (boşsa önceki konum geçerli kalır).</summary>
+        public string EventLocation
+        {
+            get { return eventLocation; }
+            set { SetProperty(ref eventLocation, value ?? string.Empty); }
+        }
+
+        /// <summary>Olay notu.</summary>
+        public string EventNote
+        {
+            get { return eventNote; }
+            set { SetProperty(ref eventNote, value ?? string.Empty); }
+        }
+
+        /// <summary>Gösterilen kayıt için durum değiştirme diyaloğunu açar.</summary>
+        public void AskInventoryEvent(string status)
+        {
+            if (Inventory.Item == null)
+            {
+                return;
+            }
+
+            eventStatus = status;
+            OnPropertyChanged(nameof(EventTitle));
+            EventDate = DateTime.Today;
+            EventPerson = CurrentUser;
+            EventLocation = string.Empty;
+            EventNote = string.Empty;
+            IsEventDialogOpen = true;
+        }
+
+        /// <summary>Olayı kayda yazar ve sayfayı yeniler.</summary>
+        public void ConfirmInventoryEvent()
+        {
+            var shown = Inventory.Item;
+            if (shown == null)
+            {
+                return;
+            }
+
+            var inventoryEvent = InventoryEvent.Create(eventStatus, EventDate, EventPerson, EventLocation, EventNote);
+            if (!InventoryService.AddEvent(shown.Folder, inventoryEvent))
+            {
+                Status = string.Format(Resources.Error_Io, shown.Folder);
+                return;
+            }
+
+            var folder = shown.Folder;
+            Refresh();
+            ShowInventory(folder);
+            Status = string.Format(Resources.Status_StatusChanged, shown.Record.Number, eventStatus);
+        }
+
+        #endregion
+    }
+}

@@ -522,4 +522,67 @@
   <data name="Format_DayMonth" xml:space="preserve">
     <value>dd.MM</value>
   </data>
+  <data name="Tree_Inventory" xml:space="preserve">
+    <value>Envanter</value>
+  </data>
+  <data name="Inv_NewTitle" xml:space="preserve">
+    <value>Yeni {0}</value>
+  </data>
+  <data name="Inv_Created" xml:space="preserve">
+    <value>Kayıt açıldı: {0}</value>
+  </data>
+  <data name="Inv_EventTitle" xml:space="preserve">
+    <value>Durum → {0}</value>
+  </data>
+  <data name="Inv_Number" xml:space="preserve">
+    <value>Stok</value>
+  </data>
+  <data name="Inv_Name" xml:space="preserve">
+    <value>Tanım</value>
+  </data>
+  <data name="Inv_Type" xml:space="preserve">
+    <value>Tür</value>
+  </data>
+  <data name="Inv_SubType" xml:space="preserve">
+    <value>Alt tür</value>
+  </data>
+  <data name="Inv_Note" xml:space="preserve">
+    <value>Not</value>
+  </data>
+  <data name="Inv_Level" xml:space="preserve">
+    <value>Düzey</value>
+  </data>
+  <data name="Inv_LevelGeneral" xml:space="preserve">
+    <value>Genel</value>
+  </data>
+  <data name="Inv_LevelProject" xml:space="preserve">
+    <value>Proje · {0}</value>
+  </data>
+  <data name="Inv_LevelStock" xml:space="preserve">
+    <value>Stok · {0}</value>
+  </data>
+  <data name="Inv_Requested" xml:space="preserve">
+    <value>Talep</value>
+  </data>
+  <data name="Inv_MadeBy" xml:space="preserve">
+    <value>Yapan</value>
+  </data>
+  <data name="Inv_Delivered" xml:space="preserve">
+    <value>Teslim</value>
+  </data>
+  <data name="Inv_Location" xml:space="preserve">
+    <value>Konum</value>
+  </data>
+  <data name="Inv_Date" xml:space="preserve">
+    <value>Tarih</value>
+  </data>
+  <data name="Inv_Person" xml:space="preserve">
+    <value>Kişi</value>
+  </data>
+  <data name="Inv_Facts" xml:space="preserve">
+    <value>Bilgiler</value>
+  </data>
+  <data name="Inv_History" xml:space="preserve">
+    <value>Geçmiş</value>
+  </data>
 </root>

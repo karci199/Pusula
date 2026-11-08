@@ -27,7 +27,9 @@ namespace Pusula.Core.Types
             var path = FilePath(root);
             if (File.Exists(path))
             {
-                return JsonFile.TryRead<TypeSet>(path) ?? TypeSet.CreateDefault();
+                var loaded = JsonFile.TryRead<TypeSet>(path) ?? TypeSet.CreateDefault();
+                loaded.Normalize();
+                return loaded;
             }
 
             var set = TypeSet.CreateDefault();

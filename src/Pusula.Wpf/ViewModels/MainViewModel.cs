@@ -15,7 +15,7 @@ namespace Pusula.Wpf.ViewModels
     /// <summary>
     /// Ana pencerenin durumu: kök klasör, ağaç, seçili düğüm, yeni proje/stok diyalogları.
     /// </summary>
-    public sealed class MainViewModel : ViewModelBase
+    public sealed partial class MainViewModel : ViewModelBase
     {
         private string rootPath = string.Empty;
         private TreeNodeViewModel? selectedNode;
@@ -96,6 +96,7 @@ namespace Pusula.Wpf.ViewModels
                     OnPropertyChanged(nameof(CanMarkAsStock));
                     OnPropertyChanged(nameof(CanMarkAsProject));
                     Detail.Load(selectedNode, templates, types);
+                    Inventory.Load(selectedNode, inventoryItems, types);
                 }
             }
         }
@@ -191,11 +192,18 @@ namespace Pusula.Wpf.ViewModels
         public void Refresh()
         {
             var expanded = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
-            foreach (var node in Nodes)
+            var pending = new Stack<TreeNodeViewModel>(Nodes);
+            while (pending.Count > 0)
             {
+                var node = pending.Pop();
                 if (node.IsExpanded)
                 {
                     expanded.Add(node.Path);
+                }
+
+                foreach (var child in node.Children)
+                {
+                    pending.Push(child);
                 }
             }
 
@@ -211,6 +219,11 @@ namespace Pusula.Wpf.ViewModels
             types = TypeStore.LoadOrCreate(rootPath);
             foreach (var entry in FolderReader.ListChildren(rootPath))
             {
+                if (IsGeneralInventoryRoot(entry.Path))
+                {
+                    continue;
+                }
+
                 var node = new TreeNodeViewModel(entry);
                 foreach (var child in FolderReader.ListChildren(entry.Path))
                 {
@@ -220,6 +233,8 @@ namespace Pusula.Wpf.ViewModels
                 node.IsExpanded = expanded.Contains(entry.Path);
                 Nodes.Add(node);
             }
+
+            AddInventoryNodes(expanded);
         }
 
         #endregion

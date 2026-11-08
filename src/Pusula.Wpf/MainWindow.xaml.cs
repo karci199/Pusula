@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -263,6 +264,119 @@ namespace Pusula.Wpf
             {
                 viewModel.OpenPath(item.Path);
                 e.Handled = true;
+            }
+        }
+
+        // "+" menüsü: envanter türleri (Yeni kablo, Yeni jig …) her açılışta tür kalıbından eklenir.
+        private void AddMenu_Opened(object sender, RoutedEventArgs e)
+        {
+            var menu = (ContextMenu)sender;
+            foreach (var old in menu.Items.OfType<FrameworkElement>().Where(i => Equals(i.Tag, "inventory")).ToList())
+            {
+                menu.Items.Remove(old);
+            }
+
+            var index = 2;
+            menu.Items.Insert(index++, new Separator { Tag = "inventory" });
+            foreach (var type in viewModel.InventoryTypes)
+            {
+                var item = new MenuItem
+                {
+                    Header = MainViewModel.NewMenuText(type),
+                    Tag = "inventory",
+                    Icon = new FontIcon { Glyph = TreeNodeViewModel.GlyphOf(type.Icon), Foreground = BrushOf(type.Color) },
+                };
+                var chosen = type;
+                item.Click += (s, args) => viewModel.OpenNewInventory(chosen);
+                menu.Items.Insert(index++, item);
+            }
+        }
+
+        private static Brush? BrushOf(string color)
+        {
+            try
+            {
+                return color.Length == 0 ? null : (Brush?)new BrushConverter().ConvertFromString(color);
+            }
+            catch (FormatException)
+            {
+                return null;
+            }
+        }
+
+        // Envanter kaydının durum menüsü: kayıt türünün durumları; seçince tarih / kişi / konum / not sorulur.
+        private void InventoryStatusMenu_Opened(object sender, RoutedEventArgs e)
+        {
+            var menu = (ContextMenu)sender;
+            menu.Items.Clear();
+            var type = viewModel.Inventory.Type;
+            if (type == null)
+            {
+                return;
+            }
+
+            var current = viewModel.Inventory.Status.Name;
+            foreach (var status in type.Statuses)
+            {
+                menu.Items.Add(CreateInventoryStatusItem(status.Name, current));
+            }
+
+            if (type.SideStatuses.Count > 0)
+            {
+                menu.Items.Add(new Separator());
+                foreach (var status in type.SideStatuses)
+                {
+                    menu.Items.Add(CreateInventoryStatusItem(status.Name, current));
+                }
+            }
+        }
+
+        private MenuItem CreateInventoryStatusItem(string status, string current)
+        {
+            var item = new MenuItem { Header = status + "…" };
+            if (string.Equals(status, current, StringComparison.OrdinalIgnoreCase))
+            {
+                item.Icon = new FontIcon { Glyph = AppIcons.Check };
+            }
+
+            item.Click += (s, args) =>
+            {
+                viewModel.NoteMenuChoice();
+                viewModel.AskInventoryEvent(status);
+            };
+            return item;
+        }
+
+        private void InventoryDialog_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (!viewModel.ConfirmNewInventory())
+            {
+                Dispatcher.BeginInvoke(new Action(() => viewModel.IsInventoryDialogOpen = true));
+            }
+        }
+
+        private void EventDialog_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            viewModel.ConfirmInventoryEvent();
+        }
+
+        // Envanter listesinde satıra çift tıklayınca ağaçta o kayıt seçilir.
+        private void InventoryList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton != MouseButton.Left || viewModel.IsDialogBusy)
+            {
+                return;
+            }
+
+            var source = e.OriginalSource as DependencyObject;
+            while (source != null && !(source is ListViewItem))
+            {
+                source = VisualTreeHelper.GetParent(source);
+            }
+
+            if ((source as ListViewItem)?.DataContext is InventoryRow row)
+            {
+                viewModel.ShowInventory(row.Item.Folder);
             }
         }
 

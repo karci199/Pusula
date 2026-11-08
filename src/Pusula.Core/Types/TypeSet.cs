@@ -29,7 +29,7 @@ namespace Pusula.Core.Types
 
         /// <summary>Dosya biçiminin sürümü.</summary>
         [DataMember(Name = "schemaVersion", Order = 0)]
-        public int SchemaVersion { get; set; } = 1;
+        public int SchemaVersion { get; set; } = 2;
 
         /// <summary>Kayıt türleri.</summary>
         [DataMember(Name = "types", Order = 1)]
@@ -51,6 +51,59 @@ namespace Pusula.Core.Types
             get { return Find(StockKey) ?? CreateDefault().Find(StockKey)!; }
         }
 
+        /// <summary>Envanter türleri (kablo, jig, yazılım …): kendi klasörü ve kaydı olanlar.</summary>
+        public IEnumerable<TypeDefinition> InventoryTypes
+        {
+            get { return Types.Where(t => t.IsInventory); }
+        }
+
+        /// <summary>
+        /// Eski dosyayı geçerli biçime çevirir (yalnızca bellekte). Sürüm 1'deki envanter türleri hiç kullanılmadığı için
+        /// varsayılanlarla değiştirilir; eksik ikon, renk ve klasörler varsayılandan doldurulur.
+        /// </summary>
+        public void Normalize()
+        {
+            var defaults = CreateDefault();
+            if (SchemaVersion < 2)
+            {
+                Types.RemoveAll(t => t.Key == "jig" || t.Key == "cable" || t.Key == "software");
+                Types.AddRange(defaults.Types.Where(t => t.IsInventory));
+            }
+
+            foreach (var type in Types)
+            {
+                var fallback = defaults.Find(type.Key);
+                if (fallback == null)
+                {
+                    continue;
+                }
+
+                if (type.Icon.Length == 0)
+                {
+                    type.Icon = fallback.Icon;
+                }
+
+                if (type.Color.Length == 0)
+                {
+                    type.Color = fallback.Color;
+                }
+
+                if (type.IsInventory && type.PluralName.Length == 0)
+                {
+                    type.PluralName = fallback.PluralName;
+                }
+
+                if (type.IsInventory && type.GeneralFolder.Length == 0)
+                {
+                    type.GeneralFolder = fallback.GeneralFolder;
+                    type.ProjectFolder = fallback.ProjectFolder;
+                    type.StockFolder = fallback.StockFolder;
+                }
+            }
+
+            SchemaVersion = 2;
+        }
+
         /// <summary>İlk kullanımda yazılan varsayılan içerik.</summary>
         public static TypeSet CreateDefault()
         {
@@ -61,6 +114,8 @@ namespace Pusula.Core.Types
             {
                 Key = ProjectKey,
                 Name = "Proje",
+                Icon = "E821",
+                Color = "#E8B04B",
                 NumberFormats = { new NumberFormat { Pattern = "####", Label = "Proje numarası" } },
             });
 
@@ -68,6 +123,8 @@ namespace Pusula.Core.Types
             {
                 Key = StockKey,
                 Name = "Stok",
+                Icon = "E7B8",
+                Color = "#60CDFF",
                 NumberFormats =
                 {
                     new NumberFormat { Pattern = "JY-####-####", Label = "Geliştirme numarası" },
@@ -88,65 +145,46 @@ namespace Pusula.Core.Types
                 },
             });
 
-            set.Types.Add(new TypeDefinition
-            {
-                Key = "jig",
-                Name = "Jig",
-                Folder = @"02_ENVANTER\Jigler",
-                NumberFormats = { new NumberFormat { Pattern = "JIG-####-####", Label = "Jig numarası" } },
-                SubTypes = { "Mekanik", "Elektriksel", "Ölçüm adaptörü", "Montaj" },
-                Statuses =
-                {
-                    new StatusDefinition { Name = "Tasarımda", Tone = StatusTone.Neutral },
-                    new StatusDefinition { Name = "Üretimde", Tone = StatusTone.Active },
-                    new StatusDefinition { Name = "Hazır", Tone = StatusTone.Done },
-                },
-                SideStatuses =
-                {
-                    new StatusDefinition { Name = "Tamirde", Tone = StatusTone.Warning, NeedsNote = true },
-                    new StatusDefinition { Name = "Kalibrasyon bekliyor", Tone = StatusTone.Warning },
-                    new StatusDefinition { Name = "Kullanım dışı", Tone = StatusTone.Neutral },
-                },
-            });
-
-            set.Types.Add(new TypeDefinition
-            {
-                Key = "cable",
-                Name = "Kablo",
-                Folder = @"02_ENVANTER\Kablolar",
-                NumberFormats = { new NumberFormat { Pattern = "KBL-####-####", Label = "Kablo numarası" } },
-                SubTypes = { "RF kablo", "EMC kablosu", "Güç / veri kablosu" },
-                Statuses =
-                {
-                    new StatusDefinition { Name = "Sipariş", Tone = StatusTone.Neutral },
-                    new StatusDefinition { Name = "Geldi", Tone = StatusTone.Active },
-                    new StatusDefinition { Name = "Kullanımda", Tone = StatusTone.Done },
-                },
-                SideStatuses =
-                {
-                    new StatusDefinition { Name = "Arızalı", Tone = StatusTone.Warning, NeedsNote = true },
-                    new StatusDefinition { Name = "Kalibrasyon bekliyor", Tone = StatusTone.Warning },
-                },
-            });
-
-            set.Types.Add(new TypeDefinition
-            {
-                Key = "software",
-                Name = "Yazılım",
-                Folder = @"02_ENVANTER\Yazilimlar",
-                SubTypes = { "Analiz aracı", "Test betiği", "Firmware", "Kütüphane" },
-                Statuses =
-                {
-                    new StatusDefinition { Name = "Geliştiriliyor", Tone = StatusTone.Active },
-                    new StatusDefinition { Name = "Kullanımda", Tone = StatusTone.Done },
-                },
-                SideStatuses =
-                {
-                    new StatusDefinition { Name = "Kullanım dışı", Tone = StatusTone.Neutral },
-                },
-            });
+            set.Types.Add(Inventory("cable", "Kablo", "Kablolar", "E703", "#F7A35C", "JT-####-####", "Kablo numarası", "Kablolar", "05_Kablolar",
+                new[] { "RF", "Haberleşme", "Güç / veri", "Kablaj" }));
+            set.Types.Add(Inventory("jig", "Jig", "Jigler", "E90F", "#B4A7F5", "JIG-####-####", "Jig numarası", "Jigler", "05_Jigler",
+                new[] { "Mekanik", "Ölçüm adaptörü", "Montaj", "Elektriksel" }));
 
             return set;
+        }
+
+        // Kablo ve jig ortak durumları: Talep → Hazırlanıyor → Teslim alındı → Kullanımda → Üretime teslim edildi;
+        // sıra dışı: Onarım / değişim gerekiyor, Çoğaltma isteniyor.
+        private static TypeDefinition Inventory(string key, string name, string plural, string icon, string color, string pattern, string label, string folder, string stockFolder, string[] subTypes)
+        {
+            var type = new TypeDefinition
+            {
+                Key = key,
+                Name = name,
+                PluralName = plural,
+                Icon = icon,
+                Color = color,
+                IsInventory = true,
+                GeneralFolder = @"ENVANTER\" + folder,
+                ProjectFolder = @"00_Proje_Geneli\Envanter\" + folder,
+                StockFolder = stockFolder,
+                NumberFormats = { new NumberFormat { Pattern = pattern, Label = label } },
+                Statuses =
+                {
+                    new StatusDefinition { Name = "Talep", Tone = StatusTone.Neutral },
+                    new StatusDefinition { Name = "Hazırlanıyor", Tone = StatusTone.Active },
+                    new StatusDefinition { Name = "Teslim alındı", Tone = StatusTone.Waiting },
+                    new StatusDefinition { Name = "Kullanımda", Tone = StatusTone.Done },
+                    new StatusDefinition { Name = "Üretime teslim edildi", Tone = StatusTone.Done },
+                },
+                SideStatuses =
+                {
+                    new StatusDefinition { Name = "Onarım / değişim gerekiyor", Tone = StatusTone.Warning, NeedsNote = true },
+                    new StatusDefinition { Name = "Çoğaltma isteniyor", Tone = StatusTone.Warning },
+                },
+            };
+            type.SubTypes.AddRange(subTypes);
+            return type;
         }
     }
 
@@ -160,7 +198,14 @@ namespace Pusula.Core.Types
         {
             Key = string.Empty;
             Name = string.Empty;
+            PluralName = string.Empty;
             Folder = string.Empty;
+            Icon = string.Empty;
+            Color = string.Empty;
+            IsInventory = false;
+            GeneralFolder = string.Empty;
+            ProjectFolder = string.Empty;
+            StockFolder = string.Empty;
             NumberFormats = new List<NumberFormat>();
             SubTypes = new List<string>();
             Statuses = new List<StatusDefinition>();
@@ -194,6 +239,34 @@ namespace Pusula.Core.Types
         /// <summary>Sıra dışı durumlar (her aşamada seçilebilir: Beklemede, Tamirde …).</summary>
         [DataMember(Name = "sideStatuses", Order = 6)]
         public List<StatusDefinition> SideStatuses { get; set; } = new List<StatusDefinition>();
+
+        /// <summary>Çoğul ad (ağaçta grup başlığı: "Kablolar").</summary>
+        [DataMember(Name = "pluralName", Order = 7, EmitDefaultValue = false)]
+        public string PluralName { get; set; } = string.Empty;
+
+        /// <summary>İkon: Segoe Fluent Icons kod noktası (onaltılık, örn. "E703").</summary>
+        [DataMember(Name = "icon", Order = 8)]
+        public string Icon { get; set; } = string.Empty;
+
+        /// <summary>Renk (örn. "#F7A35C").</summary>
+        [DataMember(Name = "color", Order = 9)]
+        public string Color { get; set; } = string.Empty;
+
+        /// <summary>Envanter türü mü (kendi klasörü ve <c>kayit.json</c> dosyası olan kayıtlar: kablo, jig …).</summary>
+        [DataMember(Name = "inventory", Order = 10, EmitDefaultValue = false)]
+        public bool IsInventory { get; set; }
+
+        /// <summary>Genel düzey klasörü (köke göre, örn. <c>ENVANTER\Kablolar</c>).</summary>
+        [DataMember(Name = "generalFolder", Order = 11, EmitDefaultValue = false)]
+        public string GeneralFolder { get; set; } = string.Empty;
+
+        /// <summary>Proje düzeyi klasörü (projeye göre, örn. <c>00_Proje_Geneli\Envanter\Kablolar</c>).</summary>
+        [DataMember(Name = "projectFolder", Order = 12, EmitDefaultValue = false)]
+        public string ProjectFolder { get; set; } = string.Empty;
+
+        /// <summary>Stok düzeyi klasörü (stoka göre, örn. <c>05_Kablolar</c>).</summary>
+        [DataMember(Name = "stockFolder", Order = 13, EmitDefaultValue = false)]
+        public string StockFolder { get; set; } = string.Empty;
 
         /// <summary>Numaraya uyan ilk biçim; uymuyorsa <c>null</c>.</summary>
         public NumberFormat? MatchNumber(string number)

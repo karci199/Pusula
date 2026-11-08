@@ -216,6 +216,12 @@
                 <DataTrigger Binding="{Binding Kind}" Value="{x:Static core:FolderKind.Stock}">
                     <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
                 </DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="{x:Static core:FolderKind.InventoryType}">
+                    <Setter Property="Foreground" Value="{Binding Color}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="{x:Static core:FolderKind.InventoryItem}">
+                    <Setter Property="Foreground" Value="{Binding Color}" />
+                </DataTrigger>
             </Style.Triggers>
         </Style>
 
@@ -333,11 +339,50 @@
             <MenuItem Header="{x:Static res:Resources.Run_OpenPhotos}" Click="RunMenuPhotos_Click" />
         </ContextMenu>
 
+        <!-- Envanter kaydı: geçmişte bir olay (dikey çizgi + renkli nokta) -->
+        <DataTemplate x:Key="HistoryTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Rectangle Width="2" HorizontalAlignment="Center" Fill="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                <Ellipse x:Name="Dot" Width="11" Height="11" Margin="0,5,0,0" VerticalAlignment="Top" HorizontalAlignment="Center"
+                         Stroke="{DynamicResource LayerBrush}" StrokeThickness="2" Fill="{DynamicResource TextTertiaryBrush}" />
+                <StackPanel Grid.Column="1" Margin="6,0,0,12">
+                    <StackPanel Orientation="Horizontal">
+                        <ContentPresenter Content="{Binding Status}" ContentTemplate="{DynamicResource StatusChipTemplate}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding Meta}" Margin="8,0,0,0" VerticalAlignment="Center"
+                                   Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding Detail}" TextWrapping="Wrap" Margin="0,3,0,0" Foreground="{DynamicResource TextSecondaryBrush}"
+                               Visibility="{Binding HasDetail, Converter={StaticResource BoolToVis}}" />
+                </StackPanel>
+            </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Status.Tone}" Value="done">
+                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status.Tone}" Value="active">
+                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status.Tone}" Value="waiting">
+                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status.Tone}" Value="warning">
+                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <!-- Envanter durum menüsü: her açılışta tür kalıbından kurulur. -->
+        <ContextMenu x:Key="InventoryStatusMenu" Opened="InventoryStatusMenu_Opened" />
+
         <!-- Durum menüsü: her açılışta tür kalıbından kurulur (MainWindow.xaml.cs). -->
         <ContextMenu x:Key="StatusMenu" Opened="StatusMenu_Opened" />
 
         <!-- Menüler ağaçla aynı DataContext'i kod tarafında alır (MainWindow.xaml.cs). -->
-        <ContextMenu x:Key="AddMenu">
+        <ContextMenu x:Key="AddMenu" Opened="AddMenu_Opened">
             <MenuItem Header="{Binding NewStockMenuText}"
                       Command="{Binding NewStockCommand}"
                       InputGestureText="{x:Static res:Resources.Gesture_NewStock}">
@@ -514,6 +559,7 @@
                         <TreeView.ItemContainerStyle>
                             <Style TargetType="TreeViewItem" BasedOn="{StaticResource {x:Type TreeViewItem}}">
                                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                                 <Setter Property="ContextMenu" Value="{StaticResource NodeMenu}" />
                             </Style>
                         </TreeView.ItemContainerStyle>
@@ -524,6 +570,9 @@
                                                        Style="{StaticResource KindIconStyle}"
                                                        VerticalAlignment="Center" />
                                     <TextBlock Text="{Binding Title}" Margin="10,0,0,0" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding Subtitle}" Margin="8,0,0,0" VerticalAlignment="Center" MaxWidth="150" TextWrapping="NoWrap"
+                                               TextTrimming="CharacterEllipsis"
+                                               Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" />
                                 </StackPanel>
                             </HierarchicalDataTemplate>
                         </TreeView.ItemTemplate>
@@ -600,6 +649,21 @@
                                        Foreground="{DynamicResource TextTertiaryBrush}"
                                        Text="{Binding DataContext.Detail.StatusInfo, RelativeSource={RelativeSource AncestorType=Window}}"
                                        Visibility="{Binding DataContext.Detail.IsStock, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
+                            <controls:DropDownButton Margin="14,0,0,0"
+                                                     Padding="4,2"
+                                                     VerticalAlignment="Center"
+                                                     Menu="{StaticResource InventoryStatusMenu}"
+                                                     ToolTip="{x:Static res:Resources.Status_ChangeHint}"
+                                                     Visibility="{Binding DataContext.Inventory.IsRecord, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}">
+                                <ContentPresenter Content="{Binding DataContext.Inventory.Status, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                  ContentTemplate="{DynamicResource StatusChipTemplate}" />
+                            </controls:DropDownButton>
+                            <TextBlock Margin="10,0,0,0"
+                                       VerticalAlignment="Center"
+                                       Style="{DynamicResource CaptionTextBlockStyle}"
+                                       Foreground="{DynamicResource TextTertiaryBrush}"
+                                       Text="{Binding DataContext.Inventory.StatusInfo, RelativeSource={RelativeSource AncestorType=Window}}"
+                                       Visibility="{Binding DataContext.Inventory.IsRecord, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
                         </StackPanel>
                         <TextBlock Style="{DynamicResource CaptionTextBlockStyle}"
                                    Foreground="{DynamicResource TextTertiaryBrush}"
@@ -621,6 +685,18 @@
                               ItemsSource="{Binding Detail.Steps}"
                               ItemTemplate="{StaticResource StatusStepTemplate}"
                               Visibility="{Binding Detail.IsStock, Converter={StaticResource BoolToVis}}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="1" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+                <!-- Envanter kaydı: aşama çubuğu -->
+                <ItemsControl Grid.Row="1" Margin="0,14,0,0"
+                              ItemsSource="{Binding Inventory.Steps}"
+                              ItemTemplate="{StaticResource StatusStepTemplate}"
+                              Visibility="{Binding Inventory.IsRecord, Converter={StaticResource BoolToVis}}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <UniformGrid Rows="1" />
@@ -679,6 +755,69 @@
                             <GridViewColumn Header="{x:Static res:Resources.Col_Files}" Width="80" DisplayMemberBinding="{Binding FileCount}" />
                             <GridViewColumn Header="{x:Static res:Resources.Col_Size}" Width="100" DisplayMemberBinding="{Binding Size}" />
                             <GridViewColumn Header="{x:Static res:Resources.Col_LastChange}" Width="150" DisplayMemberBinding="{Binding LastChange}" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+                <!-- Envanter kaydı: bilgiler ve geçmiş -->
+                <Grid Grid.Row="2" Grid.RowSpan="3" Margin="0,16,0,0" TextElement.FontWeight="Normal"
+                      Visibility="{Binding Inventory.IsRecord, Converter={StaticResource BoolToVis}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" VerticalAlignment="Top" Padding="16,12"
+                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                            CornerRadius="{DynamicResource OverlayCornerRadius}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.Inv_Facts}" />
+                            <ItemsControl ItemsSource="{Binding Inventory.Facts}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="110" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding Label}" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Value}" TextWrapping="Wrap" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="2" VerticalAlignment="Top" Padding="16,12"
+                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                            CornerRadius="{DynamicResource OverlayCornerRadius}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.Inv_History}" />
+                            <ItemsControl ItemsSource="{Binding Inventory.History}" ItemTemplate="{StaticResource HistoryTemplate}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Envanter: liste (tür ya da bölüm seçiliyken) -->
+                <ListView Grid.Row="2" Grid.RowSpan="3" Margin="0,16,0,0" TextElement.FontWeight="Normal"
+                          ItemsSource="{Binding Inventory.Rows}"
+                          MouseDoubleClick="InventoryList_MouseDoubleClick"
+                          Visibility="{Binding Inventory.IsList, Converter={StaticResource BoolToVis}}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="{x:Static res:Resources.Inv_Number}" Width="130" DisplayMemberBinding="{Binding Number}" />
+                            <GridViewColumn Header="{x:Static res:Resources.Inv_Name}" Width="220" DisplayMemberBinding="{Binding Name}" />
+                            <GridViewColumn Header="{x:Static res:Resources.Inv_Type}" Width="70" DisplayMemberBinding="{Binding TypeName}" />
+                            <GridViewColumn Header="{x:Static res:Resources.Inv_SubType}" Width="110" DisplayMemberBinding="{Binding SubType}" />
+                            <GridViewColumn Header="{x:Static res:Resources.Col_Status}" Width="190">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ContentPresenter Content="{Binding Status}" ContentTemplate="{DynamicResource StatusChipTemplate}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="{x:Static res:Resources.Inv_Location}" Width="140" DisplayMemberBinding="{Binding Location}" />
+                            <GridViewColumn Header="{x:Static res:Resources.Inv_Level}" Width="160" DisplayMemberBinding="{Binding Level}" />
                         </GridView>
                     </ListView.View>
                 </ListView>
@@ -930,6 +1069,58 @@
                 <controls:FormField Header="{Binding MarkNameLabel}" LabelWidth="90" Margin="0,8,0,0"
                                     ErrorText="{Binding MarkError}">
                     <TextBox Text="{Binding MarkName, UpdateSourceTrigger=PropertyChanged}" />
+                </controls:FormField>
+            </StackPanel>
+        </controls:ContentDialog>
+
+        <!-- Yeni envanter kaydı (kablo, jig …) -->
+        <controls:ContentDialog Grid.RowSpan="3"
+                                IsOpen="{Binding IsInventoryDialogOpen, Mode=TwoWay}"
+                                Title="{Binding InventoryDialogTitle}"
+                                PrimaryButtonText="{x:Static res:Resources.Dialog_Create}"
+                                CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                PrimaryButtonClick="InventoryDialog_PrimaryButtonClick">
+            <StackPanel MinWidth="380">
+                <controls:FormField Header="{x:Static res:Resources.Inv_Level}" LabelWidth="90">
+                    <ComboBox ItemsSource="{Binding InventoryLevels}" SelectedItem="{Binding NewInventoryLevel, Mode=TwoWay}" DisplayMemberPath="Label" />
+                </controls:FormField>
+                <controls:FormField Header="{x:Static res:Resources.Inv_Number}" IsRequired="True" LabelWidth="90" Margin="0,8,0,0">
+                    <TextBox Text="{Binding NewInventoryNumber, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+                </controls:FormField>
+                <TextBlock Margin="98,4,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
+                           Text="{Binding InventoryNumberHint}" />
+                <controls:FormField Header="{x:Static res:Resources.Inv_Name}" IsRequired="True" LabelWidth="90" Margin="0,8,0,0">
+                    <TextBox Text="{Binding NewInventoryName, UpdateSourceTrigger=PropertyChanged}" />
+                </controls:FormField>
+                <controls:FormField Header="{x:Static res:Resources.Inv_SubType}" LabelWidth="90" Margin="0,8,0,0">
+                    <ComboBox ItemsSource="{Binding InventorySubTypes}" SelectedItem="{Binding NewInventorySubType, Mode=TwoWay}" />
+                </controls:FormField>
+                <controls:FormField Header="{x:Static res:Resources.Inv_Note}" LabelWidth="90" Margin="0,8,0,0"
+                                    ErrorText="{Binding InventoryError}">
+                    <TextBox Text="{Binding NewInventoryNote, UpdateSourceTrigger=PropertyChanged}" />
+                </controls:FormField>
+            </StackPanel>
+        </controls:ContentDialog>
+
+        <!-- Envanter durum olayı: tarih, kişi, konum, not -->
+        <controls:ContentDialog Grid.RowSpan="3"
+                                IsOpen="{Binding IsEventDialogOpen, Mode=TwoWay}"
+                                Title="{Binding EventTitle}"
+                                PrimaryButtonText="{x:Static res:Resources.Editor_Save}"
+                                CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                PrimaryButtonClick="EventDialog_PrimaryButtonClick">
+            <StackPanel MinWidth="380">
+                <controls:FormField Header="{x:Static res:Resources.Inv_Date}" LabelWidth="90">
+                    <DatePicker SelectedDate="{Binding EventDate, Mode=TwoWay}" />
+                </controls:FormField>
+                <controls:FormField Header="{x:Static res:Resources.Inv_Person}" LabelWidth="90" Margin="0,8,0,0">
+                    <TextBox Text="{Binding EventPerson, UpdateSourceTrigger=PropertyChanged}" />
+                </controls:FormField>
+                <controls:FormField Header="{x:Static res:Resources.Inv_Location}" LabelWidth="90" Margin="0,8,0,0">
+                    <TextBox Text="{Binding EventLocation, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+                </controls:FormField>
+                <controls:FormField Header="{x:Static res:Resources.Inv_Note}" LabelWidth="90" Margin="0,8,0,0">
+                    <TextBox Text="{Binding EventNote, UpdateSourceTrigger=PropertyChanged}" />
                 </controls:FormField>
             </StackPanel>
         </controls:ContentDialog>

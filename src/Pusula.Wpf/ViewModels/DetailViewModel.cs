@@ -262,7 +262,7 @@ namespace Pusula.Wpf.ViewModels
             StatusInfo = string.Empty;
             Subtitle = selected == null ? string.Empty : selected.KindText;
 
-            if (selected == null || selected.Kind == FolderKind.Plain)
+            if (selected == null || (selected.Kind != FolderKind.Project && selected.Kind != FolderKind.Stock))
             {
                 IsLoading = false;
                 return;

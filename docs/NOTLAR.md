@@ -29,6 +29,14 @@ Son güncelleme: 08.11.2026. Dal: `claude/pusula-project-setup-c6ce02` (push edi
   SN: `SN01` seri, `SNP1` prototip; T = tur (deneme sırası; `_P1` de okunur). İçinde `test.md` (Obsidian notu, YAML: sistem, sn,
   tur, tarih, sonuc, kisi, plan, jig, etiketler), `Ham\`, `Analiz\`, `Foto\`. Sonuç sırası: test.md → KIWI `_kosu.md` → girilmedi.
   Jig alanı "JIG-1000-0009 Rev AC" biçimindeyse revizyon değişikliği Genel'de uyarı olur.
+- **Envanter (kablo, jig):** ortak kayıt yapısı; tür kalıbında (`turler.json`, sürüm 2) ikon, renk, numara biçimleri
+  (kablo `JT-####-####`, jig `JIG-####-####`, değiştirilebilir), alt türler, durumlar ve üç düzeyin klasörleri.
+  Düzeyler: Genel `<kök>\ENVANTER\Kablolar|Jigler`, Proje `<proje>\00_Proje_Geneli\Envanter\…`, Stok `<stok>\05_Kablolar|05_Jigler`.
+  Kayıt: `<numara>_<tanım>\_TAKIP\kayit.json` (tür, numara, tanım, alt tür, not, türe özel alanlar, olaylar).
+  Durum = son olay; her olayda tarih, kişi, konum, not. Talep / yapan / teslim / konum olaylardan okunur.
+  Durumlar: Talep → Hazırlanıyor → Teslim alındı → Kullanımda → Üretime teslim edildi; sıra dışı: Onarım / değişim gerekiyor, Çoğaltma isteniyor.
+  Ağaçta Envanter bölümü (Kablolar, Jigler, kayıtlar); "+" menüsünde Yeni kablo / Yeni jig (düzey seçimi);
+  kayıt sayfası: durum etiketi (menüden değiştir → tarih, kişi, konum, not), aşama çubuğu, Bilgiler, Geçmiş.
 - Varsayılan şablonda `03_Test_Sonuclari` altında yalnızca sistemler (VNA, SATIMO, Yankisiz, CK); `SN01\Ham`, `SN01\Analiz` ölçümle açılır.
 
 ## Stok klasör yapısı (kararlaştırılan)
@@ -59,7 +67,13 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 2. ~~Durum~~ (yapıldı: tür kalıbı + stok durumu).
 3. ~~Test koşuları, Genel / Testler / Kalifikasyon / Klasörler sekmeleri~~ (yapıldı).
 3a. **Fotoğraflar sekmesi (sıradaki):** 07_Fotograflar + koşuların Foto\ klasörleri, küçük resim ızgarası, tıkla büyüt.
-3c. **Jigler sekmesi:** jig kaydıyla birlikte (Talep → Tasarım → Üretim → Teslim alındı), kim yaptı, revizyon geçmişi.
+3c. **Stokta Jigler / Kablolar sekmeleri (sıradaki):** stok kaydı kullanır (bağ stok.json'da), kaydın sayfasında
+    "kullanan stoklar" hesaplanır; Genel'de "Jig 2 · 1 onarımda" kartı ve uyarı. Kütüphaneden ekle, ✕ yalnızca bağı kaldırır.
+3f. **Tür tanımlama ekranı:** ikonlu tür listesi, kilitli genel alanlar, türe özel alanlar (metin, sayı, tarih, seçim,
+    evet/hayır; birim), alt türler, durumlar, numara biçimleri, düzey klasörleri.
+3g. **Türe özel alanlar:** kablo (konnektör A/B, uzunluk, faz kararlı, protokol, ekran, pin yapısı), jig; foto, blok şema.
+    Özellikler ortak listeden etiket gibi seçilecek.
+3h. Düzeyler arası aktarma (stok → proje → genel), adet / seri no, zimmet.
 3d. **"+ Test koşusu":** sistem + SN seç, sıradaki tur, klasör + dolu test.md üret.
 3e. **Otomatik günlük:** dosya ve durum değişikliklerinden zaman çizelgesi.
 3b. **Test kalemleri:** ÇK, İşlevsel, Kalifikasyon; alt kalemler (RE102, CS114 …); her biri Başlamadı / Devam ediyor /
@@ -85,7 +99,7 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 - `00_Proje_Geneli` iç yapısı henüz kararlaştırılmadı (öneri: Sartname, Toplantilar, Yazismalar, Planlama).
 - Şablonda kullanılmayan modülü kütüphaneden tamamen silme yok (şimdilik listede kalır).
 - Test kütüphanesi seçilmedi (xUnit / NUnit / MSTest); `Pusula.Tests` projesi yok. Şimdilik denemeler
-  geçici klasörde PowerShell betikleriyle yapılıyor (şablon düzenleyici 32, özet 13, durum 28, işaretleme 18, test koşuları 17 kontrol).
+  geçici klasörde PowerShell betikleriyle yapılıyor (şablon düzenleyici 32, özet 13, durum 28, işaretleme 18, test koşuları 17, envanter 22 + 18 kontrol).
 - Git kullanıcı adı bu makinede tanımlı değil; commit'ler tek seferlik `-c user.name/user.email` ile atılıyor.
 
 ## Çalıştırma

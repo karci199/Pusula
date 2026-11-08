@@ -15,6 +15,15 @@ namespace Pusula.Core.Tracking
 
         /// <summary>İçinde <c>_TAKIP\stok.json</c> var.</summary>
         Stock,
+
+        /// <summary>Ağaçta envanter bölümü (sanal düğüm).</summary>
+        InventoryGroup,
+
+        /// <summary>Ağaçta bir envanter türü (Kablolar, Jigler; sanal düğüm).</summary>
+        InventoryType,
+
+        /// <summary>Envanter kaydı (içinde <c>_TAKIP\kayit.json</c> var).</summary>
+        InventoryItem,
     }
 
     /// <summary>Okunan bir klasör: yolu, türü ve görünen adı.</summary>

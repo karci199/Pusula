@@ -638,5 +638,72 @@ namespace Pusula.Wpf.Properties
         public static string Format_DayMonth { get { return Get("Format_DayMonth"); } }
 
         #endregion
+
+        #region Envanter
+
+        /// <summary>Ağaçta envanter bölümü.</summary>
+        public static string Tree_Inventory { get { return Get("Tree_Inventory"); } }
+
+        /// <summary>Yeni kayıt menüsü ve diyalog başlığı; {0} tür adı.</summary>
+        public static string Inv_NewTitle { get { return Get("Inv_NewTitle"); } }
+
+        /// <summary>Kayıt açılınca; {0} klasör.</summary>
+        public static string Inv_Created { get { return Get("Inv_Created"); } }
+
+        /// <summary>Durum olayı diyaloğu; {0} yeni durum.</summary>
+        public static string Inv_EventTitle { get { return Get("Inv_EventTitle"); } }
+
+        /// <summary>Alan: numara.</summary>
+        public static string Inv_Number { get { return Get("Inv_Number"); } }
+
+        /// <summary>Alan: tanım.</summary>
+        public static string Inv_Name { get { return Get("Inv_Name"); } }
+
+        /// <summary>Alan: tür.</summary>
+        public static string Inv_Type { get { return Get("Inv_Type"); } }
+
+        /// <summary>Alan: alt tür.</summary>
+        public static string Inv_SubType { get { return Get("Inv_SubType"); } }
+
+        /// <summary>Alan: not.</summary>
+        public static string Inv_Note { get { return Get("Inv_Note"); } }
+
+        /// <summary>Alan: düzey.</summary>
+        public static string Inv_Level { get { return Get("Inv_Level"); } }
+
+        /// <summary>Düzey: genel.</summary>
+        public static string Inv_LevelGeneral { get { return Get("Inv_LevelGeneral"); } }
+
+        /// <summary>Düzey: proje; {0} proje.</summary>
+        public static string Inv_LevelProject { get { return Get("Inv_LevelProject"); } }
+
+        /// <summary>Düzey: stok; {0} stok.</summary>
+        public static string Inv_LevelStock { get { return Get("Inv_LevelStock"); } }
+
+        /// <summary>Bilgi: talep tarihi ve kişi.</summary>
+        public static string Inv_Requested { get { return Get("Inv_Requested"); } }
+
+        /// <summary>Bilgi: hazırlayan kişi.</summary>
+        public static string Inv_MadeBy { get { return Get("Inv_MadeBy"); } }
+
+        /// <summary>Bilgi: teslim tarihi.</summary>
+        public static string Inv_Delivered { get { return Get("Inv_Delivered"); } }
+
+        /// <summary>Alan: konum.</summary>
+        public static string Inv_Location { get { return Get("Inv_Location"); } }
+
+        /// <summary>Alan: tarih.</summary>
+        public static string Inv_Date { get { return Get("Inv_Date"); } }
+
+        /// <summary>Alan: kişi.</summary>
+        public static string Inv_Person { get { return Get("Inv_Person"); } }
+
+        /// <summary>Kayıt sayfası: bilgiler başlığı.</summary>
+        public static string Inv_Facts { get { return Get("Inv_Facts"); } }
+
+        /// <summary>Kayıt sayfası: geçmiş başlığı.</summary>
+        public static string Inv_History { get { return Get("Inv_History"); } }
+
+        #endregion
     }
 }
