@@ -29,7 +29,7 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 - [x] **Logo / uygulama ikonu**: soyut ibre (koyu yuvarlak kare); `tools\Ikon-Ciz.ps1` üretir.
 - [ ] **Yeni stok ve yeni proje** pencereleri daha güzel olsun.
 - [x] Sol üstteki **+ düğmesi**: oksuz vurgu renkli +; menü Proje · Stok · Envanter türleri ("Yeni" kelimesi yok), ayraçlar sakin gri.
-- [x] Sayfa **üst kısmı**: numara + ad, tıklanabilir üst kayıt (proje / stok) › tür, durum + ince adım çizgisi, ⋯ menüsü (yolu kopyala, düzenle, takipten çıkar, sil); yol ipucunda.
+- [x] Sayfa **üst kısmı**: numara + ad, tıklanabilir üst kayıt (proje / stok) › tür, durum etiketi (adım çizgisi kaldırıldı: durum doğrusal ilerlemiyor), ⋯ menüsü (yolu kopyala, düzenle, takipten çıkar, sil); yol ipucunda.
 - [x] **Sekmeler sürüklenebilir** (stok sekmeleri, Genel sabit; sıra hatırlanır). Tablo sütunlarının sırası ve genişliği hatırlanır (40–600 px). Ayarlar → "Sekme ve sütun düzenini sıfırla".
 - [ ] Stok açılınca **anten hakkında ön bilgi + foto** gelsin (Genel kartı; zaten var, iyileştirilecek).
 - [ ] Jig ve kablo **tamamen ayrılsın**. "Genel sayfası açıldığı zaman ne ekliyse o gelsin" → konuşulacak.
@@ -96,6 +96,8 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 - [ ] Jig teslim edildi mi takibi (envanter durumu var; stok ekranında görünürlüğü).
 
 ## Sonra yapılacaklar
+
+- [ ] Bir kez stok Genel'inde "Jig ve kablo" altında fazladan "Jig 0" kutucuğu görüldü; yeniden üretilemedi (iki yükleme üst üste mi?).
 
 - [ ] Tablolara **arama kutusu ve filtre** (stok tablosu, test koşuları).
 

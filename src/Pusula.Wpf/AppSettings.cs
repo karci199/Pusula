@@ -43,6 +43,10 @@ namespace Pusula.Wpf
         [DataMember(Name = "columns", Order = 4)]
         public Dictionary<string, List<ColumnLayout>> Columns { get; set; } = new Dictionary<string, List<ColumnLayout>>();
 
+        /// <summary>Ana pencerenin son yeri ve boyutu; yoksa varsayılan (ortada, 1380×860).</summary>
+        [DataMember(Name = "window", Order = 5, EmitDefaultValue = false)]
+        public WindowBounds? Window { get; set; }
+
         /// <summary>Ayar dosyasının yerini değiştiren ortam değişkeni (testler gerçek ayarlara dokunmasın diye).</summary>
         public const string PathVariable = "PUSULA_AYARLAR";
 
@@ -94,5 +98,30 @@ namespace Pusula.Wpf
         /// <summary>Genişlik (piksel).</summary>
         [DataMember(Name = "width", Order = 1)]
         public double Width { get; set; }
+    }
+
+    /// <summary>Pencerenin yeri ve boyutu (mantıksal piksel).</summary>
+    [DataContract]
+    public sealed class WindowBounds
+    {
+        /// <summary>Sol.</summary>
+        [DataMember(Name = "left", Order = 0)]
+        public double Left { get; set; }
+
+        /// <summary>Üst.</summary>
+        [DataMember(Name = "top", Order = 1)]
+        public double Top { get; set; }
+
+        /// <summary>Genişlik.</summary>
+        [DataMember(Name = "width", Order = 2)]
+        public double Width { get; set; }
+
+        /// <summary>Yükseklik.</summary>
+        [DataMember(Name = "height", Order = 3)]
+        public double Height { get; set; }
+
+        /// <summary>Tam ekran (büyütülmüş) mü.</summary>
+        [DataMember(Name = "maximized", Order = 4)]
+        public bool Maximized { get; set; }
     }
 }

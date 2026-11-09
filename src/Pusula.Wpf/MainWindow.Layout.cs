@@ -43,7 +43,59 @@ namespace Pusula.Wpf
             StockTabs.PreviewMouseMove += StockTabs_PreviewMouseMove;
             StockTabs.Drop += StockTabs_Drop;
             ApplyTabOrder();
-            Closing += (s, e) => SaveLayout();
+            ApplyWindowBounds();
+            Closing += (s, e) =>
+            {
+                StoreWindowBounds();
+                SaveLayout();
+            };
+        }
+
+        // Son yer ve boyut: ekranlardan birinin içinde kalıyorsa uygulanır (çıkarılmış ikinci ekran gibi durumlarda ortada açılır).
+        private void ApplyWindowBounds()
+        {
+            var saved = viewModel.Settings.Window;
+            if (saved == null || saved.Width < MinWidth || saved.Height < MinHeight)
+            {
+                return;
+            }
+
+            var screen = new Rect(SystemParameters.VirtualScreenLeft, SystemParameters.VirtualScreenTop, SystemParameters.VirtualScreenWidth, SystemParameters.VirtualScreenHeight);
+            var bounds = new Rect(saved.Left, saved.Top, saved.Width, saved.Height);
+            if (!screen.IntersectsWith(bounds) || bounds.Left < screen.Left - 50 || bounds.Top < screen.Top - 10)
+            {
+                Width = Math.Min(saved.Width, SystemParameters.WorkArea.Width);
+                Height = Math.Min(saved.Height, SystemParameters.WorkArea.Height);
+                return;
+            }
+
+            WindowStartupLocation = WindowStartupLocation.Manual;
+            Left = saved.Left;
+            Top = saved.Top;
+            Width = saved.Width;
+            Height = saved.Height;
+            if (saved.Maximized)
+            {
+                WindowState = WindowState.Maximized;
+            }
+        }
+
+        private void StoreWindowBounds()
+        {
+            var bounds = WindowState == WindowState.Normal ? new Rect(Left, Top, ActualWidth, ActualHeight) : RestoreBounds;
+            if (bounds.IsEmpty || bounds.Width < MinWidth)
+            {
+                return;
+            }
+
+            viewModel.Settings.Window = new WindowBounds
+            {
+                Left = Math.Round(bounds.Left),
+                Top = Math.Round(bounds.Top),
+                Width = Math.Round(bounds.Width),
+                Height = Math.Round(bounds.Height),
+                Maximized = WindowState == WindowState.Maximized,
+            };
         }
 
         /// <summary>Sekme ve sütun düzenini varsayılana döndürür (Ayarlar'daki düğme).</summary>
@@ -51,6 +103,12 @@ namespace Pusula.Wpf
         {
             viewModel.Settings.TabOrder.Clear();
             viewModel.Settings.Columns.Clear();
+            viewModel.Settings.Window = null;
+            WindowState = WindowState.Normal;
+            Width = 1380;
+            Height = 860;
+            Left = SystemParameters.WorkArea.Left + Math.Max(0, (SystemParameters.WorkArea.Width - Width) / 2);
+            Top = SystemParameters.WorkArea.Top + Math.Max(0, (SystemParameters.WorkArea.Height - Height) / 2);
             foreach (var table in tables)
             {
                 table.Reset();

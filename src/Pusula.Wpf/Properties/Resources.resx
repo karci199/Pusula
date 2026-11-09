@@ -1108,10 +1108,10 @@
     <value>Stok · önce proje seç</value>
   </data>
   <data name="Settings_ResetLayout" xml:space="preserve">
-    <value>Sekme ve sütun düzenini sıfırla</value>
+    <value>Pencere, sekme ve sütun düzenini sıfırla</value>
   </data>
   <data name="Settings_ResetLayoutHint" xml:space="preserve">
-    <value>Stok sekmelerinin sırası ile tablo sütunlarının sırası ve genişliği ilk haline döner.</value>
+    <value>Pencere boyutu ve yeri, stok sekmelerinin sırası, tablo sütunlarının sırası ve genişliği ilk haline döner.</value>
   </data>
   <data name="Header_GoParent" xml:space="preserve">
     <value>Üst kayda git</value>
