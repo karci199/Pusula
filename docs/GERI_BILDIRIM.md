@@ -85,6 +85,8 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 - [ ] Test sonuçları nasıl tanınıyor: `SNP1_T1` klasöründen ve **_kosu.md** (KIWI) dosyasından "GEÇTİ" okundu. Kural yazılsın.
 - [x] **Test planları** Testler / Kalifikasyon sekmesinin üstünde kart olarak (KIWI planının adı, açıklaması, adım/limit, revizyon; "bu planla n koşu").
 - [ ] Test sonucu md dosyası varsa doğrudan ondan okunsun.
+- [ ] **Test tarihi ve analiz tarihi ayrı:** test bir gün yapılır, analiz sonra yapılabilir (aynı gün de olabilir). `test.md`'de `tarih:` = test yapıldığı gün, isteğe bağlı `analiz:` = analiz günü; Günlük ve tabloda ikisi de görünsün.
+- [ ] Test notu uzun olabilir (sonuç, gözlem, düzeltme …); Günlük'te kısa özet, tamamı notta.
 
 ## 11. Takip ve iş listesi
 
