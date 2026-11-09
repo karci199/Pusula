@@ -4,6 +4,7 @@
         xmlns:controls="clr-namespace:DesignKit.Controls;assembly=DesignKit.Wpf"
         xmlns:res="clr-namespace:Pusula.Wpf.Properties"
         xmlns:local="clr-namespace:Pusula.Wpf"
+        Icon="/Pusula;component/Assets/pusula.ico"
         Title="{x:Static res:Resources.Settings_Title}"
         Width="620" SizeToContent="Height"
         MinWidth="480"

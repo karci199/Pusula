@@ -6,6 +6,7 @@
         xmlns:core="clr-namespace:Pusula.Core.Tracking;assembly=Pusula.Core"
         xmlns:local="clr-namespace:Pusula.Wpf"
         xmlns:res="clr-namespace:Pusula.Wpf.Properties"
+        Icon="/Pusula;component/Assets/pusula.ico"
         Title="{x:Static res:Resources.Window_Title}"
         Width="1200" Height="760"
         MinWidth="800" MinHeight="500"
@@ -1556,7 +1557,7 @@
         <!-- Yeni proje -->
         <controls:ContentDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsProjectDialogOpen, Mode=TwoWay}"
-                                Title="{x:Static res:Resources.Dialog_NewProjectTitle}"
+                                                                Title="{x:Static res:Resources.Dialog_NewProjectTitle}"
                                 PrimaryButtonText="{x:Static res:Resources.Dialog_Create}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="ProjectDialog_PrimaryButtonClick">
@@ -1576,7 +1577,7 @@
         <!-- Yeni stok -->
         <controls:ContentDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsStockDialogOpen, Mode=TwoWay}"
-                                Title="{Binding StockDialogTitle}"
+                                                                Title="{Binding StockDialogTitle}"
                                 PrimaryButtonText="{x:Static res:Resources.Dialog_Create}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="StockDialog_PrimaryButtonClick">
@@ -1612,7 +1613,7 @@
         <!-- Elle açılmış klasörü proje / stok olarak işaretle -->
         <controls:ContentDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsMarkDialogOpen, Mode=TwoWay}"
-                                Title="{Binding MarkTitle}"
+                                                                Title="{Binding MarkTitle}"
                                 PrimaryButtonText="{x:Static res:Resources.Mark_Confirm}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="MarkDialog_PrimaryButtonClick">
@@ -1645,7 +1646,7 @@
         <!-- Yeni envanter kaydı (kablo, jig …) -->
         <controls:ContentDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsInventoryDialogOpen, Mode=TwoWay}"
-                                Title="{Binding InventoryDialogTitle}"
+                                                                Title="{Binding InventoryDialogTitle}"
                                 PrimaryButtonText="{x:Static res:Resources.Dialog_Create}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="InventoryDialog_PrimaryButtonClick">
@@ -1687,7 +1688,7 @@
         <!-- Envanter durum olayı: tarih, kişi, konum, not -->
         <controls:ContentDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsEventDialogOpen, Mode=TwoWay}"
-                                Title="{Binding EventTitle}"
+                                                                Title="{Binding EventTitle}"
                                 PrimaryButtonText="{x:Static res:Resources.Editor_Save}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="EventDialog_PrimaryButtonClick">
@@ -1710,7 +1711,7 @@
         <!-- Durum notu (Beklemede gibi) -->
         <controls:ContentDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsQuickNoteOpen, Mode=TwoWay}"
-                                Title="{Binding QuickNoteTitle}"
+                                                                Title="{Binding QuickNoteTitle}"
                                 PrimaryButtonText="{x:Static res:Resources.QuickNote_Add}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="QuickNote_PrimaryButtonClick">
@@ -1721,7 +1722,7 @@
         <!-- Düzenle: proje, stok, envanter kaydı (ortak) -->
         <controls:ContentDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsEditOpen, Mode=TwoWay}"
-                                Title="{Binding EditTitle}"
+                                                                Title="{Binding EditTitle}"
                                 PrimaryButtonText="{x:Static res:Resources.Edit_Save}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="Edit_PrimaryButtonClick">
@@ -1753,7 +1754,7 @@
         <!-- Sil: klasör _SILINENLER'e taşınır; Sil düğmesi ad doğru yazılınca görünür -->
         <controls:ContentDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsDeleteOpen, Mode=TwoWay}"
-                                Title="{Binding DeleteTitle}"
+                                                                Title="{Binding DeleteTitle}"
                                 PrimaryButtonText="{Binding DeletePrimaryText}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="Delete_PrimaryButtonClick">
@@ -1767,7 +1768,7 @@
         <!-- Takipten çıkar: dosyalar silinmez -->
         <controls:ContentDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsUntrackOpen, Mode=TwoWay}"
-                                Title="{Binding UntrackTitle}"
+                                                                Title="{Binding UntrackTitle}"
                                 PrimaryButtonText="{x:Static res:Resources.Untrack_Confirm}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="Untrack_PrimaryButtonClick">
@@ -1776,7 +1777,7 @@
 
         <controls:ContentDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsStatusNoteOpen, Mode=TwoWay}"
-                                Title="{Binding StatusNoteTitle}"
+                                                                Title="{Binding StatusNoteTitle}"
                                 PrimaryButtonText="{x:Static res:Resources.ModuleDialog_Apply}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="StatusNote_PrimaryButtonClick">
@@ -1788,7 +1789,7 @@
         <!-- Modül ekle -->
         <controls:ContentDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsModuleDialogOpen, Mode=TwoWay}"
-                                Title="{Binding ModuleDialogTitle}"
+                                                                Title="{Binding ModuleDialogTitle}"
                                 PrimaryButtonText="{x:Static res:Resources.Dialog_Add}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="ModuleDialog_PrimaryButtonClick">

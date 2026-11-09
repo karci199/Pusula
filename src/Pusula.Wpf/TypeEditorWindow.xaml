@@ -5,6 +5,7 @@
         xmlns:local="clr-namespace:Pusula.Wpf"
         xmlns:vm="clr-namespace:Pusula.Wpf.ViewModels.TypeEditor"
         xmlns:res="clr-namespace:Pusula.Wpf.Properties"
+        Icon="/Pusula;component/Assets/pusula.ico"
         Title="{x:Static res:Resources.Types_Title}"
         Width="1040" Height="760"
         MinWidth="820" MinHeight="560"

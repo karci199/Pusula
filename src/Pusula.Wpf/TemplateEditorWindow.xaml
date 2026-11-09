@@ -4,6 +4,7 @@
         xmlns:controls="clr-namespace:DesignKit.Controls;assembly=DesignKit.Wpf"
         xmlns:local="clr-namespace:Pusula.Wpf"
         xmlns:res="clr-namespace:Pusula.Wpf.Properties"
+        Icon="/Pusula;component/Assets/pusula.ico"
         Title="{x:Static res:Resources.Editor_Title}"
         Width="960" Height="700"
         MinWidth="760" MinHeight="520"

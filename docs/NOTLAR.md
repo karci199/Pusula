@@ -144,3 +144,5 @@ Deneme kökü: `C:\PusulaDeneme`.
 
 - Testler depoda: tests\Calistir.ps1 (-Derle), senaryolar tests\Senaryolar, deneme verisi tests\Veri (her senaryoya geçici kopya). Kök değişince eski açık düğümler sayılmıyor (Envanter kapalı açılıyordu).
 
+- Uygulama ikonu: soyut ibre (B), tools\Ikon-Ciz.ps1 üretir (src\Pusula.Wpf\Assets\pusula.ico + pusula-logo.png); exe ve bütün pencerelerde.
+

@@ -27,7 +27,7 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 
 ## 4. Görünüm
 
-- [ ] **Logo / uygulama ikonu** eklensin.
+- [x] **Logo / uygulama ikonu**: soyut ibre (koyu yuvarlak kare); `tools\Ikon-Ciz.ps1` üretir.
 - [ ] **Yeni stok ve yeni proje** pencereleri daha güzel olsun.
 - [ ] Sol üstteki **+ düğmesi** daha güzel olsun.
 - [ ] Stok sayfasının **üst kısmı** (numara, yol / dizin) daha iyi görünsün.

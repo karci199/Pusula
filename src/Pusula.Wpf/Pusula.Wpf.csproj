@@ -10,7 +10,14 @@
     <RootNamespace>Pusula.Wpf</RootNamespace>
     <AssemblyName>Pusula</AssemblyName>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Exe ikonu (görev çubuğu, kısayol); tools\Ikon-Ciz.ps1 üretir. -->
+    <ApplicationIcon>Assets\pusula.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\pusula.ico" />
+    <Resource Include="Assets\pusula-logo.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Pusula.Core\Pusula.Core.csproj" />
