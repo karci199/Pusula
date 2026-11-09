@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
+using Pusula.Core.Scanning;
+
 namespace Pusula.Core.Inventory
 {
     /// <summary>Kayıt klasöründeki bir alt klasörün özeti (örn. <c>01_Cizimler</c>: 3 dosya, son Rev AC).</summary>
@@ -190,7 +192,7 @@ namespace Pusula.Core.Inventory
 
             foreach (var sub in SafeDirectories(folder))
             {
-                if (System.IO.Path.GetFileName(sub).StartsWith("_", StringComparison.Ordinal))
+                if (FileRules.IsSkippedFolder(sub))
                 {
                     continue;
                 }
@@ -206,7 +208,7 @@ namespace Pusula.Core.Inventory
         {
             try
             {
-                return Directory.GetFiles(folder, pattern);
+                return Directory.GetFiles(folder, pattern).Where(f => !FileRules.IsJunkFile(f)).ToArray();
             }
             catch (IOException)
             {

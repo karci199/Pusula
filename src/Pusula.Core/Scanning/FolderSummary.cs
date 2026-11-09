@@ -192,7 +192,7 @@ namespace Pusula.Core.Scanning
             var result = FolderStats.Empty;
             try
             {
-                foreach (var file in new DirectoryInfo(folder).GetFiles())
+                foreach (var file in new DirectoryInfo(folder).GetFiles().Where(f => !FileRules.IsJunkFile(f.Name)))
                 {
                     result = result.Add(new FolderStats(1, file.Length, file.FullName, file.LastWriteTime));
                 }

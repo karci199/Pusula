@@ -978,4 +978,7 @@
   <data name="Theme_Mint" xml:space="preserve">
     <value>Nane</value>
   </data>
+  <data name="Cover_Open" xml:space="preserve">
+    <value>Fotoğrafı tam boy aç</value>
+  </data>
 </root>

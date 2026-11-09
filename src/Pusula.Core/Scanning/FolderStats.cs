@@ -47,7 +47,7 @@ namespace Pusula.Core.Scanning
 
         /// <summary>
         /// Klasörü alt klasörleriyle birlikte sayar. Okunamayan klasörler atlanır, hata fırlatılmaz.
-        /// Alt çizgiyle başlayan alt klasörler (<c>_TAKIP</c>, <c>_ARSIV</c> …) sayılmaz.
+        /// Sayılmayan klasörler ve önemsiz dosyalar (Thumbs.db, Office kilitleri …) atlanır; bkz. <see cref="FileRules"/>.
         /// </summary>
         public static FolderStats Compute(string folder, CancellationToken cancellation)
         {
@@ -82,8 +82,8 @@ namespace Pusula.Core.Scanning
                 {
                     if (entry is DirectoryInfo directory)
                     {
-                        // _TAKIP, _ARSIV, _SERBEST … sayılara girmez (kökün kendisi hariç).
-                        if (!directory.Name.StartsWith("_", StringComparison.Ordinal))
+                        // _TAKIP, _ARSIV, Arsiv, .obsidian … sayılara girmez (kökün kendisi hariç).
+                        if (!FileRules.IsSkippedFolder(directory.Name))
                         {
                             pending.Push(directory.FullName);
                         }
@@ -92,6 +92,11 @@ namespace Pusula.Core.Scanning
                     }
 
                     var file = (FileInfo)entry;
+                    if (FileRules.IsJunkFile(file.Name))
+                    {
+                        continue;
+                    }
+
                     count++;
                     bytes += file.Length;
                     if (!lastWrite.HasValue || file.LastWriteTime > lastWrite.Value)

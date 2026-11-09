@@ -1134,5 +1134,12 @@ namespace Pusula.Wpf.Properties
         public static string Theme_Mint { get { return Get("Theme_Mint"); } }
 
         #endregion
+
+        #region Kapak
+
+        /// <summary>Kapak fotoğrafının köşesindeki düğme.</summary>
+        public static string Cover_Open { get { return Get("Cover_Open"); } }
+
+        #endregion
     }
 }

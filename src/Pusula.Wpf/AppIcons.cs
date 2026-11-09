@@ -18,6 +18,9 @@
         /// <summary>Klasörü aç.</summary>
         public const string OpenFolder = "\uED25";
 
+        /// <summary>Tam boy aç (fotoğraf).</summary>
+        public const string FullScreen = "\uE740";
+
         /// <summary>Ekle.</summary>
         public const string Add = "\uE710";
 

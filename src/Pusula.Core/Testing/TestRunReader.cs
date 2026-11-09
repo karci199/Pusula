@@ -309,7 +309,7 @@ namespace Pusula.Core.Testing
         {
             try
             {
-                var times = Directory.GetFiles(folder, "*", SearchOption.AllDirectories).Select(File.GetLastWriteTime).ToList();
+                var times = Directory.GetFiles(folder, "*", SearchOption.AllDirectories).Where(f => !Scanning.FileRules.IsJunkFile(f)).Select(File.GetLastWriteTime).ToList();
                 return times.Count > 0 ? times.Min() : Directory.GetLastWriteTime(folder);
             }
             catch (IOException)

@@ -49,7 +49,7 @@ Remove-Item $tmp -Recurse -Force
 "--- 2. Kapak kırpılmaz"
 $photos = Join-Path $Data '7000_MILKON\AB-7000-0002\07_Fotograflar'
 Remove-Item (Join-Path $photos 'SH2000_kapak.png')
-$cases = @(@{ Name = 'dikey'; W = 300; H = 600; O = 0 }, @{ Name = 'genis'; W = 1200; H = 300; O = 0 }, @{ Name = 'telefon'; W = 800; H = 600; O = 6 })
+$cases = @(@{ Name = 'dikey'; W = 300; H = 600; O = 0 }, @{ Name = 'genis'; W = 1200; H = 300; O = 0 }, @{ Name = 'telefon'; W = 800; H = 600; O = 6 }, @{ Name = 'normal'; W = 1600; H = 1200; O = 0 })
 $settingsFile = Join-Path $env:LOCALAPPDATA 'Pusula\ayarlar.json'
 $savedSettings = if (Test-Path $settingsFile) { [IO.File]::ReadAllText($settingsFile) } else { $null }
 try {
@@ -66,8 +66,8 @@ try {
         NewPhoto (Join-Path $photos ('SH2000_kapak_' + $c.Name + $ext)) $c.W $c.H $c.O
         $vm.Refresh(); Pump
         $vm.SelectNodeByPath((Join-Path $Data '7000_MILKON\AB-7000-0002')); Wait
-        $button = $win.FindName('CoverButton')
-        $image = FindChild $button ([System.Windows.Controls.Image])
+        $button = $win.FindName('CoverFrame')
+        $image = $win.FindName('CoverImage')
         $src = $image.Source
         $shownRatio = $image.ActualWidth / $image.ActualHeight
         $srcRatio = $src.PixelWidth / $src.PixelHeight
@@ -78,6 +78,8 @@ try {
             Check ($c.Name + ': dik gösterilir') ($image.ActualHeight -gt $image.ActualWidth)
         }
 
+        Check ($c.Name + ': en çok 320x180') ($image.ActualWidth -le 320.5 -and $image.ActualHeight -le 180.5) ($image.ActualWidth.ToString('0') + 'x' + $image.ActualHeight.ToString('0'))
+        Check ($c.Name + ': kutu en az 132x132') ($button.ActualWidth -ge 131.5 -and $button.ActualHeight -ge 131.5)
         Snap $win ($Out + '\kapak-' + $c.Name + '.png')
     }
 } finally {

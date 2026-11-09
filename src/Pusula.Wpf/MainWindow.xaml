@@ -1233,13 +1233,25 @@
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <!-- Kapak kırpılmaz: kutuya sığdırılır (yatay/dikey fark etmez); tıklayınca fotoğraf tam boy açılır. -->
-                                        <Button x:Name="CoverButton" Grid.Column="0" Width="220" Height="165" Padding="4" Margin="0,0,16,0" VerticalAlignment="Top"
-                                                Click="CoverPhoto_Click" ToolTip="{Binding CoverPhoto}" Cursor="Hand"
-                                                Visibility="{Binding HasCover, Converter={StaticResource BoolToVis}}">
-                                            <Image Source="{Binding CoverPhoto, Converter={StaticResource PathToImage}}" Stretch="Uniform"
-                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                        </Button>
+                                        <!--
+                                            Kapak kırpılmaz. Kutu fotoğrafın oranına göre boyutlanır: en çok 320×180; çok dar ya da çok geniş
+                                            fotoğrafta kutu en az 132×132 kalır, fotoğraf ortalanır. Köşedeki düğme fotoğrafı tam boy açar.
+                                        -->
+                                        <Grid Grid.Column="0" Margin="0,0,16,0" VerticalAlignment="Top" HorizontalAlignment="Left"
+                                              Visibility="{Binding HasCover, Converter={StaticResource BoolToVis}}">
+                                            <Border x:Name="CoverFrame" MinWidth="132" MinHeight="132" Padding="4"
+                                                    Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                                                    CornerRadius="{DynamicResource ControlCornerRadius}">
+                                                <Image x:Name="CoverImage" Source="{Binding CoverPhoto, Converter={StaticResource PathToImage}}"
+                                                       Stretch="Uniform" MaxWidth="320" MaxHeight="180"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                            <Button x:Name="CoverButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,8,8" Padding="6"
+                                                    Click="CoverPhoto_Click" ToolTip="{x:Static res:Resources.Cover_Open}">
+                                                <controls:FontIcon Glyph="{x:Static local:AppIcons.FullScreen}" FontSize="12" />
+                                            </Button>
+                                        </Grid>
                                         <StackPanel Grid.Column="1">
                                             <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.Inv_NoteTitle}" />
                                             <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding NoteExcerpt}"

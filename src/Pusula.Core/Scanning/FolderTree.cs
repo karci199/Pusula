@@ -40,7 +40,7 @@ namespace Pusula.Core.Scanning
 
             try
             {
-                node.FileCount = Directory.GetFiles(folder).Length;
+                node.FileCount = Directory.GetFiles(folder).Count(f => !FileRules.IsJunkFile(f));
                 foreach (var child in Directory.GetDirectories(folder).OrderBy(d => d, StringComparer.OrdinalIgnoreCase))
                 {
                     if (FolderStats.IsAppFolder(System.IO.Path.GetFileName(child)))
@@ -48,9 +48,13 @@ namespace Pusula.Core.Scanning
                         continue;
                     }
 
+                    // Arşiv ve _ klasörleri ağaçta görünür ama üst klasörün sayısına eklenmez.
                     var sub = Build(child, cancellation);
                     node.Children.Add(sub);
-                    node.FileCount += sub.FileCount;
+                    if (!FileRules.IsSkippedFolder(child))
+                    {
+                        node.FileCount += sub.FileCount;
+                    }
                 }
             }
             catch (IOException)
