@@ -1092,4 +1092,10 @@
   <data name="Plan_Open" xml:space="preserve">
     <value>Planı aç</value>
   </data>
+  <data name="Button_New" xml:space="preserve">
+    <value>Yeni</value>
+  </data>
+  <data name="Menu_NewStockNoProject" xml:space="preserve">
+    <value>Yeni stok (önce proje seç)</value>
+  </data>
 </root>

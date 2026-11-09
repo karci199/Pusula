@@ -566,14 +566,8 @@
         <ContextMenu x:Key="StatusMenu" Opened="StatusMenu_Opened" />
 
         <!-- Menüler ağaçla aynı DataContext'i kod tarafında alır (MainWindow.xaml.cs). -->
+        <!-- "+ Yeni" menüsü: proje, stok (seçili projeye), sonra Türler'deki envanter türleri (AddMenu_Opened ekler) -->
         <ContextMenu x:Key="AddMenu" Opened="AddMenu_Opened">
-            <MenuItem Header="{Binding NewStockMenuText}"
-                      Command="{Binding NewStockCommand}"
-                      InputGestureText="{x:Static res:Resources.Gesture_NewStock}">
-                <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Stock}" Foreground="{DynamicResource AccentBrush}" />
-                </MenuItem.Icon>
-            </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Menu_NewProject}"
                       Command="{Binding NewProjectCommand}"
                       InputGestureText="{x:Static res:Resources.Gesture_NewProject}">
@@ -581,15 +575,11 @@
                     <controls:FontIcon Glyph="{x:Static local:AppIcons.Project}" Foreground="{DynamicResource Pusula.ProjectIconBrush}" />
                 </MenuItem.Icon>
             </MenuItem>
-            <Separator />
-            <MenuItem Header="{x:Static res:Resources.Button_EditTemplates}" Click="EditTemplates_Click">
+            <MenuItem Header="{Binding NewStockMenuText}"
+                      Command="{Binding NewStockCommand}"
+                      InputGestureText="{x:Static res:Resources.Gesture_NewStock}">
                 <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Settings}" />
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Header="{x:Static res:Resources.Button_EditTypes}" Click="EditTypes_Click">
-                <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Inventory}" />
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Stock}" Foreground="{DynamicResource AccentBrush}" />
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
@@ -741,7 +731,8 @@
                                                  Grid.Column="1"
                                                  Menu="{StaticResource AddMenu}"
                                                  ToolTip="{x:Static res:Resources.Button_Add}">
-                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="14" />
+                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="14" Foreground="{DynamicResource AccentBrush}" />
+
                         </controls:DropDownButton>
                         <Button Grid.Column="2"
                                 Style="{DynamicResource IconButtonStyle}"

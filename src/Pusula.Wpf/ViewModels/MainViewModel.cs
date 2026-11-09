@@ -448,10 +448,11 @@ namespace Pusula.Wpf.ViewModels
                 var project = SelectedProjectFolder();
                 if (project.Length == 0)
                 {
-                    return Resources.Menu_NewStock;
+                    return Resources.Menu_NewStockNoProject;
                 }
 
-                return string.Format(Resources.Menu_NewStockFor, Path.GetFileName(project));
+                // Menüde "_" kısayol işaretidir; klasör adındaki alt çizgi görünsün diye ikilenir (7000_MILKON).
+                return string.Format(Resources.Menu_NewStockFor, Path.GetFileName(project).Replace("_", "__"));
             }
         }
 

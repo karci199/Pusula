@@ -1272,5 +1272,15 @@ namespace Pusula.Wpf.Properties
         public static string Plan_Open { get { return Get("Plan_Open"); } }
 
         #endregion
+
+        #region Ekle
+
+        /// <summary>+ düğmesinin yazısı.</summary>
+        public static string Button_New { get { return Get("Button_New"); } }
+
+        /// <summary>Proje seçili değilken.</summary>
+        public static string Menu_NewStockNoProject { get { return Get("Menu_NewStockNoProject"); } }
+
+        #endregion
     }
 }
