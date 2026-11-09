@@ -9,11 +9,19 @@ namespace Pusula.Wpf.Mvvm
     public sealed class RelayCommand : ICommand
     {
         private readonly Action<object?> execute;
+        private readonly Func<bool>? canExecute;
 
         /// <summary>Parametresiz komut oluşturur.</summary>
         public RelayCommand(Action execute)
         {
             this.execute = _ => execute();
+        }
+
+        /// <summary>Parametresiz, ne zaman çalışabileceği verilen komut (menüde soluk görünür).</summary>
+        public RelayCommand(Action execute, Func<bool> canExecute)
+        {
+            this.execute = _ => execute();
+            this.canExecute = canExecute;
         }
 
         /// <summary>Komut parametresini alan komut oluşturur.</summary>
@@ -32,7 +40,7 @@ namespace Pusula.Wpf.Mvvm
         /// <inheritdoc />
         public bool CanExecute(object? parameter)
         {
-            return true;
+            return canExecute == null || canExecute();
         }
 
         /// <inheritdoc />

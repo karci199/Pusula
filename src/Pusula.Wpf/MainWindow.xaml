@@ -421,12 +421,9 @@
         <DataTemplate x:Key="ModuleOptionTemplate">
             <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}"
                       IsEnabled="{Binding CanChange}"
-                      Margin="0,2">
+                      Margin="0,5" ToolTip="{Binding Folder}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding Name}" />
-                    <TextBlock Text="{Binding Folder}"
-                               Margin="8,0,0,0"
-                               Foreground="{DynamicResource TextTertiaryBrush}" />
                     <TextBlock Text="{x:Static res:Resources.Module_Exists}"
                                Margin="8,0,0,0"
                                Foreground="{DynamicResource TextSecondaryBrush}"
@@ -1699,13 +1696,8 @@
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="StockDialog_PrimaryButtonClick">
             <StackPanel Width="312">
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Stock}" FontSize="22" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                    <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="270"
-                               Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding StockNumberHint}" />
-                </StackPanel>
-                <controls:FormField Header="{x:Static res:Resources.Field_StockNo}" IsRequired="True" LabelWidth="90">
-                    <TextBox Text="{Binding NewStockNo, UpdateSourceTrigger=PropertyChanged}"
+                <controls:FormField Margin="0,4,0,0" Header="{x:Static res:Resources.Field_StockNo}" IsRequired="True" LabelWidth="90">
+                    <TextBox Text="{Binding NewStockNo, UpdateSourceTrigger=PropertyChanged}" ToolTip="{Binding StockNumberHint}"
                              IsVisibleChanged="FocusWhenVisible" />
                 </controls:FormField>
                 <controls:FormField Header="{x:Static res:Resources.Field_StockName}" LabelWidth="90"
@@ -1719,7 +1711,7 @@
                               SelectedItem="{Binding SelectedTemplate, Mode=TwoWay}" />
                 </controls:FormField>
                 <controls:FormField Header="{x:Static res:Resources.Field_Modules}" LabelWidth="90"
-                                    Margin="0,8,0,0">
+                                    Margin="0,16,0,0">
                     <ItemsControl ItemsSource="{Binding StockModules}" ItemTemplate="{StaticResource ModuleOptionTemplate}" />
                 </controls:FormField>
             </StackPanel>

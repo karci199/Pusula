@@ -45,7 +45,7 @@ namespace Pusula.Wpf.ViewModels
         {
             RefreshCommand = new RelayCommand(Refresh);
             NewProjectCommand = new RelayCommand(OpenNewProject);
-            NewStockCommand = new RelayCommand(OpenNewStock);
+            NewStockCommand = new RelayCommand(OpenNewStock, () => SelectedProjectFolder().Length > 0);
             OpenFolderCommand = new RelayCommand(OpenSelectedFolder);
             AddModulesCommand = new RelayCommand(OpenAddModules);
             MarkAsStockCommand = new RelayCommand(() => OpenMark(true));

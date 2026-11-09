@@ -19,7 +19,7 @@ try {
     Check 'alt çizgi korunur (7000_MILKON)' ($vm.AddStockMenuText -eq 'Stok · 7000__MILKON') $vm.AddStockMenuText
     $menu.IsOpen = $false
     $vm.SelectNodeByPath((Join-Path $Data 'ENVANTER\Kablolar\JT-0001-0001_SATIMO_RF_kablosu')); Wait
-    Check 'proje yokken ipucu' ($vm.AddStockMenuText -eq 'Stok · önce proje seç') $vm.AddStockMenuText
+    Check 'proje yokken Stok soluk (çalışmaz)' (-not $vm.NewStockCommand.CanExecute($null)) $vm.AddStockMenuText
     Snap $win "$Out\add-button.png"
 } finally {
     if ($savedSettings -ne $null) { [IO.File]::WriteAllText($settingsFile, $savedSettings) }
