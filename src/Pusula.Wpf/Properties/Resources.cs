@@ -1415,5 +1415,24 @@ namespace Pusula.Wpf.Properties
         public static string StockInv_TileHint { get { return Get("StockInv_TileHint"); } }
 
         #endregion
+
+        #region Seri
+
+        /// <summary>SNP ile başlayan.</summary>
+        public static string Serial_Prototype { get { return Get("Serial_Prototype"); } }
+
+        /// <summary>SN ile başlayan.</summary>
+        public static string Serial_Production { get { return Get("Serial_Production"); } }
+
+        /// <summary>Tur sayısı.</summary>
+        public static string Serial_Summary { get { return Get("Serial_Summary"); } }
+
+        /// <summary>Son test tarihi.</summary>
+        public static string Serial_Last { get { return Get("Serial_Last"); } }
+
+        /// <summary>Hücre ipucu.</summary>
+        public static string Serial_OpenHint { get { return Get("Serial_OpenHint"); } }
+
+        #endregion
     }
 }

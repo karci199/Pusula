@@ -174,18 +174,63 @@ namespace Pusula.Wpf.ViewModels
     /// <summary>"Son sonuçlar" tablosunun bir satırı: SN ve sistem başına hücreler.</summary>
     public sealed class MatrixRow
     {
-        /// <summary>Satırı oluşturur.</summary>
-        public MatrixRow(string serial, IEnumerable<StatusChip> cells)
+        /// <summary>Satırı oluşturur; <paramref name="summary"/> "3 tur · son 07.11.2026".</summary>
+        public MatrixRow(string serial, IEnumerable<MatrixCell> cells, string summary)
         {
             Serial = serial;
             Cells = cells.ToList();
+            Summary = summary;
+            IsPrototype = serial.StartsWith("SNP", StringComparison.OrdinalIgnoreCase);
+            KindLabel = IsPrototype ? Resources.Serial_Prototype : Resources.Serial_Production;
         }
 
         /// <summary>Seri numarası.</summary>
         public string Serial { get; }
 
+        /// <summary>Prototip mi (SNP ile başlar); değilse üretim birimi (SN).</summary>
+        public bool IsPrototype { get; }
+
+        /// <summary>"Prototip" / "Üretim".</summary>
+        public string KindLabel { get; }
+
+        /// <summary>Tur sayısı ve son test tarihi (ipucu).</summary>
+        public string Summary { get; }
+
+        /// <summary>Yalnız tur sayısı ("3 tur").</summary>
+        public string RunCountText
+        {
+            get { return Summary.Split(new[] { " · " }, StringSplitOptions.None)[0]; }
+        }
+
         /// <summary>Hücreler (sütun sırasıyla); ölçülmemişse "—".</summary>
-        public List<StatusChip> Cells { get; }
+        public List<MatrixCell> Cells { get; }
+    }
+
+    /// <summary>Seri numaraları tablosunda bir hücre: o SN'nin o sistemdeki son turu; tıklanınca notu açılır.</summary>
+    public sealed class MatrixCell
+    {
+        /// <summary>Hücreyi kurar (koşu yoksa <paramref name="run"/> boş).</summary>
+        public MatrixCell(StatusChip chip, TestRun? run)
+        {
+            Chip = chip;
+            NotePath = run?.NotePath ?? string.Empty;
+            Folder = run?.Folder ?? string.Empty;
+        }
+
+        /// <summary>Sonuç etiketi ("Geçti · T2").</summary>
+        public StatusChip Chip { get; }
+
+        /// <summary>Turun notu; yoksa boş.</summary>
+        public string NotePath { get; }
+
+        /// <summary>Turun klasörü; koşu yoksa boş.</summary>
+        public string Folder { get; }
+
+        /// <summary>Koşu var mı (tıklanabilir).</summary>
+        public bool HasRun
+        {
+            get { return Folder.Length > 0; }
+        }
     }
 
     /// <summary>

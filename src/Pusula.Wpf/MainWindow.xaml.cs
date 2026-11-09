@@ -638,6 +638,15 @@ namespace Pusula.Wpf
             menu.IsOpen = true;
         }
 
+        // Seri numaraları tablosunda hücre: o turun notunu (yoksa klasörünü) açar.
+        private void SerialCell_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is MatrixCell cell && cell.HasRun)
+            {
+                viewModel.OpenNoteOrFolder(cell.NotePath, cell.Folder);
+            }
+        }
+
         // Genel'deki jig / kablo kutucuğu: o türün sekmesine geçer.
         private void InventoryTile_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {

@@ -421,7 +421,7 @@
     <value>Dikkat edilecek bir şey yok.</value>
   </data>
   <data name="General_Latest" xml:space="preserve">
-    <value>Son sonuçlar · her SN&apos;in son turu</value>
+    <value>Seri numaraları</value>
   </data>
   <data name="General_Timeline" xml:space="preserve">
     <value>Günlük</value>
@@ -1214,5 +1214,20 @@
   </data>
   <data name="StockInv_TileHint" xml:space="preserve">
     <value>Tıkla: sekmesine git</value>
+  </data>
+  <data name="Serial_Prototype" xml:space="preserve">
+    <value>Prototip</value>
+  </data>
+  <data name="Serial_Production" xml:space="preserve">
+    <value>Üretim</value>
+  </data>
+  <data name="Serial_Summary" xml:space="preserve">
+    <value>{0} tur</value>
+  </data>
+  <data name="Serial_Last" xml:space="preserve">
+    <value>son {0}</value>
+  </data>
+  <data name="Serial_OpenHint" xml:space="preserve">
+    <value>Tıkla: bu turun notunu aç</value>
   </data>
 </root>

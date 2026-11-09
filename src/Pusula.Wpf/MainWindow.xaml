@@ -1491,7 +1491,7 @@
                                         </StackPanel>
                                         <StackPanel Visibility="{Binding Detail.HasRuns, Converter={StaticResource BoolToVis}}">
                                             <StackPanel Orientation="Horizontal">
-                                                <Border Width="64" />
+                                                <Border Width="96" />
                                                 <ItemsControl ItemsSource="{Binding Detail.MatrixHeaders}">
                                                     <ItemsControl.ItemsPanel>
                                                         <ItemsPanelTemplate>
@@ -1510,7 +1510,13 @@
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
                                                         <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                                                            <TextBlock Width="64" Text="{Binding Serial}" VerticalAlignment="Center" FontWeight="SemiBold" />
+                                                            <StackPanel Width="96" VerticalAlignment="Center">
+                                                                <TextBlock Text="{Binding Serial}" FontWeight="SemiBold" />
+                                                                <TextBlock x:Name="SerialKind" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
+                                                                           TextTrimming="CharacterEllipsis" ToolTip="{Binding Summary}">
+                                                                    <Run Text="{Binding KindLabel, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding RunCountText, Mode=OneWay}" />
+                                                                </TextBlock>
+                                                            </StackPanel>
                                                             <ItemsControl ItemsSource="{Binding Cells}">
                                                                 <ItemsControl.ItemsPanel>
                                                                     <ItemsPanelTemplate>
@@ -1519,15 +1525,23 @@
                                                                 </ItemsControl.ItemsPanel>
                                                                 <ItemsControl.ItemTemplate>
                                                                     <DataTemplate>
-                                                                        <Border Width="126" Height="34" Margin="0,0,6,0"
-                                                                                Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                                                                                BorderThickness="1" CornerRadius="{DynamicResource ControlCornerRadius}">
+                                                                        <Border x:Name="Cell" Width="126" Height="34" Margin="0,0,6,0"
+                                                                                Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                                                                BorderThickness="1" CornerRadius="{DynamicResource ControlCornerRadius}"
+                                                                                Tag="{Binding}" MouseLeftButtonUp="SerialCell_MouseLeftButtonUp">
                                                                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                                                              Content="{Binding}" ContentTemplate="{DynamicResource StatusChipTemplate}" />
+                                                                                              Content="{Binding Chip}" ContentTemplate="{DynamicResource StatusChipTemplate}" />
                                                                         </Border>
+                                                                        <DataTemplate.Triggers>
+                                                                            <DataTrigger Binding="{Binding HasRun}" Value="True">
+                                                                                <Setter TargetName="Cell" Property="Cursor" Value="Hand" />
+                                                                                <Setter TargetName="Cell" Property="ToolTip" Value="{x:Static res:Resources.Serial_OpenHint}" />
+                                                                            </DataTrigger>
+                                                                        </DataTemplate.Triggers>
                                                                     </DataTemplate>
                                                                 </ItemsControl.ItemTemplate>
                                                             </ItemsControl>
+
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>

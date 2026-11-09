@@ -539,10 +539,13 @@ namespace Pusula.Wpf.ViewModels
                 {
                     TestRun? last;
                     return overview.Latest.TryGetValue(TestOverview.Key(c.Item1, c.Item2, serial), out last)
-                        ? TestResultChip.For(last.Result, "T" + last.Round)
-                        : new StatusChip("—", StatusTone.None);
+                        ? new MatrixCell(TestResultChip.For(last.Result, "T" + last.Round), last)
+                        : new MatrixCell(new StatusChip("—", StatusTone.None), null);
                 });
-                MatrixRows.Add(new MatrixRow(serial, cells));
+                var own = runs.Where(r => string.Equals(r.SerialNo, serial, StringComparison.OrdinalIgnoreCase)).ToList();
+                var lastDate = own.Where(r => r.Date > DateTime.MinValue).Select(r => r.Date).DefaultIfEmpty(DateTime.MinValue).Max();
+                var summary = string.Format(Resources.Serial_Summary, own.Count) + (lastDate > DateTime.MinValue ? " · " + string.Format(Resources.Serial_Last, lastDate.ToString(Resources.Format_Date)) : string.Empty);
+                MatrixRows.Add(new MatrixRow(serial, cells, summary));
             }
 
             foreach (var run in overview.Timeline)
