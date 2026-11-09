@@ -38,7 +38,8 @@ $grid.BeginEdit() | Out-Null; Pump; Pump
 $box = @(FindAll $grid ([System.Windows.Controls.TextBox]))[0]
 $bg = if ($box) { $box.Background.Color } else { $null }
 Check 'düzenleme kutusu açıldı' ($box -ne $null)
-Check 'arka plan beyaz değil (koyu tema)' ($bg -ne $null -and ($bg.R + $bg.G + $bg.B) -lt 300) ([string]$bg)
+Check 'arka plan şeffaf (satır rengi görünür, beyaz/siyah kutu yok)' ($bg -ne $null -and $bg.A -eq 0) ([string]$bg)
+Check 'altta vurgu çizgisi' ($box.BorderThickness.Bottom -eq 2 -and $box.BorderThickness.Top -eq 0)
 Snap $win "$Out\types-edit-cell.png"
 $grid.CancelEdit() | Out-Null
     "--- 3. Kaydet"
