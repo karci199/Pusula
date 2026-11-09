@@ -11,8 +11,10 @@ try {
     $app = New-Object Pusula.Wpf.App; $app.InitializeComponent(); $app.ShutdownMode = 'OnExplicitShutdown'
     $vm = New-Object Pusula.Wpf.ViewModels.TypeEditor.TypeEditorViewModel($root, $set)
     "--- 2. Düzenleme"
-    Check 'türler: Kablo, Jig' ((($vm.Types | ForEach-Object Name) -join ',') -eq 'Kablo,Jig')
+    Check 'türler: Kablo, Jig, Yazılım' ((($vm.Types | ForEach-Object Name) -join ',') -eq 'Kablo,Jig,Yazılım')
     $jig = $vm.Types | Where-Object Name -eq 'Jig'; $vm.Selected = $jig
+    Check 'jigin hazır alanları gelir' ($jig.Fields.Count -eq 8)
+    $jig.Fields.Clear()
     $f = New-Object Pusula.Wpf.ViewModels.TypeEditor.FormatRow; $f.Pattern = 'JT-####-####'; $f.Label = 'Test jigi'; $jig.Formats.Add($f)
     $f = New-Object Pusula.Wpf.ViewModels.TypeEditor.FormatRow; $f.Pattern = 'JX-####-####'; $f.Label = 'Üretim jigi'; $jig.Formats.Add($f)
     $jig.TryNumber = 'JX-0002-0015'
@@ -25,7 +27,7 @@ try {
     Check 'var olan durum kilitli' (($jig.Statuses | Where-Object Name -eq 'Talep').IsExisting -and $jig.AreFoldersLocked)
     $vm.AddTypeCommand.Execute($null)
     Check 'yeni tür: anahtar, klasörler açık' ($vm.Selected.IsNew -and $vm.Selected.Source.Key -eq 'yeni_tur' -and $vm.Selected.GeneralFolder -eq 'ENVANTER\Yeni_turler') ($vm.Selected.Source.Key + ' ' + $vm.Selected.GeneralFolder)
-    $vm.Selected.Name = 'Yazılım'; $vm.Selected.PluralName = 'Yazılımlar'
+    $vm.Selected.Name = 'Ölçüm cihazı'; $vm.Selected.PluralName = 'Ölçüm cihazları'
     $win = New-Object Pusula.Wpf.TypeEditorWindow($vm)
     $win.WindowStartupLocation = 'Manual'; $win.Left = -20000; $win.Top = -20000; $win.ShowActivated = $false
     $win.Show(); $vm.Selected = $jig; Snap $win "$Out\types-window.png"
@@ -54,7 +56,7 @@ $grid.CancelEdit() | Out-Null
     Check 'alanlar: malzeme (liste), tork (Nm, Montaj)' ($j.Fields.Count -eq 2 -and $j.Fields[0].Key -eq 'malzeme' -and $j.Fields[0].Choices.Count -eq 3 -and $j.Fields[1].Unit -eq 'Nm' -and $j.Fields[1].SubTypes[0] -eq 'Montaj')
     Check 'alt türe göre alan' (@($j.FieldsFor('Mekanik')).Count -eq 1 -and @($j.FieldsFor('Montaj')).Count -eq 2)
     Check 'yeni sıra dışı durum' ($j.FindStatus('Kalibrasyonda') -ne $null -and $j.SideStatuses.Count -eq 3)
-    Check 'yeni tür: anahtar ve klasör son addan, stok/proje korunur' ($re.Find('yazilim').Name -eq 'Yazılım' -and $re.Find('yazilim').GeneralFolder -eq 'ENVANTER\Yazilimlar' -and $re.Find('stock') -ne $null -and $re.Find('project') -ne $null)
+    Check 'yeni tür: anahtar ve klasör son addan, stok/proje korunur' ($re.Find('olcum_cihazi').Name -eq 'Ölçüm cihazı' -and $re.Find('olcum_cihazi').GeneralFolder -eq 'ENVANTER\Olcum_cihazlari' -and $re.Find('stock') -ne $null -and $re.Find('project') -ne $null)
 } finally { Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue }
 ""
 "SONUC: $ok basarili, $fail hata"
