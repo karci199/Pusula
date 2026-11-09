@@ -1862,7 +1862,7 @@
                                 PrimaryButtonClick="Journal_PrimaryButtonClick">
             <StackPanel>
                 <TextBlock Margin="0,0,0,14" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" Text="{Binding JournalTarget}" />
-            <Grid Width="380">
+            <Grid Width="330">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="76" />
                     <ColumnDefinition Width="*" />
@@ -1884,8 +1884,7 @@
                 </Grid.Resources>
 
                 <TextBlock Grid.Row="0" Style="{StaticResource JournalLabel}" Text="{x:Static res:Resources.Journal_Kind}" />
-                <ComboBox Grid.Row="0" Grid.Column="1" IsEditable="True" TextSearch.TextPath="Label"
-                          ItemsSource="{Binding JournalKinds}" Text="{Binding JournalKind, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding JournalKinds}" SelectedItem="{Binding JournalKindOption, Mode=TwoWay}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">

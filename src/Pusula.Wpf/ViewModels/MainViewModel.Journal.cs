@@ -63,11 +63,24 @@ namespace Pusula.Wpf.ViewModels
             private set { SetProperty(ref journalTitle, value); }
         }
 
-        /// <summary>Tür (listeden ya da yazılarak).</summary>
+        /// <summary>Tür adı (seçilen türden; notta bu ad yazılır).</summary>
         public string JournalKind
         {
             get { return journalKind; }
-            set { SetProperty(ref journalKind, value ?? string.Empty); }
+            set
+            {
+                if (SetProperty(ref journalKind, value ?? string.Empty))
+                {
+                    OnPropertyChanged(nameof(JournalKindOption));
+                }
+            }
+        }
+
+        /// <summary>Seçili tür (listede ikon ve renkle gösterilir).</summary>
+        public EventKindOption? JournalKindOption
+        {
+            get { return EventKinds.Find(journalKind); }
+            set { JournalKind = value?.Label ?? string.Empty; }
         }
 
         /// <summary>Olayın günü (varsayılan bugün).</summary>
