@@ -11,6 +11,7 @@ try {
     $vm = $win.DataContext; $vm.RootPath = $Data; Pump
     "--- Başlık"
     $stock = Join-Path $Data '7000_MILKON\AB-7000-0002'
+    $win.Height = 1150; Pump
     $vm.SelectNodeByPath($stock); Wait
     Check 'stok: ad' ($vm.Detail.HeaderName -eq 'TAKIM ANTEN BOYNUZ Y') $vm.Detail.HeaderName
     Check 'stok: üst kayıt proje' ($vm.Detail.ParentName -eq '7000_MILKON' -and $vm.Detail.ParentPath -eq (Join-Path $Data '7000_MILKON')) $vm.Detail.ParentName
