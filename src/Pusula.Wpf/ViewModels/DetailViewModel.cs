@@ -432,7 +432,8 @@ namespace Pusula.Wpf.ViewModels
                         var eventsTask = Task.Run(() => EventNote.ReadAll(path), token);
                         var tasksTask = Task.Run(() => OpenTask.ReadAll(path), token);
                         var plansTask = Task.Run(() => TestPlan.ReadStock(path), token);
-                        await Task.WhenAll(runsTask, treeTask, summaryTask, coverTask, eventsTask, tasksTask, plansTask).ConfigureAwait(true);
+                        var journalTask = Task.Run(() => Journal.Read(NoteFile.Find(path, Path.GetFileName(path))), token);
+                        await Task.WhenAll(runsTask, treeTask, summaryTask, coverTask, eventsTask, tasksTask, plansTask, journalTask).ConfigureAwait(true);
                         plans = plansTask.Result;
                         tasks = tasksTask.Result;
                         summary = summaryTask.Result;
@@ -440,6 +441,7 @@ namespace Pusula.Wpf.ViewModels
                         tree = treeTask.Result;
                         cover = coverTask.Result;
                         events = eventsTask.Result;
+                        events.AddRange(journalTask.Result);
                     }
                 }
             }

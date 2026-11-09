@@ -1314,5 +1314,21 @@ namespace Pusula.Wpf.Properties
         public static string Header_CopyPath { get { return Get("Header_CopyPath"); } }
 
         #endregion
+
+        #region Günlük
+
+        /// <summary>Olay türü.</summary>
+        public static string Event_Delivery { get { return Get("Event_Delivery"); } }
+
+        /// <summary>Önem.</summary>
+        public static string Importance_High { get { return Get("Importance_High"); } }
+
+        /// <summary>Önem.</summary>
+        public static string Importance_Normal { get { return Get("Importance_Normal"); } }
+
+        /// <summary>Önem.</summary>
+        public static string Importance_Low { get { return Get("Importance_Low"); } }
+
+        #endregion
     }
 }

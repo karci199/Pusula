@@ -64,7 +64,7 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Obsidian olay notundan satır oluşturur (revizyon, arıza …).</summary>
         public HistoryRow(Pusula.Core.Notes.EventNote note)
         {
-            Status = new StatusChip(EventKinds.Label(note.Kind), StatusTone.Neutral);
+            Status = new StatusChip(EventKinds.Label(note.Kind), EventKinds.Tone(note.Importance));
             var date = note.Date.ToString(Resources.Format_Date);
             Meta = note.Person.Length == 0 ? date : date + " · " + note.Person;
             Detail = note.Excerpt.Length == 0 ? note.Title : note.Title + " · " + note.Excerpt;
@@ -680,6 +680,23 @@ namespace Pusula.Wpf.ViewModels
         }
 
         // Klasörü arka planda okur; bu arada başka kayıt seçildiyse sonucu atar.
+        // Stoka ait kaydın stok klasörü (klasör yolunda sahip stok numarasının geçtiği yer); genel kayıtta boş.
+        private static string OwnerStockFolder(InventoryItem shown)
+        {
+            if (shown.Owner.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            var folder = System.IO.Path.GetDirectoryName(shown.Folder);
+            while (!string.IsNullOrEmpty(folder) && !string.Equals(System.IO.Path.GetFileName(folder), shown.Owner, StringComparison.OrdinalIgnoreCase))
+            {
+                folder = System.IO.Path.GetDirectoryName(folder);
+            }
+
+            return folder ?? string.Empty;
+        }
+
         private async Task LoadContentsAsync(InventoryItem shown)
         {
             ClearContents();
@@ -688,7 +705,19 @@ namespace Pusula.Wpf.ViewModels
             var contents = await Task.Run(() =>
             {
                 events = Pusula.Core.Notes.EventNote.ReadAll(shown.Folder);
-                return RecordContents.Read(shown.Folder, shown.Record.Number);
+                var contentsRead = RecordContents.Read(shown.Folder, shown.Record.Number);
+
+                // Kendi notunun Günlük'ü, ayrıca ait olduğu stokun Günlük'ünde bu kayda bağlanan olaylar.
+                events.AddRange(Pusula.Core.Notes.Journal.Read(contentsRead.NoteFile));
+                var stockFolder = OwnerStockFolder(shown);
+                if (stockFolder.Length > 0)
+                {
+                    var stockNote = Pusula.Core.Notes.NoteFile.Find(stockFolder, System.IO.Path.GetFileName(stockFolder));
+                    events.AddRange(Pusula.Core.Notes.Journal.Read(stockNote)
+                        .Where(e => e.Related.Any(r => string.Equals(r, shown.Record.Number, StringComparison.OrdinalIgnoreCase))));
+                }
+
+                return contentsRead;
             }).ConfigureAwait(true);
             if (version != contentsVersion)
             {

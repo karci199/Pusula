@@ -40,6 +40,36 @@ namespace Pusula.Core.Notes
         /// <summary>Gövdenin başı (başlık hariç).</summary>
         public string Excerpt { get; private set; } = string.Empty;
 
+        /// <summary>Önem: <c>Yüksek</c>, <c>Düşük</c>; normalse boş.</summary>
+        public string Importance { get; private set; } = string.Empty;
+
+        /// <summary>İlgili kayıt numaraları (<c>[[JIG-1000-0009]]</c> → <c>JIG-1000-0009</c>).</summary>
+        public List<string> Related { get; private set; } = new List<string>();
+
+        /// <summary>Etiketler (<c>#SATIMO</c> → <c>SATIMO</c>).</summary>
+        public List<string> Tags { get; private set; } = new List<string>();
+
+        /// <summary>Notun içindeki <c>## Günlük</c> bölümünden mi geldi (ayrı olay notu değil).</summary>
+        public bool IsJournal { get; private set; }
+
+        /// <summary>Günlük bölümündeki bir girdiden olay kurar (bkz. <see cref="Journal"/>).</summary>
+        internal static EventNote FromJournal(string path, string kind, DateTime date, string title, string body, string person, string importance, List<string> related, List<string> tags)
+        {
+            return new EventNote
+            {
+                Path = path,
+                Kind = kind,
+                Date = date,
+                Title = title,
+                Excerpt = body,
+                Person = person,
+                Importance = importance,
+                Related = related,
+                Tags = tags,
+                IsJournal = true,
+            };
+        }
+
         /// <summary>
         /// Klasördeki (alt klasörler dahil, <c>_</c> ile başlayanlar hariç) olay notlarını okur, yeniden eskiye sıralar.
         /// <c>olay: test</c> notları atlanır (test koşuları ayrıca okunur).
