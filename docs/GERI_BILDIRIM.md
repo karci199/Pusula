@@ -22,7 +22,6 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 - [x] **Düzenle / Takipten çıkar** her kayıtta (proje, stok, jig, kablo …): ağaç sağ tık, proje stok tablosu, envanter listeleri.
   Düzenle: ad (+ stokta şablon, envanterde alt tür ve açıklama). Takipten çıkar: takip dosyası `….json.kaldirildi-<zaman>` olur, dosyalar yerinde; klasör işaretsiz görünür.
 - [x] **Sil…**: klasör kalıcı silinmez, kökteki `_SILINENLER\<zaman>\<göreli yol>` altına taşınır, `silinenler.log` tutulur; onayda ad yazılmadan Sil düğmesi çıkmaz. Ayarlar → "Silinenler klasörünü aç".
-- [ ] Numara (klasör adı) değiştirme — ayrı adım, klasör yeniden adlandırılır; konuşulacak.
 - [ ] Envanter alan değerleri (Tork, Boy …) düzenleme penceresinde yok.
 
 ## 4. Görünüm

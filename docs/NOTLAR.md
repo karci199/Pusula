@@ -146,3 +146,5 @@ Deneme kökü: `C:\PusulaDeneme`.
 
 - Uygulama ikonu: soyut ibre (B), tools\Ikon-Ciz.ps1 üretir (src\Pusula.Wpf\Assets\pusula.ico + pusula-logo.png); exe ve bütün pencerelerde.
 
+- Karar (09.11): numara (klasör adı) uygulamadan değiştirilmez. Gerekirse klasör elle yeniden adlandırılır ya da kayıt takipten çıkarılıp / silinip yeniden eklenir.
+
