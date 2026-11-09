@@ -81,6 +81,17 @@ namespace Pusula.Wpf
                 return string.Empty;
             }
 
+            // VS Code doğrudan Code.exe ile başlatılır: vscode:// bağlantısı "bir uygulama dosya açmak istiyor" sorusu çıkarıyor.
+            if (app == VsCode)
+            {
+                var exe = VsCodeExe();
+                if (exe.Length > 0)
+                {
+                    Process.Start(new ProcessStartInfo(exe, "\"" + path + "\"") { UseShellExecute = false });
+                    return string.Empty;
+                }
+            }
+
             var uri = UriFor(path, app);
             if (uri.Length > 0 && HasProtocol(app))
             {
@@ -109,6 +120,30 @@ namespace Pusula.Wpf
             }
 
             return string.Empty;
+        }
+
+        /// <summary>Kurulu VS Code'un <c>Code.exe</c> yolu (vscode:// kaydının açma komutundan); yoksa boş.</summary>
+        public static string VsCodeExe()
+        {
+            try
+            {
+                using (var key = Registry.ClassesRoot.OpenSubKey(@"vscode\shell\open\command"))
+                {
+                    var command = key?.GetValue(string.Empty) as string ?? string.Empty;
+                    var start = command.IndexOf('"');
+                    var end = start >= 0 ? command.IndexOf('"', start + 1) : -1;
+                    var exe = end > start ? command.Substring(start + 1, end - start - 1) : string.Empty;
+                    return exe.Length > 0 && File.Exists(exe) ? exe : string.Empty;
+                }
+            }
+            catch (System.Security.SecurityException)
+            {
+                return string.Empty;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return string.Empty;
+            }
         }
 
         private static bool HasProtocol(string scheme)

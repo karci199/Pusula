@@ -30,6 +30,7 @@ try {
     Check 'seçim ayarlara yazıldı' ([IO.File]::ReadAllText($env:PUSULA_AYARLAR) -match '"noteApp":\s*"vscode"')
     Check 'obsidian bağlantısı' ($N::UriFor('C:\Kök\a b.md', 'obsidian') -eq 'obsidian://open?path=C%3A%5CK%C3%B6k%5Ca%20b.md') ($N::UriFor('C:\Kök\a b.md', 'obsidian'))
     Check 'vscode bağlantısı (sürücü)' ($N::UriFor('C:\Kök\a b.md', 'vscode') -eq 'vscode://file/C:/K%C3%B6k/a%20b.md') ($N::UriFor('C:\Kök\a b.md', 'vscode'))
+    Check 'VS Code yolu bulunur (Code.exe)' ([string]::IsNullOrEmpty($N::VsCodeExe()) -or $N::VsCodeExe().EndsWith('Code.exe')) ($N::VsCodeExe())
     Check 'vscode bağlantısı (ağ yolu)' ($N::UriFor('\\sunucu\pay\x.md', 'vscode') -eq 'vscode://file//sunucu/pay/x.md') ($N::UriFor('\\sunucu\pay\x.md', 'vscode'))
     Pump; Check 'seçim kutusu seçili öğeyi gösterir' ($set.FindName('NoteAppBox').SelectedItem -ne $null -and $set.FindName('NoteAppBox').SelectedItem.Key -eq 'vscode')
     Snap $set "$Out\settings-noteapp.png"    $set.Close()
