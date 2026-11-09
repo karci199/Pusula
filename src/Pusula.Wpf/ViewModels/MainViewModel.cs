@@ -19,6 +19,8 @@ namespace Pusula.Wpf.ViewModels
     {
         private string rootPath = string.Empty;
         private string refreshedRoot = string.Empty;
+        private Pusula.Core.Scanning.DiskWatcher? diskWatcher;
+        private bool isDiskChanged;
         private TreeNodeViewModel? selectedNode;
         private string status = string.Empty;
 
@@ -274,6 +276,51 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Ağacı yeniden okur.</summary>
         public ICommand RefreshCommand { get; }
 
+        /// <summary>Son yenilemeden beri diskte dışarıdan değişiklik oldu mu (Yenile düğmesi renklenir; bildirim çıkmaz).</summary>
+        public bool IsDiskChanged
+        {
+            get { return isDiskChanged; }
+            private set { SetProperty(ref isDiskChanged, value); }
+        }
+
+        /// <summary>Sayılan son dışarıdan değişikliğin yolu (yoksa boş).</summary>
+        public string DiskChangedPath
+        {
+            get { return diskWatcher?.LastPath ?? string.Empty; }
+        }
+
+        // Kök değişince izleyici yeniden kurulur; aynı kökte yalnızca sıfırlanır.
+        private void WatchRoot()
+        {
+            IsDiskChanged = false;
+            if (diskWatcher != null && string.Equals(diskWatcher.Root, rootPath, System.StringComparison.OrdinalIgnoreCase))
+            {
+                diskWatcher.Reset();
+                return;
+            }
+
+            diskWatcher?.Dispose();
+            diskWatcher = null;
+            if (!HasRoot)
+            {
+                return;
+            }
+
+            var context = System.Threading.SynchronizationContext.Current;
+            diskWatcher = new Pusula.Core.Scanning.DiskWatcher(rootPath);
+            diskWatcher.Changed += (s, e) =>
+            {
+                if (context != null)
+                {
+                    context.Post(_ => IsDiskChanged = true, null);
+                }
+                else
+                {
+                    IsDiskChanged = true;
+                }
+            };
+        }
+
         /// <summary>Kök klasörden iki düzey okur: projeler (ve diğer klasörler) ile altlarındaki stoklar.</summary>
         public void Refresh()
         {
@@ -304,6 +351,7 @@ namespace Pusula.Wpf.ViewModels
             InventoryNodes.Clear();
             SelectedNode = null;
             OnPropertyChanged(nameof(HasRoot));
+            WatchRoot();
             if (!HasRoot)
             {
                 return;

@@ -182,6 +182,7 @@ namespace Pusula.Core.Notes
                 }
 
                 var temp = notePath + ".tmp-" + Guid.NewGuid().ToString("N").Substring(0, 8);
+                Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
                 File.WriteAllText(temp, updated, new UTF8Encoding(true));
                 if (File.Exists(notePath))
                 {
@@ -328,6 +329,7 @@ namespace Pusula.Core.Notes
             try
             {
                 var temp = notePath + ".tmp-" + Guid.NewGuid().ToString("N").Substring(0, 8);
+                Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
                 File.WriteAllText(temp, content, new UTF8Encoding(true));
                 File.Replace(temp, notePath, null);
                 return string.Empty;

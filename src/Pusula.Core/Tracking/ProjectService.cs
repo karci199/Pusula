@@ -173,6 +173,7 @@ namespace Pusula.Core.Tracking
                 var path = Path.Combine(folder, relative);
                 if (!Directory.Exists(path))
                 {
+                    Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
                     Directory.CreateDirectory(path);
                     created++;
                 }
@@ -220,6 +221,7 @@ namespace Pusula.Core.Tracking
 
             try
             {
+                Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
                 Directory.CreateDirectory(folder);
                 writeMarker(folder);
                 TrackingFiles.HideTrackingFolder(folder);

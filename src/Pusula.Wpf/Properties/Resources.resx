@@ -1236,4 +1236,7 @@
   <data name="Field_No" xml:space="preserve">
     <value>Hayır</value>
   </data>
+  <data name="Button_RefreshChanged" xml:space="preserve">
+    <value>Diskte değişiklik var · Yenile (F5)</value>
+  </data>
 </root>

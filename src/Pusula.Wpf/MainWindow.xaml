@@ -762,11 +762,29 @@
                             <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="15" Foreground="{DynamicResource AccentBrush}" />
                         </Button>
                         <Button Grid.Column="2"
-                                Style="{DynamicResource IconButtonStyle}"
                                 Command="{Binding RefreshCommand}"
-                                ToolTip="{x:Static res:Resources.Button_Refresh}"
                                 Margin="4,0,0,0">
-                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Refresh}" FontSize="14" />
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
+                                    <Setter Property="ToolTip" Value="{x:Static res:Resources.Button_Refresh}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsDiskChanged}" Value="True">
+                                            <Setter Property="ToolTip" Value="{x:Static res:Resources.Button_RefreshChanged}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Refresh}" FontSize="14">
+                                <controls:FontIcon.Style>
+                                    <Style TargetType="controls:FontIcon">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDiskChanged}" Value="True">
+                                                <Setter Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </controls:FontIcon.Style>
+                            </controls:FontIcon>
                         </Button>
                         <Button Grid.Column="3"
                                 Style="{DynamicResource IconButtonStyle}"

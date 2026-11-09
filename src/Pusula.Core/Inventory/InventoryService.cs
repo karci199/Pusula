@@ -120,6 +120,7 @@ namespace Pusula.Core.Inventory
 
             try
             {
+                Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
                 Directory.CreateDirectory(folder);
                 JsonFile.WriteAtomic(RecordFile(folder), record);
                 TrackingFiles.HideTrackingFolder(folder);

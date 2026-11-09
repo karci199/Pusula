@@ -51,6 +51,7 @@ namespace Pusula.Core.Tracking
                 Directory.CreateDirectory(folder);
             }
 
+            Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
             var tempPath = path + ".tmp";
             using (var stream = File.Create(tempPath))
             using (var writer = JsonReaderWriterFactory.CreateJsonWriter(stream, new UTF8Encoding(false), true, true, "  "))

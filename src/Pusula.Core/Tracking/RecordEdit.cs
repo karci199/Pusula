@@ -115,6 +115,7 @@ namespace Pusula.Core.Tracking
             var target = path + RemovedSuffix + now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture);
             try
             {
+                Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
                 File.Move(path, target);
                 return string.Empty;
             }
@@ -164,6 +165,7 @@ namespace Pusula.Core.Tracking
 
             try
             {
+                Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
                 Directory.CreateDirectory(Path.GetDirectoryName(target)!);
                 Directory.Move(fullFolder, target);
             }

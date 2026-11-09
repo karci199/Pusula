@@ -1444,5 +1444,12 @@ namespace Pusula.Wpf.Properties
         public static string Field_No { get { return Get("Field_No"); } }
 
         #endregion
+
+        #region Ağaç
+
+        /// <summary>Dışarıdan değişiklik olunca Yenile düğmesinin ipucu.</summary>
+        public static string Button_RefreshChanged { get { return Get("Button_RefreshChanged"); } }
+
+        #endregion
     }
 }

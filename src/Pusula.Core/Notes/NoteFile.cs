@@ -40,6 +40,7 @@ namespace Pusula.Core.Notes
             var temp = path + ".tmp";
             try
             {
+                Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
                 File.WriteAllText(temp, text.ToString(), new UTF8Encoding(false));
                 File.Move(temp, path);
                 return path;

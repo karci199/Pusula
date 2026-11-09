@@ -74,6 +74,7 @@ namespace Pusula.Core.Types
         {
             try
             {
+                Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
                 Directory.CreateDirectory(Path.Combine(root, TemplateStore.FolderName));
                 JsonFile.WriteAtomic(FilePath(root), set);
                 return string.Empty;
