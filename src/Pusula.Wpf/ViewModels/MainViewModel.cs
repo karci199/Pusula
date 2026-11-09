@@ -245,6 +245,9 @@ namespace Pusula.Wpf.ViewModels
             var expanded = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
             var sameRoot = string.Equals(refreshedRoot, rootPath, System.StringComparison.OrdinalIgnoreCase);
             refreshedRoot = rootPath;
+
+            // Seçili düğüm de korunur: yenileyince en başa atılmaz, aynı stok / kayıt yeniden okunup gösterilir.
+            var keepSelected = sameRoot && selectedNode != null ? selectedNode.Path : null;
             var pending = new Stack<TreeNodeViewModel>(sameRoot ? Nodes : Enumerable.Empty<TreeNodeViewModel>());
             while (pending.Count > 0)
             {
@@ -293,6 +296,10 @@ namespace Pusula.Wpf.ViewModels
             AddInventoryNodes(expanded);
             OnPropertyChanged(nameof(HasInventory));
             ApplySearch();
+            if (keepSelected != null)
+            {
+                SelectNodeByPath(keepSelected);
+            }
         }
 
         /// <summary>Ağaçta aranan metin (numara, ad, tanım); boşsa hepsi görünür.</summary>

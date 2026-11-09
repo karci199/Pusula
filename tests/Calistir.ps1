@@ -84,7 +84,10 @@ try
         $one = [Diagnostics.Stopwatch]::StartNew()
         try
         {
+            # Senaryonun hata çıktısı koşturucuyu durdurmasın (PowerShell 5.1 stderr'i hata kaydına çevirir).
+            $ErrorActionPreference = 'Continue'
             $text = & powershell -NoProfile -STA -ExecutionPolicy Bypass -File $script.FullName -Bin $bin -Out $out -Data $data -Sample $sample 2>&1 | Out-String
+            $ErrorActionPreference = 'Stop'
             $code = $LASTEXITCODE
         }
         finally
