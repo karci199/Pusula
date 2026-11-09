@@ -288,6 +288,9 @@
             <GridViewColumn Width="100" DisplayMemberBinding="{Binding DateText}">
                 <GridViewColumnHeader Content="{x:Static res:Resources.Col_Date}" Tag="Date" />
             </GridViewColumn>
+            <GridViewColumn Width="90" DisplayMemberBinding="{Binding AnalysisText}">
+                <GridViewColumnHeader Content="{x:Static res:Resources.Col_Analysis}" Tag="AnalysisDate" />
+            </GridViewColumn>
             <GridViewColumn Width="90" DisplayMemberBinding="{Binding Person}">
                 <GridViewColumnHeader Content="{x:Static res:Resources.Col_Person}" Tag="Person" />
             </GridViewColumn>
@@ -537,6 +540,12 @@
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Run_OpenRaw}" Click="RunMenuRaw_Click" />
             <MenuItem Header="{x:Static res:Resources.Run_OpenPhotos}" Click="RunMenuPhotos_Click" />
+            <Separator />
+            <MenuItem Header="{x:Static res:Resources.Run_Analysis}" Click="RunMenuAnalysis_Click">
+                <MenuItem.Icon>
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Edit}" />
+                </MenuItem.Icon>
+            </MenuItem>
         </ContextMenu>
 
         <!-- Envanter kaydı: geçmişte bir olay (dikey çizgi + renkli nokta) -->
@@ -1702,6 +1711,25 @@
                 <TextBlock Text="{Binding Status}" />
             </StatusBarItem>
         </StatusBar>
+
+        <!-- Test koşusu: analiz tarihi ve kısa not -->
+        <controls:ContentDialog Grid.RowSpan="3"
+                                IsOpen="{Binding IsAnalysisOpen, Mode=TwoWay}"
+                                Title="{x:Static res:Resources.Analysis_Title}"
+                                PrimaryButtonText="{x:Static res:Resources.Edit_Save}"
+                                CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                PrimaryButtonClick="AnalysisDialog_PrimaryButtonClick">
+            <StackPanel Width="300">
+                <TextBlock Margin="0,0,0,14" Foreground="{DynamicResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis" Text="{Binding AnalysisTarget}" />
+                <controls:FormField Header="{x:Static res:Resources.Field_AnalysisDate}" LabelWidth="90" ErrorText="{Binding AnalysisError}">
+                    <TextBox Text="{Binding AnalysisDateText, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+                </controls:FormField>
+                <controls:FormField Header="{x:Static res:Resources.Field_AnalysisNote}" LabelWidth="90" Margin="0,12,0,0">
+                    <TextBox Text="{Binding AnalysisNote, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="False" MinHeight="56" VerticalContentAlignment="Top" />
+                </controls:FormField>
+                <TextBlock Margin="0,12,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" Text="{x:Static res:Resources.Analysis_Hint}" />
+            </StackPanel>
+        </controls:ContentDialog>
 
         <!-- Yeni proje -->
         <controls:ContentDialog Grid.RowSpan="3"

@@ -35,6 +35,8 @@ try {
     $view.Columns.Move(3, 1); Pump
     Call 'SaveLayout' @()
     Check 'sütun düzeni kaydedildi' ($vm.Settings.Columns.ContainsKey('stocks'))
+    $saved = $vm.Settings.Columns['stocks']
+    Check 'sütunlar anahtarla saklanır' (@($saved | Where-Object { -not $_.Key }).Count -eq 0 -and $saved[1].Key -eq [string]$view.Columns[1].Header) (($saved | ForEach-Object Key) -join ',')
     "--- Sıfırla"
     Call 'ResetLayout' @()
     Check 'sekmeler varsayılan' ((Tags) -eq $before -or (Tags) -like 'general,tests,qualification*') (Tags)

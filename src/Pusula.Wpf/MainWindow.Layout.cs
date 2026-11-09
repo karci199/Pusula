@@ -288,10 +288,22 @@ namespace Pusula.Wpf
                     return;
                 }
 
+                // Anahtarlı kayıt anahtarla eşlenir; eski (yalnız sıra numaralı) kayıt sütun sayısı tutuyorsa sırayla, tutmuyorsa yok sayılır.
+                var legacy = saved.Any(s => string.IsNullOrEmpty(s.Key));
+                if (legacy && saved.Count != original.Count)
+                {
+                    return;
+                }
+
+                var resolved = saved
+                    .Select(s => new { s.Width, Index = string.IsNullOrEmpty(s.Key) ? s.Index : original.FindIndex(c => KeyOf(c, original) == s.Key) })
+                    .Where(s => s.Index >= 0 && s.Index < original.Count)
+                    .ToList();
+
                 applying = true;
                 try
                 {
-                    var order = saved.Where(s => s.Index >= 0 && s.Index < original.Count).Select(s => s.Index).Distinct().ToList();
+                    var order = resolved.Select(s => s.Index).Distinct().ToList();
                     order.AddRange(Enumerable.Range(0, original.Count).Where(i => !order.Contains(i)));
                     for (var target = 0; target < order.Count; target++)
                     {
@@ -303,7 +315,7 @@ namespace Pusula.Wpf
                         }
                     }
 
-                    foreach (var item in saved.Where(s => s.Index >= 0 && s.Index < original.Count && s.Width > 0))
+                    foreach (var item in resolved.Where(s => s.Width > 0))
                     {
                         original[item.Index].Width = Clamp(item.Width);
                     }
@@ -323,7 +335,21 @@ namespace Pusula.Wpf
                     return;
                 }
 
-                settings.Columns[key] = view.Columns.Select(c => new ColumnLayout { Index = original.IndexOf(c), Width = double.IsNaN(c.Width) ? 0 : Math.Round(c.Width) }).ToList();
+                settings.Columns[key] = view.Columns.Select(c => new ColumnLayout { Index = original.IndexOf(c), Key = KeyOf(c, original), Width = double.IsNaN(c.Width) ? 0 : Math.Round(c.Width) }).ToList();
+            }
+
+            // Başlığın Tag'i (yoksa yazısı, o da yoksa sırası).
+            private static string KeyOf(GridViewColumn column, List<GridViewColumn> all)
+            {
+                var header = column.Header as GridViewColumnHeader;
+                var tag = header?.Tag as string;
+                if (!string.IsNullOrEmpty(tag))
+                {
+                    return tag!;
+                }
+
+                var text = (header?.Content ?? column.Header) as string;
+                return !string.IsNullOrEmpty(text) ? text! : "#" + all.IndexOf(column).ToString(System.Globalization.CultureInfo.InvariantCulture);
             }
 
             public void Reset()

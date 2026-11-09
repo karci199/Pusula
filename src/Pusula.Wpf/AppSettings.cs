@@ -98,6 +98,10 @@ namespace Pusula.Wpf
         /// <summary>Genişlik (piksel).</summary>
         [DataMember(Name = "width", Order = 1)]
         public double Width { get; set; }
+
+        /// <summary>Sütunun anahtarı (başlığın Tag'i); araya sütun eklense de doğru sütunu bulur. Eski kayıtlarda boş.</summary>
+        [DataMember(Name = "key", Order = 2, EmitDefaultValue = false)]
+        public string? Key { get; set; }
     }
 
     /// <summary>Pencerenin yeri ve boyutu (mantıksal piksel).</summary>

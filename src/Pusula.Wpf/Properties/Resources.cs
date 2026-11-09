@@ -1451,5 +1451,39 @@ namespace Pusula.Wpf.Properties
         public static string Button_RefreshChanged { get { return Get("Button_RefreshChanged"); } }
 
         #endregion
+
+        #region Analiz
+
+        /// <summary>Test koşusu sağ tık menüsü.</summary>
+        public static string Run_Analysis { get { return Get("Run_Analysis"); } }
+
+        /// <summary>Analiz penceresinin başlığı.</summary>
+        public static string Analysis_Title { get { return Get("Analysis_Title"); } }
+
+        /// <summary>Analiz penceresi alt başlığı: koşu ve test tarihi.</summary>
+        public static string Analysis_Target { get { return Get("Analysis_Target"); } }
+
+        /// <summary>Alan adı.</summary>
+        public static string Field_AnalysisDate { get { return Get("Field_AnalysisDate"); } }
+
+        /// <summary>Alan adı.</summary>
+        public static string Field_AnalysisNote { get { return Get("Field_AnalysisNote"); } }
+
+        /// <summary>Analiz penceresindeki ipucu.</summary>
+        public static string Analysis_Hint { get { return Get("Analysis_Hint"); } }
+
+        /// <summary>Analiz tarihi okunamadı.</summary>
+        public static string Analysis_BadDate { get { return Get("Analysis_BadDate"); } }
+
+        /// <summary>Durum çubuğu.</summary>
+        public static string Analysis_Saved { get { return Get("Analysis_Saved"); } }
+
+        /// <summary>Testler tablosu sütunu: test gününden ayrıysa analiz tarihi.</summary>
+        public static string Col_Analysis { get { return Get("Col_Analysis"); } }
+
+        /// <summary>Günlük kartında test tarihinin yanında analiz tarihi.</summary>
+        public static string Timeline_Analysis { get { return Get("Timeline_Analysis"); } }
+
+        #endregion
     }
 }

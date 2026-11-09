@@ -65,7 +65,27 @@ namespace Pusula.Wpf.ViewModels
             Summary = run.Summary;
             NotePath = run.NotePath;
             Folder = run.Folder;
+            AnalysisDate = run.AnalysisDate;
+            AnalysisNote = run.AnalysisNote;
+            HasSeparateAnalysis = run.HasSeparateAnalysis;
+            AnalysisText = run.HasSeparateAnalysis ? run.AnalysisDate.ToString(Resources.Format_Date) : string.Empty;
+            Title = run.SerialNo + " · " + run.System + " · T" + run.Round;
         }
+
+        /// <summary>Analiz tarihi (ayrı verilmediyse test tarihi).</summary>
+        public DateTime AnalysisDate { get; }
+
+        /// <summary>Analiz notu.</summary>
+        public string AnalysisNote { get; }
+
+        /// <summary>Analiz testten ayrı günde mi.</summary>
+        public bool HasSeparateAnalysis { get; }
+
+        /// <summary>Tablodaki Analiz sütunu: ayrı günse tarih, değilse boş.</summary>
+        public string AnalysisText { get; }
+
+        /// <summary>"SN01 · SATIMO · T2" (pencere başlıkları için).</summary>
+        public string Title { get; }
 
         /// <summary>Seri numarası.</summary>
         public string Serial { get; }
@@ -247,8 +267,18 @@ namespace Pusula.Wpf.ViewModels
             Result = TestResultChip.For(run.Result);
             Summary = run.Summary;
             var date = run.Date == DateTime.MinValue ? "—" : run.Date.ToString(Resources.Format_Date);
+            if (run.HasSeparateAnalysis)
+            {
+                date += " · " + string.Format(Resources.Timeline_Analysis, run.AnalysisDate.ToString(Resources.Format_Date));
+            }
+
             Meta = run.Person.Length == 0 ? date : date + " · " + run.Person;
             var extra = new List<string>();
+            if (run.AnalysisNote.Length > 0)
+            {
+                extra.Add(Resources.Col_Analysis + ": " + run.AnalysisNote);
+            }
+
             if (run.Plan.Length > 0)
             {
                 extra.Add(Resources.Timeline_Plan + ": " + run.Plan);

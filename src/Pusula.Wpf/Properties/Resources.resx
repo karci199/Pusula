@@ -1239,4 +1239,34 @@
   <data name="Button_RefreshChanged" xml:space="preserve">
     <value>Diskte değişiklik var · Yenile (F5)</value>
   </data>
+  <data name="Run_Analysis" xml:space="preserve">
+    <value>Analiz tarihi ve notu…</value>
+  </data>
+  <data name="Analysis_Title" xml:space="preserve">
+    <value>Analiz</value>
+  </data>
+  <data name="Analysis_Target" xml:space="preserve">
+    <value>{0} · test {1}</value>
+  </data>
+  <data name="Field_AnalysisDate" xml:space="preserve">
+    <value>Analiz tarihi</value>
+  </data>
+  <data name="Field_AnalysisNote" xml:space="preserve">
+    <value>Kısa not</value>
+  </data>
+  <data name="Analysis_Hint" xml:space="preserve">
+    <value>Test günü analiz edildiyse test tarihini bırak. Ayrıntılı not için test notunu aç.</value>
+  </data>
+  <data name="Analysis_BadDate" xml:space="preserve">
+    <value>Tarih gg.aa.yyyy biçiminde olmalı.</value>
+  </data>
+  <data name="Analysis_Saved" xml:space="preserve">
+    <value>{0} analizi kaydedildi.</value>
+  </data>
+  <data name="Col_Analysis" xml:space="preserve">
+    <value>Analiz</value>
+  </data>
+  <data name="Timeline_Analysis" xml:space="preserve">
+    <value>analiz {0}</value>
+  </data>
 </root>

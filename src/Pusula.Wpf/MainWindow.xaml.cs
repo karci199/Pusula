@@ -316,6 +316,23 @@ namespace Pusula.Wpf
             return (menu?.PlacementTarget as ListView)?.SelectedItem as TestRunRow;
         }
 
+        private void RunMenuAnalysis_Click(object sender, RoutedEventArgs e)
+        {
+            var run = SelectedRun(sender);
+            if (run != null)
+            {
+                viewModel.OpenAnalysis(run);
+            }
+        }
+
+        private void AnalysisDialog_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (!viewModel.ConfirmAnalysis())
+            {
+                Dispatcher.BeginInvoke(new Action(() => viewModel.IsAnalysisOpen = true));
+            }
+        }
+
         private void RunMenuNote_Click(object sender, RoutedEventArgs e)
         {
             var run = SelectedRun(sender);

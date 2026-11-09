@@ -77,6 +77,11 @@ namespace Pusula.Core.Testing
                         run.Source = TestRunSource.Folder;
                     }
 
+                    if (run.AnalysisDate == DateTime.MinValue)
+                    {
+                        run.AnalysisDate = run.Date;
+                    }
+
                     run.Photo = FirstPhoto(runFolder);
 
                     runs.Add(run);
@@ -110,6 +115,14 @@ namespace Pusula.Core.Testing
             {
                 run.Date = date;
             }
+
+            // Analiz testten sonra yapıldıysa ayrı tarih; yoksa test tarihi sayılır.
+            if (DateTime.TryParseExact(Get(fields, "analiz_tarihi", "analiz"), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
+            {
+                run.AnalysisDate = date;
+            }
+
+            run.AnalysisNote = Get(fields, "analiz_notu");
 
             // Notta sonuç yoksa KIWI koşusundan tamamlanır.
             if (run.Result == TestResult.Unknown)
@@ -188,6 +201,37 @@ namespace Pusula.Core.Testing
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Koşunun analiz tarihini ve kısa notunu <c>test.md</c>'nin YAML başlığına yazar (gövdeye dokunmaz). Not yoksa
+        /// test tarihiyle oluşturulur. Analiz tarihi test tarihiyle aynıysa ya da verilmemişse <c>analiz_tarihi</c> kaldırılır.
+        /// Hata metni; başarıda boş.
+        /// </summary>
+        public static string SetAnalysis(string runFolder, DateTime testDate, DateTime? analysisDate, string note)
+        {
+            var path = Path.Combine(runFolder, "test.md");
+            if (!File.Exists(path))
+            {
+                var fields = new List<KeyValuePair<string, string>>();
+                if (testDate != DateTime.MinValue)
+                {
+                    fields.Add(new KeyValuePair<string, string>("tarih", testDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)));
+                }
+
+                if (Notes.NoteFile.Create(path, fields, Path.GetFileName(runFolder)).Length == 0)
+                {
+                    return path;
+                }
+            }
+
+            var separate = analysisDate.HasValue && (testDate == DateTime.MinValue || analysisDate.Value.Date != testDate.Date);
+            var values = new Dictionary<string, string>
+            {
+                { "analiz_tarihi", separate ? analysisDate!.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : string.Empty },
+                { "analiz_notu", note ?? string.Empty },
+            };
+            return Notes.Journal.SetFrontMatter(path, values);
         }
 
         /// <summary>

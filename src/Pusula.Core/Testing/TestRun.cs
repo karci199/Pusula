@@ -54,6 +54,18 @@ namespace Pusula.Core.Testing
         /// <summary>Koşu tarihi (nottan; yoksa klasördeki en eski dosyadan).</summary>
         public DateTime Date { get; set; }
 
+        /// <summary>Analiz tarihi (nottaki <c>analiz_tarihi</c>); verilmemişse test tarihiyle aynı.</summary>
+        public DateTime AnalysisDate { get; set; }
+
+        /// <summary>Analizle ilgili kısa not (nottaki <c>analiz_notu</c>); yoksa boş.</summary>
+        public string AnalysisNote { get; set; } = string.Empty;
+
+        /// <summary>Analiz testten ayrı bir günde mi yapıldı.</summary>
+        public bool HasSeparateAnalysis
+        {
+            get { return AnalysisDate != DateTime.MinValue && Date != DateTime.MinValue && AnalysisDate.Date != Date.Date; }
+        }
+
         /// <summary>Sonuç.</summary>
         public TestResult Result { get; set; }
 
