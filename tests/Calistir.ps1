@@ -80,6 +80,8 @@ try
     foreach ($script in $scripts)
     {
         $data = Join-Path $env:TEMP ('pusula-test-' + [guid]::NewGuid().ToString('N').Substring(0, 8))
+        # Senaryo gerçek ayarlar.json'a değil, kendi geçici ayar dosyasına yazar (koşu yarıda kesilse bile kullanıcının kökü bozulmaz).
+        $env:PUSULA_AYARLAR = $data + '.ayarlar.json'
         robocopy $fixture $data /E /NFL /NDL /NJH /NJS /NP | Out-Null
         $one = [Diagnostics.Stopwatch]::StartNew()
         try
@@ -93,6 +95,8 @@ try
         finally
         {
             Remove-Item $data -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item $env:PUSULA_AYARLAR -Force -ErrorAction SilentlyContinue
+            Remove-Item Env:PUSULA_AYARLAR -ErrorAction SilentlyContinue
         }
 
         $ok = ([regex]::Matches($text, '(?m)^\s*OK ')).Count

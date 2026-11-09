@@ -27,10 +27,19 @@ namespace Pusula.Wpf
         [DataMember(Name = "theme", Order = 1)]
         public string Theme { get; set; } = string.Empty;
 
+        /// <summary>Ayar dosyasının yerini değiştiren ortam değişkeni (testler gerçek ayarlara dokunmasın diye).</summary>
+        public const string PathVariable = "PUSULA_AYARLAR";
+
         private static string FilePath
         {
             get
             {
+                var custom = Environment.GetEnvironmentVariable(PathVariable);
+                if (!string.IsNullOrEmpty(custom))
+                {
+                    return custom!;
+                }
+
                 var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                 return Path.Combine(folder, "Pusula", "ayarlar.json");
             }

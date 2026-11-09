@@ -18,7 +18,7 @@ try {
     Snap $set "$Out\settings-dark.png"
     $vm.Theme = [Pusula.Wpf.Themes]::Find('Sand'); Pump
     Check 'tema uygulandı' ([Pusula.Wpf.Themes]::Current.Key -eq 'Sand')
-    $saved = [IO.File]::ReadAllText($settingsFile)
+    $saved = [IO.File]::ReadAllText($env:PUSULA_AYARLAR)
     Check 'ayarlara yazıldı' ($saved -match '"theme":\s*"Sand"') $saved
     Check 'kök klasör korundu' ($saved.Contains($Data.Replace('\', '\\'))) $saved
     Snap $set "$Out\settings-sand.png"
