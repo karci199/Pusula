@@ -155,8 +155,8 @@
                             <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_Formats}" />
                             <DataGrid Style="{StaticResource EditGrid}" ItemsSource="{Binding Formats}" PreviewMouseWheel="Grid_PreviewMouseWheel">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="{x:Static res:Resources.Types_Pattern}" Width="200" Binding="{Binding Pattern}" FontFamily="Consolas" />
-                                    <DataGridTextColumn Header="{x:Static res:Resources.Types_Label}" Width="*" Binding="{Binding Label}" />
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_Pattern}" Width="200" Binding="{Binding Pattern}" FontFamily="Consolas" />
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_Label}" Width="*" Binding="{Binding Label}" />
                                 </DataGrid.Columns>
                             </DataGrid>
                             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
@@ -179,7 +179,7 @@
                                 <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_SubTypes}" />
                                 <DataGrid Style="{StaticResource EditGrid}" ItemsSource="{Binding SubTypes}" PreviewMouseWheel="Grid_PreviewMouseWheel">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="{x:Static res:Resources.Types_SubType}" Width="*" Binding="{Binding Text}" />
+                                        <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_SubType}" Width="*" Binding="{Binding Text}" />
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </StackPanel>
@@ -189,7 +189,7 @@
                                 <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_RecordFolders}" />
                                 <DataGrid Style="{StaticResource EditGrid}" ItemsSource="{Binding RecordFolders}" PreviewMouseWheel="Grid_PreviewMouseWheel">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="{x:Static res:Resources.Types_Folder}" Width="*" Binding="{Binding Text}" FontFamily="Consolas" />
+                                        <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_Folder}" Width="*" Binding="{Binding Text}" FontFamily="Consolas" />
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </StackPanel>
@@ -202,14 +202,14 @@
                             <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_Fields}" />
                             <DataGrid Style="{StaticResource EditGrid}" ItemsSource="{Binding Fields}" PreviewMouseWheel="Grid_PreviewMouseWheel">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="{x:Static res:Resources.Types_FieldName}" Width="150" Binding="{Binding Name}" />
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_FieldName}" Width="150" Binding="{Binding Name}" />
                                     <DataGridComboBoxColumn Header="{x:Static res:Resources.Types_FieldKind}" Width="120"
                                                             ItemsSource="{x:Static vm:TypeEditorViewModel.FieldKinds}"
                                                             SelectedValuePath="Key" DisplayMemberPath="Label"
                                                             SelectedValueBinding="{Binding Kind}" />
-                                    <DataGridTextColumn Header="{x:Static res:Resources.Types_FieldUnit}" Width="60" Binding="{Binding Unit}" />
-                                    <DataGridTextColumn Header="{x:Static res:Resources.Types_FieldChoices}" Width="*" Binding="{Binding Choices}" />
-                                    <DataGridTextColumn Header="{x:Static res:Resources.Types_FieldSubTypes}" Width="150" Binding="{Binding SubTypes}" />
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_FieldUnit}" Width="60" Binding="{Binding Unit}" />
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_FieldChoices}" Width="*" Binding="{Binding Choices}" />
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_FieldSubTypes}" Width="150" Binding="{Binding SubTypes}" />
                                 </DataGrid.Columns>
                             </DataGrid>
                             <TextBlock Margin="0,6,0,0" Style="{StaticResource HintText}" Text="{x:Static res:Resources.Types_FieldsHint}" />

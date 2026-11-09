@@ -29,6 +29,18 @@ try {
     $win = New-Object Pusula.Wpf.TypeEditorWindow($vm)
     $win.WindowStartupLocation = 'Manual'; $win.Left = -20000; $win.Top = -20000; $win.ShowActivated = $false
     $win.Show(); $vm.Selected = $jig; Snap $win "$Out\types-window.png"
+"--- Tablo hücresi düzenleme kutusu temalı (beyaz değil)"
+function FindAll($d, [type]$type) { if ($d -is $type) { $d }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($d); $i++) { FindAll ([System.Windows.Media.VisualTreeHelper]::GetChild($d, $i)) $type } }
+$grid = @(FindAll $win ([System.Windows.Controls.DataGrid]) | Where-Object { [object]::ReferenceEquals($_.ItemsSource, $jig.Formats) })[0]
+$grid.Focus() | Out-Null
+$grid.CurrentCell = New-Object System.Windows.Controls.DataGridCellInfo($grid.Items[0], $grid.Columns[0])
+$grid.BeginEdit() | Out-Null; Pump; Pump
+$box = @(FindAll $grid ([System.Windows.Controls.TextBox]))[0]
+$bg = if ($box) { $box.Background.Color } else { $null }
+Check 'düzenleme kutusu açıldı' ($box -ne $null)
+Check 'arka plan beyaz değil (koyu tema)' ($bg -ne $null -and ($bg.R + $bg.G + $bg.B) -lt 300) ([string]$bg)
+Snap $win "$Out\types-edit-cell.png"
+$grid.CancelEdit() | Out-Null
     "--- 3. Kaydet"
     $dup = New-Object Pusula.Wpf.ViewModels.TypeEditor.FieldRow; $dup.Name = 'malzeme'; $jig.Fields.Add($dup)
     Check 'aynı alan iki kez → hata' (-not $vm.Save() -and $vm.Error -match 'iki kez') $vm.Error

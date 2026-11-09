@@ -12,6 +12,19 @@
                 <ResourceDictionary Source="pack://application:,,,/DesignKit.Wpf;component/DesignKit.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/DesignKit.Wpf;component/Themes/Fluent/Fluent.Dark.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <!--
+                Tablo hücresi düzenlenirken (F2 / çift tık) açılan yazı kutusu. WPF'in varsayılanı temayı almaz,
+                koyu temada beyaz kutu çıkıyordu. Her DataGridTextColumn EditingElementStyle ile bunu kullanır.
+            -->
+            <Style x:Key="GridEditBox" TargetType="TextBox">
+                <Setter Property="Background" Value="{DynamicResource ControlFillColorInputActiveBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                <Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}" />
+                <Setter Property="SelectionBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="2,0" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

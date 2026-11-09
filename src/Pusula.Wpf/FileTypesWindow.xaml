@@ -23,9 +23,9 @@
                   AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" CanUserSortColumns="True"
                   HeadersVisibility="Column" SelectionUnit="FullRow">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="{x:Static res:Resources.FileTypes_Name}" Width="160" Binding="{Binding Name}" />
-                <DataGridTextColumn Header="{x:Static res:Resources.FileTypes_Extensions}" Width="*" Binding="{Binding Extensions}" FontFamily="Consolas" />
-                <DataGridTextColumn Header="{x:Static res:Resources.FileTypes_Group}" Width="150" Binding="{Binding Group}" />
+                <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.FileTypes_Name}" Width="160" Binding="{Binding Name}" />
+                <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.FileTypes_Extensions}" Width="*" Binding="{Binding Extensions}" FontFamily="Consolas" />
+                <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.FileTypes_Group}" Width="150" Binding="{Binding Group}" />
             </DataGrid.Columns>
         </DataGrid>
         <Border Grid.Row="2" Padding="20,12"
