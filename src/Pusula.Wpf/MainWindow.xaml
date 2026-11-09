@@ -1673,13 +1673,18 @@
                                 PrimaryButtonText="{x:Static res:Resources.Dialog_Create}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="ProjectDialog_PrimaryButtonClick">
-            <StackPanel MinWidth="320">
+            <StackPanel Width="360">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Project}" FontSize="22" Foreground="{DynamicResource Pusula.ProjectIconBrush}" VerticalAlignment="Center" />
+                    <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="320"
+                               Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding RootPath}" ToolTip="{Binding RootPath}" />
+                </StackPanel>
                 <controls:FormField Header="{x:Static res:Resources.Field_ProjectNo}" IsRequired="True" LabelWidth="90">
                     <TextBox Text="{Binding NewProjectNo, UpdateSourceTrigger=PropertyChanged}"
                              IsVisibleChanged="FocusWhenVisible" />
                 </controls:FormField>
                 <controls:FormField Header="{x:Static res:Resources.Field_ProjectName}" IsRequired="True" LabelWidth="90"
-                                    Margin="0,8,0,0"
+                                    Margin="0,12,0,0"
                                     ErrorText="{Binding ProjectError}">
                     <TextBox Text="{Binding NewProjectName, UpdateSourceTrigger=PropertyChanged}" />
                 </controls:FormField>
@@ -1693,25 +1698,23 @@
                                 PrimaryButtonText="{x:Static res:Resources.Dialog_Create}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="StockDialog_PrimaryButtonClick">
-            <StackPanel MinWidth="320">
+            <StackPanel Width="360">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Stock}" FontSize="22" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                    <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="320"
+                               Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding StockNumberHint}" />
+                </StackPanel>
                 <controls:FormField Header="{x:Static res:Resources.Field_StockNo}" IsRequired="True" LabelWidth="90">
                     <TextBox Text="{Binding NewStockNo, UpdateSourceTrigger=PropertyChanged}"
                              IsVisibleChanged="FocusWhenVisible" />
                 </controls:FormField>
-                <TextBlock Margin="98,4,0,0"
-                           MaxWidth="320"
-                           HorizontalAlignment="Left"
-                           TextWrapping="Wrap"
-                           Style="{DynamicResource CaptionTextBlockStyle}"
-                           Foreground="{DynamicResource TextTertiaryBrush}"
-                           Text="{Binding StockNumberHint}" />
                 <controls:FormField Header="{x:Static res:Resources.Field_StockName}" LabelWidth="90"
-                                    Margin="0,8,0,0"
+                                    Margin="0,12,0,0"
                                     ErrorText="{Binding StockError}">
                     <TextBox Text="{Binding NewStockName, UpdateSourceTrigger=PropertyChanged}" />
                 </controls:FormField>
                 <controls:FormField Header="{x:Static res:Resources.Field_Template}" LabelWidth="90"
-                                    Margin="0,8,0,0">
+                                    Margin="0,12,0,0">
                     <ComboBox ItemsSource="{Binding TemplateNames}"
                               SelectedItem="{Binding SelectedTemplate, Mode=TwoWay}" />
                 </controls:FormField>
