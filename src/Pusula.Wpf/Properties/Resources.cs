@@ -1247,5 +1247,30 @@ namespace Pusula.Wpf.Properties
         public static string General_OpenTasks { get { return Get("General_OpenTasks"); } }
 
         #endregion
+
+        #region Plan
+
+        /// <summary>Plan türü.</summary>
+        public static string Plan_Kiwi { get { return Get("Plan_Kiwi"); } }
+
+        /// <summary>Adım sayısı.</summary>
+        public static string Plan_Steps { get { return Get("Plan_Steps"); } }
+
+        /// <summary>Limit sayısı.</summary>
+        public static string Plan_Limits { get { return Get("Plan_Limits"); } }
+
+        /// <summary>Plan revizyonu.</summary>
+        public static string Plan_Revision { get { return Get("Plan_Revision"); } }
+
+        /// <summary>Plana bağlı koşu sayısı.</summary>
+        public static string Plan_Runs { get { return Get("Plan_Runs"); } }
+
+        /// <summary>Koşu yok.</summary>
+        public static string Plan_NoRuns { get { return Get("Plan_NoRuns"); } }
+
+        /// <summary>Düğme ipucu.</summary>
+        public static string Plan_Open { get { return Get("Plan_Open"); } }
+
+        #endregion
     }
 }

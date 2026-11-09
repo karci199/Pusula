@@ -354,6 +354,38 @@
             </Setter>
         </Style>
 
+        <!-- Test planı kartı (Testler / Kalifikasyon sekmesinin üstü) -->
+        <DataTemplate x:Key="PlanTemplate">
+            <Border Margin="0,0,0,8" Padding="12,10" BorderThickness="1"
+                    Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                    CornerRadius="{DynamicResource OverlayCornerRadius}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Text="{Binding Name}" />
+                        <TextBlock Margin="0,2,0,0" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Description}"
+                                   Visibility="{Binding HasDescription, Converter={StaticResource BoolToVis}}" />
+                        <TextBlock Margin="0,4,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}">
+                            <Run Text="{Binding Meta, Mode=OneWay}" />
+                            <Run Text=" · " />
+                            <Run Text="{Binding RunsText, Mode=OneWay}" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        </TextBlock>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
+                        <Button Style="{DynamicResource IconButtonStyle}" Tag="{Binding Path}" Click="PlanOpen_Click" ToolTip="{x:Static res:Resources.Plan_Open}">
+                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
+                        </Button>
+                        <Button Style="{DynamicResource IconButtonStyle}" Tag="{Binding Folder}" Click="PlanFolder_Click" ToolTip="{x:Static res:Resources.Menu_OpenFolder}">
+                            <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
         <Style x:Key="KindIconStyle" TargetType="controls:FontIcon">
             <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
             <Style.Triggers>
@@ -1478,22 +1510,26 @@
 
                     <!-- Testler -->
                     <TabItem Header="{Binding Detail.TestsHeader}">
-                        <ListView Margin="0,8,0,0" TextElement.FontWeight="Normal"
-                                  ItemsSource="{Binding Detail.DevelopmentRuns}"
-                                  View="{StaticResource RunsGridView}"
-                                  GridViewColumnHeader.Click="RunsHeader_Click"
-                                  MouseDoubleClick="RunsList_MouseDoubleClick"
-                                  ContextMenu="{StaticResource RunMenu}" />
+                        <DockPanel Margin="0,8,0,0" TextElement.FontWeight="Normal">
+                            <ItemsControl x:Name="TestPlanList" DockPanel.Dock="Top" ItemsSource="{Binding Detail.TestPlans}" ItemTemplate="{StaticResource PlanTemplate}" />
+                            <ListView ItemsSource="{Binding Detail.DevelopmentRuns}"
+                                      View="{StaticResource RunsGridView}"
+                                      GridViewColumnHeader.Click="RunsHeader_Click"
+                                      MouseDoubleClick="RunsList_MouseDoubleClick"
+                                      ContextMenu="{StaticResource RunMenu}" />
+                        </DockPanel>
                     </TabItem>
 
                     <!-- Kalifikasyon -->
                     <TabItem Header="{Binding Detail.QualificationHeader}">
-                        <ListView Margin="0,8,0,0" TextElement.FontWeight="Normal"
-                                  ItemsSource="{Binding Detail.QualificationRuns}"
-                                  View="{StaticResource RunsGridView}"
-                                  GridViewColumnHeader.Click="RunsHeader_Click"
-                                  MouseDoubleClick="RunsList_MouseDoubleClick"
-                                  ContextMenu="{StaticResource RunMenu}" />
+                        <DockPanel Margin="0,8,0,0" TextElement.FontWeight="Normal">
+                            <ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding Detail.QualificationPlans}" ItemTemplate="{StaticResource PlanTemplate}" />
+                            <ListView ItemsSource="{Binding Detail.QualificationRuns}"
+                                      View="{StaticResource RunsGridView}"
+                                      GridViewColumnHeader.Click="RunsHeader_Click"
+                                      MouseDoubleClick="RunsList_MouseDoubleClick"
+                                      ContextMenu="{StaticResource RunMenu}" />
+                        </DockPanel>
                     </TabItem>
 
                     <!-- Klasörler -->

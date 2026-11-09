@@ -84,7 +84,7 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 ## 10. Test
 
 - [ ] Test sonuçları nasıl tanınıyor: `SNP1_T1` klasöründen ve **_kosu.md** (KIWI) dosyasından "GEÇTİ" okundu. Kural yazılsın.
-- [ ] **Test planlarını** görsün (`02_Test_Planlari`).
+- [x] **Test planları** Testler / Kalifikasyon sekmesinin üstünde kart olarak (KIWI planının adı, açıklaması, adım/limit, revizyon; "bu planla n koşu").
 - [ ] Test sonucu md dosyası varsa doğrudan ondan okunsun.
 
 ## 11. Takip ve iş listesi

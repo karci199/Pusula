@@ -844,6 +844,23 @@ namespace Pusula.Wpf
             viewModel.ConfirmUntrack();
         }
 
+        // Test planı kartı: dosyayı (KIWI planı KIWI ile) ya da klasörünü açar.
+        private void PlanOpen_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is string path && path.Length > 0)
+            {
+                viewModel.OpenNoteOrFolder(path, System.IO.Path.GetDirectoryName(path) ?? string.Empty);
+            }
+        }
+
+        private void PlanFolder_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is string path && path.Length > 0)
+            {
+                viewModel.OpenPath(path);
+            }
+        }
+
         // Açık iş: notu açar (Ayarlar'daki programla).
         private void OpenTaskNote_Click(object sender, RoutedEventArgs e)
         {

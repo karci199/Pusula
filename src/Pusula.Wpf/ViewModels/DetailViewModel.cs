@@ -162,6 +162,12 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Kalifikasyon sekmesi: kalifikasyon koşuları.</summary>
         public ObservableCollection<TestRunRow> QualificationRuns { get; } = new ObservableCollection<TestRunRow>();
 
+        /// <summary>Geliştirme test planları (<c>02_Test_Planlari</c>).</summary>
+        public ObservableCollection<TestPlanRow> TestPlans { get; } = new ObservableCollection<TestPlanRow>();
+
+        /// <summary>Kalifikasyon test planları (<c>04_Kalifikasyon\…\Test_Plani</c>).</summary>
+        public ObservableCollection<TestPlanRow> QualificationPlans { get; } = new ObservableCollection<TestPlanRow>();
+
         /// <summary>Klasörler sekmesi: stokun klasör ağacı (üst düzey).</summary>
         public ObservableCollection<FolderTreeItem> FolderTree { get; } = new ObservableCollection<FolderTreeItem>();
 
@@ -286,6 +292,8 @@ namespace Pusula.Wpf.ViewModels
             Timeline.Clear();
             DevelopmentRuns.Clear();
             QualificationRuns.Clear();
+            TestPlans.Clear();
+            QualificationPlans.Clear();
             FolderTree.Clear();
             InventoryGroups.Clear();
             Cover.Clear();
@@ -315,6 +323,7 @@ namespace Pusula.Wpf.ViewModels
             ProjectInfo? projectInfo = null;
             List<EventNote> events = new List<EventNote>();
             List<OpenTask> tasks = new List<OpenTask>();
+            List<TestPlan> plans = new List<TestPlan>();
             try
             {
                 if (kind == FolderKind.Project)
@@ -338,7 +347,9 @@ namespace Pusula.Wpf.ViewModels
                     var coverTask = Task.Run(() => StockCover.Read(path, Path.GetFileName(path)), token);
                     var eventsTask = Task.Run(() => EventNote.ReadAll(path), token);
                     var tasksTask = Task.Run(() => OpenTask.ReadAll(path), token);
-                    await Task.WhenAll(runsTask, treeTask, summaryTask, coverTask, eventsTask, tasksTask).ConfigureAwait(true);
+                    var plansTask = Task.Run(() => TestPlan.ReadStock(path), token);
+                    await Task.WhenAll(runsTask, treeTask, summaryTask, coverTask, eventsTask, tasksTask, plansTask).ConfigureAwait(true);
+                    plans = plansTask.Result;
                     tasks = tasksTask.Result;
                     summary = summaryTask.Result;
                     runs = runsTask.Result;
@@ -375,6 +386,11 @@ namespace Pusula.Wpf.ViewModels
                 }
 
                 ShowTests(runs);
+                foreach (var plan in plans)
+                {
+                    var planKind = types.FindFileType(Path.GetExtension(plan.Path))?.Name ?? Resources.FileType_Other;
+                    (plan.IsQualification ? QualificationPlans : TestPlans).Add(new TestPlanRow(plan, runs, planKind));
+                }
                 AddToTimeline(summary.Stock, events, path);
                 foreach (var task in tasks)
                 {

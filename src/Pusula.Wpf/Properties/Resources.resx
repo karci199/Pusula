@@ -1071,4 +1071,25 @@
   <data name="General_OpenTasks" xml:space="preserve">
     <value>Açık işler · {0}</value>
   </data>
+  <data name="Plan_Kiwi" xml:space="preserve">
+    <value>KIWI</value>
+  </data>
+  <data name="Plan_Steps" xml:space="preserve">
+    <value>{0} adım</value>
+  </data>
+  <data name="Plan_Limits" xml:space="preserve">
+    <value>{0} limit</value>
+  </data>
+  <data name="Plan_Revision" xml:space="preserve">
+    <value>Rev {0}</value>
+  </data>
+  <data name="Plan_Runs" xml:space="preserve">
+    <value>bu planla {0} koşu</value>
+  </data>
+  <data name="Plan_NoRuns" xml:space="preserve">
+    <value>bu planla henüz koşu yok</value>
+  </data>
+  <data name="Plan_Open" xml:space="preserve">
+    <value>Planı aç</value>
+  </data>
 </root>
