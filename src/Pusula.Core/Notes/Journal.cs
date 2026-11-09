@@ -248,6 +248,81 @@ namespace Pusula.Core.Notes
             return WriteAtomic(notePath, string.Join(newline, lines));
         }
 
+        /// <summary>
+        /// Notun YAML başlığındaki alanları yazar: verilen anahtar varsa satırı değiştirilir, yoksa başlığın sonuna eklenir;
+        /// değer boşsa satır kaldırılır. YAML yoksa notun başına açılır. Gövdeye dokunulmaz. Not yoksa bir şey yapmaz.
+        /// Hata metni; başarıda (ya da not yoksa) boş.
+        /// </summary>
+        public static string SetFrontMatter(string notePath, IDictionary<string, string> values)
+        {
+            if (string.IsNullOrEmpty(notePath) || !File.Exists(notePath) || values.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            string text;
+            try
+            {
+                text = File.ReadAllText(notePath, Encoding.UTF8);
+            }
+            catch (IOException ex)
+            {
+                return ex.Message;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return ex.Message;
+            }
+
+            var newline = text.Contains("\r\n") ? "\r\n" : "\n";
+            var lines = text.Replace("\r\n", "\n").Split('\n').ToList();
+            int close;
+            if (lines.Count > 0 && lines[0].Trim().TrimStart('﻿') == "---" && (close = lines.FindIndex(1, l => l.Trim() == "---")) > 0)
+            {
+                // var olan başlık
+            }
+            else
+            {
+                lines.InsertRange(0, new[] { "---", "---" });
+                close = 1;
+            }
+
+            foreach (var pair in values)
+            {
+                var key = pair.Key.Trim();
+                if (key.Length == 0)
+                {
+                    continue;
+                }
+
+                var index = lines.FindIndex(1, close - 1, l => l.TrimStart().StartsWith(key + ":", StringComparison.OrdinalIgnoreCase));
+                var value = (pair.Value ?? string.Empty).Trim();
+                if (value.Length == 0)
+                {
+                    if (index > 0)
+                    {
+                        lines.RemoveAt(index);
+                        close--;
+                    }
+
+                    continue;
+                }
+
+                var line = key + ": " + value;
+                if (index > 0)
+                {
+                    lines[index] = line;
+                }
+                else
+                {
+                    lines.Insert(close, line);
+                    close++;
+                }
+            }
+
+            return WriteAtomic(notePath, string.Join(newline, lines));
+        }
+
         private static string WriteAtomic(string notePath, string content)
         {
             try

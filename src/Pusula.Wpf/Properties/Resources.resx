@@ -1230,4 +1230,10 @@
   <data name="Serial_OpenHint" xml:space="preserve">
     <value>Tıkla: bu turun notunu aç</value>
   </data>
+  <data name="Field_Yes" xml:space="preserve">
+    <value>Evet</value>
+  </data>
+  <data name="Field_No" xml:space="preserve">
+    <value>Hayır</value>
+  </data>
 </root>

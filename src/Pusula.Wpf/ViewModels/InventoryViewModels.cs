@@ -656,6 +656,16 @@ namespace Pusula.Wpf.ViewModels
             Facts.Add(new FactRow(Resources.Inv_Location, record.Location));
             Facts.Add(new FactRow(Resources.Inv_Note, record.Note));
 
+            // Türe özel alanlar (bu alt türde geçerli olanlar): Adet, Boy, Uç tipi, Protokol …
+            foreach (var field in shownType.FieldsFor(record.SubType))
+            {
+                string value;
+                var text = record.Fields.TryGetValue(field.Key, out value) && value.Trim().Length > 0
+                    ? value.Trim() + (field.Unit.Length > 0 && field.Kind == FieldKind.Number ? " " + field.Unit : string.Empty)
+                    : string.Empty;
+                Facts.Add(new FactRow(field.Name, text));
+            }
+
             // Geçmiş: durum olayları ve kısa notlar, yeniden eskiye (aynı gün: not olaydan sonra yazılmış sayılır).
             var rows = record.Events.Select(e => new HistoryRow(e, shownType))
                 .Concat(record.Notes.Select(n => new HistoryRow(n)))

@@ -105,10 +105,6 @@ namespace Pusula.Core.Types
                     type.PluralName = fallback.PluralName;
                 }
 
-                if (type.IsInventory && type.RecordFolders.Count == 0)
-                {
-                    type.RecordFolders.AddRange(fallback.RecordFolders);
-                }
 
                 if (type.IsInventory && type.GeneralFolder.Length == 0)
                 {
@@ -123,7 +119,24 @@ namespace Pusula.Core.Types
                 FileTypes.AddRange(defaults.FileTypes);
             }
 
-            SchemaVersion = 2;
+            // Sürüm 3: hazır alanlar (kablo, jig, yazılım) ve Yazılım türü. Kullanıcının tanımladığı alanlara dokunulmaz.
+            if (SchemaVersion < 3)
+            {
+                foreach (var fallback in defaults.Types.Where(t => t.IsInventory))
+                {
+                    var type = Find(fallback.Key);
+                    if (type == null)
+                    {
+                        Types.Add(fallback);
+                    }
+                    else if (type.Fields.Count == 0)
+                    {
+                        type.Fields.AddRange(fallback.Fields);
+                    }
+                }
+            }
+
+            SchemaVersion = 3;
         }
 
         /// <summary>İlk kullanımda yazılan varsayılan içerik.</summary>
@@ -191,7 +204,72 @@ namespace Pusula.Core.Types
             set.Types.Add(Inventory("jig", "Jig", "Jigler", "E90F", "#B4A7F5", "JIG-####-####", "Jig numarası", "Jigler", "05_Jigler",
                 new[] { "Mekanik", "Ölçüm adaptörü", "Montaj", "Elektriksel" }, new[] { "01_Cizimler", "02_Belgeler", "03_Fotograflar" }));
 
+            var software = Inventory("software", "Yazılım", "Yazılımlar", "E943", "#4CC38A", "YZ-####-####", "Yazılım numarası", "Yazilimlar", "06_Yazilimlar",
+                new[] { "Test betiği", "Analiz aracı", "Firmware", "Kütüphane" }, new[] { "01_Kaynak", "02_Belgeler" });
+            software.Statuses.Clear();
+            software.Statuses.AddRange(new[]
+            {
+                new StatusDefinition { Name = "Talep", Tone = StatusTone.Neutral },
+                new StatusDefinition { Name = "Geliştiriliyor", Tone = StatusTone.Active },
+                new StatusDefinition { Name = "Testte", Tone = StatusTone.Waiting },
+                new StatusDefinition { Name = "Kullanımda", Tone = StatusTone.Done },
+            });
+            software.SideStatuses.Clear();
+            software.SideStatuses.Add(new StatusDefinition { Name = "Hata var", Tone = StatusTone.Warning, NeedsNote = true });
+            software.SideStatuses.Add(new StatusDefinition { Name = "Kullanım dışı", Tone = StatusTone.Neutral });
+            set.Types.Add(software);
+
+            AddDefaultFields(set);
             return set;
+        }
+
+        // Türlerin hazır alanları (Türler penceresinden değiştirilebilir). Alt tür verilen alan yalnız o alt türlerde görünür.
+        private static void AddDefaultFields(TypeSet set)
+        {
+            var connectors = new[] { "SMA (E)", "SMA (D)", "N (E)", "N (D)", "BNC", "TNC", "2.92 mm", "Banana", "Krokodil", "D-Sub 9", "D-Sub 15", "RJ45", "Açık uç" };
+            set.Find("cable")?.Fields.AddRange(new[]
+            {
+                Field("Adet", FieldKind.Number, string.Empty),
+                Field("Boy", FieldKind.Number, "m"),
+                Field("Uç A", FieldKind.Choice, string.Empty, connectors),
+                Field("Uç B", FieldKind.Choice, string.Empty, connectors),
+                Field("Frekans", FieldKind.Text, "GHz", null, "RF"),
+                Field("Faz kararlı", FieldKind.YesNo, string.Empty, null, "RF"),
+                Field("Protokol", FieldKind.Choice, string.Empty, new[] { "RS422", "RS232", "RS485", "CAN", "Ethernet", "USB", "MIL-STD-1553" }, "Haberleşme"),
+                Field("Pin yapısı", FieldKind.Text, string.Empty, null, "Haberleşme"),
+                Field("Akım", FieldKind.Number, "A", null, "Güç / veri"),
+                Field("Kesit", FieldKind.Number, "mm²", null, "Güç / veri"),
+            });
+            set.Find("jig")?.Fields.AddRange(new[]
+            {
+                Field("Adet", FieldKind.Number, string.Empty),
+                Field("Malzeme", FieldKind.Choice, string.Empty, new[] { "Al 6061", "Al 7075", "Paslanmaz", "Delrin", "PLA (baskı)", "Diğer" }, "Mekanik", "Montaj", "Ölçüm adaptörü"),
+                Field("Ölçüler", FieldKind.Text, "mm", null, "Mekanik", "Montaj", "Ölçüm adaptörü"),
+                Field("Yüzey", FieldKind.Choice, string.Empty, new[] { "Eloksal", "Boya", "Ham" }, "Mekanik", "Ölçüm adaptörü"),
+                Field("Bağlantı", FieldKind.Text, string.Empty, null, "Mekanik", "Montaj", "Ölçüm adaptörü"),
+                Field("Tork", FieldKind.Number, "Nm", null, "Montaj"),
+                Field("Ölçüm sistemi", FieldKind.Choice, string.Empty, new[] { "SATIMO", "Yankısız", "VNA", "Diğer" }, "Ölçüm adaptörü"),
+                Field("Çizim revizyonu", FieldKind.Text, string.Empty),
+            });
+            set.Find("software")?.Fields.AddRange(new[]
+            {
+                Field("Sürüm", FieldKind.Text, string.Empty),
+                Field("Dil / platform", FieldKind.Choice, string.Empty, new[] { "C#", "Python", "MATLAB", "LabVIEW", "C", "Diğer" }),
+                Field("Konum", FieldKind.Text, string.Empty),
+                Field("Bağlı cihaz", FieldKind.Text, string.Empty, null, "Test betiği", "Firmware"),
+            });
+        }
+
+        private static FieldDefinition Field(string name, string kind, string unit, string[]? choices = null, params string[] subTypes)
+        {
+            var field = new FieldDefinition { Key = FieldDefinition.KeyFrom(name), Name = name, Kind = kind, Unit = unit };
+            if (choices != null)
+            {
+                field.Choices.AddRange(choices);
+            }
+
+            field.SubTypes.AddRange(subTypes);
+            return field;
         }
 
         private static FileTypeDefinition FileType(string name, string group, params string[] extensions)

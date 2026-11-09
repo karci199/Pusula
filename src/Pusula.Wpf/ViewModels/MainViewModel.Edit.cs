@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using Pusula.Core.Inventory;
+using Pusula.Core.Notes;
 using Pusula.Core.Tracking;
 using Pusula.Wpf.Properties;
 
@@ -96,7 +97,46 @@ namespace Pusula.Wpf.ViewModels
         public string EditSubType
         {
             get { return editSubType; }
-            set { SetProperty(ref editSubType, value ?? string.Empty); }
+            set
+            {
+                if (SetProperty(ref editSubType, value ?? string.Empty))
+                {
+                    BuildEditFields();
+                }
+            }
+        }
+
+        private Pusula.Core.Types.TypeDefinition? editType;
+        private System.Collections.Generic.Dictionary<string, string> editValues = new System.Collections.Generic.Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>Türün bu alt türe uyan alanları (Adet, Boy, Uç tipi …); değerleri düzenlenir.</summary>
+        public ObservableCollection<FieldInput> EditFields { get; } = new ObservableCollection<FieldInput>();
+
+        /// <summary>Alan var mı.</summary>
+        public bool HasEditFields
+        {
+            get { return EditFields.Count > 0; }
+        }
+
+        // Alt tür değişince alan listesi yeniden kurulur; girilen değerler kaybolmaz.
+        private void BuildEditFields()
+        {
+            foreach (var input in EditFields)
+            {
+                editValues[input.Key] = input.Value;
+            }
+
+            EditFields.Clear();
+            if (editType != null)
+            {
+                foreach (var field in editType.FieldsFor(editSubType))
+                {
+                    string value;
+                    EditFields.Add(new FieldInput(field, editValues.TryGetValue(field.Key, out value) ? value : string.Empty));
+                }
+            }
+
+            OnPropertyChanged(nameof(HasEditFields));
         }
 
         /// <summary>Envanter kısa açıklaması.</summary>
@@ -168,6 +208,9 @@ namespace Pusula.Wpf.ViewModels
             EditError = string.Empty;
             EditTemplates.Clear();
             EditSubTypes.Clear();
+            editType = null;
+            EditFields.Clear();
+            OnPropertyChanged(nameof(HasEditFields));
             switch (editKind)
             {
                 case RecordKind.Project:
@@ -217,7 +260,11 @@ namespace Pusula.Wpf.ViewModels
                         EditSubTypes.Add(currentSub);
                     }
 
+                    editType = type;
+                    editValues = new System.Collections.Generic.Dictionary<string, string>(record?.Fields ?? new System.Collections.Generic.Dictionary<string, string>(), StringComparer.OrdinalIgnoreCase);
+                    EditFields.Clear();
                     EditSubType = currentSub;
+                    BuildEditFields();
                     break;
                 }
             }
@@ -242,7 +289,34 @@ namespace Pusula.Wpf.ViewModels
                     error = RecordEdit.EditStock(editFolder, EditName, EditTemplate);
                     break;
                 default:
-                    error = RecordEdit.EditInventory(editFolder, EditName, EditSubType, EditNote);
+                    foreach (var input in EditFields)
+                    {
+                        editValues[input.Key] = input.Value;
+                    }
+
+                    error = RecordEdit.EditInventory(editFolder, EditName, EditSubType, EditNote, editValues);
+                    if (error.Length == 0)
+                    {
+                        // Alan değerleri notun YAML başlığına da yazılır (gövdeye dokunulmaz).
+                        var record = JsonFile.TryRead<InventoryRecord>(InventoryService.RecordFile(editFolder));
+                        var note = NoteFile.Find(editFolder, record?.Number ?? Path.GetFileName(editFolder));
+                        var yaml = new System.Collections.Generic.Dictionary<string, string> { { "tanim", EditName }, { "alt_tur", EditSubType } };
+                        // Başlıkta yalnız bu alt türde geçerli alanlar durur; ötekiler başlıktan kalkar (değerleri kayıtta saklı kalır).
+                        var applies = new System.Collections.Generic.HashSet<string>(editType?.FieldsFor(EditSubType).Select(f => f.Key) ?? Enumerable.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+                        foreach (var field in editType?.Fields ?? new System.Collections.Generic.List<Pusula.Core.Types.FieldDefinition>())
+                        {
+                            string value;
+                            yaml[field.Key] = applies.Contains(field.Key) && editValues.TryGetValue(field.Key, out value) && value.Trim().Length > 0
+                                ? value.Trim() + (field.Unit.Length > 0 && field.Kind == Pusula.Core.Types.FieldKind.Number ? " " + field.Unit : string.Empty)
+                                : string.Empty;
+                        }
+
+                        var yamlError = Journal.SetFrontMatter(note, yaml);
+                        if (yamlError.Length > 0)
+                        {
+                            Status = string.Format(Resources.Error_Io, yamlError);
+                        }
+                    }
                     break;
             }
 
@@ -425,6 +499,64 @@ namespace Pusula.Wpf.ViewModels
             {
                 ShowInventory(folder);
             }
+        }
+    }
+
+    /// <summary>Düzenle penceresinde bir alan: metin, sayı, evet/hayır ya da seçim.</summary>
+    public sealed class FieldInput : Mvvm.ViewModelBase
+    {
+        private string value;
+
+        /// <summary>Alanı ve şimdiki değerini kurar.</summary>
+        public FieldInput(Pusula.Core.Types.FieldDefinition field, string current)
+        {
+            Key = field.Key;
+            Label = field.Unit.Length > 0 ? field.Name + " (" + field.Unit + ")" : field.Name;
+            Choices = field.Choices.ToList();
+            IsChoice = field.Kind == Pusula.Core.Types.FieldKind.Choice;
+            IsYesNo = field.Kind == Pusula.Core.Types.FieldKind.YesNo;
+            value = current ?? string.Empty;
+        }
+
+        /// <summary>Anahtar.</summary>
+        public string Key { get; }
+
+        /// <summary>Görünen ad (birimle).</summary>
+        public string Label { get; }
+
+        /// <summary>Seçim listesi (seçim alanında).</summary>
+        public System.Collections.Generic.List<string> Choices { get; }
+
+        /// <summary>Seçim alanı mı (listeden ya da yazarak).</summary>
+        public bool IsChoice { get; }
+
+        /// <summary>Evet / hayır alanı mı.</summary>
+        public bool IsYesNo { get; }
+
+        /// <summary>Düz yazı ya da sayı alanı mı.</summary>
+        public bool IsText
+        {
+            get { return !IsChoice && !IsYesNo; }
+        }
+
+        /// <summary>Değer (metin olarak; evet/hayır "Evet" / "Hayır").</summary>
+        public string Value
+        {
+            get { return value; }
+            set
+            {
+                if (SetProperty(ref this.value, value ?? string.Empty))
+                {
+                    OnPropertyChanged(nameof(IsYes));
+                }
+            }
+        }
+
+        /// <summary>Evet / hayır kutusu.</summary>
+        public bool IsYes
+        {
+            get { return string.Equals(value, Pusula.Wpf.Properties.Resources.Field_Yes, StringComparison.OrdinalIgnoreCase); }
+            set { Value = value ? Pusula.Wpf.Properties.Resources.Field_Yes : Pusula.Wpf.Properties.Resources.Field_No; }
         }
     }
 }

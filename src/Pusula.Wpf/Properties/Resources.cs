@@ -1434,5 +1434,15 @@ namespace Pusula.Wpf.Properties
         public static string Serial_OpenHint { get { return Get("Serial_OpenHint"); } }
 
         #endregion
+
+        #region Alanlar
+
+        /// <summary>Evet/hayır alanı.</summary>
+        public static string Field_Yes { get { return Get("Field_Yes"); } }
+
+        /// <summary>Evet/hayır alanı.</summary>
+        public static string Field_No { get { return Get("Field_No"); } }
+
+        #endregion
     }
 }

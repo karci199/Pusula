@@ -1876,6 +1876,26 @@
                                     Visibility="{Binding IsEditInventory, Converter={StaticResource BoolToVis}}">
                     <TextBox Text="{Binding EditNote, UpdateSourceTrigger=PropertyChanged}" />
                 </controls:FormField>
+                <!-- Türe özel alanlar (alt türe göre): yazı, seçim ya da evet/hayır -->
+                <ScrollViewer Margin="0,4,0,0" MaxHeight="240" VerticalScrollBarVisibility="Auto"
+                              Visibility="{Binding HasEditFields, Converter={StaticResource BoolToVis}}">
+                    <ItemsControl ItemsSource="{Binding EditFields}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <controls:FormField Margin="0,8,0,0" Header="{Binding Label}" LabelWidth="80">
+                                    <Grid>
+                                        <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
+                                                 Visibility="{Binding IsText, Converter={StaticResource BoolToVis}}" />
+                                        <ComboBox IsEditable="True" ItemsSource="{Binding Choices}" Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  Visibility="{Binding IsChoice, Converter={StaticResource BoolToVis}}" />
+                                        <CheckBox IsChecked="{Binding IsYes}" VerticalAlignment="Center"
+                                                  Visibility="{Binding IsYesNo, Converter={StaticResource BoolToVis}}" />
+                                    </Grid>
+                                </controls:FormField>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
                 <TextBlock Margin="0,10,0,0" TextWrapping="Wrap" Foreground="{DynamicResource SystemFillColorCriticalBrush}" Text="{Binding EditError}" />
             </StackPanel>
         </controls:ContentDialog>
