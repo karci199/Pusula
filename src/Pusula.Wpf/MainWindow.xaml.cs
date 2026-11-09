@@ -358,6 +358,13 @@ namespace Pusula.Wpf
             viewModel.CreateStockNote();
         }
 
+        // Kapağa tıklayınca fotoğraf varsayılan görüntüleyicide tam boy açılır.
+        private void CoverPhoto_Click(object sender, RoutedEventArgs e)
+        {
+            var cover = viewModel.Detail.Cover;
+            viewModel.OpenNoteOrFolder(cover.CoverPhoto, cover.HasPhotosFolder ? cover.PhotosFolder : cover.StockFolder);
+        }
+
         private void StockPhotos_Click(object sender, RoutedEventArgs e)
         {
             var cover = viewModel.Detail.Cover;

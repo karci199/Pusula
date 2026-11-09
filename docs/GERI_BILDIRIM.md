@@ -8,7 +8,7 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 - [x] **NuGet restore hatası**: .NET 4.8 başvuru derlemeleri o makinede yoktu. Paket depoya kondu (`Dependencies\NuGet`, `nuget.config`); boş önbellekle ayrı klasörde derleme denendi, çalışıyor.
 - [x] **Hover:** proje ve stok aynı anda vurgulanıyordu. Ağaç satır şablonu Pusula'da düzeltildi (yalnız satırın kendisi); asıl kusur DesignKit'te (TreeView.xaml, IsMouseOver tetikleyicisi), orada da düzeltilmeli.
 - [ ] **Türler → Biçim tablosu:** hücre F2 ile düzenlenince arka plan beyaz oluyor (koyu temada).
-- [ ] **Stok kapak fotoğrafı** hafifçe kesiliyor. **Karar (A):** kırpılmadan kutuya sığsın, tıklayınca büyük açılsın.
+- [x] **Stok kapak fotoğrafı** kesiliyordu → kırpılmadan kutuya sığıyor, tıklayınca tam boy açılıyor; telefon fotoğraflarının EXIF yönü uygulanıyor.
 - [ ] Dosya sayımında **Thumbs.db, desktop.ini** vb. sayılmasın; dosya değişiklikleri iyi incelenmeli.
 
 ## 2. Hız ve yenileme

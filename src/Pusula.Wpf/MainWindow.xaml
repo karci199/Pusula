@@ -1233,10 +1233,12 @@
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <Button Grid.Column="0" Width="220" Height="146" Padding="0" Margin="0,0,16,0" VerticalAlignment="Top"
-                                                Click="StockPhotos_Click" ToolTip="{Binding PhotosFolder}"
+                                        <!-- Kapak kırpılmaz: kutuya sığdırılır (yatay/dikey fark etmez); tıklayınca fotoğraf tam boy açılır. -->
+                                        <Button x:Name="CoverButton" Grid.Column="0" Width="220" Height="165" Padding="4" Margin="0,0,16,0" VerticalAlignment="Top"
+                                                Click="CoverPhoto_Click" ToolTip="{Binding CoverPhoto}" Cursor="Hand"
                                                 Visibility="{Binding HasCover, Converter={StaticResource BoolToVis}}">
-                                            <Image Source="{Binding CoverPhoto, Converter={StaticResource PathToImage}}" Stretch="UniformToFill" />
+                                            <Image Source="{Binding CoverPhoto, Converter={StaticResource PathToImage}}" Stretch="Uniform"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
                                         </Button>
                                         <StackPanel Grid.Column="1">
                                             <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.Inv_NoteTitle}" />
