@@ -48,7 +48,7 @@ try {
     $jg = $groups | Where-Object { $_.Type.Key -eq 'jig' }; $cg = $groups | Where-Object { $_.Type.Key -eq 'cable' }
     Check 'jigler: 3 (1 stok + 2 bağ)' ($jg.Rows.Count -eq 3 -and @($jg.Rows | Where-Object IsLinked).Count -eq 2) (($jg.Rows | ForEach-Object Number) -join ',')
     Check 'kablolar: 2' ($cg.Rows.Count -eq 2) (($cg.Rows | ForEach-Object Number) -join ',')
-    $tc0 = $win.FindName('StockTabs'); $heads = ($tc0.Items | ForEach-Object { if ($_.Header -is [string]) { $_.Header } else { '?' } }) -join ' | '
+    $tc0 = $win.FindName('StockTabs'); $heads = ($tc0.Items | ForEach-Object { if ($_.Header -is [string]) { $_.Header } elseif ($_.Header -is [System.Windows.Controls.Panel]) { @($_.Header.Children | Where-Object { $_ -is [System.Windows.Controls.TextBlock] })[-1].Text } else { '?' } }) -join ' | '
     Check 'sekmeler: kablolar ve jigler ayrı' ($heads -match 'Kalifikasyon · \d \| Kablolar · 2 \| Jigler · 3 \| Klasörler') $heads
     Check 'özet: Jig 3 · 1 dikkat' ($jg.Summary -eq 'Jig 3 · 1 dikkat' -and $jg.HasWarning) $jg.Summary
     Check 'dikkat kartı: onarımdaki jig' (@($vm.Detail.Alerts | Where-Object { $_.Detail -match 'JIG-1000-0009 · Onarım' }).Count -eq 1)

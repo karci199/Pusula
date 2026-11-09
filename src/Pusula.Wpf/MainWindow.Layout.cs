@@ -360,7 +360,8 @@ namespace Pusula.Wpf
 
             private void Column_WidthChanged(object? sender, EventArgs e)
             {
-                if (applying || !(sender is GridViewColumn column) || double.IsNaN(column.Width))
+                // 0 genişlik "gizli" demektir (ör. tür düğümünde Tür sütunu); sınıra takılmaz.
+                if (applying || !(sender is GridViewColumn column) || double.IsNaN(column.Width) || column.Width <= 0)
                 {
                     return;
                 }
