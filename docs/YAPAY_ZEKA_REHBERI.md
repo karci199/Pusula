@@ -94,6 +94,8 @@ Başlık = ilk `# ` satırı. `olay: test` yazılmaz (testler aşağıdaki biçi
 
 ### 3. Test koşusu
 
+**Seri numarası:** ayrı kayıt yok, klasör adından okunur. `SNP1`, `SNP2` = prototip; `SN01`, `SN02` = üretim birimi. Her SN'nin her turu kendi klasöründe: `SATIMO\SNP1_T1`, `SATIMO\SN01_T2`, `Yankisiz\SN01_T1`. Aynı gün birden fazla SN ölçülse de her biri ayrı klasör. `SATIMO\SNP1\T1` gibi iç içe klasör açma.
+
 `03_Test_Sonuclari\<SİSTEM>\<SN>_T<tur>\test.md` (ör. `SATIMO\SNP1_T1\test.md`):
 
 ```yaml

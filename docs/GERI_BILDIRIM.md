@@ -104,3 +104,8 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 - [ ] **Otomatik izleme:** diskte (iç ağda) değişiklik olunca alt durum çubuğunda haber ver; "Yenile" ile gelsin.
 - [ ] **Durum çubuğunda son yapılan iş:** ör. "AB-7000-0002 kaydedildi · 21:55" kalıcı görünsün.
 - [ ] Açık işler ve kısa notlardan **haftalık / aylık rapor**.
+
+## Seri numaraları
+
+- [x] Genel'de **Seri numaraları** kartı: SN × sistem (son tur ve sonuç), Prototip (SNP) / Üretim (SN), tur sayısı; hücre tıklanınca not. Kayıt yok, klasör adlarından okunur.
+- [ ] Yetmezse: `stok.json`'da SN listesi (test edilmemiş SN'yi elle ekleme, yeniden adlandırma + eski adlar).

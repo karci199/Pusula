@@ -150,3 +150,5 @@ Deneme kökü: `C:\PusulaDeneme`.
 
 - Karar (09.11): olaylar ayrı dosya değil, ana notun en altındaki `## Günlük` bölümüne yazılır (en yeni üstte). Uygulama yalnız bu bölümün başına ekler, notun geri kalanına dokunmaz (CLAUDE.md 'gövdeye dokunulmaz' kuralının kullanıcı onaylı istisnası).
 
+- Karar (09.11): **Seri numarası kayıt olarak tutulmaz.** SN'ler test klasörü adlarından okunur (`03_Test_Sonuclari\<SİSTEM>\<SN>_T<tur>`, kalifikasyon da). `SNP…` = prototip, `SN…` = üretim birimi. Bir SN birden çok sistemde olabilir; her SN'nin her turu ayrı klasör. Genel'de **Seri numaraları** kartı (SN × sistem, son tur ve sonuç, tıklanınca not). Yetmezse ileride `stok.json`'da ayrı SN listesi (elle ekleme, yeniden adlandırma / eski adlar) eklenir.
+
