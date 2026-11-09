@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,6 +29,16 @@ namespace Pusula.Wpf
         {
             InitializeComponent();
             DataContext = viewModel;
+            viewModel.NoteEditorOpener = OpenNoteWindow;
+            viewModel.ActivateMain = () =>
+            {
+                if (WindowState == WindowState.Minimized)
+                {
+                    WindowState = WindowState.Normal;
+                }
+
+                Activate();
+            };
 
             // İlk açılışta kök klasör seçilmemişse Ayarlar açılır (kök seçimi artık orada).
             ContentRendered += (s, e) =>
@@ -315,6 +327,48 @@ namespace Pusula.Wpf
             var menu = (sender as MenuItem)?.Parent as ContextMenu;
             return (menu?.PlacementTarget as ListView)?.SelectedItem as TestRunRow;
         }
+
+        private readonly Dictionary<string, NoteWindow> noteWindows = new Dictionary<string, NoteWindow>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Notu Pusula'nın md penceresinde açar; aynı not zaten açıksa o pencere öne gelir. Kapanınca, not kaydedildiyse
+        /// ana pencere yenilenir (not özeti, bahisler).
+        /// </summary>
+        public bool OpenNoteWindow(string path)
+        {
+            NoteWindow existing;
+            if (noteWindows.TryGetValue(path, out existing))
+            {
+                if (existing.WindowState == WindowState.Minimized)
+                {
+                    existing.WindowState = WindowState.Normal;
+                }
+
+                existing.Activate();
+                return true;
+            }
+
+            var editor = viewModel.CreateNoteEditor(path);
+            var window = new NoteWindow(editor, viewModel.NavigateToKey, viewModel.OpenNoteExternally, viewModel.OpenPath);
+            window.Closed += (s, e) =>
+            {
+                noteWindows.Remove(path);
+                if (editor.SaveCount > 0)
+                {
+                    viewModel.Refresh();
+                }
+            };
+            noteWindows[path] = window;
+            window.Show();
+            return true;
+        }
+
+        /// <summary>Açık not pencereleri (testler için).</summary>
+        public IEnumerable<NoteWindow> NoteWindows
+        {
+            get { return noteWindows.Values; }
+        }
+
 
         private void Mention_Click(object sender, RoutedEventArgs e)
         {

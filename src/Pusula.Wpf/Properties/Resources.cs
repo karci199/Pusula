@@ -1505,5 +1505,183 @@ namespace Pusula.Wpf.Properties
         public static string Inv_Properties { get { return Get("Inv_Properties"); } }
 
         #endregion
+
+        #region Not
+
+        /// <summary>Not açma seçeneği: Pusula içindeki md penceresi.</summary>
+        public static string NoteApp_Pusula { get { return Get("NoteApp_Pusula"); } }
+
+        /// <summary>Görünüm: yalnız md metni.</summary>
+        public static string Note_ViewEdit { get { return Get("Note_ViewEdit"); } }
+
+        /// <summary>Görünüm: metin ve görünüm yan yana.</summary>
+        public static string Note_ViewSplit { get { return Get("Note_ViewSplit"); } }
+
+        /// <summary>Görünüm: yalnız biçimli görünüm.</summary>
+        public static string Note_ViewPreview { get { return Get("Note_ViewPreview"); } }
+
+        /// <summary>Kaydet düğmesi.</summary>
+        public static string Note_Save { get { return Get("Note_Save"); } }
+
+        /// <summary>Durum: kayıt saati.</summary>
+        public static string Note_Saved { get { return Get("Note_Saved"); } }
+
+        /// <summary>Durum.</summary>
+        public static string Note_Unsaved { get { return Get("Note_Unsaved"); } }
+
+        /// <summary>Durum: kelime sayısı.</summary>
+        public static string Note_Words { get { return Get("Note_Words"); } }
+
+        /// <summary>Durum: imleç.</summary>
+        public static string Note_Caret { get { return Get("Note_Caret"); } }
+
+        /// <summary>Durum: görünümdeki resim sayısı.</summary>
+        public static string Note_Images { get { return Get("Note_Images"); } }
+
+        /// <summary>Durum: görünümde bulunamayan resim / dosya.</summary>
+        public static string Note_MissingFiles { get { return Get("Note_MissingFiles"); } }
+
+        /// <summary>Notun klasörünü aç.</summary>
+        public static string Note_OpenFolder { get { return Get("Note_OpenFolder"); } }
+
+        /// <summary>Notu dışarıda aç.</summary>
+        public static string Note_OpenExternal { get { return Get("Note_OpenExternal"); } }
+
+        /// <summary>Ayarlar düğmesi.</summary>
+        public static string Note_Settings { get { return Get("Note_Settings"); } }
+
+        /// <summary>Araç çubuğu.</summary>
+        public static string Note_Bold { get { return Get("Note_Bold"); } }
+
+        /// <summary>Araç çubuğu.</summary>
+        public static string Note_Italic { get { return Get("Note_Italic"); } }
+
+        /// <summary>Araç çubuğu.</summary>
+        public static string Note_Strike { get { return Get("Note_Strike"); } }
+
+        /// <summary>Araç çubuğu.</summary>
+        public static string Note_Highlight { get { return Get("Note_Highlight"); } }
+
+        /// <summary>Araç çubuğu.</summary>
+        public static string Note_Heading { get { return Get("Note_Heading"); } }
+
+        /// <summary>Araç çubuğu.</summary>
+        public static string Note_List { get { return Get("Note_List"); } }
+
+        /// <summary>Araç çubuğu.</summary>
+        public static string Note_NumberList { get { return Get("Note_NumberList"); } }
+
+        /// <summary>Araç çubuğu.</summary>
+        public static string Note_Task { get { return Get("Note_Task"); } }
+
+        /// <summary>Araç çubuğu.</summary>
+        public static string Note_Quote { get { return Get("Note_Quote"); } }
+
+        /// <summary>Araç çubuğu.</summary>
+        public static string Note_Code { get { return Get("Note_Code"); } }
+
+        /// <summary>Araç çubuğu.</summary>
+        public static string Note_Link { get { return Get("Note_Link"); } }
+
+        /// <summary>Araç çubuğu.</summary>
+        public static string Note_Table { get { return Get("Note_Table"); } }
+
+        /// <summary>Araç çubuğu.</summary>
+        public static string Note_Callout { get { return Get("Note_Callout"); } }
+
+        /// <summary>Araç çubuğu.</summary>
+        public static string Note_Image { get { return Get("Note_Image"); } }
+
+        /// <summary>Araç çubuğu.</summary>
+        public static string Note_Divider { get { return Get("Note_Divider"); } }
+
+        /// <summary>Araç çubuğu.</summary>
+        public static string Note_FullScreen { get { return Get("Note_FullScreen"); } }
+
+        /// <summary>Eklenen tablo şablonunun başlık hücresi.</summary>
+        public static string Note_TableHeader { get { return Get("Note_TableHeader"); } }
+
+        /// <summary>Eklenen uyarı kutusunun başlığı.</summary>
+        public static string Note_CalloutTitle { get { return Get("Note_CalloutTitle"); } }
+
+        /// <summary>Ayar.</summary>
+        public static string Note_EditorFont { get { return Get("Note_EditorFont"); } }
+
+        /// <summary>Ayar.</summary>
+        public static string Note_EditorSize { get { return Get("Note_EditorSize"); } }
+
+        /// <summary>Ayar.</summary>
+        public static string Note_PreviewSize { get { return Get("Note_PreviewSize"); } }
+
+        /// <summary>Ayar.</summary>
+        public static string Note_Width { get { return Get("Note_Width"); } }
+
+        /// <summary>Ayar seçeneği.</summary>
+        public static string Note_WidthFull { get { return Get("Note_WidthFull"); } }
+
+        /// <summary>Ayar.</summary>
+        public static string Note_Wrap { get { return Get("Note_Wrap"); } }
+
+        /// <summary>Ayar.</summary>
+        public static string Note_LineBreaks { get { return Get("Note_LineBreaks"); } }
+
+        /// <summary>Ayar.</summary>
+        public static string Note_FrontMatter { get { return Get("Note_FrontMatter"); } }
+
+        /// <summary>Ayar: yazmayı bırakınca 2 sn sonra.</summary>
+        public static string Note_AutoSave { get { return Get("Note_AutoSave"); } }
+
+        /// <summary>Ayar.</summary>
+        public static string Note_StartMaximized { get { return Get("Note_StartMaximized"); } }
+
+        /// <summary>Kapatırken soru başlığı.</summary>
+        public static string Note_CloseTitle { get { return Get("Note_CloseTitle"); } }
+
+        /// <summary>Kapatırken soru.</summary>
+        public static string Note_CloseText { get { return Get("Note_CloseText"); } }
+
+        /// <summary>Kapatırken: değişikliği at.</summary>
+        public static string Note_CloseDiscard { get { return Get("Note_CloseDiscard"); } }
+
+        /// <summary>Dış değişiklik uyarısı.</summary>
+        public static string Note_ExternalChanged { get { return Get("Note_ExternalChanged"); } }
+
+        /// <summary>Dış değişiklik: yeniden yükle.</summary>
+        public static string Note_Reload { get { return Get("Note_Reload"); } }
+
+        /// <summary>Dış değişiklik: yok say.</summary>
+        public static string Note_KeepMine { get { return Get("Note_KeepMine"); } }
+
+        /// <summary>Durum: bağlantı hedefi yok.</summary>
+        public static string Note_LinkMissing { get { return Get("Note_LinkMissing"); } }
+
+        /// <summary>Öneri türü.</summary>
+        public static string Note_KindPerson { get { return Get("Note_KindPerson"); } }
+
+        /// <summary>Öneri türü.</summary>
+        public static string Note_KindNote { get { return Get("Note_KindNote"); } }
+
+        /// <summary>Durum.</summary>
+        public static string Note_ImageCopied { get { return Get("Note_ImageCopied"); } }
+
+        /// <summary>Resim seçme penceresinin süzgeci.</summary>
+        public static string Note_ImagesFilter { get { return Get("Note_ImagesFilter"); } }
+
+        /// <summary>Durum.</summary>
+        public static string Note_SaveError { get { return Get("Note_SaveError"); } }
+
+        /// <summary>Üstü çizili düğmesindeki harf.</summary>
+        public static string Note_GlyphStrike { get { return Get("Note_GlyphStrike"); } }
+
+        /// <summary>Okuma genişliği seçeneği.</summary>
+        public static string Note_WidthPx { get { return Get("Note_WidthPx"); } }
+
+        /// <summary>Başlık düğmesindeki harf.</summary>
+        public static string Note_GlyphHeading { get { return Get("Note_GlyphHeading"); } }
+
+        /// <summary>Not penceresi başlığı: dosya adı ve kaydedilmemiş işareti.</summary>
+        public static string Note_WindowTitle { get { return Get("Note_WindowTitle"); } }
+
+        #endregion
     }
 }

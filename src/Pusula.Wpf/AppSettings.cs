@@ -18,7 +18,7 @@ namespace Pusula.Wpf
         {
             RootPath = string.Empty;
             Theme = string.Empty;
-            NoteApp = NoteOpener.Obsidian;
+            NoteApp = NoteOpener.Pusula;
             TabOrder = new List<string>();
             Columns = new Dictionary<string, List<ColumnLayout>>();
         }
@@ -31,9 +31,9 @@ namespace Pusula.Wpf
         [DataMember(Name = "theme", Order = 1)]
         public string Theme { get; set; } = string.Empty;
 
-        /// <summary>.md notlarını açan program: <c>obsidian</c>, <c>vscode</c> ya da <c>default</c> (bkz. <see cref="NoteOpener"/>).</summary>
+        /// <summary>.md notlarını açan program: <c>pusula</c> (yerleşik), <c>obsidian</c>, <c>vscode</c> ya da <c>default</c> (bkz. <see cref="NoteOpener"/>).</summary>
         [DataMember(Name = "noteApp", Order = 2)]
-        public string NoteApp { get; set; } = NoteOpener.Obsidian;
+        public string NoteApp { get; set; } = NoteOpener.Pusula;
 
         /// <summary>Stok sekmelerinin sırası (sekme etiketleri: <c>tests</c>, <c>inventory:jig</c> …); boşsa varsayılan.</summary>
         [DataMember(Name = "tabOrder", Order = 3)]
@@ -46,6 +46,10 @@ namespace Pusula.Wpf
         /// <summary>Ana pencerenin son yeri ve boyutu; yoksa varsayılan (ortada, 1380×860).</summary>
         [DataMember(Name = "window", Order = 5, EmitDefaultValue = false)]
         public WindowBounds? Window { get; set; }
+
+        /// <summary>md not penceresinin ayarları (görünüm, yazı tipi, genişlik …); yoksa varsayılan.</summary>
+        [DataMember(Name = "noteEditor", Order = 6, EmitDefaultValue = false)]
+        public NoteEditorSettings? NoteEditor { get; set; }
 
         /// <summary>Ayar dosyasının yerini değiştiren ortam değişkeni (testler gerçek ayarlara dokunmasın diye).</summary>
         public const string PathVariable = "PUSULA_AYARLAR";
@@ -85,6 +89,55 @@ namespace Pusula.Wpf
             {
             }
         }
+    }
+
+    /// <summary>md not penceresinin ayarları.</summary>
+    [DataContract]
+    public sealed class NoteEditorSettings
+    {
+        /// <summary>Görünüm: <c>edit</c> (düz), <c>split</c> (yan yana), <c>preview</c> (görünüm).</summary>
+        [DataMember(Name = "view", Order = 0)]
+        public string View { get; set; } = "split";
+
+        /// <summary>Düz görünüm yazı tipi.</summary>
+        [DataMember(Name = "editorFont", Order = 1)]
+        public string EditorFont { get; set; } = "Cascadia Mono";
+
+        /// <summary>Düz görünüm yazı boyutu.</summary>
+        [DataMember(Name = "editorSize", Order = 2)]
+        public double EditorSize { get; set; } = 14;
+
+        /// <summary>Görünüm yazı boyutu.</summary>
+        [DataMember(Name = "previewSize", Order = 3)]
+        public double PreviewSize { get; set; } = 15;
+
+        /// <summary>Okuma genişliği (piksel); 0 tam genişlik.</summary>
+        [DataMember(Name = "readingWidth", Order = 4)]
+        public double ReadingWidth { get; set; } = 860;
+
+        /// <summary>Düz görünümde uzun satırlar kaydırılsın mı.</summary>
+        [DataMember(Name = "wrap", Order = 5)]
+        public bool Wrap { get; set; } = true;
+
+        /// <summary>Tek satır sonu görünümde yeni satır mı (Obsidian varsayılanı).</summary>
+        [DataMember(Name = "lineBreaks", Order = 6)]
+        public bool LineBreaks { get; set; } = true;
+
+        /// <summary>YAML başlığı görünümde özellik kutusu olarak gösterilsin mi.</summary>
+        [DataMember(Name = "frontMatter", Order = 7)]
+        public bool FrontMatter { get; set; } = true;
+
+        /// <summary>Yazmayı bırakınca 2 sn sonra kendiliğinden kaydet.</summary>
+        [DataMember(Name = "autoSave", Order = 8)]
+        public bool AutoSave { get; set; }
+
+        /// <summary>Pencere tam ekran (ekranı kaplar) açılsın mı.</summary>
+        [DataMember(Name = "maximized", Order = 9)]
+        public bool Maximized { get; set; } = true;
+
+        /// <summary>Yan yana görünümde düz bölümün oranı (0.2–0.8).</summary>
+        [DataMember(Name = "splitRatio", Order = 10)]
+        public double SplitRatio { get; set; } = 0.5;
     }
 
     /// <summary>Bir tablo sütununun kayıtlı yeri ve genişliği.</summary>

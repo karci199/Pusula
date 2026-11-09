@@ -1,0 +1,267 @@
+﻿<controls:ChromeWindow x:Class="Pusula.Wpf.NoteWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:DesignKit.Controls;assembly=DesignKit.Wpf"
+        xmlns:local="clr-namespace:Pusula.Wpf"
+        xmlns:res="clr-namespace:Pusula.Wpf.Properties"
+        Icon="/Pusula;component/Assets/pusula.ico"
+        Title="{Binding WindowTitle}"
+        Width="1280" Height="860"
+        MinWidth="720" MinHeight="480"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="{DynamicResource AppFont}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        Background="{DynamicResource SurfaceBaseBrush}">
+
+    <controls:ChromeWindow.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
+        <!-- Araç çubuğundaki ikon düğmesi -->
+        <Style x:Key="ToolButton" TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
+            <Setter Property="Margin" Value="1,0" />
+            <Setter Property="Focusable" Value="False" />
+        </Style>
+
+        <!-- Görünüm seçimi: seçili olan dolu -->
+        <Style x:Key="ViewToggle" TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+            <Setter Property="Padding" Value="12,4" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="Focusable" Value="False" />
+        </Style>
+
+        <Style x:Key="SettingLabel" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="Margin" Value="0,10,0,4" />
+        </Style>
+    </controls:ChromeWindow.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Araç çubuğu -->
+        <Border Grid.Row="0" Padding="14,6" Background="{DynamicResource LayerBrush}"
+                BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
+            <DockPanel LastChildFill="False">
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="18" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" VerticalAlignment="Center" />
+                    <StackPanel Margin="10,0,0,0" VerticalAlignment="Center" MaxWidth="320">
+                        <TextBlock FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Text="{Binding FileName}" ToolTip="{Binding Path}" />
+                        <TextBlock Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" TextTrimming="CharacterEllipsis" Text="{Binding RelativeFolder}" ToolTip="{Binding Folder}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Biçim düğmeleri -->
+                <StackPanel x:Name="FormatBar" DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Style="{StaticResource ToolButton}" Tag="bold" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Bold}">
+                        <controls:FontIcon Glyph="&#xE8DD;" FontSize="14" />
+                    </Button>
+                    <Button Style="{StaticResource ToolButton}" Tag="italic" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Italic}">
+                        <controls:FontIcon Glyph="&#xE8DB;" FontSize="14" />
+                    </Button>
+                    <Button Style="{StaticResource ToolButton}" Tag="strike" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Strike}">
+                        <TextBlock Text="{x:Static res:Resources.Note_GlyphStrike}" TextDecorations="Strikethrough" FontSize="14" />
+                    </Button>
+                    <Button Style="{StaticResource ToolButton}" Tag="highlight" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Highlight}">
+                        <controls:FontIcon Glyph="&#xE7E6;" FontSize="14" />
+                    </Button>
+                    <Button Style="{StaticResource ToolButton}" Tag="heading" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Heading}">
+                        <TextBlock Text="{x:Static res:Resources.Note_GlyphHeading}" FontWeight="SemiBold" FontSize="14" />
+                    </Button>
+                    <Rectangle Width="1" Height="18" Margin="6,0" Fill="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                    <Button Style="{StaticResource ToolButton}" Tag="list" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_List}">
+                        <controls:FontIcon Glyph="&#xE8FD;" FontSize="14" />
+                    </Button>
+                    <Button Style="{StaticResource ToolButton}" Tag="numbers" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_NumberList}">
+                        <controls:FontIcon Glyph="&#xE9D5;" FontSize="14" />
+                    </Button>
+                    <Button Style="{StaticResource ToolButton}" Tag="task" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Task}">
+                        <controls:FontIcon Glyph="&#xE73A;" FontSize="14" />
+                    </Button>
+                    <Button Style="{StaticResource ToolButton}" Tag="quote" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Quote}">
+                        <controls:FontIcon Glyph="&#xE9B2;" FontSize="14" />
+                    </Button>
+                    <Button Style="{StaticResource ToolButton}" Tag="code" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Code}">
+                        <controls:FontIcon Glyph="&#xE943;" FontSize="14" />
+                    </Button>
+                    <Rectangle Width="1" Height="18" Margin="6,0" Fill="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                    <Button Style="{StaticResource ToolButton}" Tag="link" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Link}">
+                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Link}" FontSize="14" />
+                    </Button>
+                    <Button Style="{StaticResource ToolButton}" Tag="image" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Image}">
+                        <controls:FontIcon Glyph="&#xEB9F;" FontSize="14" />
+                    </Button>
+                    <Button Style="{StaticResource ToolButton}" Tag="table" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Table}">
+                        <controls:FontIcon Glyph="&#xF0E2;" FontSize="14" />
+                    </Button>
+                    <Button Style="{StaticResource ToolButton}" Tag="callout" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Callout}">
+                        <controls:FontIcon Glyph="&#xE7BA;" FontSize="14" />
+                    </Button>
+                    <Button Style="{StaticResource ToolButton}" Tag="divider" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Divider}">
+                        <controls:FontIcon Glyph="&#xE76F;" FontSize="14" />
+                    </Button>
+                </StackPanel>
+
+                <!-- Sağ: kaydet, aç, ayarlar, tam ekran, görünüm -->
+                <Button DockPanel.Dock="Right" Margin="8,0,0,0" Click="Save_Click" ToolTip="{x:Static res:Resources.Note_Save}"
+                        IsEnabled="{Binding IsDirty}" Style="{StaticResource AccentButtonStyle}">
+                    <StackPanel Orientation="Horizontal">
+                        <controls:FontIcon Glyph="&#xE74E;" FontSize="14" />
+                        <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Edit_Save}" />
+                    </StackPanel>
+                </Button>
+                <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Click="FullScreen_Click" ToolTip="{x:Static res:Resources.Note_FullScreen}">
+                    <controls:FontIcon Glyph="&#xE740;" FontSize="14" />
+                </Button>
+                <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Click="OpenExternal_Click" ToolTip="{x:Static res:Resources.Note_OpenExternal}">
+                    <controls:FontIcon Glyph="&#xE8A7;" FontSize="14" />
+                </Button>
+                <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Click="OpenFolder_Click" ToolTip="{x:Static res:Resources.Note_OpenFolder}">
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" />
+                </Button>
+                <Button x:Name="SettingsButton" DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Click="Settings_Click" ToolTip="{x:Static res:Resources.Note_Settings}">
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Settings}" FontSize="14" />
+                </Button>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="0,0,10,0" VerticalAlignment="Center">
+                    <ToggleButton Style="{StaticResource ViewToggle}" Tag="edit" IsChecked="{Binding IsEditMode, Mode=OneWay}" Click="View_Click" Content="{x:Static res:Resources.Note_ViewEdit}" />
+                    <ToggleButton Style="{StaticResource ViewToggle}" Tag="split" IsChecked="{Binding IsSplitMode, Mode=OneWay}" Click="View_Click" Content="{x:Static res:Resources.Note_ViewSplit}" Margin="4,0" />
+                    <ToggleButton Style="{StaticResource ViewToggle}" Tag="preview" IsChecked="{Binding IsPreviewMode, Mode=OneWay}" Click="View_Click" Content="{x:Static res:Resources.Note_ViewPreview}" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Dış değişiklik uyarısı -->
+        <Border Grid.Row="1" Padding="16,8" Visibility="{Binding IsExternallyChanged, Converter={StaticResource BoolToVis}}"
+                Background="{DynamicResource SystemFillColorCautionBackgroundBrush}">
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Margin="8,0,0,0" Click="KeepMine_Click" Content="{x:Static res:Resources.Note_KeepMine}" />
+                <Button DockPanel.Dock="Right" Click="Reload_Click" Content="{x:Static res:Resources.Note_Reload}" />
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <controls:FontIcon Glyph="&#xE7BA;" FontSize="14" Foreground="{DynamicResource SystemFillColorCautionBrush}" />
+                    <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Note_ExternalChanged}" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Gövde: düz metin | ayraç | görünüm -->
+        <Grid x:Name="Body" Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="EditorColumn" Width="*" />
+                <ColumnDefinition x:Name="SplitterColumn" Width="Auto" />
+                <ColumnDefinition x:Name="PreviewColumn" Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBox x:Name="Editor" Grid.Column="0"
+                     AcceptsReturn="True" AcceptsTab="True"
+                     VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                     VerticalContentAlignment="Top"
+                     BorderThickness="0" Background="Transparent"
+                     Padding="28,20,28,40"
+                     SpellCheck.IsEnabled="False"
+                     AllowDrop="True"
+                     Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
+                     PreviewKeyDown="Editor_PreviewKeyDown"
+                     TextChanged="Editor_TextChanged"
+                     SelectionChanged="Editor_SelectionChanged"
+                     PreviewDragOver="Editor_PreviewDragOver"
+                     PreviewDrop="Editor_PreviewDrop"
+                     PreviewMouseWheel="Editor_PreviewMouseWheel" />
+
+            <GridSplitter x:Name="Splitter" Grid.Column="1" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                          ResizeBehavior="PreviousAndNext" Background="{DynamicResource DividerStrokeColorDefaultBrush}"
+                          DragCompleted="Splitter_DragCompleted" />
+
+            <FlowDocumentScrollViewer x:Name="Preview" Grid.Column="2"
+                                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                                      IsToolBarVisible="False" Focusable="False"
+                                      SizeChanged="Preview_SizeChanged"
+                                      PreviewMouseWheel="Preview_PreviewMouseWheel" />
+        </Grid>
+
+        <!-- Öneri listesi (@ / [[) -->
+        <Popup x:Name="SuggestPopup" Grid.Row="2" PlacementTarget="{Binding ElementName=Editor}" Placement="Relative"
+               AllowsTransparency="True" StaysOpen="True" PopupAnimation="None">
+            <Border Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="8" Padding="4" MinWidth="360" MaxHeight="340">
+                <ListBox x:Name="SuggestList" BorderThickness="0" Background="Transparent" Focusable="False"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         PreviewMouseLeftButtonUp="SuggestList_PreviewMouseLeftButtonUp">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="2,3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="24" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <controls:FontIcon Glyph="{Binding Glyph}" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" FontWeight="SemiBold" Text="{Binding Key}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" Margin="10,0,0,0" Foreground="{DynamicResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis" Text="{Binding Title}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="3" Margin="10,0,4,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Kind}" VerticalAlignment="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+        </Popup>
+
+        <!-- Görünüm ayarları -->
+        <Popup x:Name="SettingsPopup" PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"
+               AllowsTransparency="True" StaysOpen="False" PopupAnimation="Fade">
+            <Border Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="8" Padding="16,6,16,14" Width="300">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource SettingLabel}" Text="{x:Static res:Resources.Note_EditorFont}" />
+                    <ComboBox ItemsSource="{Binding EditorFonts}" SelectedItem="{Binding EditorFont, Mode=TwoWay}" />
+                    <TextBlock Style="{StaticResource SettingLabel}" Text="{x:Static res:Resources.Note_EditorSize}" />
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Right" Width="28" TextAlignment="Right" Text="{Binding EditorSize}" VerticalAlignment="Center" />
+                        <Slider Minimum="10" Maximum="28" SmallChange="1" LargeChange="2" IsSnapToTickEnabled="True" TickFrequency="1" Value="{Binding EditorSize, Mode=TwoWay}" />
+                    </DockPanel>
+                    <TextBlock Style="{StaticResource SettingLabel}" Text="{x:Static res:Resources.Note_PreviewSize}" />
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Right" Width="28" TextAlignment="Right" Text="{Binding PreviewSize}" VerticalAlignment="Center" />
+                        <Slider Minimum="11" Maximum="28" SmallChange="1" LargeChange="2" IsSnapToTickEnabled="True" TickFrequency="1" Value="{Binding PreviewSize, Mode=TwoWay}" />
+                    </DockPanel>
+                    <TextBlock Style="{StaticResource SettingLabel}" Text="{x:Static res:Resources.Note_Width}" />
+                    <ComboBox x:Name="WidthBox" SelectionChanged="WidthBox_SelectionChanged" />
+                    <CheckBox Margin="0,12,0,0" IsChecked="{Binding Wrap, Mode=TwoWay}" Content="{x:Static res:Resources.Note_Wrap}" />
+                    <CheckBox Margin="0,6,0,0" IsChecked="{Binding LineBreaks, Mode=TwoWay}" Content="{x:Static res:Resources.Note_LineBreaks}" />
+                    <CheckBox Margin="0,6,0,0" IsChecked="{Binding FrontMatter, Mode=TwoWay}" Content="{x:Static res:Resources.Note_FrontMatter}" />
+                    <CheckBox Margin="0,6,0,0" IsChecked="{Binding AutoSave, Mode=TwoWay}" Content="{x:Static res:Resources.Note_AutoSave}" />
+                    <CheckBox Margin="0,6,0,0" IsChecked="{Binding StartMaximized, Mode=TwoWay}" Content="{x:Static res:Resources.Note_StartMaximized}" />
+                </StackPanel>
+            </Border>
+        </Popup>
+
+        <!-- Durum çubuğu -->
+        <Border Grid.Row="3" Padding="16,4" Background="{DynamicResource LayerBrush}"
+                BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding SaveText}" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding WordsText}" />
+                    <TextBlock Margin="16,0,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding CaretText}" />
+                    <TextBlock x:Name="RenderInfo" Margin="16,0,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" />
+                    <TextBlock Margin="16,0,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource SystemFillColorCautionBrush}" Text="{Binding Status}" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Kapatırken: kaydedilsin mi -->
+        <controls:ContentDialog x:Name="CloseDialog" Grid.RowSpan="4"
+                                Title="{x:Static res:Resources.Note_CloseTitle}"
+                                PrimaryButtonText="{x:Static res:Resources.Edit_Save}"
+                                SecondaryButtonText="{x:Static res:Resources.Note_CloseDiscard}"
+                                CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                PrimaryButtonClick="CloseDialog_Save"
+                                SecondaryButtonClick="CloseDialog_Discard">
+            <TextBlock x:Name="CloseText" Width="300" TextWrapping="Wrap" />
+        </controls:ContentDialog>
+    </Grid>
+</controls:ChromeWindow>

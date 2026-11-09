@@ -415,7 +415,12 @@ namespace Pusula.Wpf.Markdown
         {
             var wpf = new WpfTable { CellSpacing = 0, Margin = new Thickness(0, 0, 0, 14), BorderThickness = new Thickness(1, 1, 0, 0) };
             wpf.SetResourceReference(WpfTable.BorderBrushProperty, "CardStrokeColorDefaultBrush");
-            var columns = Math.Max(table.ColumnDefinitions.Count, table.OfType<Markdig.Extensions.Tables.TableRow>().Select(r => r.Count).DefaultIfEmpty(0).Max());
+                        // Sütun sayısı hücrelerden (Markdig satır sonundaki "|" için fazladan tanım ekleyebilir).
+            var columns = table.OfType<Markdig.Extensions.Tables.TableRow>().Select(r => r.Count).DefaultIfEmpty(0).Max();
+            if (columns == 0)
+            {
+                columns = table.ColumnDefinitions.Count;
+            }
             for (var i = 0; i < columns; i++)
             {
                 wpf.Columns.Add(new TableColumn());

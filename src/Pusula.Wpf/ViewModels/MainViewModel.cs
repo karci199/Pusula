@@ -233,6 +233,11 @@ namespace Pusula.Wpf.ViewModels
         {
             if (!string.IsNullOrEmpty(notePath) && File.Exists(notePath))
             {
+                if (UsesNoteEditor && string.Equals(Path.GetExtension(notePath), ".md", StringComparison.OrdinalIgnoreCase) && OpenInNoteEditor(notePath))
+                {
+                    return;
+                }
+
                 try
                 {
                     var missing = NoteOpener.Open(notePath, NoteApp.Key);

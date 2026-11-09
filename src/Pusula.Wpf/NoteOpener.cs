@@ -38,6 +38,9 @@ namespace Pusula.Wpf
     /// </summary>
     public static class NoteOpener
     {
+        /// <summary>Pusula'nın kendi md penceresi (varsayılan).</summary>
+        public const string Pusula = "pusula";
+
         /// <summary>Obsidian.</summary>
         public const string Obsidian = "obsidian";
 
@@ -56,6 +59,7 @@ namespace Pusula.Wpf
             {
                 return options ?? (options = new[]
                 {
+                    new NoteAppOption(Pusula, Resources.NoteApp_Pusula),
                     new NoteAppOption(Obsidian, Resources.NoteApp_Obsidian),
                     new NoteAppOption(VsCode, Resources.NoteApp_VsCode),
                     new NoteAppOption(Default, Resources.NoteApp_Default),
@@ -63,7 +67,7 @@ namespace Pusula.Wpf
             }
         }
 
-        /// <summary>Anahtarı verilen seçenek; tanınmıyorsa Obsidian.</summary>
+        /// <summary>Anahtarı verilen seçenek; tanınmıyorsa Pusula.</summary>
         public static NoteAppOption Find(string? key)
         {
             return Options.FirstOrDefault(o => string.Equals(o.Key, key, StringComparison.OrdinalIgnoreCase)) ?? Options[0];
@@ -75,7 +79,8 @@ namespace Pusula.Wpf
         /// </summary>
         public static string Open(string path, string app)
         {
-            if (!string.Equals(Path.GetExtension(path), ".md", StringComparison.OrdinalIgnoreCase) || app == Default)
+            // Pusula penceresi burada açılamaz (pencere tarafında açılır); buraya düşerse Windows varsayılanı.
+            if (!string.Equals(Path.GetExtension(path), ".md", StringComparison.OrdinalIgnoreCase) || app == Default || app == Pusula)
             {
                 Shell(path);
                 return string.Empty;
