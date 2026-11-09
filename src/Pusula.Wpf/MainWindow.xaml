@@ -1022,12 +1022,20 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <TextBox Tag="Project" KeyDown="QuickNoteBox_KeyDown" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
-                                <Button Grid.Column="1" Margin="6,0,0,0" Tag="Project" Click="QuickNoteAdd_Click">
-                                    <StackPanel Orientation="Horizontal">
-                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
-                                        <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.QuickNote_Add}" />
-                                    </StackPanel>
-                                </Button>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <Button Margin="6,0,0,0" Tag="Project" Click="QuickNoteAdd_Click">
+                                        <StackPanel Orientation="Horizontal">
+                                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
+                                            <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.QuickNote_Add}" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Margin="6,0,0,0" Click="JournalAdd_Click" ToolTip="{x:Static res:Resources.Journal_ButtonHint}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" Foreground="{DynamicResource AccentBrush}" />
+                                            <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Journal_Button}" />
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
                             </Grid>
                             <ScrollViewer MaxHeight="150" VerticalScrollBarVisibility="Auto">
                                 <ItemsControl ItemsSource="{Binding Detail.ProjectNotes}" ItemTemplate="{StaticResource HistoryTemplate}" />

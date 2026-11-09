@@ -44,6 +44,14 @@ try {
     $vm.ConfirmJournalDelete() | Out-Null; Wait
     $txt = [IO.File]::ReadAllText($note)
     Check 'silindi, diğeri duruyor, not başı aynı' (-not $txt.Contains('### 05.11.2026 · Toplantı · MILKON haftalık') -and $txt.Contains('Konnektör N tipine çevrildi') -and $txt.StartsWith($before.TrimEnd()))
+    "--- Proje günlüğü"
+    $project = Join-Path $Data '7000_MILKON'
+    $vm.SelectNodeByPath($project); Wait
+    Check 'projede pencere açılır' ($vm.OpenJournalHere())
+    $vm.JournalKind = 'Toplantı'; $vm.JournalHeading = 'Proje haftalık'
+    $vm.ConfirmJournal() | Out-Null; Wait
+    Check 'proje notuna yazıldı' ((Test-Path (Join-Path $project '7000_MILKON.md')) -and ([IO.File]::ReadAllText((Join-Path $project '7000_MILKON.md'))).Contains('· Toplantı · Proje haftalık'))
+    Check 'proje sayfasında görünür' (@($vm.Detail.ProjectNotes | Where-Object { $_.Detail -like 'Proje haftalık*' }).Count -eq 1) (($vm.Detail.ProjectNotes | ForEach-Object Detail) -join ' | ')
     "--- Stoka ait jig: stoktaki ilgili olay Geçmiş'te"
     $stock3 = Join-Path $Data '7000_MILKON\AB-7000-0003'
     $vm.SelectNodeByPath($stock3); Wait

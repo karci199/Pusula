@@ -403,6 +403,7 @@ namespace Pusula.Wpf.ViewModels
             List<EventNote> events = new List<EventNote>();
             List<OpenTask> tasks = new List<OpenTask>();
             List<TestPlan> plans = new List<TestPlan>();
+            List<EventNote> projectJournal = new List<EventNote>();
             try
             {
                 if (kind == FolderKind.Project)
@@ -412,6 +413,7 @@ namespace Pusula.Wpf.ViewModels
                         {
                             projectInfo = JsonFile.TryRead<ProjectInfo>(TrackingFiles.ProjectFile(path));
                             tasks = OpenTask.ReadAll(path);
+                            projectJournal = Journal.Read(NoteFile.Find(path, Path.GetFileName(path)));
                             return FolderSummary.ForProject(path, templates.ProjectFolders, source.Token);
                         },
                         source.Token);
@@ -460,9 +462,13 @@ namespace Pusula.Wpf.ViewModels
             {
                 ShowProject(summary);
                 HeaderName = projectInfo?.Name ?? string.Empty;
-                foreach (var note in Enumerable.Reverse(projectInfo?.Notes ?? new List<QuickNote>()))
+                // Kısa notlar ve projenin ana notundaki Günlük olayları birlikte, yeniden eskiye.
+                var projectRows = (projectInfo?.Notes ?? new List<QuickNote>()).Select(n => new HistoryRow(n))
+                    .Concat(projectJournal.Select(e => new HistoryRow(e)))
+                    .OrderByDescending(r => r.SortDate);
+                foreach (var row in projectRows)
                 {
-                    ProjectNotes.Add(new HistoryRow(note));
+                    ProjectNotes.Add(row);
                 }
 
                 // Projenin bütün stoklarındaki açık işler (kaynak: stok numarası · not).
