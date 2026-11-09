@@ -15,7 +15,7 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 
 - [x] Stok sayfası yavaştı → klasör tek seferde taranıyor (FolderSnapshot), bütün okuyucular bu taramadan çalışıyor, md notları bir kez okunuyor. Ağ yolunda 148 → 28 ms (5,2 kat).
 - [x] **Yenile** en başa atıyordu → seçili düğüm, açık klasörler ve stok sekmesi korunuyor; içerik yeniden okunuyor.
-- [ ] ?Diskteki değişiklikler arada taranıp "değişiklik oldu" denilsin mi (otomatik izleme)
+- [x] Otomatik izleme → **sonraya** bırakıldı (aşağıda "Sonra yapılacaklar").
 
 ## 3. Düzenleme (eksik)
 
@@ -93,3 +93,9 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
   - [x] İlk adım: stok Genel sayfasında **Açık işler** (md notlarındaki `- [ ]` maddeleri; tıklayınca not açılır). Proje ve haftalık rapor sonra.
 - [ ] **İlerleme durumu** (jig hazır mı, yazılım var mı / hazır mı) — büyük ölçüde elle.
 - [ ] Jig teslim edildi mi takibi (envanter durumu var; stok ekranında görünürlüğü).
+
+## Sonra yapılacaklar
+
+- [ ] **Otomatik izleme:** diskte (iç ağda) değişiklik olunca alt durum çubuğunda haber ver; "Yenile" ile gelsin.
+- [ ] **Durum çubuğunda son yapılan iş:** ör. "AB-7000-0002 kaydedildi · 21:55" kalıcı görünsün.
+- [ ] Açık işler ve kısa notlardan **haftalık / aylık rapor**.
