@@ -13,7 +13,7 @@ try {
     $vm.SelectNodeByPath((Join-Path $Data '7000_MILKON')); Wait
     $menu = $win.FindResource('AddMenu'); $menu.PlacementTarget = $win.FindName('AddButton'); $menu.IsOpen = $true; Wait
     $heads = @($menu.Items | ForEach-Object { if ($_ -is [System.Windows.Controls.Separator]) { '---' } else { [string]$_.Header } })
-    Check 'sıra: proje, stok, envanter' ($heads[0] -eq 'Yeni proje' -and $heads[1] -like 'Yeni stok*' -and $heads[2] -eq '---' -and $heads[3] -eq 'Envanter') ($heads -join ' | ')
+    Check 'sıra: proje, stok, envanter (çizgi yok)' ($heads[0] -eq 'Yeni proje' -and $heads[1] -like 'Yeni stok*' -and $heads[2] -eq 'Envanter' -and -not ($heads -contains '---')) ($heads -join ' | ')
     Check 'şablon / tür maddeleri yok' (-not ($heads -match 'Şablon|Türler'))
     Check 'envanter türleri Türler''den' (($heads -contains 'Yeni kablo') -and ($heads -contains 'Yeni jig')) ($heads -join ' | ')
     Check 'alt çizgi korunur (7000_MILKON)' ($vm.NewStockMenuText -eq 'Yeni stok · 7000__MILKON') $vm.NewStockMenuText

@@ -568,8 +568,7 @@ namespace Pusula.Wpf
             }
 
             var index = 2;
-            menu.Items.Insert(index++, new Separator { Tag = "inventory" });
-            menu.Items.Insert(index++, new MenuItem { Header = Properties.Resources.Tree_Inventory, Tag = "inventory", IsEnabled = false, FontSize = 12 });
+            menu.Items.Insert(index++, new MenuItem { Header = Properties.Resources.Tree_Inventory, Tag = "inventory", IsEnabled = false, FontSize = 12, Margin = new Thickness(0, 6, 0, 0) });
             foreach (var type in viewModel.InventoryTypes)
             {
                 var item = new MenuItem
