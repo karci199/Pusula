@@ -24,8 +24,8 @@ try {
     Snap $set "$Out\settings-sand.png"
     "--- Notları şununla aç"
     $N = [Pusula.Wpf.NoteOpener]
-    Check 'varsayılan Obsidian' ($vm.NoteApp.Key -eq 'obsidian')
-    Check 'seçenekler: Obsidian, VS Code, Windows' ((($vm.NoteApps | ForEach-Object Key) -join ',') -eq 'obsidian,vscode,default')
+    Check 'varsayılan Pusula (yerleşik)' ($vm.NoteApp.Key -eq 'pusula')
+    Check 'seçenekler: Pusula, Obsidian, VS Code, Windows' ((($vm.NoteApps | ForEach-Object Key) -join ',') -eq 'pusula,obsidian,vscode,default')
     $vm.NoteApp = $N::Find('vscode')
     Check 'seçim ayarlara yazıldı' ([IO.File]::ReadAllText($env:PUSULA_AYARLAR) -match '"noteApp":\s*"vscode"')
     Check 'obsidian bağlantısı' ($N::UriFor('C:\Kök\a b.md', 'obsidian') -eq 'obsidian://open?path=C%3A%5CK%C3%B6k%5Ca%20b.md') ($N::UriFor('C:\Kök\a b.md', 'obsidian'))

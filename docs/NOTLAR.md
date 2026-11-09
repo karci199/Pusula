@@ -69,6 +69,22 @@ Son güncelleme: 08.11.2026. Dal: `claude/pusula-project-setup-c6ce02` (push edi
 - **Stok günlüğünde jig/kablo olayları:** stokun kullandığı (kendi + bağlı) kayıtların durum değişiklikleri (Talep, Hazırlanıyor,
   Teslim alındı, Onarım …) Günlük'e kendiliğinden düşer: "JIG-1000-0009 · ad", durum etiketi, "Jig · tarih · kişi", konum.
   Not düğmesi kaydın notunu açar. Bağ kaldırılınca düşer.
+- **Test / analiz tarihi (10.11.2026):** `test.md` → `analiz_tarihi`, `analiz_notu`; yoksa analiz = test günü. Koşu sağ tık →
+  "Analiz tarihi ve notu…" (not yoksa test tarihiyle oluşturulur). Testler tablosunda Tarih'in yanında Analiz sütunu (yalnız ayrı
+  günse dolu), günlük kartında "analiz 12.10.2026" ve not. Tablo sütun düzeni artık başlık anahtarıyla saklanır.
+- **Bahsedildiği yerler:** kökteki bütün md'lerde `[[…]]` ve düz numaralar taranır (arka planda, Yenile'de baştan). Proje, stok ve
+  kayıt sayfasında kart; kendi klasöründeki notlar, gizli / `_SILINENLER` / `_TAKIP` / arşiv klasörleri ve kod blokları sayılmaz.
+- **Özellikler bölümü:** Bilgiler kartında türe özel alanlar ayrı, iki sütunlu kutucuklar; "Özellikler · Mekanik · 6 / 6 dolu".
+- **md not penceresi (Markdig 0.37, BSD-2):** Ayarlar → Not programı → "Pusula (yerleşik)" (yeni kurulumda varsayılan).
+  Ekranı kaplar; Düz / Yan yana / Görünüm (Ctrl+1/2/3); Görünüm Obsidian'a benzer: YAML özellik kutusu, başlık, liste, görev
+  kutusu (tıklanınca metinde işaretlenir), kutular (`> [!warning]`), tablo, kod, vurgu, çizili, dipnot, `#etiket`, resim
+  (`![[a.png|300]]`, `![](yol)`; adla da bulunur), `[[bağ]]` (tıklayınca ana pencerede kaydı seçer, not adıysa o notu açar,
+  yoksa yeni not oluşturmaz). Kısayollar: Ctrl+B / I / E / L / K / H, Ctrl+Shift+X / H, Ctrl+S, F11, Ctrl+tekerlek yazı boyutu,
+  Enter listeyi sürdürür, Tab girinti. @ ya da [[ yazınca jig / kablo / yazılım / stok / proje / kişi listesi. Resim: araç
+  çubuğu, Ctrl+V (pano resmi `Ekler\yapistirilan_….png` olur), sürükle-bırak; kök dışı dosya `Ekler\`e kopyalanır, aslına
+  dokunulmaz. Dışarıda değişirse: değişiklik yoksa kendiliğinden yüklenir, varsa uyarı şeridi. Kapatırken kaydedilsin mi sorusu,
+  otomatik kaydet (ayar), okuma genişliği, yazı tipi/boyut, kaydırma, satır sonu, YAML ayarları `ayarlar.json` → `noteEditor`.
+  Kaydetme atomik, notun BOM / satır sonu biçimi korunur; Pusula nota kendinden bir şey eklemez.
 - **Diskteki değişikliği izleme:** kök izlenir; dışarıdan değişiklik olunca Yenile düğmesi sarı olur (bildirim yok), yenileyince söner.
   Sayılmaz: uygulamanın kendi yazdıkları (3 sn pencere), `.obsidian` gibi gizli klasörler, `_TAKIP`, `_PUSULA`, geçici dosyalar,
   klasörün yalnız tarih değişmesi.
@@ -131,10 +147,8 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 - **İnceleme sonrası kalanlar (08.11.2026):** stok seçilince 5 okuma artık aynı anda yapılıyor; tek taramada birleştirmek ileride. Kısa not / bağ / not oluşturma UI thread'inde eşzamanlı dosya yazıyor. JSON oku-değiştir-yaz kalıbı 4 yerde
   tekrar (`JsonFile.Update<T>` yapılmalı). Süzgeç kutularının "Tümü" düzeltmesi geçici çözüm.
 
-- **Test tarihi / analiz tarihi ayrımı:** varsayılan aynı; analiz sonradan yapılınca ayrı tarih (henüz yapılmadı).
-- **Bahsetmeler:** notlarda `[[JIG-…]]` taraması → kaydın sayfasında "Bahsedildiği yerler"; Pusula kutularında @ listesi (henüz yapılmadı).
-- **Türe özel alanların görünümü (10.11.2026):** Bilgiler kartında alanlar düz liste; kullanıcı "biraz düz" dedi.
-  İleride: ayrı "Özellikler" bölümü, iki sütun, uç A ↔ uç B gibi çiftler yan yana, boş alanlar soluk.
+- **md penceresi, sonraki adımlar:** arama / değiştir (Ctrl+F), düz görünümde md renklendirme (AvalonEdit, MIT; ayrı onay),
+  başlık ana hattı (outline) paneli, yan yana görünümde kaydırma eşleme, kısa not / + Olay kutularında da @ listesi.
 - **Jenerik test dokümanı üretme:** yeni stok açınca (ya da istenince) stok no/ad dolu test planı vb. doküman.
   Şablon modüllerine "başlangıç dosyaları" eklenebilir. DOCX üretimi için kullanıcının
   `C:\Projeler\Aktif\Divit` projesine bakılacak (orada docx üretimi var).

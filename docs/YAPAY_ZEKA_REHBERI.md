@@ -109,10 +109,22 @@ sonuc: Kaldı              # Geçti / Kaldı / Devam (başka değer "bilinmiyor"
 kisi: a-demir
 plan: AB-7000-0002 SATIMO Hüzme ve Yan Lob
 jig: JIG-1000-0009
+analiz_tarihi: 2026-10-23 # yalnız analiz test gününden SONRA yapıldıysa; yoksa yazma (test tarihi sayılır)
+analiz_notu: Yan lob yeniden hesaplandı   # isteğe bağlı, tek satır
 ---
 ```
 
 Ham veriler `Ham\`, fotolar `Foto\`, analiz çıktıları `Analiz\` altına.
+
+### Bağlantı, resim, kutu (Pusula'nın md penceresi ve "Bahsedildiği yerler" bunları okur)
+
+- Kayda bağlantı: `[[JIG-1000-0009]]`, görünen adla `[[JIG-1000-0009|SATIMO plakası]]`, stok `[[AB-7000-0003]]`, proje `[[7000_MILKON]]`.
+  Düz yazılmış numara da (`JIG-1000-0009 ile ölçüldü`) bahis sayılır; kod bloğu içindeki sayılmaz.
+- Kişi: `@Ad Soyad` (ayrı kişi notu açma).
+- Resim: `![[foto_01.png]]`, genişlikle `![[foto_01.png|360]]`, klasörle `![[Ekler/yapistirilan_….png]]`. Ad tek ise klasör gerekmez.
+  Web adresindeki resim gösterilmez (dış ağ çağrısı yok).
+- Kutu: `> [!warning] Başlık` (warning, danger, tip, success, question, note, quote). Vurgu `==metin==`, üstü çizili `~~metin~~`.
+- Olmayan bir nota `[[…]]` verme: Pusula yeni not oluşturmaz, bağlantı boşa düşer.
 
 ### 4. Kısa not
 
