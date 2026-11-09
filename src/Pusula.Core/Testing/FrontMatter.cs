@@ -10,6 +10,24 @@ namespace Pusula.Core.Testing
     /// </summary>
     public static class FrontMatter
     {
+        private const string SpecialStart = "-?:,[]{}#&*!|>'\"%@`";
+
+        /// <summary>
+        /// Değeri tek satırlık YAML değeri yapar: satır sonları boşluk olur; YAML'ı bozacak değer
+        /// (<c>: </c> ya da <c> #</c> içeren, özel karakterle başlayan, <c>:</c> ile biten) çift tırnağa alınır.
+        /// </summary>
+        public static string Quote(string value)
+        {
+            var text = (value ?? string.Empty).Replace("\r", " ").Replace("\n", " ").Trim();
+            if (text.Length == 0)
+            {
+                return text;
+            }
+
+            var needs = SpecialStart.IndexOf(text[0]) >= 0 || text.Contains(": ") || text.Contains(" #") || text.EndsWith(":", StringComparison.Ordinal);
+            return needs ? "\"" + text.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"" : text;
+        }
+
         /// <summary>YAML alanları (anahtarlar büyük/küçük harf duyarsız) ve gövde.</summary>
         public static Dictionary<string, string> Parse(string text, out string body)
         {

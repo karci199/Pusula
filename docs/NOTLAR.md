@@ -60,6 +60,18 @@ Son güncelleme: 08.11.2026. Dal: `claude/pusula-project-setup-c6ce02` (push edi
   arama (numara, tanım, konum, not) + Tür, Alt tür, Durum, Düzey (Genel / Proje / Stok) süzgeçleri; "8 kayıttan 2 tanesi".
 - **Ağaç:** Envanter bölümü projelerden boşlukla ayrılır; kayıt düğümünde yalnızca numara (tanım ipucunda), işaretsiz klasör soluk italik.
 - Varsayılan şablonda `03_Test_Sonuclari` altında yalnızca sistemler (VNA, SATIMO, Yankisiz, CK); `SN01\Ham`, `SN01\Analiz` ölçümle açılır.
+- **Türe özel alanlar (10.11.2026):** `turler.json` → türün `fields` listesi (ad, tür: yazı / sayı / evet-hayır / seçim, birim,
+  seçenekler, alt türler). Hazır alanlar: kablo (adet, boy, uç A/B, RF'de frekans + faz kararlı, Haberleşme'de protokol + pin yapısı,
+  Güç / veri'de akım + kesit), jig (adet, malzeme, ölçüler, yüzey, bağlantı, Montaj'da tork, Ölçüm adaptörü'nde ölçüm sistemi,
+  çizim revizyonu), Yazılım türü (sürüm, dil, konum, bağlı cihaz). Değerler Düzenle'de girilir; `kayit.json` → `fields`'a ve notun
+  YAML başlığına yazılır (yalnız o alt türün alanları; özel karakterli değer tırnaklı; notun kodlaması korunur). Bilgiler kartında birimiyle.
+  `turler.json` sürüm 3 göçü: alanı boş kablo/jig hazır alanları alır, Yazılım türü eklenir. Kaydı olmayan tür stokta sekme açmaz.
+- **Stok günlüğünde jig/kablo olayları:** stokun kullandığı (kendi + bağlı) kayıtların durum değişiklikleri (Talep, Hazırlanıyor,
+  Teslim alındı, Onarım …) Günlük'e kendiliğinden düşer: "JIG-1000-0009 · ad", durum etiketi, "Jig · tarih · kişi", konum.
+  Not düğmesi kaydın notunu açar. Bağ kaldırılınca düşer.
+- **Diskteki değişikliği izleme:** kök izlenir; dışarıdan değişiklik olunca Yenile düğmesi sarı olur (bildirim yok), yenileyince söner.
+  Sayılmaz: uygulamanın kendi yazdıkları (3 sn pencere), `.obsidian` gibi gizli klasörler, `_TAKIP`, `_PUSULA`, geçici dosyalar,
+  klasörün yalnız tarih değişmesi.
 
 ## Stok klasör yapısı (kararlaştırılan)
 
@@ -119,6 +131,8 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 - **İnceleme sonrası kalanlar (08.11.2026):** stok seçilince 5 okuma artık aynı anda yapılıyor; tek taramada birleştirmek ileride. Kısa not / bağ / not oluşturma UI thread'inde eşzamanlı dosya yazıyor. JSON oku-değiştir-yaz kalıbı 4 yerde
   tekrar (`JsonFile.Update<T>` yapılmalı). Süzgeç kutularının "Tümü" düzeltmesi geçici çözüm.
 
+- **Test tarihi / analiz tarihi ayrımı:** varsayılan aynı; analiz sonradan yapılınca ayrı tarih (henüz yapılmadı).
+- **Bahsetmeler:** notlarda `[[JIG-…]]` taraması → kaydın sayfasında "Bahsedildiği yerler"; Pusula kutularında @ listesi (henüz yapılmadı).
 - **Türe özel alanların görünümü (10.11.2026):** Bilgiler kartında alanlar düz liste; kullanıcı "biraz düz" dedi.
   İleride: ayrı "Özellikler" bölümü, iki sütun, uç A ↔ uç B gibi çiftler yan yana, boş alanlar soluk.
 - **Jenerik test dokümanı üretme:** yeni stok açınca (ya da istenince) stok no/ad dolu test planı vb. doküman.

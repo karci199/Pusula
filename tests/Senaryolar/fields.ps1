@@ -68,6 +68,17 @@ Check 'kayit.json: frekans kalktı' (-not (Rec $rf).Fields.ContainsKey('frekans'
 Check 'YAML: frekans kalktı' (-not ((Yaml $note) -match '(?m)^frekans:'))
 Check 'not gövdesi yine aynı' ((Body $note) -eq $bodyBefore)
 
+"--- 4b. Özel karakter ve kodlama"
+$bomBefore = ([IO.File]::ReadAllBytes($note))[0] -eq 0xEF
+$vm.OpenEdit($rf) | Out-Null
+(Input 'uc_b').Value = 'Raf: B #3'; (Input 'frekans').Value = '#18 "max"'
+Check 'kaydedildi' ($vm.ConfirmEdit())
+$body = $null; $fm = [Pusula.Core.Testing.FrontMatter]::Parse([IO.File]::ReadAllText($note), [ref]$body)
+Check 'YAML: ":" ve "#" içeren değer tırnaklı' ((Yaml $note) -match '(?m)^uc_b: "Raf: B #3"\r?$') (Yaml $note)
+Check 'YAML geri okunur' ($fm['uc_b'] -eq 'Raf: B #3' -and $fm['numara'] -eq 'JT-0001-0001') ($fm['uc_b'])
+Check 'not kodlaması korunur (BOM)' ((([IO.File]::ReadAllBytes($note))[0] -eq 0xEF) -eq $bomBefore)
+Check 'gövde yine aynı' ((Body $note) -eq $bodyBefore)
+
 "--- 5. Haberleşme kablosu: RS422"
 $rs = Join-Path $Data 'ENVANTER\Kablolar\JT-0001-0002_RS422_test_kablosu'
 Check 'düzenle açılır' ($vm.OpenEdit($rs))

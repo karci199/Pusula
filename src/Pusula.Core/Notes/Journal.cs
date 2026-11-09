@@ -183,7 +183,7 @@ namespace Pusula.Core.Notes
 
                 var temp = notePath + ".tmp-" + Guid.NewGuid().ToString("N").Substring(0, 8);
                 Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
-                File.WriteAllText(temp, updated, new UTF8Encoding(true));
+                File.WriteAllText(temp, updated, new UTF8Encoding(HasBom(notePath)));
                 if (File.Exists(notePath))
                 {
                     File.Replace(temp, notePath, null);
@@ -297,7 +297,7 @@ namespace Pusula.Core.Notes
                 }
 
                 var index = lines.FindIndex(1, close - 1, l => l.TrimStart().StartsWith(key + ":", StringComparison.OrdinalIgnoreCase));
-                var value = (pair.Value ?? string.Empty).Trim();
+                var value = Pusula.Core.Testing.FrontMatter.Quote(pair.Value ?? string.Empty);
                 if (value.Length == 0)
                 {
                     if (index > 0)
@@ -330,7 +330,7 @@ namespace Pusula.Core.Notes
             {
                 var temp = notePath + ".tmp-" + Guid.NewGuid().ToString("N").Substring(0, 8);
                 Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
-                File.WriteAllText(temp, content, new UTF8Encoding(true));
+                File.WriteAllText(temp, content, new UTF8Encoding(HasBom(notePath)));
                 File.Replace(temp, notePath, null);
                 return string.Empty;
             }
@@ -341,6 +341,31 @@ namespace Pusula.Core.Notes
             catch (UnauthorizedAccessException ex)
             {
                 return ex.Message;
+            }
+        }
+
+        // Notun kodlaması korunur: BOM'lu ise BOM'lu, değilse (Obsidian'ın yazdığı gibi) BOM'suz; yeni not BOM'suz.
+        private static bool HasBom(string path)
+        {
+            try
+            {
+                if (!File.Exists(path))
+                {
+                    return false;
+                }
+
+                using (var stream = File.OpenRead(path))
+                {
+                    return stream.ReadByte() == 0xEF && stream.ReadByte() == 0xBB && stream.ReadByte() == 0xBF;
+                }
+            }
+            catch (IOException)
+            {
+                return false;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
             }
         }
 
