@@ -175,7 +175,7 @@ namespace Pusula.Core.Scanning
         {
             try
             {
-                return Directory.GetDirectories(folder).OrderBy(d => d, StringComparer.OrdinalIgnoreCase).ToList();
+                return Fs.GetDirectories(folder).OrderBy(d => d, StringComparer.OrdinalIgnoreCase).ToList();
             }
             catch (IOException)
             {
@@ -192,7 +192,7 @@ namespace Pusula.Core.Scanning
             var result = FolderStats.Empty;
             try
             {
-                foreach (var file in new DirectoryInfo(folder).GetFiles().Where(f => !FileRules.IsJunkFile(f.Name)))
+                foreach (var file in Fs.Entries(folder).Where(f => !f.IsDirectory && !FileRules.IsJunkFile(f.Name)))
                 {
                     result = result.Add(new FolderStats(1, file.Length, file.FullName, file.LastWriteTime));
                 }

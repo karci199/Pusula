@@ -40,8 +40,8 @@ namespace Pusula.Core.Scanning
 
             try
             {
-                node.FileCount = Directory.GetFiles(folder).Count(f => !FileRules.IsJunkFile(f));
-                foreach (var child in Directory.GetDirectories(folder).OrderBy(d => d, StringComparer.OrdinalIgnoreCase))
+                node.FileCount = Fs.GetFiles(folder).Count(f => !FileRules.IsJunkFile(f));
+                foreach (var child in Fs.GetDirectories(folder).OrderBy(d => d, StringComparer.OrdinalIgnoreCase))
                 {
                     if (FolderStats.IsAppFolder(System.IO.Path.GetFileName(child)))
                     {

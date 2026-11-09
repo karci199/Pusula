@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using Pusula.Core.Testing;
 
+using Pusula.Core.Scanning;
+
 namespace Pusula.Core.Notes
 {
     /// <summary>
@@ -69,7 +71,7 @@ namespace Pusula.Core.Notes
             string text;
             try
             {
-                text = File.ReadAllText(path, Encoding.UTF8);
+                text = Fs.ReadAllText(path);
             }
             catch (IOException)
             {
@@ -120,7 +122,10 @@ namespace Pusula.Core.Notes
         {
             try
             {
-                using (var reader = new StreamReader(path, Encoding.UTF8))
+                // Tarama etkinse metin bellekten gelir (açık işler de aynı notu okur); değilse yalnız baş satırlar okunur.
+                using (var reader = FolderSnapshot.Active != null && FolderSnapshot.Active.Covers(path)
+                    ? (TextReader)new StringReader(Fs.ReadAllText(path))
+                    : new StreamReader(path, Encoding.UTF8))
                 {
                     var first = reader.ReadLine();
                     if (first == null || first.Trim().TrimStart('\uFEFF') != "---")
@@ -155,7 +160,7 @@ namespace Pusula.Core.Notes
 
         private static IEnumerable<string> MarkdownFiles(string folder)
         {
-            if (!Directory.Exists(folder))
+            if (!Fs.DirectoryExists(folder))
             {
                 yield break;
             }
@@ -164,8 +169,8 @@ namespace Pusula.Core.Notes
             string[] folders;
             try
             {
-                files = Directory.GetFiles(folder, "*.md");
-                folders = Directory.GetDirectories(folder);
+                files = Fs.GetFiles(folder, "*.md");
+                folders = Fs.GetDirectories(folder);
             }
             catch (IOException)
             {

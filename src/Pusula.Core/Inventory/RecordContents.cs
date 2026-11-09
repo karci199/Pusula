@@ -69,7 +69,7 @@ namespace Pusula.Core.Inventory
         public static RecordContents Read(string folder, string number)
         {
             var result = new RecordContents();
-            if (!Directory.Exists(folder))
+            if (!Fs.DirectoryExists(folder))
             {
                 return result;
             }
@@ -158,7 +158,7 @@ namespace Pusula.Core.Inventory
         /// <summary>Klasördeki ve alt klasörlerindeki fotoğraflar (<c>_</c> ile başlayanlar hariç), ada göre sıralı.</summary>
         public static List<string> ImagesUnder(string folder)
         {
-            return Directory.Exists(folder)
+            return Fs.DirectoryExists(folder)
                 ? AllFiles(folder).Where(IsImage).OrderBy(f => f, StringComparer.OrdinalIgnoreCase).ToList()
                 : new List<string>();
         }
@@ -166,7 +166,7 @@ namespace Pusula.Core.Inventory
         /// <summary>Klasördeki ve alt klasörlerindeki dosya sayısı (<c>_</c> ile başlayanlar hariç).</summary>
         public static int CountFiles(string folder)
         {
-            return Directory.Exists(folder) ? AllFiles(folder).Count() : 0;
+            return Fs.DirectoryExists(folder) ? AllFiles(folder).Count() : 0;
         }
 
         /// <summary>Kökte adı (numara öneki atılınca) verilen ada eşit ilk alt klasör ("07_Fotograflar" → "Fotograflar"); yoksa boş.</summary>
@@ -208,7 +208,7 @@ namespace Pusula.Core.Inventory
         {
             try
             {
-                return Directory.GetFiles(folder, pattern).Where(f => !FileRules.IsJunkFile(f)).ToArray();
+                return Fs.GetFiles(folder, pattern).Where(f => !FileRules.IsJunkFile(f)).ToArray();
             }
             catch (IOException)
             {
@@ -224,7 +224,7 @@ namespace Pusula.Core.Inventory
         {
             try
             {
-                return Directory.GetDirectories(folder);
+                return Fs.GetDirectories(folder);
             }
             catch (IOException)
             {

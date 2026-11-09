@@ -62,12 +62,10 @@ namespace Pusula.Core.Scanning
             {
                 cancellation.ThrowIfCancellationRequested();
                 var current = pending.Pop();
-                DirectoryInfo info;
-                FileSystemInfo[] entries;
+                List<FsEntry> entries;
                 try
                 {
-                    info = new DirectoryInfo(current);
-                    entries = info.GetFileSystemInfos();
+                    entries = Fs.Entries(current);
                 }
                 catch (IOException)
                 {
@@ -80,18 +78,18 @@ namespace Pusula.Core.Scanning
 
                 foreach (var entry in entries)
                 {
-                    if (entry is DirectoryInfo directory)
+                    if (entry.IsDirectory)
                     {
                         // _TAKIP, _ARSIV, Arsiv, .obsidian … sayılara girmez (kökün kendisi hariç).
-                        if (!FileRules.IsSkippedFolder(directory.Name))
+                        if (!FileRules.IsSkippedFolder(entry.Name))
                         {
-                            pending.Push(directory.FullName);
+                            pending.Push(entry.FullName);
                         }
 
                         continue;
                     }
 
-                    var file = (FileInfo)entry;
+                    var file = entry;
                     if (FileRules.IsJunkFile(file.Name))
                     {
                         continue;

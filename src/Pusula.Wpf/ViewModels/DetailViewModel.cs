@@ -338,24 +338,29 @@ namespace Pusula.Wpf.ViewModels
                 }
                 else
                 {
-                    // Stok: okumalar birbirinden bağımsız; aynı anda yapılır (ağ paylaşımında bekleme süreleri üst üste biner).
+                    // Stok: klasör bir kez taranır (her klasör tek listeleme), bütün okuyucular bu taramadan çalışır ve
+                    // aynı anda yapılır; md notları da bir kez okunur. Ağ paylaşımında gidiş-dönüş sayısı birkaç kat azalır.
                     var token = source.Token;
                     var currentTemplates = templates;
-                    var runsTask = Task.Run(() => TestRunReader.ReadStock(path), token);
-                    var treeTask = Task.Run(() => FolderTreeNode.Build(path, token), token);
-                    var summaryTask = Task.Run(() => FolderSummary.ForStock(path, currentTemplates, token), token);
-                    var coverTask = Task.Run(() => StockCover.Read(path, Path.GetFileName(path)), token);
-                    var eventsTask = Task.Run(() => EventNote.ReadAll(path), token);
-                    var tasksTask = Task.Run(() => OpenTask.ReadAll(path), token);
-                    var plansTask = Task.Run(() => TestPlan.ReadStock(path), token);
-                    await Task.WhenAll(runsTask, treeTask, summaryTask, coverTask, eventsTask, tasksTask, plansTask).ConfigureAwait(true);
-                    plans = plansTask.Result;
-                    tasks = tasksTask.Result;
-                    summary = summaryTask.Result;
-                    runs = runsTask.Result;
-                    tree = treeTask.Result;
-                    cover = coverTask.Result;
-                    events = eventsTask.Result;
+                    var snapshot = await Task.Run(() => FolderSnapshot.Take(path, token), token).ConfigureAwait(true);
+                    using (FolderSnapshot.Activate(snapshot))
+                    {
+                        var runsTask = Task.Run(() => TestRunReader.ReadStock(path), token);
+                        var treeTask = Task.Run(() => FolderTreeNode.Build(path, token), token);
+                        var summaryTask = Task.Run(() => FolderSummary.ForStock(path, currentTemplates, token), token);
+                        var coverTask = Task.Run(() => StockCover.Read(path, Path.GetFileName(path)), token);
+                        var eventsTask = Task.Run(() => EventNote.ReadAll(path), token);
+                        var tasksTask = Task.Run(() => OpenTask.ReadAll(path), token);
+                        var plansTask = Task.Run(() => TestPlan.ReadStock(path), token);
+                        await Task.WhenAll(runsTask, treeTask, summaryTask, coverTask, eventsTask, tasksTask, plansTask).ConfigureAwait(true);
+                        plans = plansTask.Result;
+                        tasks = tasksTask.Result;
+                        summary = summaryTask.Result;
+                        runs = runsTask.Result;
+                        tree = treeTask.Result;
+                        cover = coverTask.Result;
+                        events = eventsTask.Result;
+                    }
                 }
             }
             catch (OperationCanceledException)

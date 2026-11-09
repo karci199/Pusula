@@ -88,7 +88,7 @@ namespace Pusula.Core.Testing
             try
             {
                 // KIWI dosyaları BOM'lu UTF-8; JSON okuyucusu BOM'u tanımadığı için metin BOM'suz yeniden kodlanır.
-                var text = File.ReadAllText(path, System.Text.Encoding.UTF8);
+                var text = Fs.ReadAllText(path);
                 using (var stream = new MemoryStream(new System.Text.UTF8Encoding(false).GetBytes(text)))
                 {
                     var kiwi = (KiwiPlan?)new DataContractJsonSerializer(typeof(KiwiPlan)).ReadObject(stream);
@@ -142,7 +142,7 @@ namespace Pusula.Core.Testing
         {
             try
             {
-                return File.GetLastWriteTime(path);
+                return Fs.GetLastWriteTime(path);
             }
             catch (IOException)
             {
@@ -159,7 +159,7 @@ namespace Pusula.Core.Testing
             string[] children;
             try
             {
-                children = Directory.GetDirectories(folder);
+                children = Fs.GetDirectories(folder);
             }
             catch (IOException)
             {
@@ -198,7 +198,7 @@ namespace Pusula.Core.Testing
             string[] files;
             try
             {
-                files = Directory.GetFiles(folder, "*", SearchOption.AllDirectories);
+                files = Fs.GetFiles(folder, "*", SearchOption.AllDirectories);
             }
             catch (IOException)
             {

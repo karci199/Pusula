@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using Pusula.Core.Testing;
 
+using Pusula.Core.Scanning;
+
 namespace Pusula.Core.Notes
 {
     /// <summary>
@@ -65,7 +67,7 @@ namespace Pusula.Core.Notes
 
             try
             {
-                return Directory.GetFiles(folder, "*.md").OrderBy(f => f, StringComparer.OrdinalIgnoreCase).FirstOrDefault() ?? string.Empty;
+                return Fs.GetFiles(folder, "*.md").OrderBy(f => f, StringComparer.OrdinalIgnoreCase).FirstOrDefault() ?? string.Empty;
             }
             catch (IOException)
             {
@@ -83,7 +85,7 @@ namespace Pusula.Core.Notes
             string text;
             try
             {
-                text = File.ReadAllText(path, Encoding.UTF8);
+                text = Fs.ReadAllText(path);
             }
             catch (IOException)
             {

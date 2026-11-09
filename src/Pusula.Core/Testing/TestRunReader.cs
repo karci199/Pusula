@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
+using Pusula.Core.Scanning;
+
 namespace Pusula.Core.Testing
 {
     /// <summary>
@@ -86,7 +88,7 @@ namespace Pusula.Core.Testing
         private static bool ReadNote(TestRun run)
         {
             var path = Path.Combine(run.Folder, "test.md");
-            if (!File.Exists(path))
+            if (!Fs.FileExists(path))
             {
                 return false;
             }
@@ -129,7 +131,7 @@ namespace Pusula.Core.Testing
             string[] files;
             try
             {
-                files = Directory.GetFiles(run.Folder, "_kosu.md", SearchOption.AllDirectories);
+                files = Fs.GetFiles(run.Folder, "_kosu.md", SearchOption.AllDirectories);
             }
             catch (IOException)
             {
@@ -140,7 +142,7 @@ namespace Pusula.Core.Testing
                 return false;
             }
 
-            var path = files.OrderByDescending(f => File.GetLastWriteTime(f)).FirstOrDefault();
+            var path = files.OrderByDescending(f => Fs.GetLastWriteTime(f)).FirstOrDefault();
             if (path == null)
             {
                 return false;
@@ -243,12 +245,12 @@ namespace Pusula.Core.Testing
             {
                 try
                 {
-                    if (!Directory.Exists(folder))
+                    if (!Fs.DirectoryExists(folder))
                     {
                         continue;
                     }
 
-                    var photo = Directory.GetFiles(folder)
+                    var photo = Fs.GetFiles(folder)
                         .Where(f => PhotoExtensions.Contains(Path.GetExtension(f).ToLowerInvariant()))
                         .OrderBy(f => f, StringComparer.OrdinalIgnoreCase)
                         .FirstOrDefault();
@@ -309,8 +311,8 @@ namespace Pusula.Core.Testing
         {
             try
             {
-                var times = Directory.GetFiles(folder, "*", SearchOption.AllDirectories).Where(f => !Scanning.FileRules.IsJunkFile(f)).Select(File.GetLastWriteTime).ToList();
-                return times.Count > 0 ? times.Min() : Directory.GetLastWriteTime(folder);
+                var times = Fs.GetFiles(folder, "*", SearchOption.AllDirectories).Where(f => !Scanning.FileRules.IsJunkFile(f)).Select(Fs.GetLastWriteTime).ToList();
+                return times.Count > 0 ? times.Min() : Directory.GetLastWriteTime(folder); // klasörün kendi tarihi taramada yok; yalnız boş klasörde
             }
             catch (IOException)
             {
@@ -326,7 +328,7 @@ namespace Pusula.Core.Testing
         {
             try
             {
-                return File.ReadAllText(path, Encoding.UTF8);
+                return Fs.ReadAllText(path);
             }
             catch (IOException)
             {
@@ -342,8 +344,8 @@ namespace Pusula.Core.Testing
         {
             try
             {
-                return Directory.Exists(folder)
-                    ? Directory.GetDirectories(folder).OrderBy(d => d, StringComparer.OrdinalIgnoreCase).ToList()
+                return Fs.DirectoryExists(folder)
+                    ? Fs.GetDirectories(folder).OrderBy(d => d, StringComparer.OrdinalIgnoreCase).ToList()
                     : new List<string>();
             }
             catch (IOException)

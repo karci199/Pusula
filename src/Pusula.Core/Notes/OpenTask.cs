@@ -63,7 +63,7 @@ namespace Pusula.Core.Notes
             string[] lines;
             try
             {
-                lines = File.ReadAllLines(path, Encoding.UTF8);
+                lines = Fs.ReadAllLines(path);
             }
             catch (IOException)
             {
@@ -101,7 +101,7 @@ namespace Pusula.Core.Notes
 
         private static IEnumerable<string> MarkdownFiles(string folder)
         {
-            if (!Directory.Exists(folder))
+            if (!Fs.DirectoryExists(folder))
             {
                 yield break;
             }
@@ -110,8 +110,8 @@ namespace Pusula.Core.Notes
             string[] folders;
             try
             {
-                files = Directory.GetFiles(folder, "*.md");
-                folders = Directory.GetDirectories(folder);
+                files = Fs.GetFiles(folder, "*.md");
+                folders = Fs.GetDirectories(folder);
             }
             catch (IOException)
             {
