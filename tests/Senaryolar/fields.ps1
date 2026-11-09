@@ -13,7 +13,7 @@ function Keys() { @($vm.EditFields | ForEach-Object { $_.Key }) }
 function Input($key) { $vm.EditFields | Where-Object { $_.Key -eq $key } | Select-Object -First 1 }
 function Body($path) { $t = [IO.File]::ReadAllText($path); $i = $t.IndexOf("`n---", 4); if ($i -lt 0) { $t } else { $t.Substring($i + 4) } }
 function Yaml($path) { $t = [IO.File]::ReadAllText($path); $i = $t.IndexOf("`n---", 4); if ($i -lt 0) { '' } else { $t.Substring(0, $i) } }
-function Fact($label) { ($vm.Inventory.Facts | Where-Object { $_.Label -eq $label } | Select-Object -First 1).Value }
+function Fact($label) { (@($vm.Inventory.Facts) + @($vm.Inventory.Properties) | Where-Object { $_.Label -eq $label } | Select-Object -First 1).Value }
 
 "--- 1. Türler: hazır alanlar (eski sürümlü turler.json göçü)"
 $types = [Pusula.Core.Types.TypeStore]::LoadOrCreate($Data)
@@ -56,7 +56,11 @@ $vm.SelectNodeByPath($rf); Wait
 Check 'Boy satırı birimli' ((Fact 'Boy') -eq '1 m') (Fact 'Boy')
 Check 'Uç A satırı' ((Fact 'Uç A') -eq 'SMA (E)')
 Check 'Faz kararlı satırı' ((Fact 'Faz kararlı') -eq 'Evet')
-Check 'başka alt türün alanı yok' (-not (@($vm.Inventory.Facts | % Label) -contains 'Protokol'))
+Check 'başka alt türün alanı yok' (-not (@($vm.Inventory.Properties | % Label) -contains 'Protokol'))
+Check 'özellikler ayrı bölümde, genel bilgilerde değil' ($vm.Inventory.HasProperties -and -not (@($vm.Inventory.Facts | % Label) -contains 'Boy') -and $vm.Inventory.PropertiesHeader -match '^Özellikler · RF · \d+ / \d+ dolu$') $vm.Inventory.PropertiesHeader
+$vm.SelectNodeByPath((Join-Path $Data 'ENVANTER\Kablolar\JT-0001-0003_RS422_kablosu_Brainbox')); Wait
+Check 'doldurulmamış kablo: alanlar boş ve soluk, 0 dolu' ($vm.Inventory.Properties.Count -gt 0 -and @($vm.Inventory.Properties | Where-Object { -not $_.IsEmpty }).Count -eq 0 -and $vm.Inventory.PropertiesHeader -match ' 0 / ') $vm.Inventory.PropertiesHeader
+$vm.SelectNodeByPath($rf); Wait
 Snap $win "$Out\fields-card-rf.png"
 
 "--- 4. Değeri boşalt"

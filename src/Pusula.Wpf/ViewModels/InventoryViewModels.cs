@@ -17,7 +17,8 @@ namespace Pusula.Wpf.ViewModels
         public FactRow(string label, string value)
         {
             Label = label;
-            Value = value.Length == 0 ? "—" : value;
+            IsEmpty = value.Length == 0;
+            Value = IsEmpty ? "—" : value;
         }
 
         /// <summary>Etiket.</summary>
@@ -25,6 +26,9 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Değer ("—" boşsa).</summary>
         public string Value { get; }
+
+        /// <summary>Değer girilmemiş (soluk gösterilir).</summary>
+        public bool IsEmpty { get; }
     }
 
     /// <summary>Geçmiş listesinde bir olay.</summary>
@@ -297,6 +301,27 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Bilgiler kartı.</summary>
         public ObservableCollection<FactRow> Facts { get; } = new ObservableCollection<FactRow>();
 
+        /// <summary>Türe özel alanlar (bu alt türde geçerli olanlar), iki sütunlu bölümde.</summary>
+        public ObservableCollection<FactRow> Properties { get; } = new ObservableCollection<FactRow>();
+
+        /// <summary>Özellik var mı.</summary>
+        public bool HasProperties
+        {
+            get { return Properties.Count > 0; }
+        }
+
+        /// <summary>"Özellikler · Mekanik · 4 / 8 dolu".</summary>
+        public string PropertiesHeader
+        {
+            get
+            {
+                var filled = Properties.Count(p => !p.IsEmpty);
+                return string.Format(Resources.Inv_Properties, propertiesSubType.Length > 0 ? " · " + propertiesSubType : string.Empty, filled, Properties.Count);
+            }
+        }
+
+        private string propertiesSubType = string.Empty;
+
         /// <summary>Geçmiş (yeniden eskiye).</summary>
         public ObservableCollection<HistoryRow> History { get; } = new ObservableCollection<HistoryRow>();
 
@@ -368,6 +393,8 @@ namespace Pusula.Wpf.ViewModels
             IsList = false;
             Steps.Clear();
             Facts.Clear();
+            Properties.Clear();
+            OnPropertyChanged(nameof(HasProperties));
             History.Clear();
             Rows.Clear();
             ClearContents();
@@ -663,8 +690,12 @@ namespace Pusula.Wpf.ViewModels
                 var text = record.Fields.TryGetValue(field.Key, out value) && value.Trim().Length > 0
                     ? value.Trim() + (field.Unit.Length > 0 && field.Kind == FieldKind.Number ? " " + field.Unit : string.Empty)
                     : string.Empty;
-                Facts.Add(new FactRow(field.Name, text));
+                Properties.Add(new FactRow(field.Name, text));
             }
+
+            propertiesSubType = record.SubType;
+            OnPropertyChanged(nameof(HasProperties));
+            OnPropertyChanged(nameof(PropertiesHeader));
 
             // Geçmiş: durum olayları ve kısa notlar, yeniden eskiye (aynı gün: not olaydan sonra yazılmış sayılır).
             var rows = record.Events.Select(e => new HistoryRow(e, shownType))

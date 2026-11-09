@@ -1255,6 +1255,36 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
+
+                            <!-- Özellikler: türe özel alanlar iki sütunda; etiket üstte küçük, değer altta; boş olan soluk -->
+                            <StackPanel Visibility="{Binding Inventory.HasProperties, Converter={StaticResource BoolToVis}}">
+                                <Border Height="1" Margin="0,12,0,10" Background="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                                <TextBlock Style="{StaticResource PaneLabel}" Text="{Binding Inventory.PropertiesHeader}" />
+                                <ItemsControl x:Name="PropertyList" ItemsSource="{Binding Inventory.Properties}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="2" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Margin="0,0,8,8" Padding="10,6" CornerRadius="{DynamicResource ControlCornerRadius}"
+                                                    Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                                <StackPanel>
+                                                    <TextBlock Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Label}" />
+                                                    <TextBlock x:Name="PropValue" Margin="0,2,0,0" FontWeight="SemiBold" TextWrapping="Wrap" Text="{Binding Value}" />
+                                                </StackPanel>
+                                            </Border>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding IsEmpty}" Value="True">
+                                                    <Setter TargetName="PropValue" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+                                                    <Setter TargetName="PropValue" Property="FontWeight" Value="Normal" />
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
                         </StackPanel>
                     </Border>
                     <ContentControl Content="{Binding}" ContentTemplate="{StaticResource MentionsCardTemplate}" Focusable="False" />

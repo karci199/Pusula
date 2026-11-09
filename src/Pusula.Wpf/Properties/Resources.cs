@@ -1498,5 +1498,12 @@ namespace Pusula.Wpf.Properties
         public static string Mentions_Text { get { return Get("Mentions_Text"); } }
 
         #endregion
+
+        #region Envanter
+
+        /// <summary>Bilgiler kartındaki türe özel alanlar bölümü: alt tür, dolu ve toplam alan sayısı.</summary>
+        public static string Inv_Properties { get { return Get("Inv_Properties"); } }
+
+        #endregion
     }
 }

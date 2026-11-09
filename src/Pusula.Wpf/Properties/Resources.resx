@@ -1278,4 +1278,7 @@
   <data name="Mentions_Text" xml:space="preserve">
     <value>Numara metinde geçiyor</value>
   </data>
+  <data name="Inv_Properties" xml:space="preserve">
+    <value>Özellikler{0} · {1} / {2} dolu</value>
+  </data>
 </root>
