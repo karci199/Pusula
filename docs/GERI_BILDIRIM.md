@@ -90,5 +90,6 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 ## 11. Takip ve iş listesi
 
 - [ ] **Bekleyen işler** listesi (o anlık): "SAP REDO verildi" gibi, ayrıntısız, basit.
+  - [x] İlk adım: stok Genel sayfasında **Açık işler** (md notlarındaki `- [ ]` maddeleri; tıklayınca not açılır). Proje ve haftalık rapor sonra.
 - [ ] **İlerleme durumu** (jig hazır mı, yazılım var mı / hazır mı) — büyük ölçüde elle.
 - [ ] Jig teslim edildi mi takibi (envanter durumu var; stok ekranında görünürlüğü).

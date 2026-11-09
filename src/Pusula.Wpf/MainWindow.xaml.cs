@@ -844,6 +844,15 @@ namespace Pusula.Wpf
             viewModel.ConfirmUntrack();
         }
 
+        // Açık iş: notu açar (Ayarlar'daki programla).
+        private void OpenTaskNote_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is string path && path.Length > 0)
+            {
+                viewModel.OpenNoteOrFolder(path, System.IO.Path.GetDirectoryName(path) ?? string.Empty);
+            }
+        }
+
         private void NodeDelete_Click(object sender, RoutedEventArgs e)
         {
             viewModel.OpenDeleteSelected();

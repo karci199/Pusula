@@ -132,6 +132,21 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Genel sekmesi: dikkat maddeleri.</summary>
         public ObservableCollection<AlertItem> Alerts { get; } = new ObservableCollection<AlertItem>();
 
+        /// <summary>Stokun md notlarındaki açık görevler (<c>- [ ]</c>).</summary>
+        public ObservableCollection<OpenTask> OpenTasks { get; } = new ObservableCollection<OpenTask>();
+
+        /// <summary>Açık görev var mı.</summary>
+        public bool HasOpenTasks
+        {
+            get { return OpenTasks.Count > 0; }
+        }
+
+        /// <summary>Açık görevler başlığı ("Açık işler · 4").</summary>
+        public string OpenTasksHeader
+        {
+            get { return string.Format(Resources.General_OpenTasks, OpenTasks.Count); }
+        }
+
         /// <summary>Genel sekmesi: "son sonuçlar" tablosunun sütun başlıkları.</summary>
         public ObservableCollection<string> MatrixHeaders { get; } = new ObservableCollection<string>();
 
@@ -263,6 +278,8 @@ namespace Pusula.Wpf.ViewModels
             Steps.Clear();
             Distribution.Clear();
             Alerts.Clear();
+            OpenTasks.Clear();
+            NotifyOpenTasks();
             TestKpis.Clear();
             MatrixHeaders.Clear();
             MatrixRows.Clear();
@@ -297,6 +314,7 @@ namespace Pusula.Wpf.ViewModels
             StockCover? cover = null;
             ProjectInfo? projectInfo = null;
             List<EventNote> events = new List<EventNote>();
+            List<OpenTask> tasks = new List<OpenTask>();
             try
             {
                 if (kind == FolderKind.Project)
@@ -319,7 +337,9 @@ namespace Pusula.Wpf.ViewModels
                     var summaryTask = Task.Run(() => FolderSummary.ForStock(path, currentTemplates, token), token);
                     var coverTask = Task.Run(() => StockCover.Read(path, Path.GetFileName(path)), token);
                     var eventsTask = Task.Run(() => EventNote.ReadAll(path), token);
-                    await Task.WhenAll(runsTask, treeTask, summaryTask, coverTask, eventsTask).ConfigureAwait(true);
+                    var tasksTask = Task.Run(() => OpenTask.ReadAll(path), token);
+                    await Task.WhenAll(runsTask, treeTask, summaryTask, coverTask, eventsTask, tasksTask).ConfigureAwait(true);
+                    tasks = tasksTask.Result;
                     summary = summaryTask.Result;
                     runs = runsTask.Result;
                     tree = treeTask.Result;
@@ -356,6 +376,12 @@ namespace Pusula.Wpf.ViewModels
 
                 ShowTests(runs);
                 AddToTimeline(summary.Stock, events, path);
+                foreach (var task in tasks)
+                {
+                    OpenTasks.Add(task);
+                }
+
+                NotifyOpenTasks();
                 ShowInventory(summary.Stock, path);
                 if (tree != null)
                 {
@@ -443,6 +469,12 @@ namespace Pusula.Wpf.ViewModels
         }
 
         // Günlük: test koşularına kısa notlar ve Obsidian olay notları tarih sırasıyla (yeniden eskiye) katılır.
+        private void NotifyOpenTasks()
+        {
+            OnPropertyChanged(nameof(HasOpenTasks));
+            OnPropertyChanged(nameof(OpenTasksHeader));
+        }
+
         private void AddToTimeline(StockInfo? info, List<EventNote> events, string path)
         {
             var notes = info?.Notes ?? new List<QuickNote>();

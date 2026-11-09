@@ -1240,5 +1240,12 @@ namespace Pusula.Wpf.Properties
         public static string NoteApp_Missing { get { return Get("NoteApp_Missing"); } }
 
         #endregion
+
+        #region Genel
+
+        /// <summary>Stok Genel sayfası: md notlarındaki - [ ] maddeleri.</summary>
+        public static string General_OpenTasks { get { return Get("General_OpenTasks"); } }
+
+        #endregion
     }
 }

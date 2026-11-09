@@ -1068,4 +1068,7 @@
   <data name="NoteApp_Missing" xml:space="preserve">
     <value>{0} bu bilgisayarda bulunamadı; not Windows varsayılanıyla açıldı.</value>
   </data>
+  <data name="General_OpenTasks" xml:space="preserve">
+    <value>Açık işler · {0}</value>
+  </data>
 </root>
