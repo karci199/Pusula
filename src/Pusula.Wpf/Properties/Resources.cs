@@ -1485,5 +1485,18 @@ namespace Pusula.Wpf.Properties
         public static string Timeline_Analysis { get { return Get("Timeline_Analysis"); } }
 
         #endregion
+
+        #region Bahis
+
+        /// <summary>Başka notlarda bu kayda yapılan bahisler kartının başlığı.</summary>
+        public static string Mentions_Header { get { return Get("Mentions_Header"); } }
+
+        /// <summary>Bahis [[…]] bağlantısıyla yapılmış (ipucu).</summary>
+        public static string Mentions_Link { get { return Get("Mentions_Link"); } }
+
+        /// <summary>Bahis düz yazılmış numara (ipucu).</summary>
+        public static string Mentions_Text { get { return Get("Mentions_Text"); } }
+
+        #endregion
     }
 }

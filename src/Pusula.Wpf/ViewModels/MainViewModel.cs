@@ -157,6 +157,7 @@ namespace Pusula.Wpf.ViewModels
                     Detail.InventoryItems = inventoryItems;
                     Detail.Load(selectedNode, templates, types);
                     Inventory.Load(selectedNode, inventoryItems, types);
+                    LoadMentions(selectedNode);
                 }
             }
         }
@@ -352,6 +353,7 @@ namespace Pusula.Wpf.ViewModels
             SelectedNode = null;
             OnPropertyChanged(nameof(HasRoot));
             WatchRoot();
+            ResetMentions();
             if (!HasRoot)
             {
                 return;

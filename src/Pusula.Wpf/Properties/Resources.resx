@@ -1269,4 +1269,13 @@
   <data name="Timeline_Analysis" xml:space="preserve">
     <value>analiz {0}</value>
   </data>
+  <data name="Mentions_Header" xml:space="preserve">
+    <value>Bahsedildiği yerler · {0}</value>
+  </data>
+  <data name="Mentions_Link" xml:space="preserve">
+    <value>Bağlantı</value>
+  </data>
+  <data name="Mentions_Text" xml:space="preserve">
+    <value>Numara metinde geçiyor</value>
+  </data>
 </root>

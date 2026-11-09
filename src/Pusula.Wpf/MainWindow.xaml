@@ -526,6 +526,50 @@
             </DataTemplate.Triggers>
         </DataTemplate>
 
+        <!-- Bahsedildiği yerler: başka notlarda bu kayda yapılan bahisler; tıklayınca not açılır -->
+        <DataTemplate x:Key="MentionsCardTemplate">
+            <Expander Margin="0,12,0,0" IsExpanded="{Binding MentionsExpanded, Mode=TwoWay}"
+                      Visibility="{Binding HasMentions, Converter={StaticResource BoolToVis}}">
+                <Expander.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Link}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                        <TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding MentionsHeader}" />
+                    </StackPanel>
+                </Expander.Header>
+                <ItemsControl Margin="0,4,0,0" ItemsSource="{Binding Mentions}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Style="{DynamicResource SubtleButtonStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                    Padding="6,5" Margin="0,0,0,2" Tag="{Binding}" Click="Mention_Click" ToolTip="{Binding RelativePath}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <controls:FontIcon x:Name="Kind" Glyph="{x:Static local:AppIcons.Link}" FontSize="12" Margin="0,3,10,0" VerticalAlignment="Top"
+                                                       Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" ToolTip="{x:Static res:Resources.Mentions_Link}" />
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Text="{Binding Source}" />
+                                        <TextBlock Margin="0,2,0,0" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Snippet}" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Margin="10,0,0,0" Style="{DynamicResource CaptionTextBlockStyle}"
+                                               Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Meta}" />
+                                </Grid>
+                            </Button>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding IsLink}" Value="False">
+                                    <Setter TargetName="Kind" Property="Glyph" Value="{x:Static local:AppIcons.Note}" />
+                                    <Setter TargetName="Kind" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+                                    <Setter TargetName="Kind" Property="ToolTip" Value="{x:Static res:Resources.Mentions_Text}" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Expander>
+        </DataTemplate>
+
         <!-- Testler / Kalifikasyon satırı sağ tık menüsü -->
         <ContextMenu x:Key="RunMenu">
             <MenuItem Header="{x:Static res:Resources.Run_OpenNote}" Click="RunMenuNote_Click">
@@ -1077,6 +1121,7 @@
                                     <ItemsControl ItemsSource="{Binding Detail.OpenTasks}" ItemTemplate="{Binding ItemTemplate, ElementName=OpenTaskList}" />
                                 </ScrollViewer>
                             </Expander>
+                            <ContentControl Content="{Binding}" ContentTemplate="{StaticResource MentionsCardTemplate}" Focusable="False" />
                         </StackPanel>
                     </Border>
                 <ListView x:Name="ProjectStockList" Grid.Row="1"
@@ -1212,6 +1257,7 @@
                             </ItemsControl>
                         </StackPanel>
                     </Border>
+                    <ContentControl Content="{Binding}" ContentTemplate="{StaticResource MentionsCardTemplate}" Focusable="False" />
                     </StackPanel>
                     <StackPanel Grid.Column="2">
                     <!-- Obsidian notu: ilk satırlar; yoksa "Not oluştur" -->
@@ -1480,6 +1526,8 @@
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
                                         </Expander>
+
+                                        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource MentionsCardTemplate}" Focusable="False" />
 
                                         <StackPanel Orientation="Horizontal" Margin="0,22,0,10">
                                             <controls:FontIcon Glyph="{x:Static local:AppIcons.Inventory}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />

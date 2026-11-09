@@ -316,6 +316,14 @@ namespace Pusula.Wpf
             return (menu?.PlacementTarget as ListView)?.SelectedItem as TestRunRow;
         }
 
+        private void Mention_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is MentionRow mention)
+            {
+                viewModel.OpenNoteOrFolder(mention.Path, mention.Folder);
+            }
+        }
+
         private void RunMenuAnalysis_Click(object sender, RoutedEventArgs e)
         {
             var run = SelectedRun(sender);

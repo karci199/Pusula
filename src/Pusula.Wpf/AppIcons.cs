@@ -60,6 +60,9 @@
         /// <summary>Not / doküman.</summary>
         public const string Note = "\uE8A5";
 
+        /// <summary>Bağlantı (bahsedildiği yerler).</summary>
+        public const string Link = "\uE71B";
+
         /// <summary>Envanter bölümü (kutular).</summary>
         public const string Inventory = "\uE8F1";
 
