@@ -62,4 +62,26 @@ try {
     Check 'geçici dosya kalmaz' (@(Get-ChildItem $r -Recurse -Filter '*.tmp-*').Count -eq 0)
 } finally { Remove-Item -Recurse -Force $r -ErrorAction SilentlyContinue }
 Check 'kelime sayısı YAML hariç' (($MN::WordCount("---`na: b c`n---`nİki kelime, üç.")) -eq 3)
+"--- 6. Düzenleme işlemleri"
+$E = [Pusula.Core.Markdown.MarkdownEditing]
+$r = $E::Wrap('a kalın b', 2, 5, '**'); Check 'kalın sar' ($r.Text -eq 'a **kalın** b' -and $r.SelectionStart -eq 4 -and $r.SelectionLength -eq 5)
+$r2 = $E::Wrap($r.Text, $r.SelectionStart, $r.SelectionLength, '**'); Check 'tekrar basınca kaldır' ($r2.Text -eq 'a kalın b')
+$r = $E::Wrap('ab', 1, 0, '=='); Check 'boş seçim: imleç arada' ($r.Text -eq 'a====b' -and $r.SelectionStart -eq 3)
+$r = $E::TogglePrefix("bir`r`niki", 0, 8, '- [ ] '); Check 'iki satıra görev kutusu (CRLF)' ($r.Text -eq "- [ ] bir`r`n- [ ] iki")
+$r = $E::TogglePrefix($r.Text, 0, $r.Text.Length, '- [ ] '); Check 'görev kutusu kaldır' ($r.Text -eq "bir`r`niki")
+$r = $E::TogglePrefix("# Eski", 3, 0, '## '); Check 'başlık düzeyi değişir' ($r.Text -eq '## Eski')
+$r = $E::ContinueList("- bir", 5); Check 'liste sürer' ($r.Text -eq "- bir`r`n- " -and $r.SelectionStart -eq 9)
+$r = $E::ContinueList("a`n  3. üç", 9); Check 'numara artar, girinti korunur, LF' ($r.Text -eq "a`n  3. üç`n  4. ")
+$r = $E::ContinueList("- [x] bitti", 11); Check 'görev boş kutuyla sürer' ($r.Text -eq "- [x] bitti`r`n- [ ] ")
+$r = $E::ContinueList("x`r`n- ", 5); Check 'boş madde: listeden çık' ($r.Text -eq "x`r`n" -and $r.SelectionStart -eq 3)
+Check 'liste değil: null' ($E::ContinueList('düz satır', 4) -eq $null)
+$r = $E::Indent("- a`n- b", 4, 3, $false); Check 'girinti' ($r.Text -eq "- a`n  - b")
+$r = $E::Indent($r.Text, 6, 0, $true); Check 'girinti geri' ($r.Text -eq "- a`n- b")
+$q = $E::FindQuery('Ölçüm @JIG-10', 13); Check '@ sorgusu' ($q -ne $null -and $q.Text -eq 'JIG-10' -and -not $q.IsLink -and $q.Start -eq 6)
+$q2 = $E::FindQuery('bak [[AB-70', 11); Check '[[ sorgusu' ($q2 -ne $null -and $q2.IsLink -and $q2.Text -eq 'AB-70' -and $q2.Start -eq 4)
+Check 'e-posta @ değil' ($E::FindQuery('a@b', 3) -eq $null)
+Check 'kapanmış bağlantı sorgu değil' ($E::FindQuery('[[X]] y', 7) -eq $null)
+$r = $E::ApplySuggestion('Ölçüm @JIG-10 tamam', 13, $q, '[[JIG-1000-0009]]'); Check 'öneri yerleşir' ($r.Text -eq 'Ölçüm [[JIG-1000-0009]] tamam' -and $r.SelectionStart -eq 23)
+$r = $E::ApplySuggestion('bak [[AB-70]]', 11, $q2, '[[AB-7000-0003]]'); Check 'otomatik kapanış iki kez yazılmaz' ($r.Text -eq 'bak [[AB-7000-0003]]')
+$lc = $E::LineColumn("ab`r`ncd", 5); Check 'satır / sütun' ($lc.Item1 -eq 2 -and $lc.Item2 -eq 2)
 "SONUÇ OK=$ok HATA=$fail"
