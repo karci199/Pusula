@@ -133,7 +133,7 @@ namespace Pusula.Wpf.ViewModels
         public ObservableCollection<AlertItem> Alerts { get; } = new ObservableCollection<AlertItem>();
 
         /// <summary>Stokun md notlarındaki açık görevler (<c>- [ ]</c>).</summary>
-        public ObservableCollection<OpenTask> OpenTasks { get; } = new ObservableCollection<OpenTask>();
+        public ObservableCollection<OpenTaskRow> OpenTasks { get; } = new ObservableCollection<OpenTaskRow>();
 
         /// <summary>Açık görev var mı.</summary>
         public bool HasOpenTasks
@@ -332,6 +332,7 @@ namespace Pusula.Wpf.ViewModels
                         () =>
                         {
                             projectInfo = JsonFile.TryRead<ProjectInfo>(TrackingFiles.ProjectFile(path));
+                            tasks = OpenTask.ReadAll(path);
                             return FolderSummary.ForProject(path, templates.ProjectFolders, source.Token);
                         },
                         source.Token);
@@ -381,6 +382,14 @@ namespace Pusula.Wpf.ViewModels
                 {
                     ProjectNotes.Add(new HistoryRow(note));
                 }
+
+                // Projenin bütün stoklarındaki açık işler (kaynak: stok numarası · not).
+                foreach (var task in tasks)
+                {
+                    OpenTasks.Add(new OpenTaskRow(task, path));
+                }
+
+                NotifyOpenTasks();
             }
             else
             {
@@ -399,7 +408,7 @@ namespace Pusula.Wpf.ViewModels
                 AddToTimeline(summary.Stock, events, path);
                 foreach (var task in tasks)
                 {
-                    OpenTasks.Add(task);
+                    OpenTasks.Add(new OpenTaskRow(task, string.Empty));
                 }
 
                 NotifyOpenTasks();

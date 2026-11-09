@@ -35,8 +35,14 @@ try {
     Check 'SH2000: 6 açık iş (ana not 4 + karar notu 2)' ($texts.Count -eq 6 -and ($texts -contains 'SN02 VNA S11') -and ($texts -contains 'Antenin arkasına absorban koy')) ($texts -join ' | ')
     Check 'başlık' ($vm.Detail.OpenTasksHeader -eq 'Açık işler · 6') $vm.Detail.OpenTasksHeader
     Check 'işaretli madde yok' (-not ($texts -contains 'ATP Rev B yayımlandı (07.11.2026)'))
-    Check 'test notunda kaynak klasör adı' (@($vm.Detail.OpenTasks | Where-Object { $_.NotePath -like '*\test.md' } | Where-Object { $_.NoteName -ne 'test' }).Count -ge 1) (($vm.Detail.OpenTasks | ForEach-Object NoteName) -join ',')
+    Check 'test notunda kaynak klasör adı' (@($vm.Detail.OpenTasks | Where-Object { $_.NotePath -like '*\test.md' } | Where-Object { $_.Label -ne 'test' }).Count -ge 1) (($vm.Detail.OpenTasks | ForEach-Object Label) -join ',')
     Snap $win "$Out\open-tasks.png"
+    "--- 3. Proje: bütün stokların açık işleri"
+    $vm.SelectNodeByPath((Join-Path $Data '7000_MILKON')); Wait
+    $rows = @($vm.Detail.OpenTasks)
+    Check 'projede en az 6 iş (SH2000)' ($rows.Count -ge 6) ([string]$rows.Count)
+    Check 'kaynakta stok numarası' (@($rows | Where-Object { $_.Label -like 'AB-7000-0002*' }).Count -ge 6) (($rows | ForEach-Object Label) -join ',')
+    Snap $win "$Out\open-tasks-project.png"
     $vm.SelectNodeByPath((Join-Path $Data '7000_MILKON\AB-7000-0001')); Wait
     Check 'notsuz stokta liste boş' (-not $vm.Detail.HasOpenTasks)
 } finally {
