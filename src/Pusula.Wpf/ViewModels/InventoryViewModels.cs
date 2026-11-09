@@ -64,6 +64,7 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Obsidian olay notundan satır oluşturur (revizyon, arıza …).</summary>
         public HistoryRow(Pusula.Core.Notes.EventNote note)
         {
+            Journal = note.IsJournal ? note : null;
             Status = new StatusChip(EventKinds.Label(note.Kind), EventKinds.ToneFor(note.Kind, note.Importance));
             var date = note.Date.ToString(Resources.Format_Date);
             Meta = note.Person.Length == 0 ? date : date + " · " + note.Person;
@@ -74,6 +75,15 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Sıralama tarihi.</summary>
         public DateTime SortDate { get; }
+
+        /// <summary>Notun Günlük bölümündeki olay (düzenlenebilir / silinebilir); değilse <c>null</c>.</summary>
+        public Pusula.Core.Notes.EventNote? Journal { get; }
+
+        /// <summary>Günlük olayı mı.</summary>
+        public bool IsJournal
+        {
+            get { return Journal != null; }
+        }
 
         /// <summary>Olay notunun yolu (Obsidian notundan gelen satırda); diğerlerinde boş.</summary>
         public string NotePath { get; } = string.Empty;

@@ -106,7 +106,7 @@ namespace Pusula.Core.Notes
                     body.Add(lines[j]);
                 }
 
-                var entry = Parse(notePath, line.Substring(4), body);
+                var entry = Parse(notePath, line.Substring(4), body, line);
                 if (entry != null)
                 {
                     result.Add(entry);
@@ -204,6 +204,69 @@ namespace Pusula.Core.Notes
             return string.Empty;
         }
 
+        /// <summary>
+        /// Notta başlık satırı <paramref name="sourceLine"/> olan girdiyi yeni haliyle değiştirir (<paramref name="entry"/> boşsa siler).
+        /// Notun geri kalanına dokunulmaz. Hata metni; başarıda boş.
+        /// </summary>
+        public static string Replace(string notePath, string sourceLine, JournalEntry? entry)
+        {
+            string text;
+            try
+            {
+                text = File.ReadAllText(notePath, Encoding.UTF8);
+            }
+            catch (IOException ex)
+            {
+                return ex.Message;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return ex.Message;
+            }
+
+            var newline = text.Contains("\r\n") ? "\r\n" : "\n";
+            var lines = text.Replace("\r\n", "\n").Split('\n').ToList();
+            var heading = lines.FindIndex(IsHeading);
+            var start = heading < 0 ? -1 : lines.FindIndex(heading + 1, l => l == sourceLine.TrimEnd('\r'));
+            if (start < 0)
+            {
+                return "not found";
+            }
+
+            var end = start + 1;
+            while (end < lines.Count && !lines[end].StartsWith("### ", StringComparison.Ordinal) && !lines[end].StartsWith("## ", StringComparison.Ordinal))
+            {
+                end++;
+            }
+
+            lines.RemoveRange(start, end - start);
+            if (entry != null)
+            {
+                lines.InsertRange(start, Format(entry).TrimEnd('\n').Split('\n').Concat(new[] { string.Empty }));
+            }
+
+            return WriteAtomic(notePath, string.Join(newline, lines));
+        }
+
+        private static string WriteAtomic(string notePath, string content)
+        {
+            try
+            {
+                var temp = notePath + ".tmp-" + Guid.NewGuid().ToString("N").Substring(0, 8);
+                File.WriteAllText(temp, content, new UTF8Encoding(true));
+                File.Replace(temp, notePath, null);
+                return string.Empty;
+            }
+            catch (IOException ex)
+            {
+                return ex.Message;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return ex.Message;
+            }
+        }
+
         /// <summary>Olayın md bloğu (sonunda boş satır).</summary>
         public static string Format(JournalEntry entry)
         {
@@ -268,7 +331,7 @@ namespace Pusula.Core.Notes
             return string.Equals(trimmed, Heading, StringComparison.OrdinalIgnoreCase) || string.Equals(trimmed, "## Gunluk", StringComparison.OrdinalIgnoreCase);
         }
 
-        private static EventNote? Parse(string path, string head, List<string> body)
+        private static EventNote? Parse(string path, string head, List<string> body, string sourceLine)
         {
             var parts = head.Split(new[] { " · " }, StringSplitOptions.None).Select(p => p.Trim()).ToList();
             DateTime date;
@@ -327,7 +390,8 @@ namespace Pusula.Core.Notes
 
             return EventNote.FromJournal(path, kind.Length > 0 ? KindKey(kind) : "not", date, title.Length > 0 ? title : kind, excerpt, person,
                 string.Equals(importance, NormalImportance, StringComparison.OrdinalIgnoreCase) ? string.Empty : importance,
-                related.Distinct(StringComparer.OrdinalIgnoreCase).ToList(), tags.Distinct(StringComparer.OrdinalIgnoreCase).ToList());
+                related.Distinct(StringComparer.OrdinalIgnoreCase).ToList(), tags.Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
+                sourceLine, bodyText, kind);
         }
 
         private static bool IsMetaLine(string line)

@@ -52,11 +52,23 @@ namespace Pusula.Core.Notes
         /// <summary>Notun içindeki <c>## Günlük</c> bölümünden mi geldi (ayrı olay notu değil).</summary>
         public bool IsJournal { get; private set; }
 
+        /// <summary>Günlük girdisinin notta yazıldığı başlık satırı (<c>### …</c>); düzenleme / silmede girdiyi bulmak için.</summary>
+        public string SourceLine { get; private set; } = string.Empty;
+
+        /// <summary>Günlük girdisinin tam açıklaması (satır sonlarıyla).</summary>
+        public string Body { get; private set; } = string.Empty;
+
+        /// <summary>Günlük girdisinin notta yazılan tür adı ("Karar").</summary>
+        public string KindLabel { get; private set; } = string.Empty;
+
         /// <summary>Günlük bölümündeki bir girdiden olay kurar (bkz. <see cref="Journal"/>).</summary>
-        internal static EventNote FromJournal(string path, string kind, DateTime date, string title, string body, string person, string importance, List<string> related, List<string> tags)
+        internal static EventNote FromJournal(string path, string kind, DateTime date, string title, string body, string person, string importance, List<string> related, List<string> tags, string sourceLine, string fullBody, string kindLabel)
         {
             return new EventNote
             {
+                SourceLine = sourceLine,
+                Body = fullBody,
+                KindLabel = kindLabel,
                 Path = path,
                 Kind = kind,
                 Date = date,

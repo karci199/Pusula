@@ -30,6 +30,20 @@ try {
     $titles = @($vm.Detail.Timeline | ForEach-Object Title)
     Check 'Günlük sekmesinde görünür' (($titles -contains 'Konnektör N tipine') -and ($titles -contains 'MILKON haftalık')) ($titles -join ' | ')
 
+    "--- Düzenle / sil"
+    $item = @($vm.Detail.Timeline | Where-Object { $_.Title -eq 'Konnektör N tipine' })[0]
+    Check 'günlük olayı düzenlenebilir' ($item -ne $null -and $item.IsJournal)
+    $vm.OpenJournalEdit($item.Journal)
+    Check 'pencere dolu açıldı' ($vm.JournalHeading -eq 'Konnektör N tipine' -and $vm.JournalImportance -eq 'Yüksek' -and $vm.JournalPrimaryText -eq 'Kaydet')
+    $vm.JournalHeading = 'Konnektör N tipine çevrildi'; $vm.JournalImportance = 'Normal'
+    $vm.ConfirmJournal() | Out-Null; Wait
+    $txt = [IO.File]::ReadAllText($note)
+    Check 'düzenlendi, çiftlenmedi' ($txt.Contains('### 12.11.2026 · Karar · Konnektör N tipine çevrildi') -and -not $txt.Contains('Konnektör N tipine' + "`r`n") -and -not $txt.Contains('önem: Yüksek'))
+    $toDelete = @($vm.Detail.Timeline | Where-Object { $_.Title -eq 'MILKON haftalık' })[0].Journal
+    $vm.OpenJournalDelete($toDelete)
+    $vm.ConfirmJournalDelete() | Out-Null; Wait
+    $txt = [IO.File]::ReadAllText($note)
+    Check 'silindi, diğeri duruyor, not başı aynı' (-not $txt.Contains('### 05.11.2026 · Toplantı · MILKON haftalık') -and $txt.Contains('Konnektör N tipine çevrildi') -and $txt.StartsWith($before.TrimEnd()))
     "--- Stoka ait jig: stoktaki ilgili olay Geçmiş'te"
     $stock3 = Join-Path $Data '7000_MILKON\AB-7000-0003'
     $vm.SelectNodeByPath($stock3); Wait

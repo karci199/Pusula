@@ -188,6 +188,12 @@
         <!-- Genel sekmesi: zaman çizelgesi kartı (dikey çizgi + renkli nokta; tıklayınca açılır) -->
         <DataTemplate x:Key="TimelineTemplate">
             <Grid>
+            <Grid.ContextMenu>
+                <ContextMenu Visibility="{Binding IsJournal, Converter={StaticResource BoolToVis}}">
+                    <MenuItem Header="{x:Static res:Resources.Menu_Edit}" Click="JournalEdit_Click" />
+                    <MenuItem Header="{x:Static res:Resources.Journal_Delete}" Click="JournalDelete_Click" />
+                </ContextMenu>
+            </Grid.ContextMenu>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="22" />
                     <ColumnDefinition Width="*" />
@@ -532,6 +538,12 @@
         <!-- Envanter kaydı: geçmişte bir olay (dikey çizgi + renkli nokta) -->
         <DataTemplate x:Key="HistoryTemplate">
             <Grid>
+            <Grid.ContextMenu>
+                <ContextMenu Visibility="{Binding IsJournal, Converter={StaticResource BoolToVis}}">
+                    <MenuItem Header="{x:Static res:Resources.Menu_Edit}" Click="JournalEdit_Click" />
+                    <MenuItem Header="{x:Static res:Resources.Journal_Delete}" Click="JournalDelete_Click" />
+                </ContextMenu>
+            </Grid.ContextMenu>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="20" />
                     <ColumnDefinition Width="*" />
@@ -1935,6 +1947,16 @@
 
             </Grid>
             </StackPanel>
+        </controls:ContentDialog>
+
+        <!-- Günlük olayını sil: yalnız o olayın satırları nottan kalkar -->
+        <controls:ContentDialog Grid.RowSpan="3"
+                                IsOpen="{Binding IsJournalDeleteOpen, Mode=TwoWay}"
+                                Title="{x:Static res:Resources.Journal_DeleteTitle}"
+                                PrimaryButtonText="{x:Static res:Resources.Journal_Delete}"
+                                CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                PrimaryButtonClick="JournalDelete_PrimaryButtonClick">
+            <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="{Binding JournalDeleteText}" />
         </controls:ContentDialog>
 
         <!-- Takipten çıkar: dosyalar silinmez -->

@@ -940,6 +940,36 @@ namespace Pusula.Wpf
             viewModel.OpenJournalHere();
         }
 
+        // Günlük olayında sağ tık: düzenle / sil.
+        private static Pusula.Core.Notes.EventNote? JournalOf(object sender)
+        {
+            var context = (sender as FrameworkElement)?.DataContext;
+            return (context as TimelineItem)?.Journal ?? (context as HistoryRow)?.Journal;
+        }
+
+        private void JournalEdit_Click(object sender, RoutedEventArgs e)
+        {
+            var note = JournalOf(sender);
+            if (note != null)
+            {
+                viewModel.OpenJournalEdit(note);
+            }
+        }
+
+        private void JournalDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var note = JournalOf(sender);
+            if (note != null)
+            {
+                viewModel.OpenJournalDelete(note);
+            }
+        }
+
+        private void JournalDelete_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            viewModel.ConfirmJournalDelete();
+        }
+
         private void Journal_PrimaryButtonClick(object sender, RoutedEventArgs e)
         {
             viewModel.ConfirmJournal();

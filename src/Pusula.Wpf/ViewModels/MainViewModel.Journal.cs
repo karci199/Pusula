@@ -145,7 +145,78 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Ekle düğmesinin yazısı: başlık yazılmadan boş (düğme görünmez).</summary>
         public string JournalPrimaryText
         {
-            get { return journalHeading.Trim().Length > 0 && JournalDate.HasValue ? Resources.Journal_Add : string.Empty; }
+            get { return journalHeading.Trim().Length > 0 && JournalDate.HasValue ? (editing != null ? Resources.Edit_Save : Resources.Journal_Add) : string.Empty; }
+        }
+
+        private EventNote? editing;
+        private EventNote? deleting;
+        private bool isJournalDeleteOpen;
+        private string journalDeleteText = string.Empty;
+
+        /// <summary>Günlük olayını silme onayı açık mı.</summary>
+        public bool IsJournalDeleteOpen
+        {
+            get { return isJournalDeleteOpen; }
+            set { SetDialogOpen(ref isJournalDeleteOpen, value); }
+        }
+
+        /// <summary>Silme onayının metni.</summary>
+        public string JournalDeleteText
+        {
+            get { return journalDeleteText; }
+            private set { SetProperty(ref journalDeleteText, value); }
+        }
+
+        /// <summary>Günlükteki olayı aynı pencerede, dolu olarak açar.</summary>
+        public void OpenJournalEdit(EventNote note)
+        {
+            if (!OpenJournalHere())
+            {
+                return;
+            }
+
+            editing = note;
+            journalNotePath = note.Path;
+            JournalTitle = Resources.Journal_EditTitle;
+            JournalKind = note.KindLabel;
+            JournalDateText = note.Date.ToString(note.Date.TimeOfDay == TimeSpan.Zero ? "dd.MM.yyyy" : "dd.MM.yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+            JournalHeading = note.Title;
+            JournalBody = note.Body;
+            JournalImportance = note.Importance.Length > 0 ? note.Importance : Resources.Importance_Normal;
+            JournalTags = string.Join(", ", note.Tags);
+            OnPropertyChanged(nameof(JournalPrimaryText));
+        }
+
+        /// <summary>Günlükteki olayı silme onayını açar.</summary>
+        public void OpenJournalDelete(EventNote note)
+        {
+            deleting = note;
+            journalFolder = Inventory.Item?.Folder ?? (selectedNode?.Path ?? string.Empty);
+            JournalDeleteText = string.Format(Resources.Journal_DeleteText, note.Title, note.Date.ToString(Resources.Format_Date), Path.GetFileName(note.Path));
+            IsJournalDeleteOpen = true;
+        }
+
+        /// <summary>Onaylanan olayı nottan kaldırır (yalnız o olayın satırları).</summary>
+        public bool ConfirmJournalDelete()
+        {
+            IsJournalDeleteOpen = false;
+            var note = deleting;
+            deleting = null;
+            if (note == null)
+            {
+                return false;
+            }
+
+            var error = Journal.Replace(note.Path, note.SourceLine, null);
+            if (error.Length > 0)
+            {
+                Status = string.Format(Resources.Error_Io, error);
+                return false;
+            }
+
+            Status = string.Format(Resources.Journal_Deleted, note.Title);
+            RefreshShowing(journalFolder);
+            return true;
         }
 
         /// <summary>Tür seçenekleri.</summary>
@@ -186,6 +257,7 @@ namespace Pusula.Wpf.ViewModels
             }
 
             journalFolder = folder;
+            editing = null;
             var name = Path.GetFileName(folder.TrimEnd('\\'));
             JournalRelated.Clear();
             switch (kind.Value)
@@ -256,7 +328,14 @@ namespace Pusula.Wpf.ViewModels
             };
             entry.Related.AddRange(JournalRelated.Where(r => r.IsChecked).Select(r => r.Number));
             entry.Tags.AddRange(JournalTags.Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            var error = Journal.Add(journalNotePath, entry);
+            var edited = editing;
+            editing = null;
+            if (edited != null)
+            {
+                entry.Related.AddRange(edited.Related);
+            }
+
+            var error = edited != null ? Journal.Replace(edited.Path, edited.SourceLine, entry) : Journal.Add(journalNotePath, entry);
             if (error.Length > 0)
             {
                 Status = string.Format(Resources.Error_Io, error);

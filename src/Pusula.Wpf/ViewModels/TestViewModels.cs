@@ -241,6 +241,7 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Obsidian olay notundan kart oluşturur (toplantı, karar …); tıklayınca not açılır.</summary>
         public TimelineItem(Pusula.Core.Notes.EventNote note)
         {
+            Journal = note.IsJournal ? note : null;
             Title = note.Title;
             Result = new StatusChip(EventKinds.Label(note.Kind), EventKinds.ToneFor(note.Kind, note.Importance));
             Summary = note.Excerpt;
@@ -263,6 +264,15 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Uygulamadan yazılmış kısa not mu (koşu değil).</summary>
         public bool IsQuickNote { get; }
+
+        /// <summary>Notun Günlük bölümündeki olay (düzenlenebilir / silinebilir); değilse <c>null</c>.</summary>
+        public Pusula.Core.Notes.EventNote? Journal { get; }
+
+        /// <summary>Günlük olayı mı (sağ tıkla düzenle / sil).</summary>
+        public bool IsJournal
+        {
+            get { return Journal != null; }
+        }
 
         /// <summary>"SATIMO · SN01 · T2".</summary>
         public string Title { get; }

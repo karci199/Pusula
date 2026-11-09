@@ -1197,4 +1197,19 @@
   <data name="Journal_DateHint" xml:space="preserve">
     <value>Gün.Ay.Yıl; istersen saat: 12.11.2026 14:30</value>
   </data>
+  <data name="Journal_EditTitle" xml:space="preserve">
+    <value>Olayı düzenle</value>
+  </data>
+  <data name="Journal_Delete" xml:space="preserve">
+    <value>Sil</value>
+  </data>
+  <data name="Journal_DeleteTitle" xml:space="preserve">
+    <value>Olayı sil</value>
+  </data>
+  <data name="Journal_DeleteText" xml:space="preserve">
+    <value>{0} ({1}) günlükten silinsin mi? Yalnız bu olayın satırları {2} notundan kaldırılır.</value>
+  </data>
+  <data name="Journal_Deleted" xml:space="preserve">
+    <value>{0} günlükten silindi.</value>
+  </data>
 </root>

@@ -1392,6 +1392,21 @@ namespace Pusula.Wpf.Properties
         /// <summary>Tarih ipucu.</summary>
         public static string Journal_DateHint { get { return Get("Journal_DateHint"); } }
 
+        /// <summary>Pencere başlığı.</summary>
+        public static string Journal_EditTitle { get { return Get("Journal_EditTitle"); } }
+
+        /// <summary>Günlük olayı menüsü / düğme.</summary>
+        public static string Journal_Delete { get { return Get("Journal_Delete"); } }
+
+        /// <summary>Onay başlığı.</summary>
+        public static string Journal_DeleteTitle { get { return Get("Journal_DeleteTitle"); } }
+
+        /// <summary>Onay metni.</summary>
+        public static string Journal_DeleteText { get { return Get("Journal_DeleteText"); } }
+
+        /// <summary>Durum çubuğu.</summary>
+        public static string Journal_Deleted { get { return Get("Journal_Deleted"); } }
+
         #endregion
     }
 }
