@@ -1673,10 +1673,10 @@
                                 PrimaryButtonText="{x:Static res:Resources.Dialog_Create}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="ProjectDialog_PrimaryButtonClick">
-            <StackPanel Width="360">
+            <StackPanel Width="312">
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
                     <controls:FontIcon Glyph="{x:Static local:AppIcons.Project}" FontSize="22" Foreground="{DynamicResource Pusula.ProjectIconBrush}" VerticalAlignment="Center" />
-                    <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="320"
+                    <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="270"
                                Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding RootPath}" ToolTip="{Binding RootPath}" />
                 </StackPanel>
                 <controls:FormField Header="{x:Static res:Resources.Field_ProjectNo}" IsRequired="True" LabelWidth="90">
@@ -1698,10 +1698,10 @@
                                 PrimaryButtonText="{x:Static res:Resources.Dialog_Create}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="StockDialog_PrimaryButtonClick">
-            <StackPanel Width="360">
+            <StackPanel Width="312">
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
                     <controls:FontIcon Glyph="{x:Static local:AppIcons.Stock}" FontSize="22" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                    <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="320"
+                    <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="270"
                                Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding StockNumberHint}" />
                 </StackPanel>
                 <controls:FormField Header="{x:Static res:Resources.Field_StockNo}" IsRequired="True" LabelWidth="90">
@@ -1732,7 +1732,7 @@
                                 PrimaryButtonText="{x:Static res:Resources.Mark_Confirm}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="MarkDialog_PrimaryButtonClick">
-            <StackPanel MinWidth="340">
+            <StackPanel Width="312">
                 <TextBlock Style="{DynamicResource CaptionTextBlockStyle}"
                            Foreground="{DynamicResource TextSecondaryBrush}"
                            TextWrapping="Wrap"
@@ -1765,7 +1765,7 @@
                                 PrimaryButtonText="{x:Static res:Resources.Dialog_Create}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="InventoryDialog_PrimaryButtonClick">
-            <StackPanel MinWidth="380">
+            <StackPanel Width="312">
                 <TextBlock Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}"
                            TextWrapping="Wrap" MaxWidth="400" HorizontalAlignment="Left" Margin="0,0,0,10"
                            Text="{x:Static res:Resources.Mark_Hint}"
@@ -1807,7 +1807,7 @@
                                 PrimaryButtonText="{x:Static res:Resources.Editor_Save}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="EventDialog_PrimaryButtonClick">
-            <StackPanel MinWidth="380">
+            <StackPanel Width="312">
                 <controls:FormField Header="{x:Static res:Resources.Inv_Date}" LabelWidth="90">
                     <DatePicker SelectedDate="{Binding EventDate, Mode=TwoWay}" />
                 </controls:FormField>
@@ -1830,7 +1830,7 @@
                                 PrimaryButtonText="{x:Static res:Resources.QuickNote_Add}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="QuickNote_PrimaryButtonClick">
-            <TextBox MinWidth="380" MinHeight="70" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"
+            <TextBox Width="312" MinHeight="70" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"
                      Text="{Binding QuickNoteText, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
         </controls:ContentDialog>
 
@@ -1841,7 +1841,7 @@
                                 PrimaryButtonText="{x:Static res:Resources.Edit_Save}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="Edit_PrimaryButtonClick">
-            <StackPanel MinWidth="400">
+            <StackPanel Width="312">
                 <controls:FormField Header="{x:Static res:Resources.Edit_Number}" LabelWidth="80">
                     <TextBlock Text="{Binding EditNumber}" FontWeight="SemiBold" VerticalAlignment="Center" />
                 </controls:FormField>
@@ -1873,7 +1873,7 @@
                                 PrimaryButtonText="{Binding DeletePrimaryText}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="Delete_PrimaryButtonClick">
-            <StackPanel MaxWidth="460">
+            <StackPanel Width="312">
                 <TextBlock TextWrapping="Wrap" Text="{Binding DeleteText}" />
                 <controls:SearchBox Margin="0,12,0,0" PlaceholderText="{x:Static res:Resources.Delete_TypeHint}"
                                     Text="{Binding DeleteTyped, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
@@ -1887,9 +1887,9 @@
                                 PrimaryButtonText="{Binding JournalPrimaryText}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="Journal_PrimaryButtonClick">
-            <StackPanel>
+            <StackPanel Width="312">
                 <TextBlock Margin="0,0,0,14" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" Text="{Binding JournalTarget}" />
-            <Grid Width="330">
+            <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="76" />
                     <ColumnDefinition Width="*" />
@@ -1982,7 +1982,7 @@
                                 PrimaryButtonText="{x:Static res:Resources.Journal_Delete}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="JournalDelete_PrimaryButtonClick">
-            <TextBlock MaxWidth="400" TextWrapping="Wrap" Text="{Binding JournalDeleteText}" />
+            <TextBlock Width="312" TextWrapping="Wrap" Text="{Binding JournalDeleteText}" />
         </controls:ContentDialog>
 
         <!-- Takipten çıkar: dosyalar silinmez -->
@@ -1992,7 +1992,7 @@
                                 PrimaryButtonText="{x:Static res:Resources.Untrack_Confirm}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="Untrack_PrimaryButtonClick">
-            <TextBlock MaxWidth="440" TextWrapping="Wrap" Text="{Binding UntrackText}" />
+            <TextBlock Width="312" TextWrapping="Wrap" Text="{Binding UntrackText}" />
         </controls:ContentDialog>
 
         <controls:ContentDialog Grid.RowSpan="3"
@@ -2001,7 +2001,7 @@
                                 PrimaryButtonText="{x:Static res:Resources.ModuleDialog_Apply}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="StatusNote_PrimaryButtonClick">
-            <controls:FormField MinWidth="320" Header="{x:Static res:Resources.Field_StatusNote}" LabelWidth="60">
+            <controls:FormField Width="312" Header="{x:Static res:Resources.Field_StatusNote}" LabelWidth="60">
                 <TextBox Text="{Binding StatusNoteText, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
             </controls:FormField>
         </controls:ContentDialog>
@@ -2013,7 +2013,7 @@
                                 PrimaryButtonText="{x:Static res:Resources.Dialog_Add}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="ModuleDialog_PrimaryButtonClick">
-            <ItemsControl MinWidth="320"
+            <ItemsControl Width="312"
                           ItemsSource="{Binding AddableModules}"
                           ItemTemplate="{StaticResource ModuleOptionTemplate}" />
         </controls:ContentDialog>
