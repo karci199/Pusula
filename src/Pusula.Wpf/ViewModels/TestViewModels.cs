@@ -304,6 +304,28 @@ namespace Pusula.Wpf.ViewModels
             }
         }
 
+        /// <summary>
+        /// Stokun kullandığı jig / kablo kaydındaki bir durum değişikliğinden kart oluşturur (Talep, Hazırlanıyor, Teslim alındı …).
+        /// Kendiliğinden gelir; düzenlenmez, kaydın kendi sayfasından değişir. <paramref name="notePath"/> kaydın notu (yoksa boş: klasör açılır).
+        /// </summary>
+        public TimelineItem(Pusula.Core.Inventory.InventoryEvent inventoryEvent, Pusula.Core.Inventory.InventoryItem item, Pusula.Core.Types.TypeDefinition type, string notePath)
+        {
+            Title = item.Record.Number + " · " + item.Record.Name;
+            Result = StatusChip.For(type, inventoryEvent.Status);
+            Summary = inventoryEvent.Note;
+            var date = inventoryEvent.DateValue.HasValue ? inventoryEvent.DateValue.Value.ToString(Resources.Format_Date) : inventoryEvent.Date;
+            Meta = type.Name + " · " + (inventoryEvent.Person.Length == 0 ? date : date + " · " + inventoryEvent.Person);
+            Detail = inventoryEvent.Location.Length > 0 ? Resources.Inv_Location + ": " + inventoryEvent.Location : string.Empty;
+            Photo = string.Empty;
+            NotePath = notePath;
+            Folder = item.Folder;
+            SortDate = inventoryEvent.DateValue ?? DateTime.MinValue;
+            IsInventory = true;
+        }
+
+        /// <summary>Jig / kablo kaydından gelen durum olayı mı.</summary>
+        public bool IsInventory { get; }
+
         /// <summary>Sıralama tarihi (koşu tarihi ya da notun zamanı).</summary>
         public DateTime SortDate { get; }
 

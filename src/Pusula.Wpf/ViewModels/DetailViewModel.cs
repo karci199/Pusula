@@ -572,6 +572,13 @@ namespace Pusula.Wpf.ViewModels
                     .Select(i => new InventoryRow(i, type, i.Level != InventoryLevel.Stock))
                     .Concat(missing.Where(type.AcceptsNumber).Select(n => new InventoryRow(n, type)))
                     .ToList();
+
+                // Kökte hiç kaydı olmayan tür (örn. henüz kullanılmayan Yazılım) stokta boş sekme açmaz.
+                if (rows.Count == 0 && !InventoryItems.Any(i => string.Equals(i.Record.Type, type.Key, StringComparison.OrdinalIgnoreCase)))
+                {
+                    continue;
+                }
+
                 var group = new StockInventoryGroup(type, rows);
                 InventoryGroups.Add(group);
                 foreach (var row in group.Rows)
@@ -586,6 +593,23 @@ namespace Pusula.Wpf.ViewModels
                         var detail = row.Number + " · " + row.Status.Name + (last != null && last.Note.Length > 0 ? " · " + last.Note : string.Empty);
                         Alerts.Add(new AlertItem(AppIcons.Repair, type.Name, detail, StatusTone.Waiting));
                     }
+                }
+            }
+
+            // Kullanılan kayıtların durum değişiklikleri (Talep, Hazırlanıyor, Teslim …) zaman çizelgesine kendiliğinden düşer.
+            var inventoryEvents = used
+                .Where(i => i.Record.Events.Count > 0)
+                .Select(i => new { item = i, type = types.Find(i.Record.Type), note = NoteFile.Find(i.Folder, i.Record.Number) })
+                .Where(x => x.type != null)
+                .SelectMany(x => x.item.Record.Events.Select(e => new TimelineItem(e, x.item, x.type!, x.note)))
+                .ToList();
+            if (inventoryEvents.Count > 0)
+            {
+                var all = Timeline.Where(t => !t.IsInventory).Concat(inventoryEvents).OrderByDescending(t => t.SortDate).ToList();
+                Timeline.Clear();
+                foreach (var item in all)
+                {
+                    Timeline.Add(item);
                 }
             }
 

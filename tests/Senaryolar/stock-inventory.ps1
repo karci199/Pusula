@@ -53,7 +53,33 @@ try {
     Check 'özet: Jig 3 · 1 dikkat' ($jg.Summary -eq 'Jig 3 · 1 dikkat' -and $jg.HasWarning) $jg.Summary
     Check 'dikkat kartı: onarımdaki jig' (@($vm.Detail.Alerts | Where-Object { $_.Detail -match 'JIG-1000-0009 · Onarım' }).Count -eq 1)
     Check 'aday listesinden bağlılar düşer' (@($vm.LinkCandidates($jig)).Count -eq 0)
+    $inv = @($vm.Detail.Timeline | Where-Object IsInventory)
+    Check 'zaman çizelgesi: jig/kablo durum olayları' (@($inv | Where-Object { $_.Title -like 'JIG-1000-0009*' -and $_.Result.Name -eq 'Talep' }).Count -eq 1 -and @($inv | Where-Object { $_.Title -like 'JIG-1000-0009*' }).Count -eq 5) (($inv | ForEach-Object { $_.Title + ' ' + $_.Result.Name }) -join ' / ')
+    $dates = @($vm.Detail.Timeline | ForEach-Object SortDate)
+    Check 'zaman çizelgesi yeniden eskiye' ((@($dates | Sort-Object -Descending) -join ',') -eq ($dates -join ','))
+    Check 'olayda konum ayrıntısı' (@($inv | Where-Object { $_.Detail -eq 'Konum: Lab-A raf 3' }).Count -ge 1)
+    function InvTitles() { @($vm.Detail.Timeline | Where-Object IsInventory | ForEach-Object { ($_.Title -split ' ')[0] } | Sort-Object -Unique) -join ',' }
+    Check 'kaynaklar: stok jigi, bağlı jigler, stok kablosu, bağlı kablo' ((InvTitles) -eq 'JIG-1000-0009,JIG-1000-0014,JIG-1000-0020,JT-0001-0002,JT-0001-0102') (InvTitles)
+    Check 'meta: tür · tarih · kişi' (@($inv | Where-Object { $_.Meta -match '^(Jig|Kablo) · \d\d\.\d\d\.\d{4}' }).Count -eq $inv.Count)
+    Check 'not düğmesi kaydın notunu açar' (@($inv | Where-Object { $_.Title -like 'JIG-1000-0009*' -and $_.NotePath -like '*JIG-1000-0009.md' }).Count -eq 5)
+    Check 'test koşuları ve olaylar da duruyor' (@($vm.Detail.Timeline | Where-Object { -not $_.IsInventory }).Count -ge 4)
     Snap $win "$Out\stock-general.png"
+
+    "--- 3. Kombinler: bağı kaldır, yeni durum, envantersiz stok, kısa not"
+    $vm.SetStockLink('JIG-1000-0020', $false); Wait
+    Check 'bağı kaldırılan jigin olayları düşer' (-not ((InvTitles) -match 'JIG-1000-0020')) (InvTitles)
+    $ev = New-Object Pusula.Core.Inventory.InventoryEvent; $ev.Status = 'Teslim alındı'; $ev.Date = '2026-11-09'; $ev.Person = 'katan'; $ev.Location = 'Lab-B'; $ev.Note = 'Rev AC geldi'
+    $jigFolder = @($vm.Detail.InventoryItems | Where-Object { $_.Record.Number -eq 'JIG-1000-0009' })[0].Folder
+    Check 'jige yeni durum yazıldı' ([Pusula.Core.Inventory.InventoryService]::AddEvent($jigFolder, $ev))
+    $vm.SelectedNode = (FindNode $vm.Nodes 'AB-7000-0001'); Wait
+    Check 'envantersiz stokta envanter olayı yok' (@($vm.Detail.Timeline | Where-Object IsInventory).Count -eq 0)
+    $vm.RefreshCommand.Execute($null); Wait; $vm.SelectedNode = (FindNode $vm.Nodes 'AB-7000-0003'); Wait
+    $top = @($vm.Detail.Timeline)[0]
+    Check 'yeni durum en üstte' ($top.IsInventory -and $top.Title -like 'JIG-1000-0009*' -and $top.Result.Name -eq 'Teslim alındı' -and $top.Detail -eq 'Konum: Lab-B') ($top.Title + ' ' + $top.Result.Name)
+    $vm.SetStockLink('JT-0001-0002', $false); $vm.SetStockLink('JIG-1000-0009', $false); Wait
+    Check 'yalnız stokun kendi kayıtları kalır' ((InvTitles) -eq 'JIG-1000-0014,JT-0001-0102') (InvTitles)
+    $d = @($vm.Detail.Timeline | ForEach-Object SortDate)
+    Check 'sıra yine yeniden eskiye' ((@($d | Sort-Object -Descending) -join ',') -eq ($d -join ','))
     $tabs = [System.Windows.Media.VisualTreeHelper]; 
     function FindTab($d) { if ($d -is [System.Windows.Controls.TabControl] -and $d.IsVisible) { return $d }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($d); $i++) { $r = FindTab ([System.Windows.Media.VisualTreeHelper]::GetChild($d, $i)); if ($r) { return $r } }; return $null }
     $tc = $win.FindName('StockTabs'); $tc.SelectedIndex = 4; Snap $win "$Out\stock-inventory.png"; $vm.SelectedNode = (FindNode $vm.Nodes 'AB-7000-0001'); Wait; $vm.SelectedNode = $stock; Wait; Check 'stok değişince Jigler sekmesi açık kalır' ($tc.SelectedItem.Tag -eq 'inventory:jig') $tc.SelectedItem.Tag
