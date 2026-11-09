@@ -981,4 +981,49 @@
   <data name="Cover_Open" xml:space="preserve">
     <value>Fotoğrafı tam boy aç</value>
   </data>
+  <data name="Menu_Edit" xml:space="preserve">
+    <value>Düzenle…</value>
+  </data>
+  <data name="Menu_Untrack" xml:space="preserve">
+    <value>Takipten çıkar…</value>
+  </data>
+  <data name="Edit_Title" xml:space="preserve">
+    <value>Düzenle · {0}</value>
+  </data>
+  <data name="Edit_Number" xml:space="preserve">
+    <value>Numara</value>
+  </data>
+  <data name="Edit_NumberHint" xml:space="preserve">
+    <value>Numara klasörün adıdır; buradan değiştirilmez.</value>
+  </data>
+  <data name="Edit_Name" xml:space="preserve">
+    <value>Ad</value>
+  </data>
+  <data name="Edit_Template" xml:space="preserve">
+    <value>Şablon</value>
+  </data>
+  <data name="Edit_SubType" xml:space="preserve">
+    <value>Alt tür</value>
+  </data>
+  <data name="Edit_Note" xml:space="preserve">
+    <value>Açıklama</value>
+  </data>
+  <data name="Edit_Save" xml:space="preserve">
+    <value>Kaydet</value>
+  </data>
+  <data name="Edit_Saved" xml:space="preserve">
+    <value>{0} kaydedildi.</value>
+  </data>
+  <data name="Untrack_Title" xml:space="preserve">
+    <value>Takipten çıkar · {0}</value>
+  </data>
+  <data name="Untrack_Text" xml:space="preserve">
+    <value>Klasör ve içindeki bütün dosyalar olduğu gibi kalır; yalnız Pusula bu kaydı takip etmeyi bırakır. Takip bilgisi silinmez, yeniden adlandırılır (geri alınabilir). Klasör ağaçta işaretsiz görünür, istersen yeniden işaretlersin. Klasör: {0}</value>
+  </data>
+  <data name="Untrack_Confirm" xml:space="preserve">
+    <value>Takipten çıkar</value>
+  </data>
+  <data name="Untrack_Done" xml:space="preserve">
+    <value>{0} takipten çıkarıldı; dosyalar yerinde.</value>
+  </data>
 </root>

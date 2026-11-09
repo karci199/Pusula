@@ -19,9 +19,10 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 
 ## 3. Düzenleme (eksik)
 
-- [ ] Stok **ekleniyor ama silinemiyor / değiştirilemiyor**. Aynısı jig, kablo vb. için.
-  (Silme = takipten çıkarma; dosyalar silinmez.)
-- [ ] Jig düzenlenemiyor (ad, alt tür, alanlar …).
+- [x] **Düzenle / Takipten çıkar** her kayıtta (proje, stok, jig, kablo …): ağaç sağ tık, proje stok tablosu, envanter listeleri.
+  Düzenle: ad (+ stokta şablon, envanterde alt tür ve açıklama). Takipten çıkar: takip dosyası `….json.kaldirildi-<zaman>` olur, dosyalar yerinde; klasör işaretsiz görünür.
+- [ ] Numara (klasör adı) değiştirme — ayrı adım, klasör yeniden adlandırılır; konuşulacak.
+- [ ] Envanter alan değerleri (Tork, Boy …) düzenleme penceresinde yok.
 
 ## 4. Görünüm
 

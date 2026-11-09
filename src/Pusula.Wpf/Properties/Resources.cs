@@ -1141,5 +1141,54 @@ namespace Pusula.Wpf.Properties
         public static string Cover_Open { get { return Get("Cover_Open"); } }
 
         #endregion
+
+        #region Düzenle
+
+        /// <summary>Ağaç ve tablo menüsü.</summary>
+        public static string Menu_Edit { get { return Get("Menu_Edit"); } }
+
+        /// <summary>Ağaç ve tablo menüsü.</summary>
+        public static string Menu_Untrack { get { return Get("Menu_Untrack"); } }
+
+        /// <summary>Düzenleme diyaloğu başlığı.</summary>
+        public static string Edit_Title { get { return Get("Edit_Title"); } }
+
+        /// <summary>Salt okunur numara.</summary>
+        public static string Edit_Number { get { return Get("Edit_Number"); } }
+
+        /// <summary>Numara açıklaması.</summary>
+        public static string Edit_NumberHint { get { return Get("Edit_NumberHint"); } }
+
+        /// <summary>Ad alanı.</summary>
+        public static string Edit_Name { get { return Get("Edit_Name"); } }
+
+        /// <summary>Stok şablonu alanı.</summary>
+        public static string Edit_Template { get { return Get("Edit_Template"); } }
+
+        /// <summary>Envanter alt türü alanı.</summary>
+        public static string Edit_SubType { get { return Get("Edit_SubType"); } }
+
+        /// <summary>Envanter kısa açıklaması.</summary>
+        public static string Edit_Note { get { return Get("Edit_Note"); } }
+
+        /// <summary>Kaydet düğmesi.</summary>
+        public static string Edit_Save { get { return Get("Edit_Save"); } }
+
+        /// <summary>Durum çubuğu.</summary>
+        public static string Edit_Saved { get { return Get("Edit_Saved"); } }
+
+        /// <summary>Onay başlığı.</summary>
+        public static string Untrack_Title { get { return Get("Untrack_Title"); } }
+
+        /// <summary>Onay metni.</summary>
+        public static string Untrack_Text { get { return Get("Untrack_Text"); } }
+
+        /// <summary>Onay düğmesi.</summary>
+        public static string Untrack_Confirm { get { return Get("Untrack_Confirm"); } }
+
+        /// <summary>Durum çubuğu.</summary>
+        public static string Untrack_Done { get { return Get("Untrack_Done"); } }
+
+        #endregion
     }
 }

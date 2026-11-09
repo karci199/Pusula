@@ -787,6 +787,63 @@ namespace Pusula.Wpf
             viewModel.ConfirmQuickNote();
         }
 
+        // Düzenle / takipten çıkar: ağaç, envanter satırı, proje tablosu satırı aynı diyaloğu açar.
+        private void NodeEdit_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.OpenEditSelected();
+        }
+
+        private void NodeUntrack_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.OpenUntrackSelected();
+        }
+
+        private void StockInvEdit_Click(object sender, RoutedEventArgs e)
+        {
+            var row = MenuRow(sender);
+            if (row != null && row.Folder.Length > 0)
+            {
+                viewModel.OpenEdit(row.Folder);
+            }
+        }
+
+        private void StockInvUntrack_Click(object sender, RoutedEventArgs e)
+        {
+            var row = MenuRow(sender);
+            if (row != null && row.Folder.Length > 0)
+            {
+                viewModel.OpenUntrack(row.Folder);
+            }
+        }
+
+        private void DetailRowEdit_Click(object sender, RoutedEventArgs e)
+        {
+            var row = DetailMenuRow(sender);
+            if (row != null)
+            {
+                viewModel.OpenEdit(row.Path);
+            }
+        }
+
+        private void DetailRowUntrack_Click(object sender, RoutedEventArgs e)
+        {
+            var row = DetailMenuRow(sender);
+            if (row != null)
+            {
+                viewModel.OpenUntrack(row.Path);
+            }
+        }
+
+        private void Edit_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            viewModel.ConfirmEdit();
+        }
+
+        private void Untrack_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            viewModel.ConfirmUntrack();
+        }
+
         /// <summary>Şablonlar penceresini açar.</summary>
         internal void EditTemplates(Window owner)
         {

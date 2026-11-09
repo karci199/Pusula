@@ -63,7 +63,10 @@
                             <MenuItem Header="{x:Static res:Resources.StockInv_OpenRecord}" Click="StockInvOpen_Click" />
                             <MenuItem Header="{x:Static res:Resources.Menu_OpenFolder}" Click="StockInvFolder_Click" />
                             <MenuItem Header="{x:Static res:Resources.QuickNote_AddMenu}" Click="StockInvNote_Click" />
-                    <MenuItem Header="{x:Static res:Resources.StockInv_Unlink}" Click="StockInvUnlink_Click"
+                            <Separator />
+                            <MenuItem Header="{x:Static res:Resources.Menu_Edit}" Click="StockInvEdit_Click" />
+                            <MenuItem Header="{x:Static res:Resources.Menu_Untrack}" Click="StockInvUntrack_Click" />
+                            <MenuItem Header="{x:Static res:Resources.StockInv_Unlink}" Click="StockInvUnlink_Click"
                                       Visibility="{Binding PlacementTarget.SelectedItem.IsLinked, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BoolToVis}, FallbackValue=Collapsed}" />
                         </ContextMenu>
                     </ListView.ContextMenu>
@@ -562,6 +565,9 @@
             <MenuItem Header="{x:Static res:Resources.StockInv_OpenRecord}" Click="StockInvOpen_Click" />
             <MenuItem Header="{x:Static res:Resources.Menu_OpenFolder}" Click="StockInvFolder_Click" />
             <MenuItem Header="{x:Static res:Resources.QuickNote_AddMenu}" Click="StockInvNote_Click" />
+            <Separator />
+            <MenuItem Header="{x:Static res:Resources.Menu_Edit}" Click="StockInvEdit_Click" />
+            <MenuItem Header="{x:Static res:Resources.Menu_Untrack}" Click="StockInvUntrack_Click" />
         </ContextMenu>
 
         <ContextMenu x:Key="NodeMenu">
@@ -589,6 +595,18 @@
                       Visibility="{Binding CanMarkAsStock, Converter={StaticResource BoolToVis}}">
                 <MenuItem.Icon>
                     <controls:FontIcon Glyph="{x:Static local:AppIcons.Stock}" Foreground="{DynamicResource AccentBrush}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.Menu_Edit}" Click="NodeEdit_Click"
+                      Visibility="{Binding CanEditSelected, Converter={StaticResource BoolToVis}}">
+                <MenuItem.Icon>
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Edit}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.Menu_Untrack}" Click="NodeUntrack_Click"
+                      Visibility="{Binding CanEditSelected, Converter={StaticResource BoolToVis}}">
+                <MenuItem.Icon>
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Remove}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Menu_AddModules}" Command="{Binding AddModulesCommand}">
@@ -981,6 +999,9 @@
                             <MenuItem Header="{x:Static res:Resources.Row_Open}" Click="DetailRowOpen_Click" />
                             <MenuItem Header="{x:Static res:Resources.Menu_OpenFolder}" Click="DetailRowFolder_Click" />
                             <MenuItem Header="{x:Static res:Resources.QuickNote_AddMenu}" Click="DetailRowNote_Click" />
+                            <Separator />
+                            <MenuItem Header="{x:Static res:Resources.Menu_Edit}" Click="DetailRowEdit_Click" />
+                            <MenuItem Header="{x:Static res:Resources.Menu_Untrack}" Click="DetailRowUntrack_Click" />
                         </ContextMenu>
                     </ListView.ContextMenu>
                     <ListView.View>
@@ -1660,6 +1681,48 @@
                                 PrimaryButtonClick="QuickNote_PrimaryButtonClick">
             <TextBox MinWidth="380" MinHeight="70" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"
                      Text="{Binding QuickNoteText, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+        </controls:ContentDialog>
+
+        <!-- Düzenle: proje, stok, envanter kaydı (ortak) -->
+        <controls:ContentDialog Grid.RowSpan="3"
+                                IsOpen="{Binding IsEditOpen, Mode=TwoWay}"
+                                Title="{Binding EditTitle}"
+                                PrimaryButtonText="{x:Static res:Resources.Edit_Save}"
+                                CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                PrimaryButtonClick="Edit_PrimaryButtonClick">
+            <StackPanel MinWidth="400">
+                <controls:FormField Header="{x:Static res:Resources.Edit_Number}" LabelWidth="80">
+                    <TextBlock Text="{Binding EditNumber}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                </controls:FormField>
+                <TextBlock Margin="80,2,0,10" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
+                           Text="{x:Static res:Resources.Edit_NumberHint}" />
+                <controls:FormField Header="{x:Static res:Resources.Edit_Name}" LabelWidth="80">
+                    <TextBox x:Name="EditNameBox" Text="{Binding EditName, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+                </controls:FormField>
+                <controls:FormField Margin="0,8,0,0" Header="{x:Static res:Resources.Edit_Template}" LabelWidth="80"
+                                    Visibility="{Binding IsEditStock, Converter={StaticResource BoolToVis}}">
+                    <ComboBox ItemsSource="{Binding EditTemplates}" SelectedItem="{Binding EditTemplate, Mode=TwoWay}" />
+                </controls:FormField>
+                <controls:FormField Margin="0,8,0,0" Header="{x:Static res:Resources.Edit_SubType}" LabelWidth="80"
+                                    Visibility="{Binding IsEditInventory, Converter={StaticResource BoolToVis}}">
+                    <ComboBox ItemsSource="{Binding EditSubTypes}" Text="{Binding EditSubType, Mode=TwoWay}" IsEditable="True" />
+                </controls:FormField>
+                <controls:FormField Margin="0,8,0,0" Header="{x:Static res:Resources.Edit_Note}" LabelWidth="80"
+                                    Visibility="{Binding IsEditInventory, Converter={StaticResource BoolToVis}}">
+                    <TextBox Text="{Binding EditNote, UpdateSourceTrigger=PropertyChanged}" />
+                </controls:FormField>
+                <TextBlock Margin="0,10,0,0" TextWrapping="Wrap" Foreground="{DynamicResource SystemFillColorCriticalBrush}" Text="{Binding EditError}" />
+            </StackPanel>
+        </controls:ContentDialog>
+
+        <!-- Takipten çıkar: dosyalar silinmez -->
+        <controls:ContentDialog Grid.RowSpan="3"
+                                IsOpen="{Binding IsUntrackOpen, Mode=TwoWay}"
+                                Title="{Binding UntrackTitle}"
+                                PrimaryButtonText="{x:Static res:Resources.Untrack_Confirm}"
+                                CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                PrimaryButtonClick="Untrack_PrimaryButtonClick">
+            <TextBlock MaxWidth="440" TextWrapping="Wrap" Text="{Binding UntrackText}" />
         </controls:ContentDialog>
 
         <controls:ContentDialog Grid.RowSpan="3"
