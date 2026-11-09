@@ -1123,7 +1123,7 @@
     <value>Yolu kopyala</value>
   </data>
   <data name="Event_Delivery" xml:space="preserve">
-    <value>Teslim</value>
+    <value>Teslim alındı</value>
   </data>
   <data name="Importance_High" xml:space="preserve">
     <value>Yüksek</value>
@@ -1175,5 +1175,20 @@
   </data>
   <data name="Journal_Added" xml:space="preserve">
     <value>Olay {0} notunun Günlük bölümüne eklendi.</value>
+  </data>
+  <data name="Event_TestStart" xml:space="preserve">
+    <value>Test başladı</value>
+  </data>
+  <data name="Event_TestEnd" xml:space="preserve">
+    <value>Test bitti</value>
+  </data>
+  <data name="Event_ToProduction" xml:space="preserve">
+    <value>Üretime teslim</value>
+  </data>
+  <data name="Event_Repair" xml:space="preserve">
+    <value>Onarım</value>
+  </data>
+  <data name="Journal_RelatedShort" xml:space="preserve">
+    <value>İlgili</value>
   </data>
 </root>

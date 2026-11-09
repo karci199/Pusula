@@ -118,9 +118,9 @@ namespace Pusula.Wpf.ViewModels
         }
 
         /// <summary>Tür seçenekleri.</summary>
-        public string[] JournalKinds
+        public EventKindOption[] JournalKinds
         {
-            get { return EventKinds.JournalKinds; }
+            get { return EventKinds.All; }
         }
 
         /// <summary>Önem seçenekleri.</summary>

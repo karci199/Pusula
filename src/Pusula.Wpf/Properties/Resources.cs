@@ -1371,6 +1371,21 @@ namespace Pusula.Wpf.Properties
         /// <summary>Durum çubuğu.</summary>
         public static string Journal_Added { get { return Get("Journal_Added"); } }
 
+        /// <summary>Olay türü.</summary>
+        public static string Event_TestStart { get { return Get("Event_TestStart"); } }
+
+        /// <summary>Olay türü.</summary>
+        public static string Event_TestEnd { get { return Get("Event_TestEnd"); } }
+
+        /// <summary>Olay türü.</summary>
+        public static string Event_ToProduction { get { return Get("Event_ToProduction"); } }
+
+        /// <summary>Olay türü.</summary>
+        public static string Event_Repair { get { return Get("Event_Repair"); } }
+
+        /// <summary>Alan.</summary>
+        public static string Journal_RelatedShort { get { return Get("Journal_RelatedShort"); } }
+
         #endregion
     }
 }

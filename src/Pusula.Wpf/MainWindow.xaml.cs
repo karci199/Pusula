@@ -101,9 +101,12 @@ namespace Pusula.Wpf
             var template = (DataTemplate)FindResource("StockInventoryTabTemplate");
             foreach (var group in viewModel.Detail.InventoryGroups)
             {
+                var header = new StackPanel { Orientation = Orientation.Horizontal };
+                header.Children.Add(new FontIcon { Glyph = TreeNodeViewModel.GlyphOf(group.Type.Icon), FontSize = 13, Foreground = BrushOf(group.Type.Color), VerticalAlignment = VerticalAlignment.Center });
+                header.Children.Add(new TextBlock { Text = group.Header, Margin = new Thickness(7, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center });
                 var tab = new TabItem
                 {
-                    Header = group.Header,
+                    Header = header,
                     Content = group,
                     ContentTemplate = template,
                     Tag = InventoryTabTag + group.Type.Key,

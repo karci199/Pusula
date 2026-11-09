@@ -242,7 +242,7 @@ namespace Pusula.Wpf.ViewModels
         public TimelineItem(Pusula.Core.Notes.EventNote note)
         {
             Title = note.Title;
-            Result = new StatusChip(EventKinds.Label(note.Kind), EventKinds.Tone(note.Importance));
+            Result = new StatusChip(EventKinds.Label(note.Kind), EventKinds.ToneFor(note.Kind, note.Importance));
             Summary = note.Excerpt;
             var date = note.Date.TimeOfDay == TimeSpan.Zero ? note.Date.ToString(Resources.Format_Date) : note.Date.ToString(Resources.Format_DateTime);
             Meta = note.Person.Length == 0 ? date : date + " · " + note.Person;

@@ -64,7 +64,7 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Obsidian olay notundan satır oluşturur (revizyon, arıza …).</summary>
         public HistoryRow(Pusula.Core.Notes.EventNote note)
         {
-            Status = new StatusChip(EventKinds.Label(note.Kind), EventKinds.Tone(note.Importance));
+            Status = new StatusChip(EventKinds.Label(note.Kind), EventKinds.ToneFor(note.Kind, note.Importance));
             var date = note.Date.ToString(Resources.Format_Date);
             Meta = note.Person.Length == 0 ? date : date + " · " + note.Person;
             Detail = note.Excerpt.Length == 0 ? note.Title : note.Title + " · " + note.Excerpt;

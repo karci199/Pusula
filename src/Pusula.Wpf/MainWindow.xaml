@@ -1289,7 +1289,13 @@
                 <TabControl x:Name="StockTabs" Grid.Row="3" Grid.RowSpan="2" Margin="0,14,0,0"
                             Visibility="{Binding Detail.IsStock, Converter={StaticResource BoolToVis}}">
                     <!-- Genel -->
-                    <TabItem Header="{x:Static res:Resources.Tab_General}" Tag="general">
+                    <TabItem Tag="general">
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <controls:FontIcon Glyph="&#xE80F;" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                <TextBlock Margin="7,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Tab_General}" />
+                            </StackPanel>
+                        </TabItem.Header>
                         <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,14,0,0" TextElement.FontWeight="Normal">
                             <StackPanel>
                                 <!-- Kapak: fotoğraf + not -->
@@ -1525,7 +1531,13 @@
                     </TabItem>
 
                     <!-- Testler -->
-                    <TabItem Header="{Binding Detail.TestsHeader}" Tag="tests">
+                    <TabItem Tag="tests">
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <controls:FontIcon Glyph="&#xE9D9;" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                <TextBlock Margin="7,0,0,0" VerticalAlignment="Center" Text="{Binding Detail.TestsHeader}" />
+                            </StackPanel>
+                        </TabItem.Header>
                         <DockPanel Margin="0,8,0,0" TextElement.FontWeight="Normal">
                             <ItemsControl x:Name="TestPlanList" DockPanel.Dock="Top" ItemsSource="{Binding Detail.TestPlans}" ItemTemplate="{StaticResource PlanTemplate}" />
                             <ListView x:Name="DevRunsList" ItemsSource="{Binding Detail.DevelopmentRuns}"
@@ -1537,7 +1549,13 @@
                     </TabItem>
 
                     <!-- Kalifikasyon -->
-                    <TabItem Header="{Binding Detail.QualificationHeader}" Tag="qualification">
+                    <TabItem Tag="qualification">
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <controls:FontIcon Glyph="&#xEB95;" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                <TextBlock Margin="7,0,0,0" VerticalAlignment="Center" Text="{Binding Detail.QualificationHeader}" />
+                            </StackPanel>
+                        </TabItem.Header>
                         <DockPanel Margin="0,8,0,0" TextElement.FontWeight="Normal">
                             <ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding Detail.QualificationPlans}" ItemTemplate="{StaticResource PlanTemplate}" />
                             <ListView x:Name="QualRunsList" ItemsSource="{Binding Detail.QualificationRuns}"
@@ -1549,7 +1567,13 @@
                     </TabItem>
 
                     <!-- Klasörler -->
-                    <TabItem Header="{x:Static res:Resources.Tab_Folders}" Tag="folders">
+                    <TabItem Tag="folders">
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <controls:FontIcon Glyph="&#xE8B7;" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                <TextBlock Margin="7,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Tab_Folders}" />
+                            </StackPanel>
+                        </TabItem.Header>
                         <Grid Margin="0,12,0,0" TextElement.FontWeight="Normal">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -1824,58 +1848,107 @@
                                 PrimaryButtonText="{Binding JournalPrimaryText}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="Journal_PrimaryButtonClick">
-            <StackPanel Width="520">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="16" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <controls:FormField Header="{x:Static res:Resources.Journal_Kind}" LabelWidth="70">
-                        <ComboBox IsEditable="True" ItemsSource="{Binding JournalKinds}" Text="{Binding JournalKind, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    </controls:FormField>
-                    <controls:FormField Grid.Column="2" Header="{x:Static res:Resources.Journal_Date}" LabelWidth="50">
-                        <DatePicker SelectedDate="{Binding JournalDate, Mode=TwoWay}" SelectedDateFormat="Short" />
-                    </controls:FormField>
-                </Grid>
-                <controls:FormField Margin="0,10,0,0" Header="{x:Static res:Resources.Journal_Heading}" LabelWidth="70">
-                    <TextBox Text="{Binding JournalHeading, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
-                </controls:FormField>
-                <controls:FormField Margin="0,10,0,0" Header="{x:Static res:Resources.Journal_Body}" LabelWidth="70">
-                    <TextBox MinHeight="70" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"
-                             Text="{Binding JournalBody, UpdateSourceTrigger=PropertyChanged}" />
-                </controls:FormField>
-                <Grid Margin="0,10,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="16" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <controls:FormField Header="{x:Static res:Resources.Journal_Importance}" LabelWidth="70">
-                        <ComboBox ItemsSource="{Binding JournalImportances}" SelectedItem="{Binding JournalImportance, Mode=TwoWay}" />
-                    </controls:FormField>
-                    <controls:FormField Grid.Column="2" Header="{x:Static res:Resources.Journal_Tags}" LabelWidth="50">
-                        <TextBox Text="{Binding JournalTags, UpdateSourceTrigger=PropertyChanged}" ToolTip="{x:Static res:Resources.Journal_TagsHint}" />
-                    </controls:FormField>
-                </Grid>
-                <StackPanel Margin="0,12,0,0" Visibility="{Binding HasJournalRelated, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Journal_Related}" />
-                    <ScrollViewer MaxHeight="120" VerticalScrollBarVisibility="Auto">
-                        <ItemsControl ItemsSource="{Binding JournalRelated}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <CheckBox Margin="0,4,16,0" IsChecked="{Binding IsChecked}" Content="{Binding Label}" />
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ScrollViewer>
-                </StackPanel>
-            </StackPanel>
+            <Grid Width="440">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="76" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.Resources>
+                    <Style TargetType="TextBlock" x:Key="JournalLabel">
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+                    </Style>
+                </Grid.Resources>
+
+                <TextBlock Grid.Row="0" Style="{StaticResource JournalLabel}" Text="{x:Static res:Resources.Journal_Kind}" />
+                <ComboBox Grid.Row="0" Grid.Column="1" IsEditable="True" TextSearch.TextPath="Label"
+                          ItemsSource="{Binding JournalKinds}" Text="{Binding JournalKind, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <controls:FontIcon x:Name="KindIcon" Glyph="{Binding Glyph}" FontSize="14" Width="20" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                <TextBlock Margin="8,0,0,0" Text="{Binding Label}" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding Tone}" Value="active">
+                                    <Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Tone}" Value="waiting">
+                                    <Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Tone}" Value="done">
+                                    <Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Tone}" Value="failed">
+                                    <Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <TextBlock Grid.Row="1" Margin="0,10,0,0" Style="{StaticResource JournalLabel}" Text="{x:Static res:Resources.Journal_Date}" />
+                <DatePicker Grid.Row="1" Grid.Column="1" Margin="0,10,0,0" Width="180" HorizontalAlignment="Left"
+                            SelectedDate="{Binding JournalDate, Mode=TwoWay}" SelectedDateFormat="Short" />
+
+                <TextBlock Grid.Row="2" Margin="0,10,0,0" Style="{StaticResource JournalLabel}" Text="{x:Static res:Resources.Journal_Heading}" />
+                <TextBox Grid.Row="2" Grid.Column="1" Margin="0,10,0,0" Text="{Binding JournalHeading, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+
+                <TextBlock Grid.Row="3" Margin="0,10,0,0" VerticalAlignment="Top" Padding="0,6,0,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Journal_Body}" />
+                <TextBox Grid.Row="3" Grid.Column="1" Margin="0,10,0,0" MinHeight="80" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"
+                         Text="{Binding JournalBody, UpdateSourceTrigger=PropertyChanged}" />
+
+                <TextBlock Grid.Row="4" Margin="0,10,0,0" Style="{StaticResource JournalLabel}" Text="{x:Static res:Resources.Journal_Importance}" />
+                <ComboBox Grid.Row="4" Grid.Column="1" Margin="0,10,0,0" Width="180" HorizontalAlignment="Left"
+                          ItemsSource="{Binding JournalImportances}" SelectedItem="{Binding JournalImportance, Mode=TwoWay}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse x:Name="Dot" Width="8" Height="8" Fill="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" />
+                                <TextBlock Margin="10,0,0,0" Text="{Binding}" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Importance_High}">
+                                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Importance_Normal}">
+                                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentBrush}" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <TextBlock Grid.Row="5" Margin="0,10,0,0" Style="{StaticResource JournalLabel}" Text="{x:Static res:Resources.Journal_Tags}" />
+                <TextBox Grid.Row="5" Grid.Column="1" Margin="0,10,0,0" Text="{Binding JournalTags, UpdateSourceTrigger=PropertyChanged}" ToolTip="{x:Static res:Resources.Journal_TagsHint}" />
+
+                <TextBlock Grid.Row="6" Margin="0,14,0,0" VerticalAlignment="Top" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Journal_RelatedShort}"
+                           Visibility="{Binding HasJournalRelated, Converter={StaticResource BoolToVis}}" />
+                <ScrollViewer Grid.Row="6" Grid.Column="1" Margin="0,10,0,0" MaxHeight="110" VerticalScrollBarVisibility="Auto"
+                              Visibility="{Binding HasJournalRelated, Converter={StaticResource BoolToVis}}">
+                    <ItemsControl ItemsSource="{Binding JournalRelated}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox Margin="0,2,14,2" IsChecked="{Binding IsChecked}" Content="{Binding Label}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
         </controls:ContentDialog>
 
         <!-- Takipten çıkar: dosyalar silinmez -->
