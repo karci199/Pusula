@@ -4,11 +4,11 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 
 ## 1. Hatalar
 
-- [ ] **"Not ekle" → "the host was not found"** hatası. ?Hangi düğme, kök ağ sürücüsünde mi
-- [ ] **NuGet restore hatası** (derlerken). ?Nerede, mesaj ne; iş bilgisayarında internet yok mu
+- [ ] **Not oluşturunca "the host was not found"**: stok açıldıktan sonra md oluşturup açarken; VS Code "izin ver" istiyor. VS Code ağ yolundaki (UNC) sunucuya izin istiyor → uygulama hatası değil; çözüm: VS Code ayarı ya da md'yi Obsidian ile açma.
+- [x] **NuGet restore hatası**: .NET 4.8 başvuru derlemeleri o makinede yoktu. Paket depoya kondu (`Dependencies\NuGet`, `nuget.config`); boş önbellekle ayrı klasörde derleme denendi, çalışıyor.
 - [ ] **Hover:** proje ve stok aynı anda vurgulanıyor (üstü de vurgulu). Tek satır vurgulansın.
 - [ ] **Türler → Biçim tablosu:** hücre F2 ile düzenlenince arka plan beyaz oluyor (koyu temada).
-- [ ] **Stok kapak fotoğrafı** hafifçe kesiliyor.
+- [ ] **Stok kapak fotoğrafı** hafifçe kesiliyor / çerçeveden taşıyor.
 - [ ] Dosya sayımında **Thumbs.db, desktop.ini** vb. sayılmasın; dosya değişiklikleri iyi incelenmeli.
 
 ## 2. Hız ve yenileme
@@ -31,7 +31,7 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 - [ ] Stok sayfasının **üst kısmı** (numara, yol / dizin) daha iyi görünsün.
 - [ ] **Sekmeler sürüklenebilsin** (sıra değiştirilebilsin).
 - [ ] Stok açılınca **anten hakkında ön bilgi + foto** gelsin (Genel kartı; zaten var, iyileştirilecek).
-- [ ] Jig ve kablo **tamamen ayrılsın**. ?"Genel sayfası açıldığı zaman ne ekliyse o gelsin"
+- [ ] Jig ve kablo **tamamen ayrılsın**. "Genel sayfası açıldığı zaman ne ekliyse o gelsin" → konuşulacak.
 - [ ] ?Genel / Kablolar sekmeli yapı daha iyi olabilir mi
 
 ## 5. Notlar ve md
@@ -49,7 +49,11 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 - [ ] Not yazarken **@** basınca kablo, jig, stok, proje, **kişi** taransın ve **bağlantı** olarak eklensin
   (her nesnenin md dosyası olmalı).
 - [ ] **SATIMO, yankısız oda** gibi ölçüm altyapısı da bağlanabilir nesne olsun.
-- [ ] **161 / DGÖ** maddelerine bağlantı (tasarımcıyla konuşulan maddeler); bunun için ayrı arayüz. ?161, DGÖ ne
+- [ ] **161 / DGÖ** maddelerine bağlantı; bunun için ayrı arayüz.
+  - **DGÖ** = TG (test gereksinimleri), üst sistem düzeyi; önce o gelir.
+  - **161** = tasarımcının antene özel doğrulama maddeleri (ör. S11 < −10 dB, yükseliş hüzme genişliği 10–30°,
+    boresight''ta slant polarize tepe kazanç > X). Ayrıntı az, altyapı bazen belirtilir; kafa karıştırmamalı.
+  - Zincir: DGÖ maddesi → 161 maddesi → test koşusu (sonuç) → geçti/kaldı.
 
 ## 7. Dokümanlar, revizyon, kodlar
 
@@ -57,17 +61,17 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
   doküman türü (261 …), revizyon, stok türü, durum (aktarıldı mı, hazırlanıyor mu).
 - [ ] Doküman adı yapısı: `AB-0000-445_261-AA` ?parçaları (AB = birim, 0000-445 = ?, 261 = doküman türü, AA = revizyon)
 - [ ] **2–3 harfli önekler** bir anlama eşlenir: AB = birim, AI = modül, KB = aile stoku … → tanım listesi (Ayarlar).
-- [ ] **Doküman durumu:** üzerinde çalışılan · bitmiş · revize gereken · aktarım sürecinde.
+- [ ] **Doküman durumu:** üzerinde çalışılan · bitmiş · revize gereken · aktarım sürecinde → ayrıntılı konuşulacak.
 - [ ] **Revizyon:** ad içinden mi, ayrı klasör mü (`_Revizyonlar`)? İsimlendirme kuralı.
 - [ ] **Doküman aktarımlarının takibi** (SAP'ye aktarım?).
-- [ ] **P1 = prototip**; REDO verildiyse işlensin. ?REDO ne
+- [ ] **P1 = prototip**; **REDO** = değişiklik (doküman değişikliği, limit değişti …) ve aktarımı; verildiyse işlensin.
 
 ## 8. Fotoğraf
 
 - [ ] **İsimlendirme kuralı:** `<StokNo>_F1` mi, görünüme göre mi (`_kapak`, `_on`, `_arka`, `_montaj` …)?
 - [ ] **Sıralama:** hangi sırayla görünsün.
 - [ ] Şablonda "konulması istenen fotolar" listesi olsun (eksik olan görünsün).
-- [ ] png, jpg ve diğer uzantılar desteklensin (şu an: jpg, jpeg, png, bmp, gif, tif, tiff — ?eksik olan hangisi, ör. heic, webp).
+- [x] Uzantılar: eksik yok (jpg, jpeg, png, bmp, gif, tif, tiff).
 
 ## 9. Stok yapısı
 

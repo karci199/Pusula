@@ -30,4 +30,15 @@
     <DependenciesDir>$(MSBuildThisFileDirectory)Dependencies\</DependenciesDir>
   </PropertyGroup>
 
+  <!--
+    .NET Framework 4.8 başvuru derlemeleri: makinede kurulu "targeting pack"e güvenilmez (her bilgisayarda yok).
+    Paket Dependencies\NuGet altından gelir (nuget.config yalnız o klasörü kaynak sayar); internet gerekmez.
+  -->
+  <PropertyGroup>
+    <AutomaticallyUseReferenceAssemblyPackages>false</AutomaticallyUseReferenceAssemblyPackages>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+
 </Project>
