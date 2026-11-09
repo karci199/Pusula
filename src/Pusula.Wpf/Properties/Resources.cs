@@ -1281,6 +1281,15 @@ namespace Pusula.Wpf.Properties
         /// <summary>Proje seçili değilken.</summary>
         public static string Menu_NewStockNoProject { get { return Get("Menu_NewStockNoProject"); } }
 
+        /// <summary>+ menüsü.</summary>
+        public static string Add_Project { get { return Get("Add_Project"); } }
+
+        /// <summary>+ menüsü, seçili projeye.</summary>
+        public static string Add_StockFor { get { return Get("Add_StockFor"); } }
+
+        /// <summary>+ menüsü, proje seçili değil.</summary>
+        public static string Add_StockNoProject { get { return Get("Add_StockNoProject"); } }
+
         #endregion
     }
 }

@@ -568,14 +568,14 @@
         <!-- Menüler ağaçla aynı DataContext'i kod tarafında alır (MainWindow.xaml.cs). -->
         <!-- "+ Yeni" menüsü: proje, stok (seçili projeye), sonra Türler'deki envanter türleri (AddMenu_Opened ekler) -->
         <ContextMenu x:Key="AddMenu" Opened="AddMenu_Opened">
-            <MenuItem Header="{x:Static res:Resources.Menu_NewProject}"
+            <MenuItem Header="{x:Static res:Resources.Add_Project}"
                       Command="{Binding NewProjectCommand}"
                       InputGestureText="{x:Static res:Resources.Gesture_NewProject}">
                 <MenuItem.Icon>
                     <controls:FontIcon Glyph="{x:Static local:AppIcons.Project}" Foreground="{DynamicResource Pusula.ProjectIconBrush}" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="{Binding NewStockMenuText}"
+            <MenuItem Header="{Binding AddStockMenuText}"
                       Command="{Binding NewStockCommand}"
                       InputGestureText="{x:Static res:Resources.Gesture_NewStock}">
                 <MenuItem.Icon>

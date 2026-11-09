@@ -140,6 +140,7 @@ namespace Pusula.Wpf.ViewModels
 
                     OnPropertyChanged(nameof(HasSelection));
                     OnPropertyChanged(nameof(NewStockMenuText));
+                    OnPropertyChanged(nameof(AddStockMenuText));
                     OnPropertyChanged(nameof(CanMarkAsStock));
                     OnPropertyChanged(nameof(CanMarkAsProject));
                     OnPropertyChanged(nameof(CanMarkAsInventory));
@@ -441,6 +442,19 @@ namespace Pusula.Wpf.ViewModels
         }
 
         /// <summary>Menüdeki "Yeni stok" metni; seçime göre hedef projeyi gösterir.</summary>
+        /// <summary>"+" menüsündeki stok metni ("Stok · 7000_MILKON"; "Yeni" kelimesi yok, + zaten yeni demek).</summary>
+        public string AddStockMenuText
+        {
+            get
+            {
+                var project = SelectedProjectFolder();
+                return project.Length == 0
+                    ? Resources.Add_StockNoProject
+                    : string.Format(Resources.Add_StockFor, Path.GetFileName(project).Replace("_", "__"));
+            }
+        }
+
+        /// <summary>Sağ tık menüsündeki "Yeni stok" metni (seçili projeyle).</summary>
         public string NewStockMenuText
         {
             get

@@ -16,6 +16,16 @@
                 Tablo hücresi düzenlenirken (F2 / çift tık) açılan yazı kutusu. WPF'in varsayılanı temayı almaz,
                 koyu temada beyaz kutu çıkıyordu. Her DataGridTextColumn EditingElementStyle ile bunu kullanır.
             -->
+            <!-- Menü ayraçları: DesignKit'in parlak çizgisi yerine ince, sakin gri çizgi (bütün menülerde). -->
+            <Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" TargetType="Separator">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Separator">
+                            <Border Height="1" Margin="10,4" Background="{DynamicResource DividerStrokeColorDefaultBrush}" SnapsToDevicePixels="True" />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
             <Style x:Key="GridEditBox" TargetType="TextBox">
                 <!-- Zemin şeffaf: satırın (seçili) rengi görünür; düzenlendiği alttaki vurgu çizgisinden anlaşılır. -->
                 <Setter Property="Background" Value="Transparent" />

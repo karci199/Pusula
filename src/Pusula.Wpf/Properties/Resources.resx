@@ -1096,6 +1096,15 @@
     <value>Yeni</value>
   </data>
   <data name="Menu_NewStockNoProject" xml:space="preserve">
-    <value>Yeni stok (önce proje seç)</value>
+    <value>Yeni stok · önce proje seç</value>
+  </data>
+  <data name="Add_Project" xml:space="preserve">
+    <value>Proje</value>
+  </data>
+  <data name="Add_StockFor" xml:space="preserve">
+    <value>Stok · {0}</value>
+  </data>
+  <data name="Add_StockNoProject" xml:space="preserve">
+    <value>Stok · önce proje seç</value>
   </data>
 </root>

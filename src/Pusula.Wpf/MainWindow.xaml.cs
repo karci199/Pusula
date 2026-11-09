@@ -573,7 +573,7 @@ namespace Pusula.Wpf
             {
                 var item = new MenuItem
                 {
-                    Header = MainViewModel.NewMenuText(type),
+                    Header = type.Name.Replace("_", "__"),
                     Tag = "inventory",
                     Icon = new FontIcon { Glyph = TreeNodeViewModel.GlyphOf(type.Icon), Foreground = BrushOf(type.Color) },
                 };
