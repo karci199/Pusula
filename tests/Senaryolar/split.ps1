@@ -18,7 +18,13 @@ try {
     Check 'envanterden seçim' ($vm.SelectedNode -eq $jig)
     $p = $vm.ProjectNodes[0]; $p.IsSelected = $true; Pump
     Check 'projeye geçince eski seçim kalkar' ($vm.SelectedNode -eq $p -and -not $jig.IsSelected)
-    $vm.SelectedNode = $null; Pump
+    "--- Hover: yalnız satırın kendisi"
+    $tree = $win.FindName('FolderTree')
+    $item = $tree.ItemContainerGenerator.ContainerFromItem($vm.ProjectNodes[0])
+    $hover = @($item.Template.Triggers | Where-Object { $_ -is [System.Windows.Trigger] -and $_.Property.Name -eq 'IsMouseOver' })
+    Check 'hover tetikleyicisi satıra (Bd) bakar' ($hover.Count -eq 1 -and $hover[0].SourceName -eq 'Bd') (($hover | ForEach-Object { [string]$_.SourceName }) -join ',')
+    $inv = $win.FindName('InventoryTree').ItemContainerGenerator.ContainerFromItem($vm.InventoryNodes[0])
+    Check 'envanter ağacında da aynı şablon' ($inv.Template -eq $item.Template)    $vm.SelectedNode = $null; Pump
     Snap $win "$Out\tree-split.png"
     $win.Height = 420; Pump; Snap $win "$Out\tree-split-small.png"
 } finally {
