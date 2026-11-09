@@ -30,7 +30,7 @@ function Draw([int]$size)
     $c = $size / 2.0
 
     # Zemin: yuvarlak köşeli kare
-    $x = 8 * $s; $w = 240 * $s; $r = 52 * $s
+    $x = 2 * $s; $w = 252 * $s; $r = 56 * $s
     $path = New-Object System.Drawing.Drawing2D.GraphicsPath
     $path.AddArc([float]$x, [float]$x, [float](2 * $r), [float](2 * $r), 180, 90)
     $path.AddArc([float]($x + $w - 2 * $r), [float]$x, [float](2 * $r), [float](2 * $r), 270, 90)
@@ -43,14 +43,14 @@ function Draw([int]$size)
     $state = $g.Save()
     $g.TranslateTransform([float]$c, [float]$c)
     $g.RotateTransform([float]$tilt)
-    $len = 96 * $s; $wid = 34 * $s
+    $len = 112 * $s; $wid = 40 * $s
     $n = [System.Drawing.PointF[]]@((New-Object System.Drawing.PointF 0, (-$len)), (New-Object System.Drawing.PointF $wid, 0), (New-Object System.Drawing.PointF (-$wid), 0))
     $so = [System.Drawing.PointF[]]@((New-Object System.Drawing.PointF 0, $len), (New-Object System.Drawing.PointF $wid, 0), (New-Object System.Drawing.PointF (-$wid), 0))
     $g.FillPolygon((New-Object System.Drawing.SolidBrush $north), $n)
     $g.FillPolygon((New-Object System.Drawing.SolidBrush $south), $so)
     $g.Restore($state)
 
-    $h = 12 * $s
+    $h = 14 * $s
     $g.FillEllipse((New-Object System.Drawing.SolidBrush $tile), [float]($c - $h), [float]($c - $h), [float](2 * $h), [float](2 * $h))
     $g.Dispose()
     return $bmp
