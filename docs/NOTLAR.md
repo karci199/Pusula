@@ -148,3 +148,5 @@ Deneme kökü: `C:\PusulaDeneme`.
 
 - Karar (09.11): numara (klasör adı) uygulamadan değiştirilmez. Gerekirse klasör elle yeniden adlandırılır ya da kayıt takipten çıkarılıp / silinip yeniden eklenir.
 
+- Karar (09.11): olaylar ayrı dosya değil, ana notun en altındaki `## Günlük` bölümüne yazılır (en yeni üstte). Uygulama yalnız bu bölümün başına ekler, notun geri kalanına dokunmaz (CLAUDE.md 'gövdeye dokunulmaz' kuralının kullanıcı onaylı istisnası).
+

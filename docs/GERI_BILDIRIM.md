@@ -43,7 +43,7 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 - [ ] ?Zaman çizelgesine elle eklenen notlar hepsi `<StokNo>.md` içinde mi dursun
 - [ ] ?Proje geneli md olsun mu, içinde neler olur
 - [ ] **Şablon md'ler** (tür başına: SATIMO tekil ölçüm vb.); değerler uygulamadan girilsin, açıklamalar elle.
-- [ ] **Olay ekle** nasıl olsun: "toplantı yapıldı, şu kararlar alındı" gibi hızlı giriş.
+- [x] **+ Olay**: ana notun en altındaki `## Günlük` bölümüne eklenir (en yeni üstte; tür, tarih, başlık, açıklama, önem Yüksek/Normal/Düşük, ilgili, etiket). Stok Günlük'ünde ve jig/kablo Geçmiş'inde görünür. Proje geneli henüz yok.
 
 ## 6. Bağlantılar (@)
 

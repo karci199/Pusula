@@ -1134,4 +1134,46 @@
   <data name="Importance_Low" xml:space="preserve">
     <value>Düşük</value>
   </data>
+  <data name="Journal_Button" xml:space="preserve">
+    <value>Olay</value>
+  </data>
+  <data name="Journal_ButtonHint" xml:space="preserve">
+    <value>Ana notun en altındaki Günlük bölümüne olay ekler (en yeni en üstte).</value>
+  </data>
+  <data name="Journal_Title" xml:space="preserve">
+    <value>Olay ekle · {0}</value>
+  </data>
+  <data name="Journal_Add" xml:space="preserve">
+    <value>Ekle</value>
+  </data>
+  <data name="Journal_Kind" xml:space="preserve">
+    <value>Tür</value>
+  </data>
+  <data name="Journal_Date" xml:space="preserve">
+    <value>Tarih</value>
+  </data>
+  <data name="Journal_Heading" xml:space="preserve">
+    <value>Başlık</value>
+  </data>
+  <data name="Journal_Body" xml:space="preserve">
+    <value>Açıklama</value>
+  </data>
+  <data name="Journal_Importance" xml:space="preserve">
+    <value>Önem</value>
+  </data>
+  <data name="Journal_Tags" xml:space="preserve">
+    <value>Etiket</value>
+  </data>
+  <data name="Journal_TagsHint" xml:space="preserve">
+    <value>Virgülle ayır: SATIMO, SN02</value>
+  </data>
+  <data name="Journal_Related" xml:space="preserve">
+    <value>İlgili (seçilenler notta bağlantı olur)</value>
+  </data>
+  <data name="Journal_NoTitle" xml:space="preserve">
+    <value>Başlık yazılmadı; olay eklenmedi.</value>
+  </data>
+  <data name="Journal_Added" xml:space="preserve">
+    <value>Olay {0} notunun Günlük bölümüne eklendi.</value>
+  </data>
 </root>

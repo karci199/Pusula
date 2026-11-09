@@ -931,6 +931,17 @@ namespace Pusula.Wpf
             }
         }
 
+        // + Olay: gösterilen stokun ya da kaydın ana notuna.
+        private void JournalAdd_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.OpenJournalHere();
+        }
+
+        private void Journal_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            viewModel.ConfirmJournal();
+        }
+
         private void NodeDelete_Click(object sender, RoutedEventArgs e)
         {
             viewModel.OpenDeleteSelected();

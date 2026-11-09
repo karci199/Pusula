@@ -1195,7 +1195,15 @@
                             Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
                             CornerRadius="{DynamicResource OverlayCornerRadius}">
                         <StackPanel>
-                            <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.Inv_History}" />                            <Grid Margin="0,0,0,10">
+                            <Grid Margin="0,0,0,4">
+                                <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.Inv_History}" VerticalAlignment="Center" />
+                                <Button HorizontalAlignment="Right" Margin="0,-6,0,0" Padding="8,3" Click="JournalAdd_Click" ToolTip="{x:Static res:Resources.Journal_ButtonHint}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" Foreground="{DynamicResource AccentBrush}" />
+                                        <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Journal_Button}" />
+                                    </StackPanel>
+                                </Button>
+                            </Grid>                            <Grid Margin="0,0,0,10">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
@@ -1500,7 +1508,15 @@
                                                    Visibility="{Binding Detail.HasRuns, Converter={StaticResource InverseBoolToVis}}" />
                                     </StackPanel>
                                     <StackPanel Grid.Column="2">
-                                        <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.General_Timeline}" />
+                                        <Grid>
+                                            <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.General_Timeline}" VerticalAlignment="Center" />
+                                            <Button x:Name="StockJournalButton" HorizontalAlignment="Right" Margin="0,-6,0,0" Padding="8,3" Click="JournalAdd_Click" ToolTip="{x:Static res:Resources.Journal_ButtonHint}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" Foreground="{DynamicResource AccentBrush}" />
+                                                    <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Journal_Button}" />
+                                                </StackPanel>
+                                            </Button>
+                                        </Grid>
                                         <ItemsControl ItemsSource="{Binding Detail.Timeline}" ItemTemplate="{StaticResource TimelineTemplate}" />
                                     </StackPanel>
                                 </Grid>
@@ -1798,6 +1814,67 @@
                 <TextBlock TextWrapping="Wrap" Text="{Binding DeleteText}" />
                 <controls:SearchBox Margin="0,12,0,0" PlaceholderText="{x:Static res:Resources.Delete_TypeHint}"
                                     Text="{Binding DeleteTyped, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+            </StackPanel>
+        </controls:ContentDialog>
+
+        <!-- + Olay: ana notun ## Günlük bölümüne eklenir (en yeni en üstte); Ekle düğmesi başlık yazılınca görünür -->
+        <controls:ContentDialog Grid.RowSpan="3"
+                                IsOpen="{Binding IsJournalOpen, Mode=TwoWay}"
+                                Title="{Binding JournalTitle}"
+                                PrimaryButtonText="{Binding JournalPrimaryText}"
+                                CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                PrimaryButtonClick="Journal_PrimaryButtonClick">
+            <StackPanel Width="520">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <controls:FormField Header="{x:Static res:Resources.Journal_Kind}" LabelWidth="70">
+                        <ComboBox IsEditable="True" ItemsSource="{Binding JournalKinds}" Text="{Binding JournalKind, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </controls:FormField>
+                    <controls:FormField Grid.Column="2" Header="{x:Static res:Resources.Journal_Date}" LabelWidth="50">
+                        <DatePicker SelectedDate="{Binding JournalDate, Mode=TwoWay}" SelectedDateFormat="Short" />
+                    </controls:FormField>
+                </Grid>
+                <controls:FormField Margin="0,10,0,0" Header="{x:Static res:Resources.Journal_Heading}" LabelWidth="70">
+                    <TextBox Text="{Binding JournalHeading, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+                </controls:FormField>
+                <controls:FormField Margin="0,10,0,0" Header="{x:Static res:Resources.Journal_Body}" LabelWidth="70">
+                    <TextBox MinHeight="70" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"
+                             Text="{Binding JournalBody, UpdateSourceTrigger=PropertyChanged}" />
+                </controls:FormField>
+                <Grid Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <controls:FormField Header="{x:Static res:Resources.Journal_Importance}" LabelWidth="70">
+                        <ComboBox ItemsSource="{Binding JournalImportances}" SelectedItem="{Binding JournalImportance, Mode=TwoWay}" />
+                    </controls:FormField>
+                    <controls:FormField Grid.Column="2" Header="{x:Static res:Resources.Journal_Tags}" LabelWidth="50">
+                        <TextBox Text="{Binding JournalTags, UpdateSourceTrigger=PropertyChanged}" ToolTip="{x:Static res:Resources.Journal_TagsHint}" />
+                    </controls:FormField>
+                </Grid>
+                <StackPanel Margin="0,12,0,0" Visibility="{Binding HasJournalRelated, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Journal_Related}" />
+                    <ScrollViewer MaxHeight="120" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding JournalRelated}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox Margin="0,4,16,0" IsChecked="{Binding IsChecked}" Content="{Binding Label}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </StackPanel>
             </StackPanel>
         </controls:ContentDialog>
 

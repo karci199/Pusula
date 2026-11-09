@@ -1329,6 +1329,48 @@ namespace Pusula.Wpf.Properties
         /// <summary>Önem.</summary>
         public static string Importance_Low { get { return Get("Importance_Low"); } }
 
+        /// <summary>Günlük başlığındaki düğme.</summary>
+        public static string Journal_Button { get { return Get("Journal_Button"); } }
+
+        /// <summary>Düğme ipucu.</summary>
+        public static string Journal_ButtonHint { get { return Get("Journal_ButtonHint"); } }
+
+        /// <summary>Pencere başlığı.</summary>
+        public static string Journal_Title { get { return Get("Journal_Title"); } }
+
+        /// <summary>Ekle düğmesi.</summary>
+        public static string Journal_Add { get { return Get("Journal_Add"); } }
+
+        /// <summary>Alan.</summary>
+        public static string Journal_Kind { get { return Get("Journal_Kind"); } }
+
+        /// <summary>Alan.</summary>
+        public static string Journal_Date { get { return Get("Journal_Date"); } }
+
+        /// <summary>Alan.</summary>
+        public static string Journal_Heading { get { return Get("Journal_Heading"); } }
+
+        /// <summary>Alan.</summary>
+        public static string Journal_Body { get { return Get("Journal_Body"); } }
+
+        /// <summary>Alan.</summary>
+        public static string Journal_Importance { get { return Get("Journal_Importance"); } }
+
+        /// <summary>Alan.</summary>
+        public static string Journal_Tags { get { return Get("Journal_Tags"); } }
+
+        /// <summary>Etiket ipucu.</summary>
+        public static string Journal_TagsHint { get { return Get("Journal_TagsHint"); } }
+
+        /// <summary>İlgili listesi başlığı.</summary>
+        public static string Journal_Related { get { return Get("Journal_Related"); } }
+
+        /// <summary>Durum çubuğu.</summary>
+        public static string Journal_NoTitle { get { return Get("Journal_NoTitle"); } }
+
+        /// <summary>Durum çubuğu.</summary>
+        public static string Journal_Added { get { return Get("Journal_Added"); } }
+
         #endregion
     }
 }
