@@ -1029,13 +1029,16 @@
                             <ScrollViewer MaxHeight="150" VerticalScrollBarVisibility="Auto">
                                 <ItemsControl ItemsSource="{Binding Detail.ProjectNotes}" ItemTemplate="{StaticResource HistoryTemplate}" />
                             </ScrollViewer>
-                            <!-- Projenin bütün stoklarındaki açık işler -->
-                            <StackPanel Visibility="{Binding Detail.HasOpenTasks, Converter={StaticResource BoolToVis}}">
-                                <TextBlock Style="{StaticResource PaneLabel}" Margin="0,12,0,6" Text="{Binding Detail.OpenTasksHeader}" />
-                                <ScrollViewer MaxHeight="190" VerticalScrollBarVisibility="Auto">
+                            <!-- Projenin bütün stoklarındaki açık işler (aç / kapa) -->
+                            <Expander Margin="0,10,0,0" IsExpanded="{Binding Detail.OpenTasksExpanded, Mode=TwoWay}"
+                                      Visibility="{Binding Detail.HasOpenTasks, Converter={StaticResource BoolToVis}}">
+                                <Expander.Header>
+                                    <TextBlock Style="{StaticResource PaneLabel}" Margin="0" Text="{Binding Detail.OpenTasksHeader}" />
+                                </Expander.Header>
+                                <ScrollViewer Margin="0,4,0,0" MaxHeight="190" VerticalScrollBarVisibility="Auto">
                                     <ItemsControl ItemsSource="{Binding Detail.OpenTasks}" ItemTemplate="{Binding ItemTemplate, ElementName=OpenTaskList}" />
                                 </ScrollViewer>
-                            </StackPanel>
+                            </Expander>
                         </StackPanel>
                     </Border>
                 <ListView Grid.Row="1"
@@ -1407,9 +1410,12 @@
                                                    Visibility="{Binding Detail.HasAlerts, Converter={StaticResource InverseBoolToVis}}" />
 
                                         <!-- Açık işler: md notlarındaki "- [ ]" maddeleri; tıklayınca not açılır -->
-                                        <StackPanel Visibility="{Binding Detail.HasOpenTasks, Converter={StaticResource BoolToVis}}">
-                                            <TextBlock Style="{StaticResource PaneLabel}" Margin="0,16,0,6" Text="{Binding Detail.OpenTasksHeader}" />
-                                            <ItemsControl x:Name="OpenTaskList" ItemsSource="{Binding Detail.OpenTasks}">
+                                        <Expander Margin="0,12,0,0" IsExpanded="{Binding Detail.OpenTasksExpanded, Mode=TwoWay}"
+                                                  Visibility="{Binding Detail.HasOpenTasks, Converter={StaticResource BoolToVis}}">
+                                            <Expander.Header>
+                                                <TextBlock Style="{StaticResource PaneLabel}" Margin="0" Text="{Binding Detail.OpenTasksHeader}" />
+                                            </Expander.Header>
+                                            <ItemsControl x:Name="OpenTaskList" Margin="0,4,0,0" ItemsSource="{Binding Detail.OpenTasks}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
                                                         <Button Style="{DynamicResource SubtleButtonStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
@@ -1430,7 +1436,7 @@
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
-                                        </StackPanel>
+                                        </Expander>
 
                                         <TextBlock Style="{StaticResource PaneLabel}" Margin="0,16,0,8" Text="{x:Static res:Resources.StockInv_Section}" />
                                         <ItemsControl ItemsSource="{Binding Detail.InventoryGroups}">

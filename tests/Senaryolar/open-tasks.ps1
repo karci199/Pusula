@@ -23,7 +23,7 @@ $settingsFile = Join-Path $env:LOCALAPPDATA 'Pusula\ayarlar.json'
 $savedSettings = if (Test-Path $settingsFile) { [IO.File]::ReadAllText($settingsFile) } else { $null }
 try {
     [System.Threading.SynchronizationContext]::SetSynchronizationContext((New-Object System.Windows.Threading.DispatcherSynchronizationContext))
-    $app = New-Object Pusula.Wpf.App; $app.InitializeComponent(); $app.ShutdownMode = 'OnExplicitShutdown'
+    $app = New-Object Pusula.Wpf.App; $app.InitializeComponent(); $app.ShutdownMode = 'OnExplicitShutdown'; [Pusula.Wpf.Themes]::Apply([Pusula.Wpf.Themes]::Find('FluentDark'))
     $win = New-Object Pusula.Wpf.MainWindow
     $win.WindowStartupLocation = 'Manual'; $win.Left = -20000; $win.Top = -20000; $win.ShowActivated = $false; $win.Width = 1240; $win.Height = 760
     $win.Show(); Pump
@@ -42,6 +42,11 @@ try {
     $rows = @($vm.Detail.OpenTasks)
     Check 'projede en az 6 iş (SH2000)' ($rows.Count -ge 6) ([string]$rows.Count)
     Check 'kaynakta stok numarası' (@($rows | Where-Object { $_.Label -like 'AB-7000-0002*' }).Count -ge 6) (($rows | ForEach-Object Label) -join ',')
+    $vm.Detail.OpenTasksExpanded = $false; Pump
+    $vm.SelectNodeByPath((Join-Path $Data '7000_MILKON\AB-7000-0002')); Wait
+    Check 'kapalı bırakılan bölüm stokta da kapalı' (-not $vm.Detail.OpenTasksExpanded)
+    $vm.Detail.OpenTasksExpanded = $true
+    $vm.SelectNodeByPath((Join-Path $Data '7000_MILKON')); Wait
     Snap $win "$Out\open-tasks-project.png"
     $vm.SelectNodeByPath((Join-Path $Data '7000_MILKON\AB-7000-0001')); Wait
     Check 'notsuz stokta liste boş' (-not $vm.Detail.HasOpenTasks)

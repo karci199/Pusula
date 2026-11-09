@@ -135,6 +135,15 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Stokun md notlarındaki açık görevler (<c>- [ ]</c>).</summary>
         public ObservableCollection<OpenTaskRow> OpenTasks { get; } = new ObservableCollection<OpenTaskRow>();
 
+        private bool openTasksExpanded = true;
+
+        /// <summary>Açık işler bölümü açık mı (stoktan stoka geçince korunur).</summary>
+        public bool OpenTasksExpanded
+        {
+            get { return openTasksExpanded; }
+            set { SetProperty(ref openTasksExpanded, value); }
+        }
+
         /// <summary>Açık görev var mı.</summary>
         public bool HasOpenTasks
         {

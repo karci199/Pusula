@@ -193,9 +193,10 @@ namespace Pusula.Wpf
             var accent = p.Accent;
             Set("SystemAccentColor", accent);
 
-            // Üzerine gelme ve seçili satır rengi vurguya doğru boyalı (kitin varsayılanı neredeyse görünmüyor).
-            Set("SubtleFillColorSecondary", Mix(Mix(bg, white, p.Dark ? 0.04 : 0.55), accent, p.Dark ? 0.26 : 0.18));
-            Set("SubtleFillColorTertiary", Mix(Mix(bg, white, p.Dark ? 0.04 : 0.55), accent, p.Dark ? 0.36 : 0.28));
+            // DesignKit bu iki rengi tablo başlığında, ara satırlarda (Tertiary), üzerine gelmede ve seçili satırda
+            // (Secondary) kullanır. Vurguya hafifçe boyanır: seçim görünür, tablo cırtlak olmaz. Tertiary daha soluk.
+            Set("SubtleFillColorSecondary", p.Dark ? Mix(Mix(bg, white, 0.07), accent, 0.14) : Mix(Mix(bg, black, 0.05), accent, 0.10));
+            Set("SubtleFillColorTertiary", p.Dark ? Mix(Mix(bg, white, 0.035), accent, 0.04) : Mix(Mix(bg, black, 0.025), accent, 0.03));
             Set("AccentFillColorDefault", accent);
             Set("AccentFillColorSecondary", Mix(accent, bg, 0.12));
             Set("AccentFillColorTertiary", Mix(accent, bg, 0.26));
