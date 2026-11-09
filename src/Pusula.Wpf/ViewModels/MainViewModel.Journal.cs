@@ -77,6 +77,37 @@ namespace Pusula.Wpf.ViewModels
             set { SetProperty(ref journalDate, value); }
         }
 
+        private string journalDateText = string.Empty;
+        private string journalTarget = string.Empty;
+
+        /// <summary>Tarih kutusu: <c>12.11.2026</c> ya da <c>12.11.2026 14:30</c>.</summary>
+        public string JournalDateText
+        {
+            get { return journalDateText; }
+            set
+            {
+                if (SetProperty(ref journalDateText, value ?? string.Empty))
+                {
+                    JournalDate = ParseDate(journalDateText);
+                    OnPropertyChanged(nameof(JournalPrimaryText));
+                }
+            }
+        }
+
+        /// <summary>Pencerenin alt başlığı: hangi kaydın günlüğüne yazıldığı ("AB-7000-0002 · TAKIM ANTEN BOYNUZ Y günlüğüne").</summary>
+        public string JournalTarget
+        {
+            get { return journalTarget; }
+            private set { SetProperty(ref journalTarget, value); }
+        }
+
+        private static DateTime? ParseDate(string text)
+        {
+            DateTime value;
+            var formats = new[] { "d.M.yyyy", "dd.MM.yyyy", "d.M.yyyy H:mm", "dd.MM.yyyy HH:mm", "yyyy-MM-dd", "yyyy-MM-dd HH:mm" };
+            return DateTime.TryParseExact((text ?? string.Empty).Trim(), formats, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out value) ? value : (DateTime?)null;
+        }
+
         /// <summary>Başlık (zorunlu).</summary>
         public string JournalHeading
         {
@@ -114,7 +145,7 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Ekle düğmesinin yazısı: başlık yazılmadan boş (düğme görünmez).</summary>
         public string JournalPrimaryText
         {
-            get { return journalHeading.Trim().Length > 0 ? Resources.Journal_Add : string.Empty; }
+            get { return journalHeading.Trim().Length > 0 && JournalDate.HasValue ? Resources.Journal_Add : string.Empty; }
         }
 
         /// <summary>Tür seçenekleri.</summary>
@@ -191,9 +222,11 @@ namespace Pusula.Wpf.ViewModels
             }
 
             OnPropertyChanged(nameof(HasJournalRelated));
-            JournalTitle = string.Format(Resources.Journal_Title, name);
+            JournalTitle = Resources.Journal_Title;
+            var shownName = kind.Value == RecordKind.Inventory ? Inventory.Item?.Record.Name ?? string.Empty : Detail.HeaderName;
+            JournalTarget = string.Format(Resources.Journal_Target, name + (shownName.Length > 0 ? " · " + shownName : string.Empty));
             JournalKind = string.Empty;
-            JournalDate = DateTime.Today;
+            JournalDateText = DateTime.Today.ToString("dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture);
             JournalHeading = string.Empty;
             JournalBody = string.Empty;
             JournalImportance = Resources.Importance_Normal;

@@ -1386,6 +1386,12 @@ namespace Pusula.Wpf.Properties
         /// <summary>Alan.</summary>
         public static string Journal_RelatedShort { get { return Get("Journal_RelatedShort"); } }
 
+        /// <summary>Pencerenin alt başlığı.</summary>
+        public static string Journal_Target { get { return Get("Journal_Target"); } }
+
+        /// <summary>Tarih ipucu.</summary>
+        public static string Journal_DateHint { get { return Get("Journal_DateHint"); } }
+
         #endregion
     }
 }

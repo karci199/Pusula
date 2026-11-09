@@ -1848,7 +1848,9 @@
                                 PrimaryButtonText="{Binding JournalPrimaryText}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="Journal_PrimaryButtonClick">
-            <Grid Width="440">
+            <StackPanel>
+                <TextBlock Margin="0,0,0,14" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" Text="{Binding JournalTarget}" />
+            <Grid Width="380">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="76" />
                     <ColumnDefinition Width="*" />
@@ -1897,14 +1899,14 @@
                 </ComboBox>
 
                 <TextBlock Grid.Row="1" Margin="0,10,0,0" Style="{StaticResource JournalLabel}" Text="{x:Static res:Resources.Journal_Date}" />
-                <DatePicker Grid.Row="1" Grid.Column="1" Margin="0,10,0,0" Width="180" HorizontalAlignment="Left"
-                            SelectedDate="{Binding JournalDate, Mode=TwoWay}" SelectedDateFormat="Short" />
+                <TextBox Grid.Row="1" Grid.Column="1" Margin="0,10,0,0" Width="160" HorizontalAlignment="Left"
+                         Text="{Binding JournalDateText, UpdateSourceTrigger=PropertyChanged}" ToolTip="{x:Static res:Resources.Journal_DateHint}" />
 
                 <TextBlock Grid.Row="2" Margin="0,10,0,0" Style="{StaticResource JournalLabel}" Text="{x:Static res:Resources.Journal_Heading}" />
                 <TextBox Grid.Row="2" Grid.Column="1" Margin="0,10,0,0" Text="{Binding JournalHeading, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
 
                 <TextBlock Grid.Row="3" Margin="0,10,0,0" VerticalAlignment="Top" Padding="0,6,0,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Journal_Body}" />
-                <TextBox Grid.Row="3" Grid.Column="1" Margin="0,10,0,0" MinHeight="80" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"
+                <TextBox Grid.Row="3" Grid.Column="1" Margin="0,10,0,0" MinHeight="130" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"
                          Text="{Binding JournalBody, UpdateSourceTrigger=PropertyChanged}" />
 
                 <TextBlock Grid.Row="4" Margin="0,10,0,0" Style="{StaticResource JournalLabel}" Text="{x:Static res:Resources.Journal_Importance}" />
@@ -1931,24 +1933,8 @@
                 <TextBlock Grid.Row="5" Margin="0,10,0,0" Style="{StaticResource JournalLabel}" Text="{x:Static res:Resources.Journal_Tags}" />
                 <TextBox Grid.Row="5" Grid.Column="1" Margin="0,10,0,0" Text="{Binding JournalTags, UpdateSourceTrigger=PropertyChanged}" ToolTip="{x:Static res:Resources.Journal_TagsHint}" />
 
-                <TextBlock Grid.Row="6" Margin="0,14,0,0" VerticalAlignment="Top" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Journal_RelatedShort}"
-                           Visibility="{Binding HasJournalRelated, Converter={StaticResource BoolToVis}}" />
-                <ScrollViewer Grid.Row="6" Grid.Column="1" Margin="0,10,0,0" MaxHeight="110" VerticalScrollBarVisibility="Auto"
-                              Visibility="{Binding HasJournalRelated, Converter={StaticResource BoolToVis}}">
-                    <ItemsControl ItemsSource="{Binding JournalRelated}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <CheckBox Margin="0,2,14,2" IsChecked="{Binding IsChecked}" Content="{Binding Label}" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
             </Grid>
+            </StackPanel>
         </controls:ContentDialog>
 
         <!-- Takipten çıkar: dosyalar silinmez -->

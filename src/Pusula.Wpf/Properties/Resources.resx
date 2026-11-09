@@ -1141,7 +1141,7 @@
     <value>Ana notun en altındaki Günlük bölümüne olay ekler (en yeni en üstte).</value>
   </data>
   <data name="Journal_Title" xml:space="preserve">
-    <value>Olay ekle · {0}</value>
+    <value>Günlüğe yaz</value>
   </data>
   <data name="Journal_Add" xml:space="preserve">
     <value>Ekle</value>
@@ -1190,5 +1190,11 @@
   </data>
   <data name="Journal_RelatedShort" xml:space="preserve">
     <value>İlgili</value>
+  </data>
+  <data name="Journal_Target" xml:space="preserve">
+    <value>{0} günlüğüne</value>
+  </data>
+  <data name="Journal_DateHint" xml:space="preserve">
+    <value>Gün.Ay.Yıl; istersen saat: 12.11.2026 14:30</value>
   </data>
 </root>

@@ -208,7 +208,7 @@ namespace Pusula.Core.Notes
         public static string Format(JournalEntry entry)
         {
             var sb = new StringBuilder();
-            var head = new List<string> { entry.Date.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture) };
+            var head = new List<string> { entry.Date.ToString(entry.Date.TimeOfDay == TimeSpan.Zero ? "dd.MM.yyyy" : "dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture) };
             if (entry.Kind.Trim().Length > 0)
             {
                 head.Add(entry.Kind.Trim());

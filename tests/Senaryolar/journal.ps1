@@ -14,13 +14,13 @@ try {
     $note = Join-Path $stock 'AB-7000-0002.md'
     $before = [IO.File]::ReadAllText($note)
     $vm.SelectNodeByPath($stock); Wait
-    Check 'pencere açılır, Ekle gizli' ($vm.OpenJournalHere() -and $vm.IsJournalOpen -and $vm.JournalPrimaryText -eq '')
+    Check 'pencere açılır, Ekle gizli, tarih bugün' ($vm.OpenJournalHere() -and $vm.IsJournalOpen -and $vm.JournalPrimaryText -eq '' -and $vm.JournalDateText -eq [datetime]::Today.ToString('dd.MM.yyyy'))
     Check 'ilgili: seri numaraları' (@($vm.JournalRelated | ForEach-Object Number) -contains 'SN01') (($vm.JournalRelated | ForEach-Object Number) -join ',')
     $vm.JournalKind = 'Toplantı'; $vm.JournalDate = [datetime]'2026-11-05'; $vm.JournalHeading = 'MILKON haftalık'; $vm.JournalBody = 'SN01 paylaşıldı.'
     ($vm.JournalRelated | Where-Object Number -eq 'SN01').IsChecked = $true; $vm.JournalTags = 'MILKON'
     Check 'eklendi' ($vm.ConfirmJournal()); Wait
     $vm.OpenJournalHere() | Out-Null
-    $vm.JournalKind = 'Karar'; $vm.JournalDate = [datetime]'2026-11-12'; $vm.JournalHeading = 'Konnektör N tipine'; $vm.JournalImportance = 'Yüksek'
+    $vm.JournalKind = 'Karar'; $vm.JournalDateText = '12.11.2026'; $vm.JournalHeading = 'Konnektör N tipine'; $vm.JournalImportance = 'Yüksek'
     Check 'ikinci eklendi' ($vm.ConfirmJournal()); Wait
     $after = [IO.File]::ReadAllText($note)
     Check 'notun önceki kısmı aynen duruyor' ($after.StartsWith($before.TrimEnd()))
