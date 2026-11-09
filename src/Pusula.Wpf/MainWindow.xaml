@@ -477,27 +477,38 @@
         </DataTemplate>
 
         <!-- Aşama çubuğunda bir adım: geçilmiş, şu an, gelecek. -->
+        <!-- Aşamalar: ince çizgi üzerinde noktalar; geçilen vurgu renginde, şimdiki dolu ve kalın, sonrakiler soluk -->
         <DataTemplate x:Key="StatusStepTemplate">
-            <Border x:Name="Step"
-                    Margin="0,0,4,0"
-                    Padding="4,5"
-                    CornerRadius="{DynamicResource ControlCornerRadius}"
-                    Background="{DynamicResource ControlFillColorSecondaryBrush}">
-                <TextBlock x:Name="StepText"
+            <Grid Margin="0,0,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="12" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Border x:Name="Line" Grid.Row="0" Height="2" VerticalAlignment="Center" Background="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                <Ellipse x:Name="Dot" Grid.Row="0" Width="10" Height="10" HorizontalAlignment="Center"
+                         Fill="{DynamicResource LayerBrush}" Stroke="{DynamicResource TextTertiaryBrush}" StrokeThickness="1.5" />
+                <TextBlock x:Name="StepText" Grid.Row="1" Margin="2,5,2,0"
                            Text="{Binding Name}"
                            FontSize="11"
                            HorizontalAlignment="Center"
                            TextTrimming="CharacterEllipsis"
                            Foreground="{DynamicResource TextTertiaryBrush}" />
-            </Border>
+            </Grid>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding State}" Value="past">
-                    <Setter TargetName="Step" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
-                    <Setter TargetName="StepText" Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                    <Setter TargetName="Line" Property="Background" Value="{DynamicResource AccentBrush}" />
+                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentBrush}" />
+                    <Setter TargetName="Dot" Property="Stroke" Value="{DynamicResource AccentBrush}" />
+                    <Setter TargetName="StepText" Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding State}" Value="current">
-                    <Setter TargetName="Step" Property="Background" Value="{DynamicResource AccentBrush}" />
-                    <Setter TargetName="StepText" Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                    <Setter TargetName="Dot" Property="Width" Value="14" />
+                    <Setter TargetName="Dot" Property="Height" Value="14" />
+                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentBrush}" />
+                    <Setter TargetName="Dot" Property="Stroke" Value="{DynamicResource LayerBrush}" />
+                    <Setter TargetName="Dot" Property="StrokeThickness" Value="2" />
+                    <Setter TargetName="StepText" Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                    <Setter TargetName="StepText" Property="FontWeight" Value="SemiBold" />
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
@@ -876,24 +887,35 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <!-- Başlık -->
+                <!-- Başlık: numara + ad, üst kayıt (tıklanır) › tür / şablon, durum; sağda klasör ve ⋯ menüsü. Yol ipucunda. -->
                 <Grid Grid.Row="0" DataContext="{Binding SelectedNode}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <controls:FontIcon Grid.Column="0" Glyph="{Binding Glyph}" FontSize="32"
+                    <controls:FontIcon Grid.Column="0" Glyph="{Binding Glyph}" FontSize="38"
                                        Style="{StaticResource KindIconStyle}"
-                                       VerticalAlignment="Center" Margin="0,0,16,0" />
+                                       VerticalAlignment="Top" Margin="0,4,20,0" />
                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                        <TextBlock Style="{DynamicResource CaptionTextBlockStyle}"
-                                   Foreground="{DynamicResource TextSecondaryBrush}"
-                                   Text="{Binding DataContext.Detail.Subtitle, RelativeSource={RelativeSource AncestorType=Window}}" />
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{DynamicResource SubtitleTextBlockStyle}" Text="{Binding Title}" VerticalAlignment="Center" />
-                            <controls:DropDownButton Margin="14,0,0,0"
-                                                     Padding="4,2"
+                        <WrapPanel ToolTip="{Binding Path}">
+                            <TextBlock x:Name="HeaderTitle" FontSize="26" FontWeight="SemiBold" Text="{Binding Title}" VerticalAlignment="Bottom" />
+                            <TextBlock Margin="14,0,0,3" FontSize="18" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       Text="{Binding DataContext.Detail.HeaderName, RelativeSource={RelativeSource AncestorType=Window}}" />
+                        </WrapPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                            <Button Style="{DynamicResource HyperlinkButtonStyle}" Padding="0" Click="HeaderParent_Click"
+                                    Content="{Binding DataContext.Detail.ParentName, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    ToolTip="{x:Static res:Resources.Header_GoParent}"
+                                    Visibility="{Binding DataContext.Detail.HasParent, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
+                            <TextBlock Margin="8,0,8,0" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Text="›"
+                                       Visibility="{Binding DataContext.Detail.HasParent, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
+                            <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}"
+                                       Text="{Binding DataContext.Detail.ContextText, RelativeSource={RelativeSource AncestorType=Window}}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                            <controls:DropDownButton Padding="4,2"
                                                      VerticalAlignment="Center"
                                                      Menu="{StaticResource StatusMenu}"
                                                      ToolTip="{x:Static res:Resources.Status_ChangeHint}"
@@ -901,14 +923,13 @@
                                 <ContentPresenter Content="{Binding DataContext.Detail.Status, RelativeSource={RelativeSource AncestorType=Window}}"
                                                   ContentTemplate="{DynamicResource StatusChipTemplate}" />
                             </controls:DropDownButton>
-                            <TextBlock Margin="10,0,0,0"
+                            <TextBlock Margin="12,0,0,0"
                                        VerticalAlignment="Center"
                                        Style="{DynamicResource CaptionTextBlockStyle}"
                                        Foreground="{DynamicResource TextTertiaryBrush}"
                                        Text="{Binding DataContext.Detail.StatusInfo, RelativeSource={RelativeSource AncestorType=Window}}"
                                        Visibility="{Binding DataContext.Detail.IsStock, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
-                            <controls:DropDownButton Margin="14,0,0,0"
-                                                     Padding="4,2"
+                            <controls:DropDownButton Padding="4,2"
                                                      VerticalAlignment="Center"
                                                      Menu="{StaticResource InventoryStatusMenu}"
                                                      ToolTip="{x:Static res:Resources.Status_ChangeHint}"
@@ -916,30 +937,29 @@
                                 <ContentPresenter Content="{Binding DataContext.Inventory.Status, RelativeSource={RelativeSource AncestorType=Window}}"
                                                   ContentTemplate="{DynamicResource StatusChipTemplate}" />
                             </controls:DropDownButton>
-                            <TextBlock Margin="10,0,0,0"
+                            <TextBlock Margin="12,0,0,0"
                                        VerticalAlignment="Center"
                                        Style="{DynamicResource CaptionTextBlockStyle}"
                                        Foreground="{DynamicResource TextTertiaryBrush}"
                                        Text="{Binding DataContext.Inventory.StatusInfo, RelativeSource={RelativeSource AncestorType=Window}}"
                                        Visibility="{Binding DataContext.Inventory.IsRecord, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
                         </StackPanel>
-                        <TextBlock Style="{DynamicResource CaptionTextBlockStyle}"
-                                   Foreground="{DynamicResource TextTertiaryBrush}"
-                                   TextTrimming="CharacterEllipsis"
-                                   Text="{Binding Path}" />
                     </StackPanel>
-                    <Button Grid.Column="2"
-                            VerticalAlignment="Center"
-                            Command="{Binding DataContext.OpenFolderCommand, RelativeSource={RelativeSource AncestorType=Window}}">
-                        <StackPanel Orientation="Horizontal">
-                            <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" VerticalAlignment="Center" />
-                            <TextBlock Text="{x:Static res:Resources.Menu_OpenFolder}" Margin="8,0,0,0" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </Button>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Top">
+                        <Button Command="{Binding DataContext.OpenFolderCommand, RelativeSource={RelativeSource AncestorType=Window}}">
+                            <StackPanel Orientation="Horizontal">
+                                <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" VerticalAlignment="Center" />
+                                <TextBlock Text="{x:Static res:Resources.Menu_OpenFolder}" Margin="8,0,0,0" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="HeaderMoreButton" Margin="6,0,0,0" Style="{DynamicResource IconButtonStyle}" Click="HeaderMore_Click"
+                                ToolTip="{x:Static res:Resources.Header_More}">
+                            <controls:FontIcon Glyph="{x:Static local:AppIcons.More}" FontSize="16" />
+                        </Button>
+                    </StackPanel>
                 </Grid>
-
                 <!-- Stok: aşama çubuğu -->
-                <ItemsControl Grid.Row="1" Margin="0,14,0,0"
+                <ItemsControl Grid.Row="1" Margin="58,18,0,0"
                               ItemsSource="{Binding Detail.Steps}"
                               ItemTemplate="{StaticResource StatusStepTemplate}"
                               Visibility="{Binding Detail.IsStock, Converter={StaticResource BoolToVis}}">
@@ -951,7 +971,7 @@
                 </ItemsControl>
 
                 <!-- Envanter kaydı: aşama çubuğu -->
-                <ItemsControl Grid.Row="1" Margin="0,14,0,0"
+                <ItemsControl Grid.Row="1" Margin="58,18,0,0"
                               ItemsSource="{Binding Inventory.Steps}"
                               ItemTemplate="{StaticResource StatusStepTemplate}"
                               Visibility="{Binding Inventory.IsRecord, Converter={StaticResource BoolToVis}}">

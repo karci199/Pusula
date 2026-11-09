@@ -248,6 +248,51 @@ namespace Pusula.Wpf.ViewModels
             private set { SetProperty(ref subtitle, value); }
         }
 
+        private string headerName = string.Empty;
+        private string parentName = string.Empty;
+        private string parentPath = string.Empty;
+        private string contextText = string.Empty;
+
+        /// <summary>Başlıkta numaranın yanındaki ad (stok adı, proje adı, kayıt tanımı); boş olabilir.</summary>
+        public string HeaderName
+        {
+            get { return headerName; }
+            private set { SetProperty(ref headerName, value); }
+        }
+
+        /// <summary>Üst kayıt (stokta proje, stoka ait envanterde stok); tıklanınca oraya gidilir. Boş olabilir.</summary>
+        public string ParentName
+        {
+            get { return parentName; }
+            private set
+            {
+                if (SetProperty(ref parentName, value))
+                {
+                    OnPropertyChanged(nameof(HasParent));
+                }
+            }
+        }
+
+        /// <summary>Üst kaydın klasörü.</summary>
+        public string ParentPath
+        {
+            get { return parentPath; }
+            private set { SetProperty(ref parentPath, value); }
+        }
+
+        /// <summary>Üst kayıt var mı.</summary>
+        public bool HasParent
+        {
+            get { return parentName.Length > 0; }
+        }
+
+        /// <summary>Başlığın ikinci satırı: tür, şablon, alt tür ("Stok · Pasif anten", "Jig · Mekanik").</summary>
+        public string ContextText
+        {
+            get { return contextText; }
+            private set { SetProperty(ref contextText, value); }
+        }
+
         /// <summary>Tablonun altındaki not.</summary>
         public string Note
         {
@@ -313,6 +358,31 @@ namespace Pusula.Wpf.ViewModels
             Note = string.Empty;
             StatusInfo = string.Empty;
             Subtitle = selected == null ? string.Empty : selected.KindText;
+            HeaderName = string.Empty;
+            ParentName = string.Empty;
+            ParentPath = string.Empty;
+            ContextText = Subtitle;
+            if (selected?.Item != null)
+            {
+                // Envanter kaydı: tanım, tür · alt tür; stoka aitse üst kayıt o stok.
+                var record = selected.Item.Record;
+                HeaderName = record.Name;
+                ContextText = string.Join(" · ", new[] { selected.Type?.Name ?? string.Empty, record.SubType }.Where(p => p.Length > 0));
+                if (selected.Item.Owner.Length > 0)
+                {
+                    var folder = Path.GetDirectoryName(selected.Item.Folder);
+                    while (!string.IsNullOrEmpty(folder) && !string.Equals(Path.GetFileName(folder), selected.Item.Owner, StringComparison.OrdinalIgnoreCase))
+                    {
+                        folder = Path.GetDirectoryName(folder);
+                    }
+
+                    if (!string.IsNullOrEmpty(folder))
+                    {
+                        ParentName = selected.Item.Owner;
+                        ParentPath = folder!;
+                    }
+                }
+            }
 
             if (selected == null || (selected.Kind != FolderKind.Project && selected.Kind != FolderKind.Stock))
             {
@@ -387,6 +457,7 @@ namespace Pusula.Wpf.ViewModels
             if (kind == FolderKind.Project)
             {
                 ShowProject(summary);
+                HeaderName = projectInfo?.Name ?? string.Empty;
                 foreach (var note in Enumerable.Reverse(projectInfo?.Notes ?? new List<QuickNote>()))
                 {
                     ProjectNotes.Add(new HistoryRow(note));
@@ -573,6 +644,10 @@ namespace Pusula.Wpf.ViewModels
             var project = Path.GetFileName(Path.GetDirectoryName(path) ?? string.Empty);
             var parts = new[] { format?.Label ?? Resources.Kind_Stock, summary.Template, project }.Where(p => !string.IsNullOrEmpty(p));
             Subtitle = string.Join(" · ", parts);
+            HeaderName = info?.Name ?? string.Empty;
+            ParentName = project;
+            ParentPath = Path.GetDirectoryName(path) ?? string.Empty;
+            ContextText = string.Join(" · ", new[] { format?.Label ?? Resources.Kind_Stock, summary.Template }.Where(p => !string.IsNullOrEmpty(p)));
 
             var current = info?.Status ?? string.Empty;
             Status = StatusChip.For(stockType, current);

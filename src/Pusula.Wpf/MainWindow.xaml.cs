@@ -586,6 +586,55 @@ namespace Pusula.Wpf
             }
         }
 
+        // Başlıktaki üst kayıt (proje / stok) bağlantısı: oraya gider.
+        private void HeaderParent_Click(object sender, RoutedEventArgs e)
+        {
+            if (viewModel.Detail.ParentPath.Length > 0)
+            {
+                viewModel.SelectNodeByPath(viewModel.Detail.ParentPath);
+            }
+        }
+
+        // Başlıktaki ⋯: yolu kopyala, düzenle, takipten çıkar, sil.
+        private void HeaderMore_Click(object sender, RoutedEventArgs e)
+        {
+            var node = viewModel.SelectedNode;
+            if (node == null)
+            {
+                return;
+            }
+
+            var menu = new ContextMenu { PlacementTarget = (UIElement)sender, Placement = PlacementMode.Bottom };
+            var copy = new MenuItem { Header = Properties.Resources.Header_CopyPath, Icon = new FontIcon { Glyph = AppIcons.Copy } };
+            copy.Click += (s, args) =>
+            {
+                try
+                {
+                    Clipboard.SetText(node.Path);
+                }
+                catch (System.Runtime.InteropServices.COMException)
+                {
+                    // Pano başka bir uygulamada kilitliyse sessizce geçilir.
+                }
+            };
+            menu.Items.Add(copy);
+            if (viewModel.CanEditSelected)
+            {
+                menu.Items.Add(new Separator());
+                var edit = new MenuItem { Header = Properties.Resources.Menu_Edit, Icon = new FontIcon { Glyph = AppIcons.Edit } };
+                edit.Click += NodeEdit_Click;
+                var untrack = new MenuItem { Header = Properties.Resources.Menu_Untrack, Icon = new FontIcon { Glyph = AppIcons.Remove } };
+                untrack.Click += NodeUntrack_Click;
+                var delete = new MenuItem { Header = Properties.Resources.Menu_Delete, Icon = new FontIcon { Glyph = AppIcons.Delete } };
+                delete.Click += NodeDelete_Click;
+                menu.Items.Add(edit);
+                menu.Items.Add(untrack);
+                menu.Items.Add(delete);
+            }
+
+            menu.IsOpen = true;
+        }
+
         // "+" düğmesi: menüyü düğmenin altında açar (ok yok, sade ikon).
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {

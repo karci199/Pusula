@@ -1301,5 +1301,18 @@ namespace Pusula.Wpf.Properties
         public static string Settings_ResetLayoutHint { get { return Get("Settings_ResetLayoutHint"); } }
 
         #endregion
+
+        #region Başlık
+
+        /// <summary>Başlıktaki proje / stok bağlantısı.</summary>
+        public static string Header_GoParent { get { return Get("Header_GoParent"); } }
+
+        /// <summary>Başlıktaki ⋯ düğmesi.</summary>
+        public static string Header_More { get { return Get("Header_More"); } }
+
+        /// <summary>⋯ menüsü.</summary>
+        public static string Header_CopyPath { get { return Get("Header_CopyPath"); } }
+
+        #endregion
     }
 }

@@ -1113,4 +1113,13 @@
   <data name="Settings_ResetLayoutHint" xml:space="preserve">
     <value>Stok sekmelerinin sırası ile tablo sütunlarının sırası ve genişliği ilk haline döner.</value>
   </data>
+  <data name="Header_GoParent" xml:space="preserve">
+    <value>Üst kayda git</value>
+  </data>
+  <data name="Header_More" xml:space="preserve">
+    <value>Diğer işlemler</value>
+  </data>
+  <data name="Header_CopyPath" xml:space="preserve">
+    <value>Yolu kopyala</value>
+  </data>
 </root>

@@ -18,6 +18,12 @@
         /// <summary>Klasörü aç.</summary>
         public const string OpenFolder = "\uED25";
 
+        /// <summary>Diğer işlemler (⋯).</summary>
+        public const string More = "\uE712";
+
+        /// <summary>Kopyala.</summary>
+        public const string Copy = "\uE8C8";
+
         /// <summary>Tam boy aç (fotoğraf).</summary>
         public const string FullScreen = "\uE740";
 
