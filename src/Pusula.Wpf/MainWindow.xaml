@@ -201,9 +201,9 @@
                 <Rectangle Grid.Column="0" Width="2" HorizontalAlignment="Center" Fill="{DynamicResource DividerStrokeColorDefaultBrush}" />
                 <Ellipse x:Name="Dot" Grid.Column="0" Width="12" Height="12" Margin="0,13,0,0" VerticalAlignment="Top" HorizontalAlignment="Center"
                          Stroke="{DynamicResource LayerBrush}" StrokeThickness="2" Fill="{DynamicResource TextTertiaryBrush}" />
-                <Border Grid.Column="1" Margin="6,0,0,10" Padding="12,8" Cursor="Hand"
-                        Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
-                        CornerRadius="{DynamicResource OverlayCornerRadius}"
+                <Border x:Name="Card" Grid.Column="1" Margin="6,0,0,10" Padding="12,9" Cursor="Hand"
+                        Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{DynamicResource TextTertiaryBrush}" BorderThickness="3,0,0,0"
+                        CornerRadius="{DynamicResource ControlCornerRadius}"
                         MouseLeftButtonUp="TimelineCard_MouseLeftButtonUp">
                     <StackPanel>
                         <Grid>
@@ -247,14 +247,21 @@
                 <DataTrigger Binding="{Binding IsExpanded}" Value="True">
                     <Setter TargetName="Details" Property="Visibility" Value="Visible" />
                 </DataTrigger>
+                <DataTrigger Binding="{Binding Result.Tone}" Value="active">
+                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentBrush}" />
+                    <Setter TargetName="Card" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                </DataTrigger>
                 <DataTrigger Binding="{Binding Result.Tone}" Value="done">
                     <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                    <Setter TargetName="Card" Property="BorderBrush" Value="{DynamicResource SystemFillColorSuccessBrush}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Result.Tone}" Value="failed">
                     <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                    <Setter TargetName="Card" Property="BorderBrush" Value="{DynamicResource SystemFillColorCriticalBrush}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Result.Tone}" Value="waiting">
                     <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                    <Setter TargetName="Card" Property="BorderBrush" Value="{DynamicResource SystemFillColorCautionBrush}" />
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
@@ -1514,13 +1521,11 @@
                                                    Visibility="{Binding Detail.HasRuns, Converter={StaticResource InverseBoolToVis}}" />
                                     </StackPanel>
                                     <!-- Günlük kartı: kısa not (uygulamada kalır) + Olay (ana notun Günlük bölümüne) + zaman çizelgesi -->
-                                    <Border Grid.Column="2" Padding="16,14" BorderThickness="1" VerticalAlignment="Top"
-                                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                                            CornerRadius="{DynamicResource OverlayCornerRadius}">
+                                    <Border Grid.Column="2" VerticalAlignment="Top">
                                         <StackPanel>
                                             <StackPanel Orientation="Horizontal">
-                                                <controls:FontIcon Glyph="{x:Static local:AppIcons.Clock}" FontSize="18" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                                                <TextBlock Margin="10,0,0,0" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.General_Timeline}" />
+                                                <controls:FontIcon Glyph="{x:Static local:AppIcons.Clock}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                                <TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.General_Timeline}" />
                                             </StackPanel>
                                             <Grid Margin="0,12,0,14">
                                                 <Grid.ColumnDefinitions>
@@ -1535,9 +1540,9 @@
                                                         <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.QuickNote_Add}" />
                                                     </StackPanel>
                                                 </Button>
-                                                <Button x:Name="StockJournalButton" Grid.Column="2" Margin="6,0,0,0" Style="{DynamicResource AccentButtonStyle}" Click="JournalAdd_Click" ToolTip="{x:Static res:Resources.Journal_ButtonHint}">
+                                                <Button x:Name="StockJournalButton" Grid.Column="2" Margin="6,0,0,0" Click="JournalAdd_Click" ToolTip="{x:Static res:Resources.Journal_ButtonHint}">
                                                     <StackPanel Orientation="Horizontal">
-                                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" />
+                                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" Foreground="{DynamicResource AccentBrush}" />
                                                         <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Journal_Button}" />
                                                     </StackPanel>
                                                 </Button>
