@@ -65,7 +65,7 @@ MSBuild Pusula.sln /p:Configuration=Debug /p:Platform=x64
 
 - **Klasör = yer, JSON = bilgi.** Klasör ağacı JSON'da tutulmaz, diskten taranır.
 - Uygulama kullanıcının dosyalarını **asla silmez**. Göç **kopyalar**, taşımaz.
-- Obsidian notlarının **gövdesine dokunulmaz** (yalnızca YAML bloğu yönetilir).
+- Obsidian notlarının **gövdesine dokunulmaz** (yalnızca YAML bloğu yönetilir). Tek istisna: ana notun en altındaki `## Günlük` bölümünün başına olay **eklenir** (kullanıcı kararı, 09.11.2026); mevcut satırlar değiştirilmez.
 - Dosya yazımı atomik: geçici dosya + yeniden adlandırma.
 - Bulut yok, telemetri yok, dış ağ çağrısı yok.
 - Karar kodla, öneri yapay zekayla, onay kullanıcıyla.
