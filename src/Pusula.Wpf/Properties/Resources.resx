@@ -1050,4 +1050,22 @@
   <data name="Settings_Trash" xml:space="preserve">
     <value>Silinenler klasörünü aç</value>
   </data>
+  <data name="Settings_NoteApp" xml:space="preserve">
+    <value>Notları şununla aç</value>
+  </data>
+  <data name="Settings_NoteAppHint" xml:space="preserve">
+    <value>Notu aç düğmeleri .md notlarını bu programla açar. Obsidian için kök klasör bir Obsidian kasasının (vault) içinde olmalı. Fotoğraf ve belgeler her zaman Windows varsayılanıyla açılır.</value>
+  </data>
+  <data name="NoteApp_Obsidian" xml:space="preserve">
+    <value>Obsidian</value>
+  </data>
+  <data name="NoteApp_VsCode" xml:space="preserve">
+    <value>VS Code</value>
+  </data>
+  <data name="NoteApp_Default" xml:space="preserve">
+    <value>Windows varsayılanı</value>
+  </data>
+  <data name="NoteApp_Missing" xml:space="preserve">
+    <value>{0} bu bilgisayarda bulunamadı; not Windows varsayılanıyla açıldı.</value>
+  </data>
 </root>

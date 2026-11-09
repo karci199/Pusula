@@ -54,6 +54,13 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
 
+            <!-- Notları açan program: "Notu aç" düğmeleri .md notunu bununla açar -->
+            <TextBlock Margin="0,20,0,2" Style="{DynamicResource SubtitleTextBlockStyle}" Text="{x:Static res:Resources.Settings_NoteApp}" />
+            <TextBlock Margin="0,0,0,8" TextWrapping="Wrap" Style="{DynamicResource CaptionTextBlockStyle}"
+                       Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Settings_NoteAppHint}" />
+            <ComboBox x:Name="NoteAppBox" Width="260" HorizontalAlignment="Left" DisplayMemberPath="Name"
+                      ItemsSource="{Binding NoteApps}" SelectedItem="{Binding NoteApp, Mode=TwoWay}" />
+
             <!-- Tanımlar: kök klasörün _PUSULA altındaki dosyalar -->
             <TextBlock Margin="0,20,0,8" Style="{DynamicResource SubtitleTextBlockStyle}" Text="{x:Static res:Resources.Settings_Definitions}" />
             <WrapPanel IsEnabled="{Binding HasRoot}">

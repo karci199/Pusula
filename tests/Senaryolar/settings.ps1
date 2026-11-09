@@ -22,7 +22,17 @@ try {
     Check 'ayarlara yazıldı' ($saved -match '"theme":\s*"Sand"') $saved
     Check 'kök klasör korundu' ($saved.Contains($Data.Replace('\', '\\'))) $saved
     Snap $set "$Out\settings-sand.png"
-    $set.Close()
+    "--- Notları şununla aç"
+    $N = [Pusula.Wpf.NoteOpener]
+    Check 'varsayılan Obsidian' ($vm.NoteApp.Key -eq 'obsidian')
+    Check 'seçenekler: Obsidian, VS Code, Windows' ((($vm.NoteApps | ForEach-Object Key) -join ',') -eq 'obsidian,vscode,default')
+    $vm.NoteApp = $N::Find('vscode')
+    Check 'seçim ayarlara yazıldı' ([IO.File]::ReadAllText($env:PUSULA_AYARLAR) -match '"noteApp":\s*"vscode"')
+    Check 'obsidian bağlantısı' ($N::UriFor('C:\Kök\a b.md', 'obsidian') -eq 'obsidian://open?path=C%3A%5CK%C3%B6k%5Ca%20b.md') ($N::UriFor('C:\Kök\a b.md', 'obsidian'))
+    Check 'vscode bağlantısı (sürücü)' ($N::UriFor('C:\Kök\a b.md', 'vscode') -eq 'vscode://file/C:/K%C3%B6k/a%20b.md') ($N::UriFor('C:\Kök\a b.md', 'vscode'))
+    Check 'vscode bağlantısı (ağ yolu)' ($N::UriFor('\\sunucu\pay\x.md', 'vscode') -eq 'vscode://file//sunucu/pay/x.md') ($N::UriFor('\\sunucu\pay\x.md', 'vscode'))
+    Pump; Check 'seçim kutusu seçili öğeyi gösterir' ($set.FindName('NoteAppBox').SelectedItem -ne $null -and $set.FindName('NoteAppBox').SelectedItem.Key -eq 'vscode')
+    Snap $set "$Out\settings-noteapp.png"    $set.Close()
     ($vm.ProjectNodes[0]).IsSelected = $true; Pump; Wait
     Snap $win "$Out\main-sand.png"
     $vm.Theme = [Pusula.Wpf.Themes]::Find('Night'); Pump; Wait

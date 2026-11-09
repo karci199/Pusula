@@ -195,14 +195,42 @@ namespace Pusula.Wpf.ViewModels
             OpenPath(Directory.Exists(path) ? path : folder);
         }
 
-        /// <summary>Notu varsayılan programla açar (Obsidian ya da metin düzenleyici); not yoksa klasörü açar.</summary>
+        /// <summary>Notları açan program (Ayarlar: Obsidian / VS Code / Windows varsayılanı); değişince ayarlara yazılır.</summary>
+        public NoteAppOption NoteApp
+        {
+            get { return NoteOpener.Find(settings.NoteApp); }
+            set
+            {
+                if (value == null || value.Key == settings.NoteApp)
+                {
+                    return;
+                }
+
+                settings.NoteApp = value.Key;
+                settings.Save();
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>Not açma seçenekleri.</summary>
+        public NoteAppOption[] NoteApps { get; } = NoteOpener.Options;
+
+        /// <summary>
+        /// Dosyayı açar: .md notları Ayarlar'da seçilen programla (Obsidian, VS Code, Windows varsayılanı), diğerleri
+        /// varsayılanla. Dosya yoksa ya da açılamazsa klasörü açar.
+        /// </summary>
         public void OpenNoteOrFolder(string notePath, string folder)
         {
             if (!string.IsNullOrEmpty(notePath) && File.Exists(notePath))
             {
                 try
                 {
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(notePath) { UseShellExecute = true });
+                    var missing = NoteOpener.Open(notePath, NoteApp.Key);
+                    if (missing.Length > 0)
+                    {
+                        Status = string.Format(Resources.NoteApp_Missing, missing);
+                    }
+
                     return;
                 }
                 catch (System.ComponentModel.Win32Exception)

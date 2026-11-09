@@ -4,7 +4,7 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 
 ## 1. Hatalar
 
-- [ ] **Not oluşturunca "the host was not found"**: stok açıldıktan sonra md oluşturup açarken; VS Code "izin ver" istiyor (ağ yolundaki sunucuya izin) → uygulama hatası değil. **Karar (C):** Ayarlar'a "Notları şununla aç" (Obsidian / VS Code / Windows varsayılanı), varsayılan Obsidian.
+- [x] **Not oluşturunca "the host was not found"**: stok açıldıktan sonra md oluşturup açarken; VS Code "izin ver" istiyor (ağ yolundaki sunucuya izin) → uygulama hatası değil. **Yapıldı:** Ayarlar → "Notları şununla aç" (Obsidian / VS Code / Windows varsayılanı), varsayılan Obsidian; program yoksa Windows varsayılanı.
 - [x] **NuGet restore hatası**: .NET 4.8 başvuru derlemeleri o makinede yoktu. Paket depoya kondu (`Dependencies\NuGet`, `nuget.config`); boş önbellekle ayrı klasörde derleme denendi, çalışıyor.
 - [x] **Hover:** proje ve stok aynı anda vurgulanıyordu. Ağaç satır şablonu Pusula'da düzeltildi (yalnız satırın kendisi); asıl kusur DesignKit'te (TreeView.xaml, IsMouseOver tetikleyicisi), orada da düzeltilmeli.
 - [x] **Türler → Biçim tablosu:** F2 ile düzenlenince kutu beyazdı → tüm düzenlenebilir tablolarda (Türler, Dosya türleri) temalı düzenleme kutusu.

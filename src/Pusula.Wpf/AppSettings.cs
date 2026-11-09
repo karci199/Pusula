@@ -17,6 +17,7 @@ namespace Pusula.Wpf
         {
             RootPath = string.Empty;
             Theme = string.Empty;
+            NoteApp = NoteOpener.Obsidian;
         }
 
         /// <summary>Son seçilen projeler klasörü.</summary>
@@ -26,6 +27,10 @@ namespace Pusula.Wpf
         /// <summary>Seçili tema anahtarı (bkz. <see cref="Themes"/>); boşsa varsayılan.</summary>
         [DataMember(Name = "theme", Order = 1)]
         public string Theme { get; set; } = string.Empty;
+
+        /// <summary>.md notlarını açan program: <c>obsidian</c>, <c>vscode</c> ya da <c>default</c> (bkz. <see cref="NoteOpener"/>).</summary>
+        [DataMember(Name = "noteApp", Order = 2)]
+        public string NoteApp { get; set; } = NoteOpener.Obsidian;
 
         /// <summary>Ayar dosyasının yerini değiştiren ortam değişkeni (testler gerçek ayarlara dokunmasın diye).</summary>
         public const string PathVariable = "PUSULA_AYARLAR";

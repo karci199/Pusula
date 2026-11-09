@@ -1218,5 +1218,27 @@ namespace Pusula.Wpf.Properties
         public static string Settings_Trash { get { return Get("Settings_Trash"); } }
 
         #endregion
+
+        #region Ayarlar
+
+        /// <summary>Ayarlar başlığı.</summary>
+        public static string Settings_NoteApp { get { return Get("Settings_NoteApp"); } }
+
+        /// <summary>Ayarlar açıklaması.</summary>
+        public static string Settings_NoteAppHint { get { return Get("Settings_NoteAppHint"); } }
+
+        /// <summary>Seçenek.</summary>
+        public static string NoteApp_Obsidian { get { return Get("NoteApp_Obsidian"); } }
+
+        /// <summary>Seçenek.</summary>
+        public static string NoteApp_VsCode { get { return Get("NoteApp_VsCode"); } }
+
+        /// <summary>Seçenek.</summary>
+        public static string NoteApp_Default { get { return Get("NoteApp_Default"); } }
+
+        /// <summary>Durum çubuğu.</summary>
+        public static string NoteApp_Missing { get { return Get("NoteApp_Missing"); } }
+
+        #endregion
     }
 }
