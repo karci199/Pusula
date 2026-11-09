@@ -103,7 +103,14 @@ namespace Pusula.Core.Notes
             foreach (var raw in body.Replace("\r\n", "\n").Split('\n'))
             {
                 var line = raw.Trim();
-                if (line.Length == 0 || line.StartsWith("#", StringComparison.Ordinal))
+
+                // Günlük bölümü (ve önündeki ayırıcı) özete girmez; özet notun serbest kısmından alınır.
+                if (string.Equals(line, Journal.Heading, StringComparison.OrdinalIgnoreCase) || string.Equals(line, "## Gunluk", StringComparison.OrdinalIgnoreCase))
+                {
+                    break;
+                }
+
+                if (line.Length == 0 || line == "---" || line.StartsWith("#", StringComparison.Ordinal))
                 {
                     continue;
                 }

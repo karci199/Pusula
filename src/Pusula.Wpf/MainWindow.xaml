@@ -1039,7 +1039,7 @@
                             <Expander Margin="0,10,0,0" IsExpanded="{Binding Detail.OpenTasksExpanded, Mode=TwoWay}"
                                       Visibility="{Binding Detail.HasOpenTasks, Converter={StaticResource BoolToVis}}">
                                 <Expander.Header>
-                                    <TextBlock Style="{StaticResource PaneLabel}" Margin="0" Text="{Binding Detail.OpenTasksHeader}" />
+                                    <StackPanel Orientation="Horizontal"><controls:FontIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" /><TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding Detail.OpenTasksHeader}" /></StackPanel>
                                 </Expander.Header>
                                 <ScrollViewer Margin="0,4,0,0" MaxHeight="190" VerticalScrollBarVisibility="Auto">
                                     <ItemsControl ItemsSource="{Binding Detail.OpenTasks}" ItemTemplate="{Binding ItemTemplate, ElementName=OpenTaskList}" />
@@ -1412,7 +1412,10 @@
                                         <ColumnDefinition Width="11*" />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
-                                        <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.General_Attention}" />
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Error}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                            <TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.General_Attention}" />
+                                        </StackPanel>
                                         <ItemsControl ItemsSource="{Binding Detail.Alerts}" ItemTemplate="{StaticResource AlertTemplate}" />
                                         <TextBlock Style="{StaticResource HintText}" Text="{x:Static res:Resources.General_NoAttention}"
                                                    Visibility="{Binding Detail.HasAlerts, Converter={StaticResource InverseBoolToVis}}" />
@@ -1421,7 +1424,7 @@
                                         <Expander Margin="0,12,0,0" IsExpanded="{Binding Detail.OpenTasksExpanded, Mode=TwoWay}"
                                                   Visibility="{Binding Detail.HasOpenTasks, Converter={StaticResource BoolToVis}}">
                                             <Expander.Header>
-                                                <TextBlock Style="{StaticResource PaneLabel}" Margin="0" Text="{Binding Detail.OpenTasksHeader}" />
+                                                <StackPanel Orientation="Horizontal"><controls:FontIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" /><TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding Detail.OpenTasksHeader}" /></StackPanel>
                                             </Expander.Header>
                                             <ItemsControl x:Name="OpenTaskList" Margin="0,4,0,0" ItemsSource="{Binding Detail.OpenTasks}">
                                                 <ItemsControl.ItemTemplate>
@@ -1446,7 +1449,10 @@
                                             </ItemsControl>
                                         </Expander>
 
-                                        <TextBlock Style="{StaticResource PaneLabel}" Margin="0,16,0,8" Text="{x:Static res:Resources.StockInv_Section}" />
+                                        <StackPanel Orientation="Horizontal" Margin="0,22,0,10">
+                                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Inventory}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                            <TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.StockInv_Section}" />
+                                        </StackPanel>
                                         <ItemsControl ItemsSource="{Binding Detail.InventoryGroups}">
                                             <ItemsControl.ItemsPanel>
                                                 <ItemsPanelTemplate>
@@ -1455,9 +1461,11 @@
                                             </ItemsControl.ItemsPanel>
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <Border x:Name="Box" Margin="0,0,8,0" Padding="12,9" BorderThickness="1"
-                                                            CornerRadius="{DynamicResource OverlayCornerRadius}"
-                                                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+                                                    <Border x:Name="Box" Margin="0,0,8,0" Padding="12,10" BorderThickness="3,0,0,0" Cursor="Hand"
+                                                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                                                            Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{Binding Color}"
+                                                            Tag="{Binding Type.Key}" MouseLeftButtonUp="InventoryTile_MouseLeftButtonUp"
+                                                            ToolTip="{x:Static res:Resources.StockInv_TileHint}">
                                                         <StackPanel Orientation="Horizontal">
                                                             <controls:FontIcon Glyph="{Binding Glyph}" Foreground="{Binding Color}" FontSize="16" VerticalAlignment="Center" />
                                                             <TextBlock Margin="10,0,0,0" Text="{Binding Summary}" VerticalAlignment="Center" />
@@ -1472,7 +1480,10 @@
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
 
-                                        <TextBlock Style="{StaticResource PaneLabel}" Margin="0,16,0,8" Text="{x:Static res:Resources.General_Latest}" />
+                                        <StackPanel Orientation="Horizontal" Margin="0,22,0,10">
+                                            <controls:FontIcon Glyph="&#xE9D9;" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                            <TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.General_Latest}" />
+                                        </StackPanel>
                                         <StackPanel Visibility="{Binding Detail.HasRuns, Converter={StaticResource BoolToVis}}">
                                             <StackPanel Orientation="Horizontal">
                                                 <Border Width="64" />

@@ -1408,5 +1408,12 @@ namespace Pusula.Wpf.Properties
         public static string Journal_Deleted { get { return Get("Journal_Deleted"); } }
 
         #endregion
+
+        #region Genel
+
+        /// <summary>Jig / kablo kutucuğu ipucu.</summary>
+        public static string StockInv_TileHint { get { return Get("StockInv_TileHint"); } }
+
+        #endregion
     }
 }

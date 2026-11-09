@@ -554,7 +554,10 @@ namespace Pusula.Wpf.ViewModels
             List<string> missing;
             var links = info?.Inventory ?? new List<string>();
             var used = InventoryService.UsedByStock(path, links, InventoryItems, out missing);
-            foreach (var type in types.InventoryTypes)
+
+            // Her doldurmada baştan: üst üste binen yüklemelerde aynı tür iki kez görünmesin.
+            InventoryGroups.Clear();
+            foreach (var type in types.InventoryTypes.GroupBy(t => t.Key, StringComparer.OrdinalIgnoreCase).Select(g => g.First()))
             {
                 var rows = used.Where(i => string.Equals(i.Record.Type, type.Key, StringComparison.OrdinalIgnoreCase))
                     .Select(i => new InventoryRow(i, type, i.Level != InventoryLevel.Stock))

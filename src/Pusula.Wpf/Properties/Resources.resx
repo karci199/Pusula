@@ -1212,4 +1212,7 @@
   <data name="Journal_Deleted" xml:space="preserve">
     <value>{0} günlükten silindi.</value>
   </data>
+  <data name="StockInv_TileHint" xml:space="preserve">
+    <value>Tıkla: sekmesine git</value>
+  </data>
 </root>

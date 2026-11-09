@@ -638,6 +638,17 @@ namespace Pusula.Wpf
             menu.IsOpen = true;
         }
 
+        // Genel'deki jig / kablo kutucuğu: o türün sekmesine geçer.
+        private void InventoryTile_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var key = (sender as FrameworkElement)?.Tag as string;
+            var tab = StockTabs.Items.OfType<TabItem>().FirstOrDefault(t => t.Tag as string == InventoryTabTag + key);
+            if (tab != null)
+            {
+                StockTabs.SelectedItem = tab;
+            }
+        }
+
         // "+" düğmesi: menüyü düğmenin altında açar (ok yok, sade ikon).
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
