@@ -32,6 +32,11 @@ namespace Pusula.Wpf
             main.EditFileTypes(this);
         }
 
+        private void Trash_Click(object sender, RoutedEventArgs e)
+        {
+            ((MainViewModel)DataContext).OpenTrash();
+        }
+
         private void Close_Click(object sender, RoutedEventArgs e)
         {
             Close();

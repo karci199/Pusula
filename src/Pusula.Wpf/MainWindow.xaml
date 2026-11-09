@@ -66,6 +66,7 @@
                             <Separator />
                             <MenuItem Header="{x:Static res:Resources.Menu_Edit}" Click="StockInvEdit_Click" />
                             <MenuItem Header="{x:Static res:Resources.Menu_Untrack}" Click="StockInvUntrack_Click" />
+<MenuItem Header="{x:Static res:Resources.Menu_Delete}" Click="StockInvDelete_Click" />
                             <MenuItem Header="{x:Static res:Resources.StockInv_Unlink}" Click="StockInvUnlink_Click"
                                       Visibility="{Binding PlacementTarget.SelectedItem.IsLinked, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BoolToVis}, FallbackValue=Collapsed}" />
                         </ContextMenu>
@@ -568,6 +569,7 @@
             <Separator />
             <MenuItem Header="{x:Static res:Resources.Menu_Edit}" Click="StockInvEdit_Click" />
             <MenuItem Header="{x:Static res:Resources.Menu_Untrack}" Click="StockInvUntrack_Click" />
+<MenuItem Header="{x:Static res:Resources.Menu_Delete}" Click="StockInvDelete_Click" />
         </ContextMenu>
 
         <ContextMenu x:Key="NodeMenu">
@@ -607,6 +609,12 @@
                       Visibility="{Binding CanEditSelected, Converter={StaticResource BoolToVis}}">
                 <MenuItem.Icon>
                     <controls:FontIcon Glyph="{x:Static local:AppIcons.Remove}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.Menu_Delete}" Click="NodeDelete_Click"
+                      Visibility="{Binding CanEditSelected, Converter={StaticResource BoolToVis}}">
+                <MenuItem.Icon>
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Delete}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Menu_AddModules}" Command="{Binding AddModulesCommand}">
@@ -1002,6 +1010,7 @@
                             <Separator />
                             <MenuItem Header="{x:Static res:Resources.Menu_Edit}" Click="DetailRowEdit_Click" />
                             <MenuItem Header="{x:Static res:Resources.Menu_Untrack}" Click="DetailRowUntrack_Click" />
+<MenuItem Header="{x:Static res:Resources.Menu_Delete}" Click="DetailRowDelete_Click" />
                         </ContextMenu>
                     </ListView.ContextMenu>
                     <ListView.View>
@@ -1712,6 +1721,20 @@
                     <TextBox Text="{Binding EditNote, UpdateSourceTrigger=PropertyChanged}" />
                 </controls:FormField>
                 <TextBlock Margin="0,10,0,0" TextWrapping="Wrap" Foreground="{DynamicResource SystemFillColorCriticalBrush}" Text="{Binding EditError}" />
+            </StackPanel>
+        </controls:ContentDialog>
+
+        <!-- Sil: klasör _SILINENLER'e taşınır; Sil düğmesi ad doğru yazılınca görünür -->
+        <controls:ContentDialog Grid.RowSpan="3"
+                                IsOpen="{Binding IsDeleteOpen, Mode=TwoWay}"
+                                Title="{Binding DeleteTitle}"
+                                PrimaryButtonText="{Binding DeletePrimaryText}"
+                                CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                PrimaryButtonClick="Delete_PrimaryButtonClick">
+            <StackPanel MaxWidth="460">
+                <TextBlock TextWrapping="Wrap" Text="{Binding DeleteText}" />
+                <controls:SearchBox Margin="0,12,0,0" PlaceholderText="{x:Static res:Resources.Delete_TypeHint}"
+                                    Text="{Binding DeleteTyped, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
             </StackPanel>
         </controls:ContentDialog>
 

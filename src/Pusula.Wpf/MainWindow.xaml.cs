@@ -844,6 +844,34 @@ namespace Pusula.Wpf
             viewModel.ConfirmUntrack();
         }
 
+        private void NodeDelete_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.OpenDeleteSelected();
+        }
+
+        private void StockInvDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var row = MenuRow(sender);
+            if (row != null && row.Folder.Length > 0)
+            {
+                viewModel.OpenDelete(row.Folder);
+            }
+        }
+
+        private void DetailRowDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var row = DetailMenuRow(sender);
+            if (row != null)
+            {
+                viewModel.OpenDelete(row.Path);
+            }
+        }
+
+        private void Delete_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            viewModel.ConfirmDelete();
+        }
+
         /// <summary>Şablonlar penceresini açar.</summary>
         internal void EditTemplates(Window owner)
         {

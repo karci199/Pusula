@@ -59,6 +59,23 @@ try {
     $c = FindNode $vm.Nodes 'JT-0001-0003_RS422_kablosu_Brainbox'
     Check 'ağaçta işaretsiz kablo' ($c -ne $null -and $c.IsUnmarkedInventory)
     Check 'takip edilmeyen klasör düzenlenemez' (-not $vm.OpenEdit($other))
+    "--- 6. Sil: _SILINENLER'e taşınır"
+    $victim = Join-Path $project 'AB-7000-0001'
+    $count = CountAll $victim
+    Check 'onay açılır, Sil düğmesi gizli' ($vm.OpenDelete($victim) -and $vm.IsDeleteOpen -and $vm.DeletePrimaryText -eq '')
+    $vm.DeleteTyped = 'AB-7000-000'
+    Check 'yanlış ad: düğme gizli' ($vm.DeletePrimaryText -eq '')
+    Check 'yanlış adla silinmez' (-not $vm.ConfirmDelete() -and (Test-Path $victim))
+    $vm.OpenDelete($victim) | Out-Null
+    $vm.DeleteTyped = 'ab-7000-0001'
+    Check 'doğru ad: Sil düğmesi görünür' ($vm.DeletePrimaryText.Length -gt 0)
+    Check 'silindi' ($vm.ConfirmDelete())
+    $moved = @(Get-ChildItem (Join-Path $Data '_SILINENLER') -Directory | ForEach-Object { Join-Path $_.FullName '7000_MILKON\AB-7000-0001' } | Where-Object { Test-Path $_ })
+    Check 'eski yer boş, silinenlerde göreli yolla duruyor' (-not (Test-Path $victim) -and $moved.Count -eq 1) ($moved -join ',')
+    Check 'bütün dosyalar taşındı' ($moved.Count -eq 1 -and (CountAll $moved[0]) -eq $count) ([string]$count)
+    Check 'silinenler.log satırı' ((Get-Content (Join-Path $Data '_SILINENLER\silinenler.log') -Encoding UTF8) -match 'AB-7000-0001')
+    Check 'ağaçta yok' ((FindNode $vm.Nodes 'AB-7000-0001') -eq $null)
+    Check 'kökün dışı reddedilir' ([Pusula.Core.Tracking.RecordEdit]::MoveToTrash($project, $Data, [DateTime]::Now, 'x', [ref]'') -ne '')
 } finally {
     if ($savedSettings -ne $null) { [IO.File]::WriteAllText($settingsFile, $savedSettings) }
 }

@@ -27,6 +27,7 @@ Amaç: Jira, Confluence, Excel, txt, docx, OneNote'a dağılmış bilgiyi tek ye
 <KÖK>\
 ├── _PUSULA\                 ← uygulama ayarları: sablon.json (klasör şablonları), turler.json (jig/kablo türleri, dosya türleri)
 ├── _Sablonlar\              ← Obsidian şablonları: Olay.md, Test.md, BENI_OKU.md
+├── _SILINENLER\            ← Pusula'da "Sil" denenler (tarih\eski yol); silinenler.log. Geri almak = eski yerine taşımak
 ├── ENVANTER\                ← genel envanter (hiçbir projeye ait değil)
 │   ├── Jigler\JIG-1000-0009_SATIMO_adaptor_plakasi\
 │   └── Kablolar\JT-0001-0001_SATIMO_RF_kablosu\

@@ -128,6 +128,70 @@ namespace Pusula.Core.Tracking
             }
         }
 
+        /// <summary>Kökteki "silinenler" klasörünün adı (alt çizgiyle başladığı için ağaçta görünmez, sayılmaz).</summary>
+        public const string TrashFolderName = "_SILINENLER";
+
+        /// <summary>Silinenlerin kaydı (her satır: zaman, kişi, eski yol, yeni yol).</summary>
+        public const string TrashLogName = "silinenler.log";
+
+        /// <summary>
+        /// "Siler": klasörü kalıcı silmez, kökteki <c>_SILINENLER\&lt;zaman&gt;\&lt;kökten göreli yol&gt;</c> altına taşır ve
+        /// <c>_SILINENLER\silinenler.log</c> dosyasına bir satır ekler. Geri almak için klasörü eski yerine taşımak yeter.
+        /// Kökün dışındaki, kökün kendisi ya da zaten silinenlerdeki klasörler reddedilir. Hata metni; başarıda boş.
+        /// </summary>
+        public static string MoveToTrash(string root, string folder, DateTime now, string person, out string target)
+        {
+            target = string.Empty;
+            var fullRoot = Path.GetFullPath(root).TrimEnd('\\', '/');
+            var fullFolder = Path.GetFullPath(folder).TrimEnd('\\', '/');
+            var trash = Path.Combine(fullRoot, TrashFolderName);
+            if (!fullFolder.StartsWith(fullRoot + "\\", StringComparison.OrdinalIgnoreCase)
+                || fullFolder.StartsWith(trash + "\\", StringComparison.OrdinalIgnoreCase)
+                || !Directory.Exists(fullFolder))
+            {
+                return fullFolder;
+            }
+
+            var relative = fullFolder.Substring(fullRoot.Length + 1);
+            var stamp = now.ToString("yyyy-MM-dd_HHmmss", CultureInfo.InvariantCulture);
+            target = Path.Combine(trash, stamp, relative);
+            var suffix = 2;
+            while (Directory.Exists(target) || File.Exists(target))
+            {
+                target = Path.Combine(trash, stamp + "_" + suffix.ToString(CultureInfo.InvariantCulture), relative);
+                suffix++;
+            }
+
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+                Directory.Move(fullFolder, target);
+            }
+            catch (IOException ex)
+            {
+                return ex.Message;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return ex.Message;
+            }
+
+            try
+            {
+                var line = now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) + " | " + person + " | " + fullFolder + " | " + target + Environment.NewLine;
+                File.AppendAllText(Path.Combine(trash, TrashLogName), line, new System.Text.UTF8Encoding(true));
+            }
+            catch (IOException)
+            {
+                // Kayıt yazılamasa da taşıma yapıldı; klasör yerinde durur.
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+
+            return string.Empty;
+        }
+
         private static string Write<T>(string path, T value)
         {
             try

@@ -1190,5 +1190,33 @@ namespace Pusula.Wpf.Properties
         public static string Untrack_Done { get { return Get("Untrack_Done"); } }
 
         #endregion
+
+        #region Sil
+
+        /// <summary>Ağaç ve tablo menüsü.</summary>
+        public static string Menu_Delete { get { return Get("Menu_Delete"); } }
+
+        /// <summary>Silme onayı başlığı.</summary>
+        public static string Delete_Title { get { return Get("Delete_Title"); } }
+
+        /// <summary>Silme onayı metni.</summary>
+        public static string Delete_Text { get { return Get("Delete_Text"); } }
+
+        /// <summary>Onay kutusu ipucu.</summary>
+        public static string Delete_TypeHint { get { return Get("Delete_TypeHint"); } }
+
+        /// <summary>Sil düğmesi (ad doğru yazılınca görünür).</summary>
+        public static string Delete_Confirm { get { return Get("Delete_Confirm"); } }
+
+        /// <summary>Durum çubuğu.</summary>
+        public static string Delete_NotTyped { get { return Get("Delete_NotTyped"); } }
+
+        /// <summary>Durum çubuğu.</summary>
+        public static string Delete_Done { get { return Get("Delete_Done"); } }
+
+        /// <summary>Ayarlar düğmesi.</summary>
+        public static string Settings_Trash { get { return Get("Settings_Trash"); } }
+
+        #endregion
     }
 }

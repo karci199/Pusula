@@ -302,6 +302,120 @@ namespace Pusula.Wpf.ViewModels
             return true;
         }
 
+        private bool isDeleteOpen;
+        private string deleteTitle = string.Empty;
+        private string deleteText = string.Empty;
+        private string deleteTyped = string.Empty;
+        private string deleteExpected = string.Empty;
+
+        /// <summary>Silme onayı açık mı.</summary>
+        public bool IsDeleteOpen
+        {
+            get { return isDeleteOpen; }
+            set { SetDialogOpen(ref isDeleteOpen, value); }
+        }
+
+        /// <summary>Silme onayının başlığı.</summary>
+        public string DeleteTitle
+        {
+            get { return deleteTitle; }
+            private set { SetProperty(ref deleteTitle, value); }
+        }
+
+        /// <summary>Silme onayının açıklaması (nereye taşınacağı).</summary>
+        public string DeleteText
+        {
+            get { return deleteText; }
+            private set { SetProperty(ref deleteText, value); }
+        }
+
+        /// <summary>Onay için yazılması gereken ad (klasör adı).</summary>
+        public string DeleteExpected
+        {
+            get { return deleteExpected; }
+            private set { SetProperty(ref deleteExpected, value); }
+        }
+
+        /// <summary>Kullanıcının yazdığı onay metni.</summary>
+        public string DeleteTyped
+        {
+            get { return deleteTyped; }
+            set
+            {
+                if (SetProperty(ref deleteTyped, value ?? string.Empty))
+                {
+                    OnPropertyChanged(nameof(DeletePrimaryText));
+                }
+            }
+        }
+
+        /// <summary>Sil düğmesinin yazısı: ad doğru yazılana kadar boş (düğme görünmez).</summary>
+        public string DeletePrimaryText
+        {
+            get { return IsDeleteTypedRight ? Resources.Delete_Confirm : string.Empty; }
+        }
+
+        private bool IsDeleteTypedRight
+        {
+            get { return deleteExpected.Length > 0 && string.Equals(deleteTyped.Trim(), deleteExpected, StringComparison.OrdinalIgnoreCase); }
+        }
+
+        /// <summary>Seçili düğüm için silme onayını açar.</summary>
+        public void OpenDeleteSelected()
+        {
+            if (selectedNode != null)
+            {
+                OpenDelete(selectedNode.Path);
+            }
+        }
+
+        /// <summary>Silme onayını açar (takip edilen kayıtlar için).</summary>
+        public bool OpenDelete(string folder)
+        {
+            if (!KindOf(folder).HasValue)
+            {
+                return false;
+            }
+
+            editFolder = folder;
+            DeleteExpected = Path.GetFileName(folder.TrimEnd('\\', '/'));
+            DeleteTyped = string.Empty;
+            DeleteTitle = string.Format(Resources.Delete_Title, DeleteExpected);
+            DeleteText = string.Format(Resources.Delete_Text, Path.Combine(rootPath, RecordEdit.TrashFolderName), DeleteExpected);
+            OnPropertyChanged(nameof(DeletePrimaryText));
+            IsDeleteOpen = true;
+            return true;
+        }
+
+        /// <summary>Ad doğru yazıldıysa klasörü silinenlere taşır. Taşındıysa <c>true</c>.</summary>
+        public bool ConfirmDelete()
+        {
+            IsDeleteOpen = false;
+            if (!IsDeleteTypedRight)
+            {
+                Status = Resources.Delete_NotTyped;
+                return false;
+            }
+
+            string target;
+            var error = RecordEdit.MoveToTrash(rootPath, editFolder, DateTime.Now, CurrentUser, out target);
+            if (error.Length > 0)
+            {
+                Status = string.Format(Resources.Error_Io, error);
+                return false;
+            }
+
+            Refresh();
+            Status = string.Format(Resources.Delete_Done, DeleteExpected, target);
+            return true;
+        }
+
+        /// <summary>Kökteki silinenler klasörünü açar (yoksa bir şey yapmaz).</summary>
+        public void OpenTrash()
+        {
+            OpenPath(Path.Combine(rootPath, RecordEdit.TrashFolderName));
+        }
+
         // Kaydedince ağaç yenilenir; envanter kaydı gösteriliyorsa yine o gösterilir.
         private void RefreshShowing(string folder)
         {
