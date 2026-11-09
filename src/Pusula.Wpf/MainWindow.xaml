@@ -958,30 +958,6 @@
                         </Button>
                     </StackPanel>
                 </Grid>
-                <!-- Stok: aşama çubuğu -->
-                <ItemsControl Grid.Row="1" Margin="58,18,0,0"
-                              ItemsSource="{Binding Detail.Steps}"
-                              ItemTemplate="{StaticResource StatusStepTemplate}"
-                              Visibility="{Binding Detail.IsStock, Converter={StaticResource BoolToVis}}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid Rows="1" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-
-                <!-- Envanter kaydı: aşama çubuğu -->
-                <ItemsControl Grid.Row="1" Margin="58,18,0,0"
-                              ItemsSource="{Binding Inventory.Steps}"
-                              ItemTemplate="{StaticResource StatusStepTemplate}"
-                              Visibility="{Binding Inventory.IsRecord, Converter={StaticResource BoolToVis}}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid Rows="1" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-
                 <!-- Proje: durum dağılımı -->
                 <ItemsControl Grid.Row="1" Margin="0,14,0,0"
                               ItemsSource="{Binding Detail.Distribution}"
