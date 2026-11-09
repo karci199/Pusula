@@ -28,7 +28,7 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 
 - [x] **Logo / uygulama ikonu**: soyut ibre (koyu yuvarlak kare); `tools\Ikon-Ciz.ps1` üretir.
 - [ ] **Yeni stok ve yeni proje** pencereleri daha güzel olsun.
-- [ ] Sol üstteki **+ düğmesi** daha güzel olsun.
+- [x] Sol üstteki **+ düğmesi**: oksuz vurgu renkli +; menü Proje · Stok · Envanter türleri ("Yeni" kelimesi yok), ayraçlar sakin gri.
 - [ ] Stok sayfasının **üst kısmı** (numara, yol / dizin) daha iyi görünsün.
 - [ ] **Sekmeler sürüklenebilsin** (sıra değiştirilebilsin).
 - [ ] Stok açılınca **anten hakkında ön bilgi + foto** gelsin (Genel kartı; zaten var, iyileştirilecek).
