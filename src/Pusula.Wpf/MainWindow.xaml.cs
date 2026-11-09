@@ -45,6 +45,7 @@ namespace Pusula.Wpf
 
             viewModel.Detail.InventoryGroups.CollectionChanged += (s, e) => RebuildInventoryTabs();
             StockTabs.SelectionChanged += StockTabs_SelectionChanged;
+            SetUpLayout();
 
             // Tür düğümünde (hepsi aynı tür) envanter listesinin Tür sütunu gizlenir.
             viewModel.Inventory.PropertyChanged += (s, e) =>
@@ -85,6 +86,8 @@ namespace Pusula.Wpf
             {
                 rebuildingTabs = false;
             }
+
+            ApplyTabOrder();
         }
 
         private void RebuildInventoryTabsCore()

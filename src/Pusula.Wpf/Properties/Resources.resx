@@ -1107,4 +1107,10 @@
   <data name="Add_StockNoProject" xml:space="preserve">
     <value>Stok · önce proje seç</value>
   </data>
+  <data name="Settings_ResetLayout" xml:space="preserve">
+    <value>Sekme ve sütun düzenini sıfırla</value>
+  </data>
+  <data name="Settings_ResetLayoutHint" xml:space="preserve">
+    <value>Stok sekmelerinin sırası ile tablo sütunlarının sırası ve genişliği ilk haline döner.</value>
+  </data>
 </root>

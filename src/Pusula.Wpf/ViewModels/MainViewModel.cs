@@ -96,6 +96,12 @@ namespace Pusula.Wpf.ViewModels
             }
         }
 
+        /// <summary>Kullanıcı ayarları (sekme ve sütun düzeni burada saklanır).</summary>
+        public AppSettings Settings
+        {
+            get { return settings; }
+        }
+
         /// <summary>Seçilebilen temalar.</summary>
         public Palette[] AllThemes
         {

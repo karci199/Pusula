@@ -1032,7 +1032,7 @@
                             </Expander>
                         </StackPanel>
                     </Border>
-                <ListView Grid.Row="1"
+                <ListView x:Name="ProjectStockList" Grid.Row="1"
                           ItemsSource="{Binding Detail.Rows}"
                           ItemContainerStyle="{StaticResource DetailRowStyle}"
                           MouseDoubleClick="DetailList_MouseDoubleClick">
@@ -1285,7 +1285,7 @@
                 <TabControl x:Name="StockTabs" Grid.Row="3" Grid.RowSpan="2" Margin="0,14,0,0"
                             Visibility="{Binding Detail.IsStock, Converter={StaticResource BoolToVis}}">
                     <!-- Genel -->
-                    <TabItem Header="{x:Static res:Resources.Tab_General}">
+                    <TabItem Header="{x:Static res:Resources.Tab_General}" Tag="general">
                         <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,14,0,0" TextElement.FontWeight="Normal">
                             <StackPanel>
                                 <!-- Kapak: fotoğraf + not -->
@@ -1513,10 +1513,10 @@
                     </TabItem>
 
                     <!-- Testler -->
-                    <TabItem Header="{Binding Detail.TestsHeader}">
+                    <TabItem Header="{Binding Detail.TestsHeader}" Tag="tests">
                         <DockPanel Margin="0,8,0,0" TextElement.FontWeight="Normal">
                             <ItemsControl x:Name="TestPlanList" DockPanel.Dock="Top" ItemsSource="{Binding Detail.TestPlans}" ItemTemplate="{StaticResource PlanTemplate}" />
-                            <ListView ItemsSource="{Binding Detail.DevelopmentRuns}"
+                            <ListView x:Name="DevRunsList" ItemsSource="{Binding Detail.DevelopmentRuns}"
                                       View="{StaticResource RunsGridView}"
                                       GridViewColumnHeader.Click="RunsHeader_Click"
                                       MouseDoubleClick="RunsList_MouseDoubleClick"
@@ -1525,10 +1525,10 @@
                     </TabItem>
 
                     <!-- Kalifikasyon -->
-                    <TabItem Header="{Binding Detail.QualificationHeader}">
+                    <TabItem Header="{Binding Detail.QualificationHeader}" Tag="qualification">
                         <DockPanel Margin="0,8,0,0" TextElement.FontWeight="Normal">
                             <ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding Detail.QualificationPlans}" ItemTemplate="{StaticResource PlanTemplate}" />
-                            <ListView ItemsSource="{Binding Detail.QualificationRuns}"
+                            <ListView x:Name="QualRunsList" ItemsSource="{Binding Detail.QualificationRuns}"
                                       View="{StaticResource RunsGridView}"
                                       GridViewColumnHeader.Click="RunsHeader_Click"
                                       MouseDoubleClick="RunsList_MouseDoubleClick"
@@ -1537,7 +1537,7 @@
                     </TabItem>
 
                     <!-- Klasörler -->
-                    <TabItem Header="{x:Static res:Resources.Tab_Folders}">
+                    <TabItem Header="{x:Static res:Resources.Tab_Folders}" Tag="folders">
                         <Grid Margin="0,12,0,0" TextElement.FontWeight="Normal">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />

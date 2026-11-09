@@ -30,7 +30,7 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 - [ ] **Yeni stok ve yeni proje** pencereleri daha güzel olsun.
 - [x] Sol üstteki **+ düğmesi**: oksuz vurgu renkli +; menü Proje · Stok · Envanter türleri ("Yeni" kelimesi yok), ayraçlar sakin gri.
 - [ ] Stok sayfasının **üst kısmı** (numara, yol / dizin) daha iyi görünsün.
-- [ ] **Sekmeler sürüklenebilsin** (sıra değiştirilebilsin).
+- [x] **Sekmeler sürüklenebilir** (stok sekmeleri, Genel sabit; sıra hatırlanır). Tablo sütunlarının sırası ve genişliği hatırlanır (40–600 px). Ayarlar → "Sekme ve sütun düzenini sıfırla".
 - [ ] Stok açılınca **anten hakkında ön bilgi + foto** gelsin (Genel kartı; zaten var, iyileştirilecek).
 - [ ] Jig ve kablo **tamamen ayrılsın**. "Genel sayfası açıldığı zaman ne ekliyse o gelsin" → konuşulacak.
 - [ ] ?Genel / Kablolar sekmeli yapı daha iyi olabilir mi
@@ -94,6 +94,8 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 - [ ] Jig teslim edildi mi takibi (envanter durumu var; stok ekranında görünürlüğü).
 
 ## Sonra yapılacaklar
+
+- [ ] Tablolara **arama kutusu ve filtre** (stok tablosu, test koşuları).
 
 - [ ] **Otomatik izleme:** diskte (iç ağda) değişiklik olunca alt durum çubuğunda haber ver; "Yenile" ile gelsin.
 - [ ] **Durum çubuğunda son yapılan iş:** ör. "AB-7000-0002 kaydedildi · 21:55" kalıcı görünsün.

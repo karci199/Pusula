@@ -1291,5 +1291,15 @@ namespace Pusula.Wpf.Properties
         public static string Add_StockNoProject { get { return Get("Add_StockNoProject"); } }
 
         #endregion
+
+        #region Ayarlar
+
+        /// <summary>Ayarlar düğmesi.</summary>
+        public static string Settings_ResetLayout { get { return Get("Settings_ResetLayout"); } }
+
+        /// <summary>Düğme ipucu.</summary>
+        public static string Settings_ResetLayoutHint { get { return Get("Settings_ResetLayoutHint"); } }
+
+        #endregion
     }
 }

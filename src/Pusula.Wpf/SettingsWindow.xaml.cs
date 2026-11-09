@@ -37,6 +37,11 @@ namespace Pusula.Wpf
             ((MainViewModel)DataContext).OpenTrash();
         }
 
+        private void ResetLayout_Click(object sender, RoutedEventArgs e)
+        {
+            main.ResetLayout();
+        }
+
         private void Close_Click(object sender, RoutedEventArgs e)
         {
             Close();
