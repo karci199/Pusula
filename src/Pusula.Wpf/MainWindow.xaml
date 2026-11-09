@@ -727,13 +727,13 @@
                                    Foreground="{DynamicResource TextSecondaryBrush}"
                                    VerticalAlignment="Center"
                                    Text="{x:Static res:Resources.Tree_Header}" />
-                        <controls:DropDownButton x:Name="AddButton"
-                                                 Grid.Column="1"
-                                                 Menu="{StaticResource AddMenu}"
-                                                 ToolTip="{x:Static res:Resources.Button_Add}">
-                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="14" Foreground="{DynamicResource AccentBrush}" />
-
-                        </controls:DropDownButton>
+                        <Button x:Name="AddButton"
+                                Grid.Column="1"
+                                Style="{DynamicResource IconButtonStyle}"
+                                Click="AddButton_Click"
+                                ToolTip="{x:Static res:Resources.Button_Add}">
+                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="15" Foreground="{DynamicResource AccentBrush}" />
+                        </Button>
                         <Button Grid.Column="2"
                                 Style="{DynamicResource IconButtonStyle}"
                                 Command="{Binding RefreshCommand}"

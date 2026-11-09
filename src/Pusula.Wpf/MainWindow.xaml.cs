@@ -583,6 +583,15 @@ namespace Pusula.Wpf
             }
         }
 
+        // "+" düğmesi: menüyü düğmenin altında açar (ok yok, sade ikon).
+        private void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            var menu = (ContextMenu)FindResource("AddMenu");
+            menu.PlacementTarget = (UIElement)sender;
+            menu.Placement = PlacementMode.Bottom;
+            menu.IsOpen = true;
+        }
+
         private static Brush? BrushOf(string color)
         {
             try
