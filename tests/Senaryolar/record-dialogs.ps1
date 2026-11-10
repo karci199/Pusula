@@ -76,7 +76,13 @@ $newCombo = FindLogical $win { param($x) $x -is [System.Windows.Controls.ComboBo
 Check 'yeni kayıt: alt tür kutusu dolu' ($newCombo.SelectedItem -eq $vm.NewInventorySubType -and $vm.NewInventorySubType.Length -gt 0)
 Check 'talep tarihi bugün, talep eden bu kullanıcı (varsayılan)' ($vm.NewInventoryRequestDate -eq [DateTime]::Today -and $vm.NewInventoryRequester -eq [Environment]::UserName)
 $vm.NewInventoryNumber = 'JIG-1000-0099'; $vm.NewInventoryName = 'Deneme aparatı'
-$vm.NewInventoryRequestDate = [DateTime]'2026-11-03'; $vm.NewInventoryRequester = 'A. Test'
+$vm.NewInventoryRequestDateText = '31.02.2026'
+Check 'geçersiz tarih: kayıt açılmaz, uyarı' (-not $vm.ConfirmNewInventory() -and $vm.InventoryError -match 'okunamadı') $vm.InventoryError
+$vm.NewInventoryRequestDateText = [DateTime]::Today.AddDays(3).ToString('dd.MM.yyyy')
+Check 'ileri tarih: kayıt açılmaz' (-not $vm.ConfirmNewInventory() -and $vm.InventoryError -match 'ileri') $vm.InventoryError
+$vm.NewInventoryRequestDateText = '3.11.26'
+Check 'kısa yazım okunur (3.11.26)' ($vm.NewInventoryRequestDate -eq [DateTime]'2026-11-03')
+$vm.NewInventoryRequestDateText = '03.11.2026'; $vm.NewInventoryRequester = 'A. Test'
 $first = $vm.NewInventoryFields[0]; $first.Value = '7'
 $sub2 = @($vm.InventorySubTypes | Where-Object { $_ -ne $vm.NewInventorySubType })[0]
 $keep = $vm.NewInventorySubType
@@ -99,6 +105,19 @@ $vm.ShowInventory($jig); Wait
 $labels = @($vm.Inventory.ProcessFacts | ForEach-Object { $_.Label }) -join ','
 Check 'süreç: düzey, talep, yapan, teslim, not' ($labels -eq 'Düzey,Talep,Yapan,Teslim,Not') $labels
 Check 'bilgiler listesi (eski) yerinde: numara dahil' (@($vm.Inventory.Facts | ForEach-Object { $_.Label }) -contains 'Numara')
+
+"--- 3b. Etiket kutusu: rozetler"
+$hostW = New-Object System.Windows.Window; $hostW.Left = -20000; $hostW.Top = -20000; $hostW.ShowActivated = $false; $hostW.Width = 500; $hostW.Height = 120
+$tb = New-Object Pusula.Wpf.TagBox; $hostW.Content = $tb; $hostW.Show(); Pump
+$tb.Tags = '#SATIMO'; Pump
+Check 'var olan etiket rozet' ($tb.ChipCount -eq 1)
+$tb.Input.Text = '#faz_kararli '; Pump
+Check 'yazılan etiket boşlukla rozete döner' ($tb.ChipCount -eq 2 -and $tb.Tags -eq '#SATIMO #faz_kararli' -and $tb.Input.Text -eq '') $tb.Tags
+$tb.Input.Text = '#SATIMO '; Pump
+Check 'aynı etiket iki kez eklenmez' ($tb.ChipCount -eq 2)
+$tb.Input.Text = 'RS422 RS232 '; Pump
+Check '# yazmadan da, birden çok' ($tb.Tags -eq '#SATIMO #faz_kararli #RS422 #RS232') $tb.Tags
+$hostW.Close()
 
 "--- 4. Etiketler"
 $vm.OpenEdit($jig) | Out-Null; Pump

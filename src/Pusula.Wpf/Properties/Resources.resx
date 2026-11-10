@@ -1623,4 +1623,13 @@
   <data name="Types_TagsHint" xml:space="preserve">
     <value>Geçerli olduğu yer: tür ya da tür · alt tür, virgülle (Kablo · RF, Jig). Boş bırakılırsa her yerde. Ad # olmadan, boşluk yerine alt çizgi; Obsidian etiketi gibi notun tags: alanına yazılır.</value>
   </data>
+  <data name="Date_Placeholder" xml:space="preserve">
+    <value>gg.aa.yyyy</value>
+  </data>
+  <data name="Date_Invalid" xml:space="preserve">
+    <value>Talep tarihi okunamadı: {0}. gg.aa.yyyy biçiminde yaz (12.10.2026).</value>
+  </data>
+  <data name="Date_Future" xml:space="preserve">
+    <value>Talep tarihi ileri bir gün olamaz.</value>
+  </data>
 </root>

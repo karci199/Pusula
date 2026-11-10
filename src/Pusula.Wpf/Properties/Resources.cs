@@ -1850,6 +1850,15 @@ namespace Pusula.Wpf.Properties
         /// <summary>Etiket tablosu ipucu.</summary>
         public static string Types_TagsHint { get { return Get("Types_TagsHint"); } }
 
+        /// <summary>Tarih kutusu ipucu.</summary>
+        public static string Date_Placeholder { get { return Get("Date_Placeholder"); } }
+
+        /// <summary>Geçersiz tarih.</summary>
+        public static string Date_Invalid { get { return Get("Date_Invalid"); } }
+
+        /// <summary>İleri tarih.</summary>
+        public static string Date_Future { get { return Get("Date_Future"); } }
+
         #endregion
     }
 }

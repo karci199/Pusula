@@ -49,7 +49,7 @@
             <UniformGrid Columns="2" VerticalAlignment="Top" />
         </ItemsPanelTemplate>
         <DataTemplate x:Key="FieldInputTemplate">
-            <controls:FormField Margin="0,0,16,10" Header="{Binding Label}" LabelWidth="110" ToolTip="{Binding Label}">
+            <controls:FormField Margin="0,0,16,10" Header="{Binding Label}" LabelWidth="130" ToolTip="{Binding Label}">
                 <Grid>
                     <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
                              Visibility="{Binding IsText, Converter={StaticResource BoolToVis}}" />
@@ -1969,47 +1969,46 @@
                            TextWrapping="Wrap" Margin="0,0,0,10"
                            Text="{x:Static res:Resources.Mark_Hint}"
                            Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource BoolToVis}}" />
-                <UniformGrid Columns="2">
-                    <controls:FormField Header="{x:Static res:Resources.Inv_StockNo}" IsRequired="True" LabelWidth="110" Margin="0,0,16,0">
-                        <TextBox Text="{Binding NewInventoryNumber, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+                <controls:FormField Header="{x:Static res:Resources.Inv_Name}" IsRequired="True" LabelWidth="130">
+                    <TextBox Text="{Binding NewInventoryName, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+                </controls:FormField>
+                <UniformGrid Columns="2" Margin="0,10,0,0">
+                    <controls:FormField Header="{x:Static res:Resources.Inv_StockNo}" IsRequired="True" LabelWidth="130" Margin="0,0,16,0">
+                        <TextBox Text="{Binding NewInventoryNumber, UpdateSourceTrigger=PropertyChanged}" ToolTip="{Binding InventoryNumberHint}" controls:TextBoxHelper.PlaceholderText="{Binding InventoryNumberHint}" />
                     </controls:FormField>
                     <Grid>
-                        <controls:FormField Header="{x:Static res:Resources.Inv_Level}" LabelWidth="110"
+                        <controls:FormField Header="{x:Static res:Resources.Inv_Level}" LabelWidth="130"
                                             Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}">
                             <ComboBox ItemsSource="{Binding InventoryLevels}" SelectedItem="{Binding NewInventoryLevel, Mode=TwoWay}" DisplayMemberPath="Label" />
                         </controls:FormField>
-                        <controls:FormField Header="{x:Static res:Resources.Col_Status}" LabelWidth="110"
+                        <controls:FormField Header="{x:Static res:Resources.Col_Status}" LabelWidth="130"
                                             Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource BoolToVis}}">
                             <ComboBox ItemsSource="{Binding InventoryStatuses}" SelectedItem="{Binding NewInventoryStatus, Mode=TwoWay}" />
                         </controls:FormField>
                     </Grid>
                 </UniformGrid>
-                <TextBlock Margin="118,4,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
-                           Text="{Binding InventoryNumberHint}" />
-                <controls:FormField Header="{x:Static res:Resources.Inv_Name}" IsRequired="True" LabelWidth="110" Margin="0,10,0,0">
-                    <TextBox Text="{Binding NewInventoryName, UpdateSourceTrigger=PropertyChanged}" />
-                </controls:FormField>
                 <UniformGrid Columns="2" Margin="0,10,0,0">
-                    <controls:FormField Header="{x:Static res:Resources.Inv_SubType}" LabelWidth="110" Margin="0,0,16,0">
+                    <controls:FormField Header="{x:Static res:Resources.Inv_SubType}" LabelWidth="130" Margin="0,0,16,0">
                         <ComboBox ItemsSource="{Binding InventorySubTypes}" SelectedItem="{Binding NewInventorySubType, Mode=TwoWay}" />
                     </controls:FormField>
-                    <controls:FormField Header="{x:Static res:Resources.Inv_RequestDate}" LabelWidth="110"
+                    <controls:FormField Header="{x:Static res:Resources.Inv_RequestDate}" LabelWidth="130"
                                         Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}">
-                        <DatePicker SelectedDate="{Binding NewInventoryRequestDate, Mode=TwoWay}" />
+                        <TextBox Text="{Binding NewInventoryRequestDateText, UpdateSourceTrigger=PropertyChanged}"
+                                 controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Date_Placeholder}" ToolTip="{x:Static res:Resources.Date_Placeholder}" />
                     </controls:FormField>
                 </UniformGrid>
                 <UniformGrid Columns="2" Margin="0,10,0,0">
-                    <controls:FormField Header="{x:Static res:Resources.Inv_RequestedBy}" LabelWidth="110" Margin="0,0,16,0"
+                    <controls:FormField Header="{x:Static res:Resources.Inv_RequestedBy}" LabelWidth="130" Margin="0,0,16,0"
                                         Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}">
                         <TextBox Text="{Binding NewInventoryRequester, UpdateSourceTrigger=PropertyChanged}" />
                     </controls:FormField>
-                    <controls:FormField Header="{x:Static res:Resources.Inv_Note}" LabelWidth="110"
+                    <controls:FormField Header="{x:Static res:Resources.Inv_Note}" LabelWidth="130"
                                         ErrorText="{Binding InventoryError}">
                         <TextBox Text="{Binding NewInventoryNote, UpdateSourceTrigger=PropertyChanged}" />
                     </controls:FormField>
-                </UniformGrid>                <controls:FormField Header="{x:Static res:Resources.Inv_Tags}" LabelWidth="110" Margin="0,10,0,0">
-                    <TextBox Text="{Binding NewInventoryTags, UpdateSourceTrigger=PropertyChanged}" local:MentionAssist.Mode="tag"
-                             controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Tag_Placeholder}" />
+                </UniformGrid>
+                <controls:FormField Header="{x:Static res:Resources.Inv_Tags}" LabelWidth="130" Margin="0,10,0,0">
+                    <local:TagBox Tags="{Binding NewInventoryTags, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Tag_Placeholder}" />
                 </controls:FormField>
                 <StackPanel Visibility="{Binding HasNewInventoryFields, Converter={StaticResource BoolToVis}}">
                     <Border Margin="0,16,0,10" Padding="0,0,0,6" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
@@ -2069,29 +2068,28 @@
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="Edit_PrimaryButtonClick">
             <StackPanel>
-                <controls:FormField Header="{x:Static res:Resources.Edit_Number}" LabelWidth="110">
+                <controls:FormField Header="{x:Static res:Resources.Edit_Number}" LabelWidth="130">
                     <TextBlock Text="{Binding EditNumber}" FontWeight="SemiBold" VerticalAlignment="Center" />
                 </controls:FormField>
-                <TextBlock Margin="118,2,0,10" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
+                <TextBlock Margin="138,2,0,10" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
                            Text="{x:Static res:Resources.Edit_NumberHint}" />
-                <controls:FormField Header="{x:Static res:Resources.Edit_Name}" LabelWidth="110">
+                <controls:FormField Header="{x:Static res:Resources.Edit_Name}" LabelWidth="130">
                     <TextBox x:Name="EditNameBox" Text="{Binding EditName, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
                 </controls:FormField>
-                <controls:FormField Margin="0,10,0,0" Header="{x:Static res:Resources.Edit_Template}" LabelWidth="110"
+                <controls:FormField Margin="0,10,0,0" Header="{x:Static res:Resources.Edit_Template}" LabelWidth="130"
                                     Visibility="{Binding IsEditStock, Converter={StaticResource BoolToVis}}">
                     <ComboBox ItemsSource="{Binding EditTemplates}" SelectedItem="{Binding EditTemplate, Mode=TwoWay}" />
                 </controls:FormField>
                 <UniformGrid Columns="2" Margin="0,10,0,0" Visibility="{Binding IsEditInventory, Converter={StaticResource BoolToVis}}">
-                    <controls:FormField Header="{x:Static res:Resources.Edit_SubType}" LabelWidth="110" Margin="0,0,16,0">
+                    <controls:FormField Header="{x:Static res:Resources.Edit_SubType}" LabelWidth="130" Margin="0,0,16,0">
                         <ComboBox x:Name="EditSubTypeBox" ItemsSource="{Binding EditSubTypes}" SelectedItem="{Binding EditSubType, Mode=TwoWay}" />
                     </controls:FormField>
-                    <controls:FormField Header="{x:Static res:Resources.Edit_Note}" LabelWidth="110">
+                    <controls:FormField Header="{x:Static res:Resources.Edit_Note}" LabelWidth="130">
                         <TextBox Text="{Binding EditNote, UpdateSourceTrigger=PropertyChanged}" />
                     </controls:FormField>
                 </UniformGrid>
-                <controls:FormField Header="{x:Static res:Resources.Inv_Tags}" LabelWidth="110" Margin="0,10,0,0" Visibility="{Binding IsEditInventory, Converter={StaticResource BoolToVis}}">
-                    <TextBox Text="{Binding EditTags, UpdateSourceTrigger=PropertyChanged}" local:MentionAssist.Mode="tag"
-                             controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Tag_Placeholder}" />
+                <controls:FormField Header="{x:Static res:Resources.Inv_Tags}" LabelWidth="130" Margin="0,10,0,0" Visibility="{Binding IsEditInventory, Converter={StaticResource BoolToVis}}">
+                    <local:TagBox Tags="{Binding EditTags, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Tag_Placeholder}" />
                 </controls:FormField>                <!-- Türe özel alanlar (alt türe göre), iki sütun -->
                 <StackPanel Visibility="{Binding HasEditFields, Converter={StaticResource BoolToVis}}">
                     <Border Margin="0,16,0,10" Padding="0,0,0,6" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">

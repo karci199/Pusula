@@ -230,6 +230,7 @@ namespace Pusula.Wpf.ViewModels
             NewInventoryStatus = InventoryStatuses.Contains(Resources.Inv_DefaultMarkStatus) ? Resources.Inv_DefaultMarkStatus : type.InitialStatus;
             NewInventoryNote = string.Empty;
             NewInventoryRequestDate = DateTime.Today;
+            NewInventoryRequestDateText = DateTime.Today.ToString("dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture);
             NewInventoryRequester = CurrentUser;
             NewInventoryTags = string.Empty;
             InventoryError = string.Empty;
@@ -330,7 +331,42 @@ namespace Pusula.Wpf.ViewModels
         public DateTime? NewInventoryRequestDate
         {
             get { return newInventoryRequestDate; }
-            set { SetProperty(ref newInventoryRequestDate, value); }
+            set
+            {
+                if (SetProperty(ref newInventoryRequestDate, value) && value.HasValue && ParseDay(newInventoryRequestDateText) != value.Value.Date)
+                {
+                    newInventoryRequestDateText = value.Value.ToString("dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                    OnPropertyChanged(nameof(NewInventoryRequestDateText));
+                }
+            }
+        }
+
+        private string newInventoryRequestDateText = DateTime.Today.ToString("dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture);
+
+        /// <summary>Talep tarihi, elle yazıldığı gibi (<c>12.10.2026</c>; <c>12.10.26</c>, <c>2026-10-12</c> de olur). Geçersizse oluştururken uyarılır.</summary>
+        public string NewInventoryRequestDateText
+        {
+            get { return newInventoryRequestDateText; }
+            set
+            {
+                if (SetProperty(ref newInventoryRequestDateText, value ?? string.Empty))
+                {
+                    var day = ParseDay(newInventoryRequestDateText);
+                    if (day.HasValue)
+                    {
+                        newInventoryRequestDate = day;
+                        OnPropertyChanged(nameof(NewInventoryRequestDate));
+                    }
+                }
+            }
+        }
+
+        /// <summary>Gün metnini okur (gg.aa.yyyy, g.a.yyyy, gg.aa.yy, yyyy-aa-gg); okunamazsa <c>null</c>.</summary>
+        public static DateTime? ParseDay(string text)
+        {
+            DateTime value;
+            var formats = new[] { "dd.MM.yyyy", "d.M.yyyy", "dd.MM.yy", "d.M.yy", "yyyy-MM-dd", "dd/MM/yyyy", "d/M/yyyy" };
+            return DateTime.TryParseExact((text ?? string.Empty).Trim(), formats, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out value) ? value.Date : (DateTime?)null;
         }
 
         /// <summary>Talep eden (ilk durum olayının kişisi); varsayılan bu bilgisayarın kullanıcısı.</summary>
@@ -416,6 +452,7 @@ namespace Pusula.Wpf.ViewModels
             BuildNewInventoryFields();
             NewInventoryNote = string.Empty;
             NewInventoryRequestDate = DateTime.Today;
+            NewInventoryRequestDateText = DateTime.Today.ToString("dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture);
             NewInventoryRequester = CurrentUser;
             NewInventoryTags = string.Empty;
             InventoryError = string.Empty;
@@ -430,6 +467,19 @@ namespace Pusula.Wpf.ViewModels
             if (newInventoryType == null || (!isInventoryMarkMode && newInventoryLevel == null))
             {
                 return true;
+            }
+
+            // Elle yazılan talep tarihi denetlenir: okunamazsa ya da ileri bir günse kayıt açılmaz.
+            if (!isInventoryMarkMode)
+            {
+                var day = ParseDay(NewInventoryRequestDateText);
+                if (!day.HasValue || day.Value > DateTime.Today)
+                {
+                    InventoryError = day.HasValue ? Resources.Date_Future : string.Format(Resources.Date_Invalid, NewInventoryRequestDateText);
+                    return false;
+                }
+
+                NewInventoryRequestDate = day;
             }
 
             var result = isInventoryMarkMode
