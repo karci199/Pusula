@@ -1539,4 +1539,7 @@
   <data name="Note_AutoPair" xml:space="preserve">
     <value>Parantez ve işaretleri kendiliğinden kapat</value>
   </data>
+  <data name="Note_NoTable" xml:space="preserve">
+    <value>İmleç bir tablonun içinde değil (Ctrl+Shift+T tabloyu hizalar).</value>
+  </data>
 </root>

@@ -271,6 +271,20 @@ $ed.Undo(); Check 'geri alınır (3)' ($ed.Text -eq $orig)
 $e.AutoPair = $false; $ed.Select($end, 0)
 Check 'ayar kapalı: çift eklenmez, kaydedildi' (-not $nw.TypeChar([char]'(') -and -not $vm.Settings.NoteEditor.AutoPair)
 $e.AutoPair = $true
+$ti = $ed.Text.IndexOf('| SATIMO'); $ed.Select($ti + 3, 0)
+$nw.HandleKey($K::T, $true, $true) | Out-Null
+$tlines = @($ed.Text -split "`r`n" | Where-Object { $_.StartsWith('|') })
+Check 'Ctrl+Shift+T: tablo hizalanır' ($tlines.Count -eq 4 -and @($tlines | ForEach-Object { $_.Length } | Select-Object -Unique).Count -eq 1 -and $tlines[1].StartsWith('| :----- | :---: |')) ($tlines -join ' / ')
+$nw.HandleKey($K::D1, $true, $false) | Out-Null; Wait; $ed.Select($ed.Text.IndexOf('| Sistem'), 0); $nw.FindName('Editor').ScrollToLine($ed.GetLineIndexFromCharacterIndex($ed.CaretIndex)); Wait
+Snap $nw "$Out\note-table.png"
+$nw.HandleKey($K::D2, $true, $false) | Out-Null; Wait; $ed.Select($ed.Text.IndexOf('| SATIMO') + 3, 0)
+$nw.HandleKey($K::Tab, $false, $false) | Out-Null
+Check 'tabloda Tab: sonraki hücre seçilir' ($ed.SelectedText -eq 'Geçti')
+$nw.HandleKey($K::Tab, $false, $true) | Out-Null
+Check 'tabloda Shift+Tab: önceki hücre' ($ed.SelectedText -eq 'SATIMO')
+$ed.Undo(); Check 'hizalama geri alınır' ($ed.Text -eq $orig)
+$ed.Select(0, 0); $nw.HandleKey($K::T, $true, $true) | Out-Null
+Check 'tablo dışında: metin aynı, uyarı' ($ed.Text -eq $orig -and $e.Status -match 'tablonun içinde değil') $e.Status
 $nw.HandleKey($K::D3, $true, $false) | Out-Null; Wait
 $nw.HandleGlobalKey($K::F, $true, $false) | Out-Null; Pump
 Check 'yalnız görünümde Ctrl+F: yan yanaya geçer' ($e.IsSplitMode -and $nw.IsFindOpen)

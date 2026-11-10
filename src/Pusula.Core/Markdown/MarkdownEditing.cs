@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Pusula.Core.Markdown
@@ -437,6 +440,289 @@ namespace Pusula.Core.Markdown
 
             var link = "[" + selected + "](" + url + ")";
             return new EditResult(text.Substring(0, start) + link + text.Substring(start + length), start + link.Length, 0);
+        }
+
+        /// <summary>İmleç bir md tablosunun (başı <c>|</c> olan satırlar, ikinci satırı <c>|---|</c>) içinde mi.</summary>
+        public static bool IsInTable(string text, int caret)
+        {
+            return FindTable(text ?? string.Empty, caret) != null;
+        }
+
+        /// <summary>
+        /// İmlecin bulunduğu tabloyu hizalar (Ctrl+Shift+T): hücreler kırpılır, sütunlar en geniş hücreye göre doldurulur,
+        /// hizalama (<c>:---</c>, <c>---:</c>, <c>:---:</c>) korunur, eksik hücreler eklenir. İmleç aynı hücrenin başına
+        /// gelir. Tablo yoksa <c>null</c>.
+        /// </summary>
+        public static EditResult? FormatTable(string text, int caret)
+        {
+            return TableEdit(text, caret, 0);
+        }
+
+        /// <summary>
+        /// Tablo içinde Tab / Shift+Tab: tablo hizalanır, sonraki / önceki hücrenin içeriği seçilir (ayraç satırı atlanır).
+        /// Son hücrede Tab yeni boş satır açar. Tablo yoksa <c>null</c>.
+        /// </summary>
+        public static EditResult? TableNextCell(string text, int caret, bool backwards)
+        {
+            return TableEdit(text, caret, backwards ? -1 : 1);
+        }
+
+        private sealed class TableBlock
+        {
+            public int Start;
+            public int End;
+            public List<string> Lines = new List<string>();
+            public int CaretRow;
+            public int CaretCell;
+        }
+
+        private static TableBlock? FindTable(string text, int caret)
+        {
+            caret = Clamp(caret, 0, text.Length);
+            var lineStart = LineStart(text, caret);
+            if (!IsTableLine(text, lineStart))
+            {
+                return null;
+            }
+
+            var start = lineStart;
+            while (start > 0)
+            {
+                var previous = LineStart(text, start - 1);
+                if (!IsTableLine(text, previous))
+                {
+                    break;
+                }
+
+                start = previous;
+            }
+
+            var block = new TableBlock { Start = start };
+            var position = start;
+            while (true)
+            {
+                var end = LineEnd(text, position);
+                if (position == lineStart)
+                {
+                    block.CaretRow = block.Lines.Count;
+                    block.CaretCell = Math.Max(0, CountPipes(text.Substring(position, caret - position)) - 1);
+                }
+
+                block.Lines.Add(text.Substring(position, end - position));
+                block.End = end;
+                if (end >= text.Length)
+                {
+                    break;
+                }
+
+                var next = end + (text[end] == '\r' ? 2 : 1);
+                if (next >= text.Length || !IsTableLine(text, next))
+                {
+                    break;
+                }
+
+                position = next;
+            }
+
+            if (block.Lines.Count < 2 || !SplitCells(block.Lines[1]).All(c => Regex.IsMatch(c.Trim(), @"^:?-+:?$")))
+            {
+                return null;
+            }
+
+            return block;
+        }
+
+        private static EditResult? TableEdit(string text, int caret, int step)
+        {
+            text = text ?? string.Empty;
+            var table = FindTable(text, caret);
+            if (table == null)
+            {
+                return null;
+            }
+
+            var rows = table.Lines.Select(SplitCells).Select(r => r.Select(c => c.Trim()).ToList()).ToList();
+            var columns = rows.Max(r => r.Count);
+            foreach (var row in rows)
+            {
+                while (row.Count < columns)
+                {
+                    row.Add(string.Empty);
+                }
+            }
+
+            var align = rows[1].Select(c => c.StartsWith(":", StringComparison.Ordinal) && c.EndsWith(":", StringComparison.Ordinal) && c.Length > 1 ? 'c'
+                : c.EndsWith(":", StringComparison.Ordinal) ? 'r' : c.StartsWith(":", StringComparison.Ordinal) ? 'L' : 'l').ToList();
+
+            // Hedef hücre: Tab ile ilerlenir, ayraç satırı atlanır; sondaysa yeni satır.
+            var targetRow = Math.Max(0, table.CaretRow);
+            var targetCell = Math.Min(table.CaretCell, columns - 1);
+            if (targetRow == 1)
+            {
+                targetRow = 2 < rows.Count ? 2 : 0;
+                targetCell = 0;
+            }
+            else if (step > 0)
+            {
+                targetCell++;
+                if (targetCell >= columns)
+                {
+                    targetCell = 0;
+                    targetRow = targetRow == 0 ? 2 : targetRow + 1;
+                    if (targetRow >= rows.Count)
+                    {
+                        rows.Add(Enumerable.Repeat(string.Empty, columns).ToList());
+                    }
+                }
+            }
+            else if (step < 0)
+            {
+                targetCell--;
+                if (targetCell < 0)
+                {
+                    if (targetRow == 0)
+                    {
+                        targetCell = 0;
+                    }
+                    else
+                    {
+                        targetRow = targetRow == 2 ? 0 : targetRow - 1;
+                        targetCell = columns - 1;
+                    }
+                }
+            }
+
+            var widths = Enumerable.Range(0, columns).Select(c => Math.Max(3, rows.Where((r, i) => i != 1).Max(r => r[c].Length))).ToList();
+            var newline = NewlineOf(text);
+            var builder = new StringBuilder();
+            int selectStart = 0, selectLength = 0;
+            for (var r = 0; r < rows.Count; r++)
+            {
+                if (r > 0)
+                {
+                    builder.Append(newline);
+                }
+
+                builder.Append('|');
+                for (var c = 0; c < columns; c++)
+                {
+                    builder.Append(' ');
+                    var cell = r == 1 ? Delimiter(align[c], widths[c]) : Pad(rows[r][c], widths[c], align[c]);
+                    if (r == targetRow && c == targetCell)
+                    {
+                        var lead = cell.Length - cell.TrimStart().Length;
+                        selectStart = table.Start + builder.Length + (rows[r][c].Length == 0 ? 0 : lead);
+                        selectLength = rows[r][c].Length;
+                    }
+
+                    builder.Append(cell).Append(" |");
+                }
+            }
+
+            var result = text.Substring(0, table.Start) + builder + text.Substring(table.End);
+            return new EditResult(result, selectStart, step == 0 ? 0 : selectLength);
+        }
+
+        private static bool IsTableLine(string text, int lineStart)
+        {
+            var end = LineEnd(text, lineStart);
+            return end > lineStart && text.Substring(lineStart, end - lineStart).TrimStart().StartsWith("|", StringComparison.Ordinal);
+        }
+
+        // Hücreler: baştaki ve sondaki | atılır; \| ve `kod` içindeki | ayırmaz.
+        private static List<string> SplitCells(string line)
+        {
+            var trimmed = line.Trim();
+            if (trimmed.StartsWith("|", StringComparison.Ordinal))
+            {
+                trimmed = trimmed.Substring(1);
+            }
+
+            if (trimmed.EndsWith("|", StringComparison.Ordinal) && !trimmed.EndsWith("\\|", StringComparison.Ordinal))
+            {
+                trimmed = trimmed.Substring(0, trimmed.Length - 1);
+            }
+
+            var cells = new List<string>();
+            var current = new StringBuilder();
+            var inCode = false;
+            for (var i = 0; i < trimmed.Length; i++)
+            {
+                var ch = trimmed[i];
+                if (ch == '`')
+                {
+                    inCode = !inCode;
+                }
+
+                if (ch == '|' && !inCode && (i == 0 || trimmed[i - 1] != '\\'))
+                {
+                    cells.Add(current.ToString());
+                    current.Clear();
+                    continue;
+                }
+
+                current.Append(ch);
+            }
+
+            cells.Add(current.ToString());
+            return cells;
+        }
+
+        // İmleçten önceki ayırıcı | sayısı (hücre sırası için).
+        private static int CountPipes(string before)
+        {
+            var count = 0;
+            var inCode = false;
+            for (var i = 0; i < before.Length; i++)
+            {
+                if (before[i] == '`')
+                {
+                    inCode = !inCode;
+                }
+                else if (before[i] == '|' && !inCode && (i == 0 || before[i - 1] != '\\'))
+                {
+                    count++;
+                }
+            }
+
+            return before.TrimStart().StartsWith("|", StringComparison.Ordinal) ? count : count + 1;
+        }
+
+        private static string Pad(string cell, int width, char align)
+        {
+            var space = width - cell.Length;
+            if (space <= 0)
+            {
+                return cell;
+            }
+
+            if (align == 'r')
+            {
+                return new string(' ', space) + cell;
+            }
+
+            if (align == 'c')
+            {
+                var left = space / 2;
+                return new string(' ', left) + cell + new string(' ', space - left);
+            }
+
+            return cell + new string(' ', space);
+        }
+
+        private static string Delimiter(char align, int width)
+        {
+            switch (align)
+            {
+                case 'c':
+                    return ":" + new string('-', width - 2) + ":";
+                case 'r':
+                    return new string('-', width - 1) + ":";
+                case 'L':
+                    return ":" + new string('-', width - 1);
+                default:
+                    return new string('-', width);
+            }
         }
 
         // Seçimin kapsadığı tam satırlar (satır sonu hariç). Seçim bir satırın başında bitiyorsa o satır sayılmaz.

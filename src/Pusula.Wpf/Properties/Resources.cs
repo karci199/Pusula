@@ -1766,6 +1766,9 @@ namespace Pusula.Wpf.Properties
         /// <summary>Ayar.</summary>
         public static string Note_AutoPair { get { return Get("Note_AutoPair"); } }
 
+        /// <summary>Tablo yokken durum çubuğu.</summary>
+        public static string Note_NoTable { get { return Get("Note_NoTable"); } }
+
         #endregion
     }
 }

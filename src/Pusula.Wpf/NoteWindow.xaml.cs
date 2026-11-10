@@ -926,6 +926,18 @@ namespace Pusula.Wpf
                     case Key.K:
                         Apply(MarkdownEditing.DeleteLines(Editor.Text, Editor.SelectionStart, Editor.SelectionLength));
                         return true;
+                    case Key.T:
+                        var table = MarkdownEditing.FormatTable(Editor.Text, Editor.CaretIndex);
+                        if (table != null)
+                        {
+                            Apply(table);
+                        }
+                        else
+                        {
+                            viewModel.Status = Res.Note_NoTable;
+                        }
+
+                        return true;
                     case Key.H:
                         ApplyFormat("highlight");
                         return true;
@@ -938,6 +950,17 @@ namespace Pusula.Wpf
                 if (result != null)
                 {
                     Apply(result);
+                    return true;
+                }
+            }
+
+            // Tablo içinde Tab / Shift+Tab: hizala ve sonraki / önceki hücre (son hücrede yeni satır).
+            if (key == Key.Tab && !ctrl && Editor.SelectedText.IndexOf('\n') < 0)
+            {
+                var cell = MarkdownEditing.TableNextCell(Editor.Text, Editor.SelectionStart, shift);
+                if (cell != null)
+                {
+                    Apply(cell);
                     return true;
                 }
             }

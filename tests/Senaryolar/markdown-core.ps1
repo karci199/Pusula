@@ -147,6 +147,26 @@ Check 'seçim yokken normal yapıştırma' ($E::PasteLink('bak', 3, 0, 'https://
 Check 'adres değilse normal' ($E::PasteLink('bak a', 4, 1, 'düz yazı') -eq $null)
 Check 'seçim zaten adresse normal' ($E::PasteLink('https://a.b', 0, 11, 'https://x.y') -eq $null)
 
+"--- 8c. Tablo hizalama"
+$tb = "Önce`r`n|Sistem|Sonuç|Not|`r`n|:--|:-:|--:|`r`n|SATIMO|Geçti|yan lob|`r`n|VNA|Kaldı`r`nSonra"
+$r = $E::FormatTable($tb, $tb.IndexOf('SATIMO') + 2)
+$want = "Önce`r`n| Sistem | Sonuç |     Not |`r`n| :----- | :---: | ------: |`r`n| SATIMO | Geçti | yan lob |`r`n| VNA    | Kaldı |         |`r`nSonra"
+Check 'tablo hizalanır (sol, orta, sağ; eksik hücre eklenir)' ($r.Text -eq $want) ("`n" + $r.Text)
+Check 'imleç aynı hücrede' ($r.Text.Substring($r.SelectionStart, 6) -eq 'SATIMO')
+Check 'tablo dışında: yok' ($E::FormatTable($tb, 2) -eq $null -and -not $E::IsInTable($tb, 2) -and $E::IsInTable($tb, $tb.IndexOf('VNA')))
+Check 'ayraç satırı yoksa tablo değil' ($E::FormatTable("|a|b|`r`n|c|d|", 2) -eq $null)
+$r = $E::TableNextCell($want, $want.IndexOf('SATIMO'), $false)
+Check 'Tab: sonraki hücre seçilir' ($r.Text.Substring($r.SelectionStart, $r.SelectionLength) -eq 'Geçti')
+$r = $E::TableNextCell($r.Text, $r.SelectionStart, $true)
+Check 'Shift+Tab: önceki hücre' ($r.Text.Substring($r.SelectionStart, $r.SelectionLength) -eq 'SATIMO')
+$r = $E::TableNextCell($want, $want.IndexOf('Not |') + 1, $false)
+Check 'başlıktan sonra ayraç atlanır' ($r.Text.Substring($r.SelectionStart, $r.SelectionLength) -eq 'SATIMO')
+$last = $want.IndexOf('Kaldı |') + 8
+$r = $E::TableNextCell($want, $last, $false)
+Check 'son hücrede Tab: yeni satır' ($r.Text.Contains("| VNA    | Kaldı |         |`r`n|        |       |         |`r`nSonra") -and $r.SelectionLength -eq 0) ("`n" + $r.Text)
+$r = $E::FormatTable("| a | ``x|y`` | c\|d |`n|---|---|---|", 2)
+Check 'kod ve \| içindeki çizgi hücre ayırmaz' ($r.Text.StartsWith('| a   | `x|y` | c\|d |'))  ("`n" + $r.Text)
+
 "--- 9. Başlıklar (içindekiler)"
 $osrc = "---`r`nbaslik: x`r`n---`r`n# Ana **kalın**`r`n`r`nmetin`r`n`r`n## Alt ##`r`n`r`n" + '```' + "`r`n# kod değil`r`n" + '```' + "`r`n%%`r`n# yorum değil`r`n%%`r`nSetext`r`n------`r`n`r`n> ## Alıntıda`r`n"
 $ol = @($MN::Outline($osrc))
