@@ -157,6 +157,12 @@ Check 'e-postada liste açılmaz' (-not $nw.IsSuggesting)
 $line = @($ed.Text -split "`r`n").IndexOf('- [ ] SN02 tekrar ölç')
 $e.ToggleTask($line)
 Check 'görünümde tıklanan kutu metinde işaretlenir' ($e.Text.Contains('- [x] SN02 tekrar ölç'))
+$e.ToggleTask($line)
+$nw.ToggleTaskAt($line); Pump
+Check 'pencerede tıklama işaretler' ($ed.Text.Contains('- [x] SN02 tekrar ölç'))
+$ed.Undo() | Out-Null; Pump
+Check 'Ctrl+Z tıklamayı geri alır' ($ed.Text.Contains('- [ ] SN02 tekrar ölç') -and $e.Text.Contains('- [ ] SN02 tekrar ölç'))
+$e.ToggleTask($line)
 Check '[[JIG-1000-0009]] ana pencerede jigi seçer' ($vm.NavigateToKey('JIG-1000-0009') -and $vm.SelectedNode.Path -like '*JIG-1000-0009*')
 Check '[[AB-7000-0003]] stoğu seçer' ($vm.NavigateToKey('AB-7000-0003') -and $vm.SelectedNode.Path -eq $stock)
 Check 'olmayan hedef: false, dosya oluşmaz' (-not $vm.NavigateToKey('Olmayan Not') -and -not (Test-Path (Join-Path $Data 'Olmayan Not.md')))

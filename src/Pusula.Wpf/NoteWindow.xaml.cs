@@ -138,11 +138,7 @@ namespace Pusula.Wpf
                 },
                 UrlClicked = OpenShell,
                 FileClicked = OpenShell,
-                TaskToggled = line =>
-                {
-                    viewModel.ToggleTask(line);
-                    RenderPreview();
-                },
+                TaskToggled = ToggleTaskAt,
             };
             var document = MarkdownRenderer.Render(viewModel.Text, context);
             document.PagePadding = ReadingPadding(Preview.ActualWidth, 32);
@@ -278,6 +274,17 @@ namespace Pusula.Wpf
                 viewModel.Status = ex.Message;
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Görünümde tıklanan görev kutusunu işaretler / kaldırır. Düzenleyiciden geçer: tıklama Ctrl+Z ile geri alınır
+        /// (metni baştan yazmak geri alma geçmişini silerdi).
+        /// </summary>
+        public void ToggleTaskAt(int line)
+        {
+            var caret = Math.Min(Editor.CaretIndex, Editor.Text.Length);
+            Apply(new EditResult(MarkdownNotes.ToggleTask(Editor.Text, line), caret, 0), false);
+            RenderPreview();
         }
 
         /// <summary>Öneri listesi açık mı (testler için).</summary>
