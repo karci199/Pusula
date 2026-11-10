@@ -10,20 +10,14 @@ using Pusula.Wpf.Properties;
 
 namespace Pusula.Wpf.ViewModels
 {
-    /// <summary>Zaman çizgisinde ve çizelgede gösterilen bir olay (tarih, renk, ad ve hangi süzgece girdiği).</summary>
+    /// <summary>Zaman çizelgesinde bir olay: tarihi ve hangi süzgece girdiği.</summary>
     public interface ITimelinePoint
     {
         /// <summary>Olayın tarihi.</summary>
         DateTime SortDate { get; }
 
-        /// <summary>Renk anlamı (<see cref="Pusula.Core.Types.StatusTone"/>).</summary>
-        string PointTone { get; }
 
-        /// <summary>Eksende yazan kısa ad ("Teslim alındı", "Revizyon").</summary>
-        string PointLabel { get; }
 
-        /// <summary>Olayın geldiği bağlı kayıt (stokta jig / kablo numarası); kendi olayıysa boş.</summary>
-        string PointSource { get; }
 
         /// <summary>Aşama (durum) olayı mı.</summary>
         bool IsStage { get; }

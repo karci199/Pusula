@@ -1943,14 +1943,8 @@ namespace Pusula.Wpf.Properties
         /// <summary>Çizelge süzgeci: yalnız stokun kendi olayları.</summary>
         public static string Timeline_FilterOwn { get { return Get("Timeline_FilterOwn"); } }
 
-        /// <summary>Kayıt sayfası: zaman çizgisi kartı başlığı.</summary>
-        public static string TimeAxis_Title { get { return Get("TimeAxis_Title"); } }
 
-        /// <summary>Zaman çizgisi: bugün işareti.</summary>
-        public static string TimeAxis_Today { get { return Get("TimeAxis_Today"); } }
 
-        /// <summary>Zaman çizgisi: gösterilecek olay yok.</summary>
-        public static string TimeAxis_Empty { get { return Get("TimeAxis_Empty"); } }
 
         /// <summary>Geçmiş: konum değişikliği (eski → yeni).</summary>
         public static string Inv_LocationChange { get { return Get("Inv_LocationChange"); } }

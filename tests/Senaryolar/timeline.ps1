@@ -1,6 +1,6 @@
 ﻿param([string]$Bin, [string]$Out, [string]$Data, [string]$Sample)
 . (Join-Path $PSScriptRoot '..\_Ortak.ps1')
-# Zaman çizgisi: kayıt sayfasında olaylar tarih ekseninde; Geçmiş süzgeci (Aşama / Revizyon / Konum / Not); konum
+# Zaman çizelgesi: Geçmiş süzgeci (Aşama / Revizyon / Konum / Not); konum
 # değişikliği "eski → yeni"; stok çizelgesinde bağlı jigin durum ve Günlük olayları, "Yalnız stok" süzgeci.
 $root = Join-Path $env:TEMP ('pusula-tl-' + [guid]::NewGuid().ToString('N').Substring(0,6))
 New-Item -ItemType Directory "$root\7000_MILKON\AB-7000-0003" -Force | Out-Null
@@ -37,14 +37,12 @@ try {
     Check 'konum değişiklikleri (4) ve eski → yeni' ($loc.Count -eq 4 -and @($loc | ? { $_.Detail -match 'SATIMO odası → Mekanik atölye' }).Count -eq 1) (($loc | % Detail) -join ' | ')
     Check 'revizyon satırı' (@($hist | ? { $_.IsRevision -and $_.Status.Name -eq 'Revizyon' }).Count -eq 1)
 
-    "--- 2. Süzgeç ve zaman çizgisi"
-    $axis = $win.FindName('RecordTimeAxis'); $axis.UpdateLayout(); Wait
-    Check 'eksende hepsi çizildi' ($axis.PointCount -eq $hist.Count -and $axis.LabelCount -gt 0) ("$($axis.PointCount)/$($hist.Count) etiket $($axis.LabelCount)")
+    "--- 2. Süzgeç"
     $f = $vm.Inventory.HistoryFilter
     Check 'süzgeç seçenekleri' ((($f.Options | % Label) -join ',') -eq 'Hepsi,Aşama,Revizyon,Konum,Not')
     $f.Options[2].IsSelected = $true; Wait
     $view = [System.Windows.Data.CollectionViewSource]::GetDefaultView($vm.Inventory.History)
-    Check 'Revizyon: yalnız revizyon, eksen de süzülür' (@($view).Count -eq 1 -and $axis.PointCount -eq 1 -and $f.Selected -eq 'revision' -and -not $f.Options[0].IsSelected) ("$(@($view).Count) / $($axis.PointCount)")
+    Check 'Revizyon: yalnız revizyon' (@($view).Count -eq 1 -and $f.Selected -eq 'revision' -and -not $f.Options[0].IsSelected) ([string]@($view).Count)
     $f.Select('location'); Wait
     Check 'Konum: 4' (@($view).Count -eq 4)
     $f.Select('stage'); Wait
@@ -67,8 +65,6 @@ try {
     $sf.Select('revision'); Wait
     Check 'stokta Revizyon süzgeci' (@($sv).Count -eq 1)
     $sf.Select('all'); Wait
-    $sa = $win.FindName('StockTimeAxis')
-    Check 'stok ekseni çizildi' ($sa.PointCount -gt 0) ([string]$sa.PointCount)
     Snap $win "$Out\timeline-stock.png"
     $win.Close()
 } finally { Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue }

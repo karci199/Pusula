@@ -31,7 +31,7 @@ namespace Pusula.Wpf.ViewModels
         public bool IsEmpty { get; }
     }
 
-    /// <summary>Geçmiş listesinde bir olay (zaman çizgisinde de bir nokta).</summary>
+    /// <summary>Geçmiş listesinde bir olay.</summary>
     public sealed class HistoryRow : ITimelinePoint
     {
         /// <summary>
@@ -109,23 +109,8 @@ namespace Pusula.Wpf.ViewModels
             get { return false; }
         }
 
-        /// <summary>Renk anlamı.</summary>
-        public string PointTone
-        {
-            get { return Status.Tone; }
-        }
 
-        /// <summary>Eksendeki ad.</summary>
-        public string PointLabel
-        {
-            get { return Status.Name; }
-        }
 
-        /// <summary>Kayıt sayfasında olaylar hep kaydın kendisinden.</summary>
-        public string PointSource
-        {
-            get { return string.Empty; }
-        }
 
         /// <summary>Notun Günlük bölümündeki olay (düzenlenebilir / silinebilir); değilse <c>null</c>.</summary>
         public Pusula.Core.Notes.EventNote? Journal { get; }
@@ -386,7 +371,7 @@ namespace Pusula.Wpf.ViewModels
 
         private TimelineFilter? historyFilter;
 
-        /// <summary>Geçmiş süzgeci (Hepsi / Aşama / Revizyon / Konum / Not); Geçmiş listesini ve zaman çizgisini süzer.</summary>
+        /// <summary>Geçmiş süzgeci (Hepsi / Aşama / Revizyon / Konum / Not).</summary>
         public TimelineFilter HistoryFilter
         {
             get

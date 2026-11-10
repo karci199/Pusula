@@ -404,23 +404,8 @@ namespace Pusula.Wpf.ViewModels
             get { return IsInventory; }
         }
 
-        /// <summary>Renk anlamı.</summary>
-        public string PointTone
-        {
-            get { return Result.Tone; }
-        }
 
-        /// <summary>Eksendeki ad.</summary>
-        public string PointLabel
-        {
-            get { return Result.Name; }
-        }
 
-        /// <summary>Bağlı kaydın numarası (başlığın ilk parçası); stokun kendi olayında boş.</summary>
-        public string PointSource
-        {
-            get { return IsInventory ? Title.Split(' ')[0] : string.Empty; }
-        }
 
         /// <summary>Sıralama tarihi (koşu tarihi ya da notun zamanı).</summary>
         public DateTime SortDate { get; }
