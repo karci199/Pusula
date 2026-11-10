@@ -217,6 +217,21 @@
                         </StackPanel>
                     </Border>
 
+                    <!-- Etiketler: bütün türler için ortak; her etiketin geçerli olduğu yer -->
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_Tags}" />
+                            <DataGrid x:Name="TagGrid" Style="{StaticResource EditGrid}" PreviewMouseWheel="Grid_PreviewMouseWheel"
+                                      ItemsSource="{Binding DataContext.Tags, RelativeSource={RelativeSource AncestorType=Window}}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_TagName}" Width="180" Binding="{Binding Name}" />
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_TagScope}" Width="*" Binding="{Binding Scope}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <TextBlock Margin="0,6,0,0" Style="{StaticResource HintText}" TextWrapping="Wrap" Text="{x:Static res:Resources.Types_TagsHint}" />
+                        </StackPanel>
+                    </Border>
+
                     <!-- Durumlar -->
                     <Border Style="{StaticResource Section}">
                         <StackPanel>

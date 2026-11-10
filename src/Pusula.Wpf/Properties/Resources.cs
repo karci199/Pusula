@@ -1838,6 +1838,18 @@ namespace Pusula.Wpf.Properties
         /// <summary>Etiketin kapsamı: her yerde.</summary>
         public static string Tag_Everywhere { get { return Get("Tag_Everywhere"); } }
 
+        /// <summary>Türler penceresi: etiket bölümü.</summary>
+        public static string Types_Tags { get { return Get("Types_Tags"); } }
+
+        /// <summary>Etiket tablosu sütunu.</summary>
+        public static string Types_TagName { get { return Get("Types_TagName"); } }
+
+        /// <summary>Etiket tablosu sütunu.</summary>
+        public static string Types_TagScope { get { return Get("Types_TagScope"); } }
+
+        /// <summary>Etiket tablosu ipucu.</summary>
+        public static string Types_TagsHint { get { return Get("Types_TagsHint"); } }
+
         #endregion
     }
 }

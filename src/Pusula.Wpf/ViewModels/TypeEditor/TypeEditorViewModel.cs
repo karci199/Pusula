@@ -47,6 +47,19 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
 
         /// <summary>Geçerli alt türler, virgülle; boşsa hepsi.</summary>
         public string SubTypes { get; set; } = string.Empty;
+
+        /// <summary>Alt türe göre seçenek listeleri (kablo ucu gibi); bu pencerede düzenlenmez, kaydederken korunur.</summary>
+        public System.Collections.Generic.List<SubTypeChoiceList> SubTypeChoices { get; set; } = new System.Collections.Generic.List<SubTypeChoiceList>();
+    }
+
+    /// <summary>Etiket satırı: ad ve geçerli olduğu yer (metin: "Kablo · RF, Jig"; boşsa her yerde).</summary>
+    public sealed class TagRow
+    {
+        /// <summary>Ad (<c>#</c>'sız; kaydederken boşluk alt çizgi olur).</summary>
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>Geçerli olduğu yer: "Tür" ya da "Tür · Alt tür", virgülle; boşsa her yerde.</summary>
+        public string Scope { get; set; } = string.Empty;
     }
 
     /// <summary>Durum satırı. Var olan durumun adı değiştirilemez (kayıtların geçmişi bu ada bağlı).</summary>
@@ -150,6 +163,7 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
                     Unit = field.Unit,
                     Choices = string.Join(", ", field.Choices),
                     SubTypes = string.Join(", ", field.SubTypes),
+                    SubTypeChoices = field.SubTypeChoices,
                 });
             }
 
@@ -334,6 +348,7 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
                 };
                 definition.Choices.AddRange(SplitList(field.Choices));
                 definition.SubTypes.AddRange(SplitList(field.SubTypes));
+                definition.SubTypeChoices.AddRange(field.SubTypeChoices);
                 type.Fields.Add(definition);
             }
 
@@ -393,6 +408,52 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
 
             selected = Types.FirstOrDefault();
             AddTypeCommand = new RelayCommand(AddType);
+            foreach (var tag in types.TagList)
+            {
+                Tags.Add(new TagRow { Name = tag.Name, Scope = string.Join(", ", tag.Scopes.Select(ScopeText)) });
+            }
+        }
+
+        /// <summary>Etiketler: ad ve geçerli olduğu yer ("Kablo · RF, Jig"; boşsa her yerde).</summary>
+        public ObservableCollection<TagRow> Tags { get; } = new ObservableCollection<TagRow>();
+
+        // "Kablo · RF" ← (cable, RF); tür adı yoksa anahtar.
+        private string ScopeText(TagScope scope)
+        {
+            var name = original.Types.FirstOrDefault(t => string.Equals(t.Key, scope.Type, StringComparison.OrdinalIgnoreCase))?.Name ?? scope.Type;
+            return scope.SubType.Length > 0 ? name + " · " + scope.SubType : name;
+        }
+
+        // Satırlardan etiket listesi: ad düzeltilir (# ve boşluk), aynı ad bir kez; kapsam "Tür · Alt tür" parçalarından.
+        private System.Collections.Generic.List<TagDefinition> BuildTags()
+        {
+            var list = new System.Collections.Generic.List<TagDefinition>();
+            foreach (var row in Tags)
+            {
+                var name = TagDefinition.NameFrom(row.Name);
+                if (name.Length == 0 || list.Any(t => string.Equals(t.Name, name, StringComparison.OrdinalIgnoreCase)))
+                {
+                    continue;
+                }
+
+                var tag = new TagDefinition { Name = name };
+                foreach (var part in (row.Scope ?? string.Empty).Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    var bits = part.Split(new[] { '·', '/' }, 2);
+                    var typeText = bits[0].Trim();
+                    if (typeText.Length == 0)
+                    {
+                        continue;
+                    }
+
+                    var type = original.Types.FirstOrDefault(t => string.Equals(t.Name, typeText, StringComparison.CurrentCultureIgnoreCase) || string.Equals(t.Key, typeText, StringComparison.OrdinalIgnoreCase));
+                    tag.Scopes.Add(new TagScope { Type = type?.Key ?? typeText, SubType = bits.Length > 1 ? bits[1].Trim() : string.Empty });
+                }
+
+                list.Add(tag);
+            }
+
+            return list;
         }
 
         /// <summary>Simge seçenekleri.</summary>
@@ -545,8 +606,11 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
                 return false;
             }
 
-            var set = new TypeSet { SchemaVersion = 2 };
+            // Bu pencerenin düzenlemediği her şey olduğu gibi korunur (etiketler, dosya türleri, sürüm).
+            var set = new TypeSet { SchemaVersion = original.SchemaVersion };
             set.Tags.AddRange(original.Tags);
+            set.TagList.AddRange(BuildTags());
+            set.FileTypes.AddRange(original.FileTypes);
             set.Types.AddRange(original.Types.Where(t => !t.IsInventory));
             set.Types.AddRange(built);
             var failure = TypeStore.Save(root, set);

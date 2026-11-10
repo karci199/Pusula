@@ -23,6 +23,11 @@ try {
     Check 'dene: uymaz' ($jig.TryResult -match 'uymuyor')
     $fr = New-Object Pusula.Wpf.ViewModels.TypeEditor.FieldRow; $fr.Name = 'Malzeme'; $fr.Kind = 'choice'; $fr.Choices = 'Al 6061, Delrin, Paslanmaz'; $jig.Fields.Add($fr)
     $fr = New-Object Pusula.Wpf.ViewModels.TypeEditor.FieldRow; $fr.Name = 'Tork'; $fr.Kind = 'number'; $fr.Unit = 'Nm'; $fr.SubTypes = 'Montaj'; $jig.Fields.Add($fr)
+    "--- 2b. Etiketler"
+    $faz = $vm.Tags | Where-Object Name -eq 'faz_kararli'
+    Check 'etiketler yüklendi, kapsam metni' ($vm.Tags.Count -eq $set.TagList.Count -and $faz.Scope -eq 'Kablo · RF' -and ($vm.Tags | Where-Object Name -eq 'SATIMO').Scope -eq '') ("$($vm.Tags.Count) / $($faz.Scope)")
+    $tr = New-Object Pusula.Wpf.ViewModels.TypeEditor.TagRow; $tr.Name = '#yeni etiket'; $tr.Scope = 'Jig, Kablo · Güç'; $vm.Tags.Add($tr)
+    $fileTypes = $set.FileTypes.Count
     $st = New-Object Pusula.Wpf.ViewModels.TypeEditor.StatusRow; $st.Name = 'Kalibrasyonda'; $st.Tone = 'waiting'; $st.IsSide = $true; $jig.Statuses.Add($st)
     Check 'var olan durum kilitli' (($jig.Statuses | Where-Object Name -eq 'Talep').IsExisting -and $jig.AreFoldersLocked)
     $vm.AddTypeCommand.Execute($null)
@@ -56,6 +61,10 @@ $grid.CancelEdit() | Out-Null
     Check 'alanlar: malzeme (liste), tork (Nm, Montaj)' ($j.Fields.Count -eq 2 -and $j.Fields[0].Key -eq 'malzeme' -and $j.Fields[0].Choices.Count -eq 3 -and $j.Fields[1].Unit -eq 'Nm' -and $j.Fields[1].SubTypes[0] -eq 'Montaj')
     Check 'alt türe göre alan' (@($j.FieldsFor('Mekanik')).Count -eq 1 -and @($j.FieldsFor('Montaj')).Count -eq 2)
     Check 'yeni sıra dışı durum' ($j.FindStatus('Kalibrasyonda') -ne $null -and $j.SideStatuses.Count -eq 3)
+    $yt = $re.TagList | Where-Object Name -eq 'yeni_etiket'
+    Check 'yeni etiket kaydedildi: ad düzeltildi, kapsam jig + kablo · Güç' ($yt -ne $null -and $yt.Scopes.Count -eq 2 -and $yt.Scopes[0].Type -eq 'jig' -and $yt.Scopes[1].Type -eq 'cable' -and $yt.Scopes[1].SubType -eq 'Güç')
+    Check 'öteki etiketler ve kapsamları korundu' (@($re.TagList | Where-Object { $_.Name -eq 'faz_kararli' -and $_.Scopes[0].SubType -eq 'RF' }).Count -eq 1)
+    Check 'kaydetme dosya türlerini, sürümü ve uç listelerini korur' ($re.FileTypes.Count -eq $fileTypes -and $re.SchemaVersion -eq 5 -and ($re.Find('cable').Fields | Where-Object Key -eq 'uc_a').SubTypeChoices.Count -eq 3) ("$($re.FileTypes.Count)/$fileTypes v$($re.SchemaVersion)")
     Check 'yeni tür: anahtar ve klasör son addan, stok/proje korunur' ($re.Find('olcum_cihazi').Name -eq 'Ölçüm cihazı' -and $re.Find('olcum_cihazi').GeneralFolder -eq 'ENVANTER\Olcum_cihazlari' -and $re.Find('stock') -ne $null -and $re.Find('project') -ne $null)
 } finally { Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue }
 ""
