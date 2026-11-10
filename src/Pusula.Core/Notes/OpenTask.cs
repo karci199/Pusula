@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -8,17 +9,42 @@ using Pusula.Core.Scanning;
 namespace Pusula.Core.Notes
 {
     /// <summary>
-    /// md notlarındaki işaretlenmemiş görev: <c>- [ ] SN02 VNA S11 #gorev</c>. İşaretli olanlar (<c>- [x]</c>) okunmaz.
-    /// Uygulama yalnızca okur; işaretlemek Obsidian'da yapılır.
+    /// md notlarındaki görev: <c>- [ ] SN02 VNA S11 @Ayşe_Demir #gorev 📅 2026-11-14</c>. Obsidian Tasks biçimi okunur:
+    /// <c>📅</c> son tarih, <c>✅</c> bitiş tarihi; <c>@Ad_Soyad</c> kişi. Ekleme ve kapatma <see cref="TaskList"/> ile yapılır.
     /// </summary>
     public sealed class OpenTask
     {
-        private static readonly Regex TaskLine = new Regex(@"^\s*[-*+]\s+\[ \]\s+(?<text>.+?)\s*$", RegexOptions.Compiled);
+        /// <summary>Görev satırı: madde işareti, kutu (<c>[ ]</c> / <c>[x]</c>), metin.</summary>
+        internal static readonly Regex TaskLine = new Regex(@"^\s*[-*+]\s+\[(?<mark>[ xX])\]\s+(?<text>.+?)\s*$", RegexOptions.Compiled);
 
         private static readonly Regex Tag = new Regex(@"(^|\s)#[\p{L}\p{N}_/-]+", RegexOptions.Compiled);
 
-        /// <summary>Görev metni (etiketler, <c>#gorev</c> gibi, atılmış).</summary>
+        private static readonly Regex Person = new Regex(@"(^|\s)@(?<name>[\p{L}\p{N}_.-]+)", RegexOptions.Compiled);
+
+        private static readonly Regex DueDate = new Regex("\uD83D\uDCC5\\s*(?<date>\\d{4}-\\d{2}-\\d{2})", RegexOptions.Compiled);
+
+        private static readonly Regex DoneDateMark = new Regex("\u2705\\s*(?<date>\\d{4}-\\d{2}-\\d{2})", RegexOptions.Compiled);
+
+        /// <summary>Görev metni (etiket, kişi ve tarihler atılmış).</summary>
         public string Text { get; private set; } = string.Empty;
+
+        /// <summary>Satırın kendisi (kapatırken notun değişmediği bununla denetlenir).</summary>
+        public string RawLine { get; private set; } = string.Empty;
+
+        /// <summary>Notta satır numarası (0'dan).</summary>
+        public int Line { get; private set; }
+
+        /// <summary>Bitti mi (<c>[x]</c>).</summary>
+        public bool IsDone { get; private set; }
+
+        /// <summary>Kişi (<c>@Ad_Soyad</c> → "Ad Soyad"); yoksa boş.</summary>
+        public string PersonName { get; private set; } = string.Empty;
+
+        /// <summary>Son tarih (<c>📅 yyyy-MM-dd</c>); yoksa <c>null</c>.</summary>
+        public DateTime? Due { get; private set; }
+
+        /// <summary>Bitiş tarihi (<c>✅ yyyy-MM-dd</c>); yoksa <c>null</c>.</summary>
+        public DateTime? DoneDate { get; private set; }
 
         /// <summary>Görevin bulunduğu notun tam yolu.</summary>
         public string NotePath { get; private set; } = string.Empty;
@@ -42,22 +68,22 @@ namespace Pusula.Core.Notes
         }
 
         /// <summary>
-        /// Klasördeki (alt klasörler dahil; <c>_</c> ile başlayan ve arşiv klasörleri hariç) md notlarındaki açık görevler,
-        /// notların ve satırların sırasıyla.
+        /// Klasördeki (alt klasörler dahil; <c>_</c> ile başlayan ve arşiv klasörleri hariç) md notlarındaki görevler,
+        /// notların ve satırların sırasıyla. <paramref name="includeDone"/> ise bitenler de.
         /// </summary>
-        public static List<OpenTask> ReadAll(string folder)
+        public static List<OpenTask> ReadAll(string folder, bool includeDone = false)
         {
             var result = new List<OpenTask>();
             foreach (var file in MarkdownFiles(folder))
             {
-                result.AddRange(Read(file));
+                result.AddRange(Read(file, includeDone));
             }
 
             return result;
         }
 
-        /// <summary>Tek notun açık görevleri; okunamazsa boş.</summary>
-        public static List<OpenTask> Read(string path)
+        /// <summary>Tek notun görevleri (varsayılan: yalnız açıklar); okunamazsa boş.</summary>
+        public static List<OpenTask> Read(string path, bool includeDone = false)
         {
             var result = new List<OpenTask>();
             string[] lines;
@@ -75,28 +101,68 @@ namespace Pusula.Core.Notes
             }
 
             var inCode = false;
-            foreach (var line in lines)
+            for (var i = 0; i < lines.Length; i++)
             {
+                var line = lines[i];
                 if (line.TrimStart().StartsWith("```", StringComparison.Ordinal))
                 {
                     inCode = !inCode;
                     continue;
                 }
 
-                var match = inCode ? Match.Empty : TaskLine.Match(line);
-                if (!match.Success)
+                var task = inCode ? null : Parse(line);
+                if (task == null || (task.IsDone && !includeDone))
                 {
                     continue;
                 }
 
-                var text = Tag.Replace(match.Groups["text"].Value, string.Empty).Trim();
-                if (text.Length > 0)
-                {
-                    result.Add(new OpenTask { Text = text, NotePath = path });
-                }
+                task.Line = i;
+                task.NotePath = path;
+                result.Add(task);
             }
 
             return result;
+        }
+
+        /// <summary>Satırı görev olarak okur; görev değilse (ya da metni boşsa) <c>null</c>.</summary>
+        public static OpenTask? Parse(string line)
+        {
+            var match = TaskLine.Match(line ?? string.Empty);
+            if (!match.Success)
+            {
+                return null;
+            }
+
+            var body = match.Groups["text"].Value;
+            var task = new OpenTask { RawLine = line ?? string.Empty, IsDone = match.Groups["mark"].Value != " " };
+            var due = DueDate.Match(body);
+            if (due.Success)
+            {
+                task.Due = ParseDate(due.Groups["date"].Value);
+            }
+
+            var done = DoneDateMark.Match(body);
+            if (done.Success)
+            {
+                task.DoneDate = ParseDate(done.Groups["date"].Value);
+            }
+
+            var person = Person.Match(body);
+            if (person.Success)
+            {
+                task.PersonName = person.Groups["name"].Value.Replace('_', ' ');
+            }
+
+            var text = DoneDateMark.Replace(DueDate.Replace(body, string.Empty), string.Empty);
+            text = Person.Replace(Tag.Replace(text, " "), " ");
+            task.Text = string.Join(" ", text.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries));
+            return task.Text.Length == 0 ? null : task;
+        }
+
+        private static DateTime? ParseDate(string text)
+        {
+            DateTime value;
+            return DateTime.TryParseExact(text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out value) ? value : (DateTime?)null;
         }
 
         private static IEnumerable<string> MarkdownFiles(string folder)

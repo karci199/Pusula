@@ -373,7 +373,7 @@ namespace Pusula.Core.Notes
         }
 
         // Notun kodlaması korunur: BOM'lu ise BOM'lu, değilse (Obsidian'ın yazdığı gibi) BOM'suz; yeni not BOM'suz.
-        private static bool HasBom(string path)
+        internal static bool HasBom(string path)
         {
             try
             {

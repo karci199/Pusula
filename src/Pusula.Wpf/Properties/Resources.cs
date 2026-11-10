@@ -1952,6 +1952,48 @@ namespace Pusula.Wpf.Properties
         /// <summary>Türler: kişi ayrıldı sütunu (önerilerde çıkmaz).</summary>
         public static string Types_PersonLeft { get { return Get("Types_PersonLeft"); } }
 
+        /// <summary>Yapılacaklar: iş kutusu ipucu.</summary>
+        public static string Task_Placeholder { get { return Get("Task_Placeholder"); } }
+
+        /// <summary>Yapılacaklar: son tarih kutusu ipucu.</summary>
+        public static string Task_DuePlaceholder { get { return Get("Task_DuePlaceholder"); } }
+
+        /// <summary>Yapılacaklar: ekle düğmesi.</summary>
+        public static string Task_Add { get { return Get("Task_Add"); } }
+
+        /// <summary>Yapılacaklar süzgeci: açık işler.</summary>
+        public static string Task_FilterOpen { get { return Get("Task_FilterOpen"); } }
+
+        /// <summary>Yapılacaklar süzgeci: kullanıcının açık işleri.</summary>
+        public static string Task_FilterMine { get { return Get("Task_FilterMine"); } }
+
+        /// <summary>Yapılacaklar süzgeci: biten işler.</summary>
+        public static string Task_FilterDone { get { return Get("Task_FilterDone"); } }
+
+        /// <summary>Durum: iş eklendi.</summary>
+        public static string Task_Added { get { return Get("Task_Added"); } }
+
+        /// <summary>Durum: iş bitti olarak işaretlendi.</summary>
+        public static string Task_Closed { get { return Get("Task_Closed"); } }
+
+        /// <summary>Durum: biten iş yeniden açıldı.</summary>
+        public static string Task_Reopened { get { return Get("Task_Reopened"); } }
+
+        /// <summary>Durum: görev satırı okunduğundan beri değişmiş.</summary>
+        public static string Task_Changed { get { return Get("Task_Changed"); } }
+
+        /// <summary>Durum: son tarih geçersiz.</summary>
+        public static string Task_BadDate { get { return Get("Task_BadDate"); } }
+
+        /// <summary>Yapılacaklar: son tarihi geçmiş iş.</summary>
+        public static string Task_Late { get { return Get("Task_Late"); } }
+
+        /// <summary>Yapılacaklar: bitiş tarihi.</summary>
+        public static string Task_DoneOn { get { return Get("Task_DoneOn"); } }
+
+        /// <summary>Yapılacaklar: açıklama.</summary>
+        public static string Task_Hint { get { return Get("Task_Hint"); } }
+
         #endregion
     }
 }

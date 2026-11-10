@@ -132,8 +132,25 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Genel sekmesi: dikkat maddeleri.</summary>
         public ObservableCollection<AlertItem> Alerts { get; } = new ObservableCollection<AlertItem>();
 
-        /// <summary>Stokun md notlarındaki açık görevler (<c>- [ ]</c>).</summary>
+        /// <summary>Stokun (projede bütün stokların) md notlarındaki görevler, açık ve biten (<c>- [ ]</c>, <c>- [x]</c>).</summary>
         public ObservableCollection<OpenTaskRow> OpenTasks { get; } = new ObservableCollection<OpenTaskRow>();
+
+        private TaskFilter? taskFilter;
+
+        /// <summary>Yapılacaklar süzgeci (Açık / Bana ait / Bitenler).</summary>
+        public TaskFilter TaskFilter
+        {
+            get
+            {
+                if (taskFilter == null)
+                {
+                    taskFilter = new TaskFilter();
+                    taskFilter.Attach(OpenTasks);
+                }
+
+                return taskFilter;
+            }
+        }
 
         private bool openTasksExpanded = true;
 
@@ -147,13 +164,13 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Açık görev var mı.</summary>
         public bool HasOpenTasks
         {
-            get { return OpenTasks.Count > 0; }
+            get { return OpenTasks.Any(t => !t.IsDone); }
         }
 
-        /// <summary>Açık görevler başlığı ("Açık işler · 4").</summary>
+        /// <summary>Başlık ("Yapılacaklar · 4"; açık işlerin sayısı).</summary>
         public string OpenTasksHeader
         {
-            get { return string.Format(Resources.General_OpenTasks, OpenTasks.Count); }
+            get { return string.Format(Resources.General_OpenTasks, OpenTasks.Count(t => !t.IsDone)); }
         }
 
         /// <summary>Genel sekmesi: "son sonuçlar" tablosunun sütun başlıkları.</summary>
@@ -430,7 +447,7 @@ namespace Pusula.Wpf.ViewModels
                         () =>
                         {
                             projectInfo = JsonFile.TryRead<ProjectInfo>(TrackingFiles.ProjectFile(path));
-                            tasks = OpenTask.ReadAll(path);
+                            tasks = OpenTask.ReadAll(path, true);
                             projectJournal = Journal.Read(NoteFile.Find(path, Path.GetFileName(path)));
                             return FolderSummary.ForProject(path, templates.ProjectFolders, source.Token);
                         },
@@ -450,7 +467,7 @@ namespace Pusula.Wpf.ViewModels
                         var summaryTask = Task.Run(() => FolderSummary.ForStock(path, currentTemplates, token), token);
                         var coverTask = Task.Run(() => StockCover.Read(path, Path.GetFileName(path)), token);
                         var eventsTask = Task.Run(() => EventNote.ReadAll(path), token);
-                        var tasksTask = Task.Run(() => OpenTask.ReadAll(path), token);
+                        var tasksTask = Task.Run(() => OpenTask.ReadAll(path, true), token);
                         var plansTask = Task.Run(() => TestPlan.ReadStock(path), token);
                         var journalTask = Task.Run(() => Journal.Read(NoteFile.Find(path, Path.GetFileName(path))), token);
                         await Task.WhenAll(runsTask, treeTask, summaryTask, coverTask, eventsTask, tasksTask, plansTask, journalTask).ConfigureAwait(true);

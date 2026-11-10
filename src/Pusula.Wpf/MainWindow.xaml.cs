@@ -1064,6 +1064,31 @@ namespace Pusula.Wpf
         }
 
         // Açık iş: notu açar (Ayarlar'daki programla).
+        // Yapılacaklar: Ekle düğmesi / Enter işi ekler; kutu işi kapatır ya da yeniden açar.
+        private void TaskAdd_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.AddTask();
+        }
+
+        private void TaskBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter && sender is TextBox box && !MentionAssist.IsOpen(box))
+            {
+                box.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
+                viewModel.AddTask();
+                e.Handled = true;
+            }
+        }
+
+        private void TaskDone_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is CheckBox box && box.DataContext is OpenTaskRow row)
+            {
+                viewModel.SetTaskDone(row, box.IsChecked == true);
+                box.IsChecked = row.IsDone;
+            }
+        }
+
         private void OpenTaskNote_Click(object sender, RoutedEventArgs e)
         {
             if ((sender as FrameworkElement)?.Tag is string path && path.Length > 0)

@@ -1069,7 +1069,7 @@
     <value>{0} bu bilgisayarda bulunamadı; not Windows varsayılanıyla açıldı.</value>
   </data>
   <data name="General_OpenTasks" xml:space="preserve">
-    <value>Açık işler · {0}</value>
+    <value>Yapılacaklar · {0}</value>
   </data>
   <data name="Plan_Kiwi" xml:space="preserve">
     <value>KIWI</value>
@@ -1721,5 +1721,47 @@
   </data>
   <data name="Types_PersonLeft" xml:space="preserve">
     <value>Ayrıldı</value>
+  </data>
+  <data name="Task_Placeholder" xml:space="preserve">
+    <value>Yapılacak iş yaz… @kişi, @numara, #etiket</value>
+  </data>
+  <data name="Task_DuePlaceholder" xml:space="preserve">
+    <value>Son tarih</value>
+  </data>
+  <data name="Task_Add" xml:space="preserve">
+    <value>Ekle</value>
+  </data>
+  <data name="Task_FilterOpen" xml:space="preserve">
+    <value>Açık</value>
+  </data>
+  <data name="Task_FilterMine" xml:space="preserve">
+    <value>Bana ait</value>
+  </data>
+  <data name="Task_FilterDone" xml:space="preserve">
+    <value>Bitenler</value>
+  </data>
+  <data name="Task_Added" xml:space="preserve">
+    <value>İş eklendi: {0}</value>
+  </data>
+  <data name="Task_Closed" xml:space="preserve">
+    <value>İş kapatıldı: {0}</value>
+  </data>
+  <data name="Task_Reopened" xml:space="preserve">
+    <value>İş yeniden açıldı: {0}</value>
+  </data>
+  <data name="Task_Changed" xml:space="preserve">
+    <value>Not bu arada değişmiş; liste yenilendi, yeniden deneyin.</value>
+  </data>
+  <data name="Task_BadDate" xml:space="preserve">
+    <value>Son tarih okunamadı (gg.aa.yyyy).</value>
+  </data>
+  <data name="Task_Late" xml:space="preserve">
+    <value>{0} · gecikti</value>
+  </data>
+  <data name="Task_DoneOn" xml:space="preserve">
+    <value>bitti {0}</value>
+  </data>
+  <data name="Task_Hint" xml:space="preserve">
+    <value>Kutuyu işaretleyince iş biter (notta - [x] ve ✅ tarih); Bitenler&apos;de kutuyu kaldırınca yeniden açılır. Satıra tıklayınca not açılır.</value>
   </data>
 </root>

@@ -35,21 +35,28 @@ namespace Pusula.Wpf.ViewModels
         bool IsLinked { get; }
     }
 
+    /// <summary>Tek seçimli süzgeç: seçeneklerinden biri seçilince ötekileri bırakır.</summary>
+    public interface IFilterOwner
+    {
+        /// <summary>Anahtarı verilen seçeneği seçer.</summary>
+        void Select(string key);
+    }
+
     /// <summary>Süzgeç seçeneği ("Hepsi", "Aşama" …); bir anda biri seçilidir.</summary>
     public sealed class TimelineFilterOption : ViewModelBase
     {
-        private readonly TimelineFilter owner;
+        private readonly IFilterOwner owner;
         private bool isSelected;
 
         /// <summary>Seçeneği kurar.</summary>
-        public TimelineFilterOption(TimelineFilter owner, string key, string label)
+        public TimelineFilterOption(IFilterOwner owner, string key, string label)
         {
             this.owner = owner;
             Key = key;
             Label = label;
         }
 
-        /// <summary>Anahtar (all, stage, revision, location, note, own).</summary>
+        /// <summary>Anahtar (all, stage, revision, location, note, own; işlerde open, mine, done).</summary>
         public string Key { get; }
 
         /// <summary>Görünen ad.</summary>
@@ -84,7 +91,7 @@ namespace Pusula.Wpf.ViewModels
     /// Zaman çizelgesi süzgeci: Hepsi / Aşama / Revizyon / Konum / Not (stokta ayrıca "Yalnız stok"). Bağlandığı listenin
     /// varsayılan görünümünü süzer; liste değişmez, yalnızca gösterilen satırlar değişir.
     /// </summary>
-    public sealed class TimelineFilter : ViewModelBase
+    public sealed class TimelineFilter : ViewModelBase, IFilterOwner
     {
         /// <summary>Hepsi.</summary>
         public const string All = "all";

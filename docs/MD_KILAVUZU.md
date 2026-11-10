@@ -130,9 +130,27 @@ Satır başında `- [ ] ` (boş) ya da `- [x] ` (bitti).
 - [ ] Rapor taslağı #gorev
 ```
 
-- Pusula'nın **Görünüm**ünde kutuya tıklayınca metindeki `[ ]` ↔ `[x]` değişir ve not kaydedilir.
+- Pusula'nın **Görünüm**ünde kutuya tıklayınca metindeki `[ ]` ↔ `[x]` değişir ve not kaydedilir (Ctrl+Z geri alır).
 - **Ctrl+L** seçili satırları görev yapar / görevi kaldırır.
-- `#gorev` etiketi ana notun **Açık işler** bölümünde işi işaretlemek için kullanılır (Pusula kuralı).
+- Stok ve proje sayfasındaki **Yapılacaklar** kartı, klasördeki bütün notların görevlerini listeler.
+
+### Uygulamadan eklenen iş (Obsidian Tasks biçimi)
+
+Yapılacaklar kartından eklenen iş, ana notun `## Yapılacaklar` bölümüne yazılır (bölüm yoksa `## Günlük`'ün
+üstünde açılır). Kişi `@Ad_Soyad`, son tarih `📅 yyyy-MM-dd`; kartta kutu işaretlenince `[x]` ve `✅ yyyy-MM-dd`
+eklenir. Obsidian'ın Tasks eklentisi aynı işaretleri okur.
+
+```md
+## Yapılacaklar
+
+- [ ] SN02 VNA S11 tekrar ölç @Ayşe_Demir 📅 2026-11-14
+- [ ] Jig Rev AC montajı #SATIMO @Mehmet_Kaya 📅 2026-11-12
+- [x] Kablo JT-1000-0012 değiştir ✅ 2026-11-08
+```
+
+- Kartta süzgeç: **Açık**, **Bana ait** (kişisi Ayarlar'daki kullanıcı), **Bitenler** (kutuyu kaldırınca iş yeniden açılır).
+- Son tarihi geçen açık iş kırmızı yazılır ("08.11 · gecikti").
+- Uygulama yalnız bu bölüme satır ekler ve kapatılan işin kendi satırını değiştirir; notun başka hiçbir yerine dokunmaz.
 
 ---
 
