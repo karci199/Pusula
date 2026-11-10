@@ -1760,6 +1760,12 @@ namespace Pusula.Wpf.Properties
         /// <summary>Araç çubuğu.</summary>
         public static string Note_OutlineToggle { get { return Get("Note_OutlineToggle"); } }
 
+        /// <summary>Ayar.</summary>
+        public static string Note_SyncScroll { get { return Get("Note_SyncScroll"); } }
+
+        /// <summary>Ayar.</summary>
+        public static string Note_AutoPair { get { return Get("Note_AutoPair"); } }
+
         #endregion
     }
 }

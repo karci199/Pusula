@@ -78,6 +78,7 @@ namespace Pusula.Wpf
 
             WidthBox.SelectedItem = WidthBox.Items.OfType<ComboBoxItem>().FirstOrDefault(i => (double)i.Tag == viewModel.ReadingWidth);
             CommandManager.AddPreviewExecutedHandler(Editor, Editor_PreviewExecuted);
+            HookScrollSync();
             Loaded += (s, e) =>
             {
                 if (viewModel.StartMaximized)
@@ -160,7 +161,14 @@ namespace Pusula.Wpf
 
             RenderInfo.Text = string.Join(" · ", info);
             RenderInfo.ToolTip = context.MissingFiles.Count > 0 ? string.Join(Environment.NewLine, context.MissingFiles) : null;
-            Dispatcher.BeginInvoke(new Action(() => FindScroll(Preview)?.ScrollToVerticalOffset(offset)), DispatcherPriority.Loaded);
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                FindScroll(Preview)?.ScrollToVerticalOffset(offset);
+                if (SyncActive)
+                {
+                    SyncPreviewToEditor();
+                }
+            }), DispatcherPriority.Loaded);
         }
 
         /// <summary>Biçim işlemi (araç çubuğu ve kısayollar): bold, italic, strike, highlight, code, heading, list, numbers, task, quote, link, image, table, callout, divider.</summary>

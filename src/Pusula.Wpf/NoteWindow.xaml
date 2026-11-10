@@ -333,6 +333,8 @@
                     <CheckBox Margin="0,6,0,0" IsChecked="{Binding LineBreaks, Mode=TwoWay}" Content="{x:Static res:Resources.Note_LineBreaks}" />
                     <CheckBox Margin="0,6,0,0" IsChecked="{Binding FrontMatter, Mode=TwoWay}" Content="{x:Static res:Resources.Note_FrontMatter}" />
                     <CheckBox Margin="0,6,0,0" IsChecked="{Binding AutoSave, Mode=TwoWay}" Content="{x:Static res:Resources.Note_AutoSave}" />
+                    <CheckBox Margin="0,6,0,0" IsChecked="{Binding SyncScroll, Mode=TwoWay}" Content="{x:Static res:Resources.Note_SyncScroll}" />
+                    <CheckBox Margin="0,6,0,0" IsChecked="{Binding AutoPair, Mode=TwoWay}" Content="{x:Static res:Resources.Note_AutoPair}" />
                     <CheckBox Margin="0,6,0,0" IsChecked="{Binding StartMaximized, Mode=TwoWay}" Content="{x:Static res:Resources.Note_StartMaximized}" />
                 </StackPanel>
             </Border>

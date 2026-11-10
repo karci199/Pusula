@@ -1533,4 +1533,10 @@
   <data name="Note_OutlineToggle" xml:space="preserve">
     <value>Başlık paneli (Ctrl+Shift+O)</value>
   </data>
+  <data name="Note_SyncScroll" xml:space="preserve">
+    <value>Yan yanada birlikte kaydır</value>
+  </data>
+  <data name="Note_AutoPair" xml:space="preserve">
+    <value>Parantez ve işaretleri kendiliğinden kapat</value>
+  </data>
 </root>

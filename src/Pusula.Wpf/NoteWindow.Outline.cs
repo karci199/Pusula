@@ -50,8 +50,16 @@ namespace Pusula.Wpf
             var item = outlineItems[index];
             if (viewModel.ShowsEditor)
             {
-                Editor.Select(Math.Min(item.Start, Editor.Text.Length), 0);
-                RevealInEditor(item.Start);
+                // Başlık düz metinde de en üste gelir (birlikte kaydırmada iki taraf aynı yerde durur).
+                var start = Math.Min(item.Start, Editor.Text.Length);
+                Editor.Select(start, 0);
+                Editor.ScrollToLine(Editor.GetLineIndexFromCharacterIndex(start));
+                var rect = Editor.GetRectFromCharacterIndex(start);
+                if (!rect.IsEmpty)
+                {
+                    Editor.ScrollToVerticalOffset(Math.Max(0, Editor.VerticalOffset + rect.Top - Editor.Padding.Top));
+                }
+
                 Editor.Focus();
             }
 
@@ -96,13 +104,31 @@ namespace Pusula.Wpf
         // İmlecin bulunduğu başlık seçili görünür (gezinme tetiklenmez).
         private void HighlightOutline()
         {
+            HighlightOutlineAt(Editor.CaretIndex);
+        }
+
+        // Kaydırınca: imleç ekrandaysa onun başlığı, değilse düz metinde en üstte görünen satırın başlığı seçili görünür.
+        private void HighlightOutlineAtTop()
+        {
+            var first = Editor.GetFirstVisibleLineIndex();
+            var last = Editor.GetLastVisibleLineIndex();
+            if (first < 0)
+            {
+                return;
+            }
+
+            var caretLine = Editor.GetLineIndexFromCharacterIndex(Math.Min(Editor.CaretIndex, Editor.Text.Length));
+            HighlightOutlineAt(caretLine >= first && caretLine <= last ? Editor.CaretIndex : Editor.GetCharacterIndexFromLineIndex(first));
+        }
+
+        private void HighlightOutlineAt(int position)
+        {
             if (!IsOutlineOpen || outlineItems.Count == 0)
             {
                 return;
             }
 
-            var caret = Editor.CaretIndex;
-            var current = outlineItems.LastOrDefault(i => i.Start <= caret) ?? outlineItems[0];
+            var current = outlineItems.LastOrDefault(i => i.Start <= position) ?? outlineItems[0];
             if (ReferenceEquals(OutlineList.SelectedItem, current))
             {
                 return;

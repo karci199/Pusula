@@ -307,6 +307,28 @@ Check 'imlecin başlığı panelde seçili' ($gw.FindName('OutlineList').Selecte
 $ged.Select($ged.Text.IndexOf('## 3. Yazı'), 0); Pump
 Check 'imleç değişince seçim izler' ($gw.OutlineItems[$gw.FindName('OutlineList').SelectedIndex].Title -like '3. Yazı*')
 Snap $gw "$Out\note-outline.png"
+"--- 13. Yan yana birlikte kaydırma"
+function HeadIdx($prefix) { for ($x = 0; $x -lt $gw.OutlineItems.Count; $x++) { if ($gw.OutlineItems[$x].Title -like "$prefix*") { return $x } }; -1 }
+function PreviewTop($i) { $r = $gw.LastRender.Headings[$i].ContentStart.GetCharacterRect('Forward'); $r.Top }
+function EditorTop($i) { $ged.GetRectFromCharacterIndex($gw.OutlineItems[$i].Start).Top }
+Check 'varsayılan: birlikte kaydır açık' ($ge.SyncScroll)
+$h17 = HeadIdx '17. Pusula'
+$ged.ScrollToVerticalOffset($ged.VerticalOffset + (EditorTop $h17) - $ged.Padding.Top); Wait
+Check 'düz metin kayınca görünüm aynı başlığa gelir' ([Math]::Abs((PreviewTop $h17) - (EditorTop $h17)) -lt 60 -and (PreviewTop $h17) -ge -5 -and (PreviewTop $h17) -lt 120) ("görünüm=$(PreviewTop $h17) düz=$(EditorTop $h17)")
+Check 'kaydırınca panel en üstteki başlığı izler (imleç ekran dışında)' ($gw.FindName('OutlineList').SelectedIndex -eq $h17) ("seçili=$($gw.FindName('OutlineList').SelectedIndex) beklenen=$h17")
+Snap $gw "$Out\note-sync.png"
+$h8 = HeadIdx '8. Tablo'
+$gscroll.ScrollToVerticalOffset($gscroll.VerticalOffset + (PreviewTop $h8) - 12); Wait
+$gw.SyncEditorToPreview(); Wait
+Check 'görünüm kayınca düz metin aynı başlığa gelir' ((EditorTop $h8) -ge 0 -and (EditorTop $h8) -lt 120) ("düz=$(EditorTop $h8)")
+$h4 = HeadIdx '4. Listeler'
+$ged.ScrollToVerticalOffset($ged.VerticalOffset + (EditorTop $h4) - $ged.Padding.Top + 37); Wait
+Check 'başlıklar arası orantılı (aradaki satır)' ((PreviewTop $h4) -lt 30 -and (PreviewTop $h4) -gt -120) ("görünüm=$(PreviewTop $h4)")
+$ge.SyncScroll = $false; Pump
+$before = $gscroll.VerticalOffset
+$ged.ScrollToVerticalOffset(0); Wait
+Check 'kapalıyken görünüm kıpırdamaz, ayar kaydedildi' ([Math]::Abs($gscroll.VerticalOffset - $before) -lt 1 -and -not $vm.Settings.NoteEditor.SyncScroll)
+$ge.SyncScroll = $true
 $gw.ToggleOutline(); Pump
 Check 'panel kapanır, ayar kaydedildi' (-not $gw.IsOutlineOpen -and -not $vm.Settings.NoteEditor.ShowOutline)
 $gw.Close(); Pump
