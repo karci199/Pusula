@@ -22,6 +22,7 @@ namespace Pusula.Wpf
             TabOrder = new List<string>();
             Columns = new Dictionary<string, List<ColumnLayout>>();
             LastAction = string.Empty;
+            UserName = string.Empty;
         }
 
         /// <summary>Son seçilen projeler klasörü.</summary>
@@ -55,6 +56,10 @@ namespace Pusula.Wpf
         /// <summary>Durum çubuğundaki son yapılan iş ("AB-7000-0002 kaydedildi · 21:55"); yoksa boş.</summary>
         [DataMember(Name = "lastAction", Order = 7, EmitDefaultValue = false)]
         public string LastAction { get; set; } = string.Empty;
+
+        /// <summary>Kullanıcı (ben): ad soyad; talep eden, olay kişisi gibi kutularda varsayılan. Boşsa Windows kullanıcı adı.</summary>
+        [DataMember(Name = "user", Order = 8, EmitDefaultValue = false)]
+        public string UserName { get; set; } = string.Empty;
 
         /// <summary>Ayar dosyasının yerini değiştiren ortam değişkeni (testler gerçek ayarlara dokunmasın diye).</summary>
         public const string PathVariable = "PUSULA_AYARLAR";

@@ -95,16 +95,17 @@ namespace Pusula.Wpf.ViewModels
                 list.Add(new NoteSuggestion(item.Record.Number, item.Record.Name, type?.Name ?? item.Record.Type, type != null ? TreeNodeViewModel.GlyphOf(type.Icon) : AppIcons.Inventory, "[[" + item.Record.Number + "]]"));
             }
 
-            var people = inventoryItems.SelectMany(i => i.Record.Events.Select(e => e.Person).Concat(i.Record.Notes.Select(n => n.Person)))
-                .Concat(new[] { Environment.UserName })
+            // Kişiler: önce Türler penceresindeki kişi listesi (rol · ekip ile), sonra kullanıcı ve kayıtlarda geçen adlar.
+            var people = types.People.Select(p => p.Name).Concat(new[] { CurrentUser })
+                .Concat(inventoryItems.SelectMany(i => i.Record.Events.Select(e => e.Person).Concat(i.Record.Notes.Select(n => n.Person))))
                 .Select(p => (p ?? string.Empty).Trim())
                 .Where(p => p.Length > 0)
-                .Distinct(StringComparer.OrdinalIgnoreCase);
+                .Distinct(StringComparer.CurrentCultureIgnoreCase);
             foreach (var person in people)
             {
                 if (seen.Add("@" + person))
                 {
-                    list.Add(new NoteSuggestion(person, string.Empty, Resources.Note_KindPerson, "", "@" + person));
+                    list.Add(new NoteSuggestion(person, types.FindPerson(person)?.Summary ?? string.Empty, Resources.Note_KindPerson, "", "@" + person));
                 }
             }
 

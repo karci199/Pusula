@@ -55,6 +55,16 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
 
+            <!-- Kullanıcı (ben): talep eden ve olay kişisinde varsayılan -->
+            <TextBlock Margin="0,20,0,2" Style="{DynamicResource SubtitleTextBlockStyle}" Text="{x:Static res:Resources.Settings_User}" />
+            <TextBlock Margin="0,0,0,8" TextWrapping="Wrap" Style="{DynamicResource CaptionTextBlockStyle}"
+                       Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Settings_UserHint}" />
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="UserBox" Width="260" Text="{Binding UserName, UpdateSourceTrigger=LostFocus}" local:MentionAssist.Mode="person"
+                         controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Placeholder_Person}" />
+                <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" Style="{DynamicResource CaptionTextBlockStyle}"
+                           Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding UserSummary}" />
+            </StackPanel>
             <!-- Notları açan program: "Notu aç" düğmeleri .md notunu bununla açar -->
             <TextBlock Margin="0,20,0,2" Style="{DynamicResource SubtitleTextBlockStyle}" Text="{x:Static res:Resources.Settings_NoteApp}" />
             <TextBlock Margin="0,0,0,8" TextWrapping="Wrap" Style="{DynamicResource CaptionTextBlockStyle}"

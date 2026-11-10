@@ -232,6 +232,37 @@
                         </StackPanel>
                     </Border>
 
+                    <!-- Kişiler: bütün türler için ortak (talep eden, yapan, olay kişisi) -->
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_People}" />
+                            <DataGrid x:Name="PeopleGrid" Style="{StaticResource EditGrid}" PreviewMouseWheel="Grid_PreviewMouseWheel"
+                                      ItemsSource="{Binding DataContext.People, RelativeSource={RelativeSource AncestorType=Window}}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_PersonName}" Width="200" Binding="{Binding Name}" />
+                                    <DataGridComboBoxColumn Header="{x:Static res:Resources.Types_PersonRole}" Width="140" SelectedItemBinding="{Binding Role}">
+                                        <DataGridComboBoxColumn.ElementStyle>
+                                            <Style TargetType="ComboBox">
+                                                <Setter Property="ItemsSource" Value="{Binding DataContext.Roles, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                            </Style>
+                                        </DataGridComboBoxColumn.ElementStyle>
+                                        <DataGridComboBoxColumn.EditingElementStyle>
+                                            <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                                                <Setter Property="ItemsSource" Value="{Binding DataContext.Roles, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                            </Style>
+                                        </DataGridComboBoxColumn.EditingElementStyle>
+                                    </DataGridComboBoxColumn>
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_PersonTeam}" Width="*" Binding="{Binding Team}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <TextBlock Margin="0,6,0,0" Style="{StaticResource HintText}" TextWrapping="Wrap" Text="{x:Static res:Resources.Types_PeopleHint}" />
+                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                <TextBlock Width="60" VerticalAlignment="Center" Text="{x:Static res:Resources.Types_Roles}" />
+                                <TextBox Width="300" Text="{Binding DataContext.RolesText, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=LostFocus}"
+                                         controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Types_RolesHint}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
                     <!-- Durumlar -->
                     <Border Style="{StaticResource Section}">
                         <StackPanel>

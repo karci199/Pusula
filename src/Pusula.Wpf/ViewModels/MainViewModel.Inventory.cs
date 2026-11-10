@@ -65,10 +65,42 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Envanter seçiliyken sağ panel.</summary>
         public InventoryDetailViewModel Inventory { get; } = new InventoryDetailViewModel();
 
-        /// <summary>Oturum açmış kullanıcı (olaylarda varsayılan kişi).</summary>
+        private static string userName = string.Empty;
+
+        /// <summary>Kullanıcı (ben): Ayarlar'daki ad; boşsa Windows kullanıcı adı. Talep eden ve olay kişisinde varsayılan.</summary>
         public static string CurrentUser
         {
-            get { return Environment.UserName; }
+            get { return userName.Length > 0 ? userName : Environment.UserName; }
+        }
+
+        /// <summary>Ayarlar'daki kullanıcı adı (ad soyad); değişince ayarlara yazılır.</summary>
+        public string UserName
+        {
+            get { return userName; }
+            set
+            {
+                var text = (value ?? string.Empty).Trim();
+                if (text == userName)
+                {
+                    return;
+                }
+
+                userName = text;
+                settings.UserName = text;
+                settings.Save();
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(UserSummary));
+            }
+        }
+
+        /// <summary>Kullanıcının kişi listesindeki rolü ve ekibi ("Mühendis · Anten ekibi"); listede değilse ipucu.</summary>
+        public string UserSummary
+        {
+            get
+            {
+                var person = types.FindPerson(CurrentUser);
+                return person == null ? Resources.Settings_UserNotListed : person.Summary;
+            }
         }
 
         #region Ağaç

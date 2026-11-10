@@ -62,6 +62,19 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
         public string Scope { get; set; } = string.Empty;
     }
 
+    /// <summary>Kişi satırı: ad soyad, rol, ekip.</summary>
+    public sealed class PersonRow
+    {
+        /// <summary>Ad soyad.</summary>
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>Rol (Mühendis, Teknisyen …).</summary>
+        public string Role { get; set; } = string.Empty;
+
+        /// <summary>Ekip.</summary>
+        public string Team { get; set; } = string.Empty;
+    }
+
     /// <summary>Durum satırı. Var olan durumun adı değiştirilemez (kayıtların geçmişi bu ada bağlı).</summary>
     public sealed class StatusRow
     {
@@ -412,6 +425,54 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
             {
                 Tags.Add(new TagRow { Name = tag.Name, Scope = string.Join(", ", tag.Scopes.Select(ScopeText)) });
             }
+
+            foreach (var person in types.People)
+            {
+                People.Add(new PersonRow { Name = person.Name, Role = person.Role, Team = person.Team });
+            }
+
+            rolesText = string.Join(", ", types.PersonRoles);
+        }
+
+        private string rolesText;
+
+        /// <summary>Kişiler: ad soyad, rol, ekip.</summary>
+        public ObservableCollection<PersonRow> People { get; } = new ObservableCollection<PersonRow>();
+
+        /// <summary>Roller, virgülle ("Mühendis, Teknisyen"); değişince rol seçim listesi yenilenir.</summary>
+        public string RolesText
+        {
+            get { return rolesText; }
+            set
+            {
+                rolesText = value ?? string.Empty;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(Roles));
+            }
+        }
+
+        /// <summary>Rol seçim listesi (<see cref="RolesText"/> parçaları).</summary>
+        public System.Collections.Generic.List<string> Roles
+        {
+            get { return rolesText.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries).Select(r => r.Trim()).Where(r => r.Length > 0).Distinct(StringComparer.CurrentCultureIgnoreCase).ToList(); }
+        }
+
+        // Satırlardan kişi listesi: adı boş satır atlanır, aynı ad bir kez.
+        private System.Collections.Generic.List<PersonDefinition> BuildPeople()
+        {
+            var list = new System.Collections.Generic.List<PersonDefinition>();
+            foreach (var row in People)
+            {
+                var name = string.Join(" ", (row.Name ?? string.Empty).Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries));
+                if (name.Length == 0 || list.Any(p => string.Equals(p.Name, name, StringComparison.CurrentCultureIgnoreCase)))
+                {
+                    continue;
+                }
+
+                list.Add(new PersonDefinition { Name = name, Role = (row.Role ?? string.Empty).Trim(), Team = (row.Team ?? string.Empty).Trim() });
+            }
+
+            return list;
         }
 
         /// <summary>Etiketler: ad ve geçerli olduğu yer ("Kablo · RF, Jig"; boşsa her yerde).</summary>
@@ -610,6 +671,8 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
             var set = new TypeSet { SchemaVersion = original.SchemaVersion };
             set.Tags.AddRange(original.Tags);
             set.TagList.AddRange(BuildTags());
+            set.People.AddRange(BuildPeople());
+            set.PersonRoles.AddRange(Roles);
             set.FileTypes.AddRange(original.FileTypes);
             set.Types.AddRange(original.Types.Where(t => !t.IsInventory));
             set.Types.AddRange(built);

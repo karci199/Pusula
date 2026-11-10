@@ -27,11 +27,13 @@ namespace Pusula.Core.Types
             Tags = new List<string>();
             FileTypes = new List<FileTypeDefinition>();
             TagList = new List<TagDefinition>();
+            People = new List<PersonDefinition>();
+            PersonRoles = new List<string>();
         }
 
         /// <summary>Dosya biçiminin sürümü.</summary>
         [DataMember(Name = "schemaVersion", Order = 0)]
-        public int SchemaVersion { get; set; } = 9;
+        public int SchemaVersion { get; set; } = 10;
 
         /// <summary>Kayıt türleri.</summary>
         [DataMember(Name = "types", Order = 1)]
@@ -52,6 +54,20 @@ namespace Pusula.Core.Types
         [DataMember(Name = "tagList", Order = 4, EmitDefaultValue = false)]
         public List<TagDefinition> TagList { get; set; } = new List<TagDefinition>();
 
+        /// <summary>Kişiler (sürüm 10): ad soyad, rol (mühendis / teknisyen …), ekip. Talep eden, yapan gibi kutularda önerilir.</summary>
+        [DataMember(Name = "people", Order = 5, EmitDefaultValue = false)]
+        public List<PersonDefinition> People { get; set; } = new List<PersonDefinition>();
+
+        /// <summary>Kişi rolleri (seçim listesi: Mühendis, Teknisyen …).</summary>
+        [DataMember(Name = "personRoles", Order = 6, EmitDefaultValue = false)]
+        public List<string> PersonRoles { get; set; } = new List<string>();
+
+        /// <summary>Adı verilen kişi (büyük / küçük harf duyarsız); yoksa <c>null</c>.</summary>
+        public PersonDefinition? FindPerson(string name)
+        {
+            var value = (name ?? string.Empty).Trim();
+            return People.FirstOrDefault(p => string.Equals(p.Name, value, StringComparison.CurrentCultureIgnoreCase));
+        }
         /// <summary>Bu türde (ve alt türde) geçerli etiketler, listedeki sırayla.</summary>
         public IEnumerable<TagDefinition> TagsFor(string typeKey, string subType)
         {
@@ -303,7 +319,13 @@ namespace Pusula.Core.Types
                 }
             }
 
-            SchemaVersion = 9;
+            // Sürüm 10 (10.11.2026): kişi listesi ve roller (Mühendis, Teknisyen).
+            if (PersonRoles.Count == 0)
+            {
+                PersonRoles.AddRange(defaults.PersonRoles);
+            }
+
+            SchemaVersion = 10;
         }
 
         private static bool SameSet(IEnumerable<string> a, IEnumerable<string> b)
@@ -363,6 +385,8 @@ namespace Pusula.Core.Types
             set.TagList.Add(TagDefinition.For("faz_kararli", "cable", "RF kablo"));
             set.TagList.Add(TagDefinition.For("RS422", "cable", "Haberleşme kablosu"));
             set.TagList.Add(TagDefinition.For("RS232", "cable", "Haberleşme kablosu"));
+
+            set.PersonRoles.AddRange(new[] { "Mühendis", "Teknisyen" });
 
             set.Types.Add(new TypeDefinition
             {
@@ -896,8 +920,39 @@ namespace Pusula.Core.Types
         }
     }
 
-    /// <summary>Bir alt türün seçenek listesi (bkz. <see cref="FieldDefinition.SubTypeChoices"/>).</summary>
+    /// <summary>Kişi: ad soyad (tek alan), rol ve ekip.</summary>
     [DataContract]
+    public sealed class PersonDefinition
+    {
+        /// <summary>Serileştirici kurucuyu çağırmaz; dosyada olmayan alanlar boş değerle başlar.</summary>
+        [OnDeserializing]
+        private void OnDeserializing(StreamingContext context)
+        {
+            Name = string.Empty;
+            Role = string.Empty;
+            Team = string.Empty;
+        }
+
+        /// <summary>Ad soyad ("Ahmet Yılmaz"); kayıtlara bu yazılır.</summary>
+        [DataMember(Name = "name", Order = 0)]
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>Rol (<see cref="TypeSet.PersonRoles"/>: Mühendis, Teknisyen …); boş olabilir.</summary>
+        [DataMember(Name = "role", Order = 1, EmitDefaultValue = false)]
+        public string Role { get; set; } = string.Empty;
+
+        /// <summary>Çalıştığı ekip; boş olabilir.</summary>
+        [DataMember(Name = "team", Order = 2, EmitDefaultValue = false)]
+        public string Team { get; set; } = string.Empty;
+
+        /// <summary>Kısa açıklama: "Mühendis · Anten ekibi" (boş parçalar atlanır).</summary>
+        public string Summary
+        {
+            get { return string.Join(" · ", new[] { Role, Team }.Where(s => s.Length > 0)); }
+        }
+    }
+
+    /// <summary>Bir alt türün seçenek listesi (bkz. <see cref="FieldDefinition.SubTypeChoices"/>).</summary>    [DataContract]
     public sealed class SubTypeChoiceList
     {
         /// <summary>Serileştirici kurucuyu çağırmaz; dosyada olmayan alanlar boş değerle başlar.</summary>

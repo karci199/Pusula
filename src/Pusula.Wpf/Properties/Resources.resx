@@ -1668,4 +1668,34 @@
   <data name="Inv_DetailsLater" xml:space="preserve">
     <value>Talep, yapan, doküman ve özellikler kayıt açıldıktan sonra Düzenle&apos;den girilir.</value>
   </data>
+  <data name="Settings_User" xml:space="preserve">
+    <value>Kullanıcı (ben)</value>
+  </data>
+  <data name="Settings_UserHint" xml:space="preserve">
+    <value>Adın soyadın. Yeni kayıtta talep eden ve olaylarda kişi olarak kendiliğinden yazılır; # ile kişi listesinden seçilir. Boşsa Windows kullanıcı adı kullanılır.</value>
+  </data>
+  <data name="Settings_UserNotListed" xml:space="preserve">
+    <value>Kişi listesinde yok · Türler penceresinden eklenebilir</value>
+  </data>
+  <data name="Types_People" xml:space="preserve">
+    <value>Kişiler</value>
+  </data>
+  <data name="Types_PersonName" xml:space="preserve">
+    <value>Ad soyad</value>
+  </data>
+  <data name="Types_PersonRole" xml:space="preserve">
+    <value>Rol</value>
+  </data>
+  <data name="Types_PersonTeam" xml:space="preserve">
+    <value>Ekip</value>
+  </data>
+  <data name="Types_PeopleHint" xml:space="preserve">
+    <value>Ad soyad tek alanda yazılır; kayıtlara bu ad düşer. Talep eden, yapan, olay kişisi kutularında # ile önerilir.</value>
+  </data>
+  <data name="Types_Roles" xml:space="preserve">
+    <value>Roller</value>
+  </data>
+  <data name="Types_RolesHint" xml:space="preserve">
+    <value>Virgülle ayrılır: Mühendis, Teknisyen</value>
+  </data>
 </root>

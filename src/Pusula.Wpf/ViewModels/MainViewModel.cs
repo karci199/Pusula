@@ -55,6 +55,7 @@ namespace Pusula.Wpf.ViewModels
             MarkAsInventoryCommand = new RelayCommand(OpenMarkInventory);
 
             settings = AppSettings.Load();
+            userName = (settings.UserName ?? string.Empty).Trim();
             rootPath = settings.RootPath ?? string.Empty;
             Refresh();
         }
@@ -365,6 +366,7 @@ namespace Pusula.Wpf.ViewModels
             }
 
             templates = TemplateStore.LoadOrCreate(rootPath);
+            OnPropertyChanged(nameof(UserSummary));
             types = TypeStore.LoadOrCreate(rootPath);
             foreach (var entry in FolderReader.ListChildren(rootPath))
             {

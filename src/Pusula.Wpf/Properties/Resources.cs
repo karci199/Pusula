@@ -1895,6 +1895,36 @@ namespace Pusula.Wpf.Properties
         /// <summary>Yeni kayıt ipucu.</summary>
         public static string Inv_DetailsLater { get { return Get("Inv_DetailsLater"); } }
 
+        /// <summary>Ayarlar: kullanıcı başlığı.</summary>
+        public static string Settings_User { get { return Get("Settings_User"); } }
+
+        /// <summary>Ayarlar: kullanıcı açıklaması.</summary>
+        public static string Settings_UserHint { get { return Get("Settings_UserHint"); } }
+
+        /// <summary>Ayarlar: kullanıcı kişi listesinde değil.</summary>
+        public static string Settings_UserNotListed { get { return Get("Settings_UserNotListed"); } }
+
+        /// <summary>Türler: kişiler bölümü.</summary>
+        public static string Types_People { get { return Get("Types_People"); } }
+
+        /// <summary>Türler: kişi adı sütunu.</summary>
+        public static string Types_PersonName { get { return Get("Types_PersonName"); } }
+
+        /// <summary>Türler: kişi rolü sütunu.</summary>
+        public static string Types_PersonRole { get { return Get("Types_PersonRole"); } }
+
+        /// <summary>Türler: kişi ekibi sütunu.</summary>
+        public static string Types_PersonTeam { get { return Get("Types_PersonTeam"); } }
+
+        /// <summary>Türler: kişiler açıklaması.</summary>
+        public static string Types_PeopleHint { get { return Get("Types_PeopleHint"); } }
+
+        /// <summary>Türler: rol listesi başlığı.</summary>
+        public static string Types_Roles { get { return Get("Types_Roles"); } }
+
+        /// <summary>Türler: rol listesi açıklaması.</summary>
+        public static string Types_RolesHint { get { return Get("Types_RolesHint"); } }
+
         #endregion
     }
 }

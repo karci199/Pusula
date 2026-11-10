@@ -218,7 +218,7 @@ namespace Pusula.Wpf.ViewModels
         /// </summary>
         public System.Collections.Generic.IEnumerable<NoteSuggestion> PersonSuggestions()
         {
-            return NoteSuggestions().Where(s => s.Kind == Resources.Note_KindPerson).Select(s => new NoteSuggestion(s.Key, string.Empty, s.Kind, s.Glyph, s.Key)).ToList();
+            return NoteSuggestions().Where(s => s.Kind == Resources.Note_KindPerson).Select(s => new NoteSuggestion(s.Key, s.Title, s.Kind, s.Glyph, s.Key)).ToList();
         }
 
         /// <summary>Alan bölümünün başlığı: "Özellikler · Mekanik".</summary>
