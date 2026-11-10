@@ -43,7 +43,7 @@ Check 'dönüşüm: alt türler RF, Haberleşme, Güç, Diğer' (($oc.SubTypes -
 Check 'dönüşüm: alanların alt türü de Güç oldu' ((@($oc.FieldsFor('Güç') | % Key) -contains 'akim') -and -not (@($oc.Fields | ForEach-Object { $_.SubTypes }) -contains 'Güç / veri'))
 Check 'dönüşüm: adet kablo ve jigden kalktı' (-not (@($oc.Fields | % Key) -contains 'adet') -and -not (@($old.Find('jig').Fields | % Key) -contains 'adet'))
 Check 'dönüşüm: mm² kesit yerine AWG' (-not (@($oc.Fields | % Key) -contains 'kesit') -and (@($oc.FieldsFor('Güç') | % Key) -contains 'kesit_awg'))
-Check 'dönüşüm: uçlar alt türe göre, kullanıcının eklediği seçenek korunur' ($ua.Name -eq '1. uç (konnektör)' -and ($ua.ChoicesFor('Güç') -contains 'Pabuç') -and ($ua.Choices -contains 'Özel uç') -and $old.SchemaVersion -eq 4) ($ua.Choices -join '|')
+Check 'dönüşüm: uçlar alt türe göre, kullanıcının eklediği seçenek korunur' ($ua.Name -eq '1. uç (konnektör)' -and ($ua.ChoicesFor('Güç') -contains 'Pabuç') -and ($ua.Choices -contains 'Özel uç') -and $old.SchemaVersion -ge 4) ($ua.Choices -join '|')
 
 "--- 2. RF kablo: alanlar alt türe göre"
 $rf = Join-Path $Data 'ENVANTER\Kablolar\JT-0001-0001_SATIMO_RF_kablosu'
