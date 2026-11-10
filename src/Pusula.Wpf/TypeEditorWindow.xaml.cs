@@ -31,7 +31,7 @@ namespace Pusula.Wpf
         }
 
         // Kişi tablosu görünür olunca alan sütunları kişi türünün o anki alanlarından yeniden kurulur
-        // (metin alanı kutu, liste alanı açılır liste); ad ve rol sütunları sabit.
+        // (metin alanı kutu, liste alanı açılır liste); ad, rol ve ayrıldı sütunları sabit.
         private void PeopleGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (!PeopleGrid.IsVisible)
@@ -39,9 +39,10 @@ namespace Pusula.Wpf
                 return;
             }
 
-            while (PeopleGrid.Columns.Count > 2)
+            // Sabit sütunlar: ad, rol, ayrıldı; alan sütunları bunlardan sonra.
+            while (PeopleGrid.Columns.Count > 3)
             {
-                PeopleGrid.Columns.RemoveAt(2);
+                PeopleGrid.Columns.RemoveAt(3);
             }
 
             var columns = viewModel.PersonColumns();

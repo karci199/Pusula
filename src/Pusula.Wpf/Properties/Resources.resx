@@ -1687,7 +1687,7 @@
     <value>Ekip</value>
   </data>
   <data name="Types_PeopleHint" xml:space="preserve">
-    <value>Ad soyad tek alanda yazılır; kayıtlara bu ad düşer. Roller yukarıdaki Alt türler, Ekip gibi sütunlar Alanlar tablosundan gelir (liste alanı açılır liste olur). Talep eden, yapan, olay kişisi kutularında # ile önerilir.</value>
+    <value>Ad soyad tek alanda yazılır; kayıtlara bu ad düşer. Roller yukarıdaki Alt türler, Ekip gibi sütunlar Alanlar tablosundan gelir (liste alanı açılır liste olur). Talep eden, yapan, olay kişisi kutularında # ile önerilir; Ayrıldı işaretli kişi önerilmez, eski kayıtlarda adı kalır.</value>
   </data>
   <data name="Types_Roles" xml:space="preserve">
     <value>Roller</value>
@@ -1718,5 +1718,8 @@
   </data>
   <data name="Inv_LocationChange" xml:space="preserve">
     <value>Konum: {0} → {1}</value>
+  </data>
+  <data name="Types_PersonLeft" xml:space="preserve">
+    <value>Ayrıldı</value>
   </data>
 </root>

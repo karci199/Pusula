@@ -71,6 +71,9 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
         /// <summary>Rol (Mühendis, Teknisyen …).</summary>
         public string Role { get; set; } = string.Empty;
 
+        /// <summary>Ayrıldı mı (önerilerde çıkmaz).</summary>
+        public bool HasLeft { get; set; }
+
         /// <summary>Alan değerleri (alan anahtarı → değer); tablo sütunları buna bağlanır.</summary>
         public Dictionary<string, string> Values { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     }
@@ -443,7 +446,7 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
 
             foreach (var person in types.People)
             {
-                var row = new PersonRow { Name = person.Name, Role = person.Role };
+                var row = new PersonRow { Name = person.Name, Role = person.Role, HasLeft = person.HasLeft };
                 foreach (var pair in person.Fields)
                 {
                     row.Values[pair.Key] = pair.Value;
@@ -506,7 +509,7 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
                     continue;
                 }
 
-                var person = new PersonDefinition { Name = name, Role = (row.Role ?? string.Empty).Trim() };
+                var person = new PersonDefinition { Name = name, Role = (row.Role ?? string.Empty).Trim(), HasLeft = row.HasLeft };
                 foreach (var pair in row.Values.Where(p => (p.Value ?? string.Empty).Trim().Length > 0))
                 {
                     person.Fields[pair.Key] = pair.Value.Trim();

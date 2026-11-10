@@ -1949,6 +1949,9 @@ namespace Pusula.Wpf.Properties
         /// <summary>Geçmiş: konum değişikliği (eski → yeni).</summary>
         public static string Inv_LocationChange { get { return Get("Inv_LocationChange"); } }
 
+        /// <summary>Türler: kişi ayrıldı sütunu (önerilerde çıkmaz).</summary>
+        public static string Types_PersonLeft { get { return Get("Types_PersonLeft"); } }
+
         #endregion
     }
 }

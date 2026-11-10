@@ -100,7 +100,8 @@ namespace Pusula.Wpf.ViewModels
                 .Concat(inventoryItems.SelectMany(i => i.Record.Events.Select(e => e.Person).Concat(i.Record.Notes.Select(n => n.Person))))
                 .Select(p => (p ?? string.Empty).Trim())
                 .Where(p => p.Length > 0)
-                .Distinct(StringComparer.CurrentCultureIgnoreCase);
+                .Distinct(StringComparer.CurrentCultureIgnoreCase)
+                .Where(p => types.FindPerson(p)?.HasLeft != true);
             foreach (var person in people)
             {
                 if (seen.Add("@" + person))

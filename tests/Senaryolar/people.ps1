@@ -61,4 +61,14 @@ Check 'kaydedildi' ($ed.Save()) $ed.Error
 $after = [Pusula.Core.Types.TypeStore]::LoadOrCreate($Data)
 Check 'ad boşlukları düzeltildi, tekrar atıldı' ((@($after.People | % Name) -join ',') -eq 'Ayşe Demir,Zeynep Ak,Mehmet Kaya') (@($after.People | % Name) -join ',')
 Check 'rol, alanlar ve tür korundu' ($after.Person.SubTypes -contains 'Stajyer' -and $after.FindPerson('Mehmet Kaya').Fields['dahili_tel'] -eq '1234' -and @($after.Types | ? Key -eq 'person').Count -eq 1 -and $after.TagList.Count -eq $types.TagList.Count -and $after.Find('stock') -ne $null)
+"--- 4. Ayrıldı"
+$after.FindPerson('Mehmet Kaya').HasLeft = $true
+[Pusula.Core.Types.TypeStore]::Save($Data, $after) | Out-Null
+$vm.RootPath = ''; Wait; $vm.RootPath = $Data; Wait
+$names = @($vm.PersonSuggestions() | % Key)
+Check 'ayrılan kişi önerilmez, diğerleri gelir' (-not ($names -contains 'Mehmet Kaya') -and $names -contains 'Ayşe Demir') ($names -join ',')
+$back2 = [Pusula.Core.Types.TypeStore]::LoadOrCreate($Data)
+Check 'ayrıldı bilgisi kaydedilir, kişi silinmez' ($back2.FindPerson('Mehmet Kaya').HasLeft -and $back2.People.Count -eq 3)
+$ed2 = New-Object Pusula.Wpf.ViewModels.TypeEditor.TypeEditorViewModel($Data, $back2)
+Check 'Türler penceresinde işaretli görünür' (@($ed2.People | ? { $_.Name -eq 'Mehmet Kaya' -and $_.HasLeft }).Count -eq 1)
 $win.Close()

@@ -980,6 +980,7 @@ namespace Pusula.Core.Types
             Name = string.Empty;
             Role = string.Empty;
             Fields = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            HasLeft = false;
         }
 
         /// <summary>Ad soyad ("Ahmet Yılmaz"); kayıtlara bu yazılır.</summary>
@@ -993,6 +994,12 @@ namespace Pusula.Core.Types
         /// <summary>Alan değerleri (alan anahtarı → değer: <c>ekip</c> → Anten).</summary>
         [DataMember(Name = "fields", Order = 2, EmitDefaultValue = false)]
         public Dictionary<string, string> Fields { get; set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Ayrıldı mı: ayrılan kişi talep eden / # önerilerinde çıkmaz; eski kayıtlarda ve çizelgede adı olduğu gibi kalır.
+        /// </summary>
+        [DataMember(Name = "left", Order = 3, EmitDefaultValue = false)]
+        public bool HasLeft { get; set; }
 
         /// <summary>Ekip (<see cref="TypeSet.TeamKey"/> alanı); yoksa boş.</summary>
         public string Team

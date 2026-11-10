@@ -237,6 +237,7 @@
                                             </Style>
                                         </DataGridComboBoxColumn.EditingElementStyle>
                                     </DataGridComboBoxColumn>
+                                    <DataGridCheckBoxColumn Header="{x:Static res:Resources.Types_PersonLeft}" Width="80" Binding="{Binding HasLeft}" />
                                 </DataGrid.Columns>
                             </DataGrid>
                             <TextBlock Margin="0,6,0,0" Style="{StaticResource HintText}" TextWrapping="Wrap" Text="{x:Static res:Resources.Types_PeopleHint}" />
