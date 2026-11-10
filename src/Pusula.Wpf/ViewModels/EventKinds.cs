@@ -77,6 +77,12 @@ namespace Pusula.Wpf.ViewModels
             return All.FirstOrDefault(o => o.Key == key);
         }
 
+        /// <summary>Revizyon türü mü (çizelgede Revizyon süzgecine girer).</summary>
+        public static bool IsRevision(string kind)
+        {
+            return Journal.KindKey(kind) == Journal.KindKey(Resources.Event_Revision);
+        }
+
         /// <summary>Görünen ad.</summary>
         public static string Label(string kind)
         {

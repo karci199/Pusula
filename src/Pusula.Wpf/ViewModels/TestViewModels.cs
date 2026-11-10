@@ -256,7 +256,7 @@ namespace Pusula.Wpf.ViewModels
     /// <summary>
     /// Zaman çizelgesinde bir kart. Kapalıyken tek satır özet; tıklanınca notun metni, plan, jig ve ilk fotoğraf açılır.
     /// </summary>
-    public sealed class TimelineItem : ViewModelBase
+    public sealed class TimelineItem : ViewModelBase, ITimelinePoint
     {
         private bool isExpanded;
 
@@ -311,6 +311,7 @@ namespace Pusula.Wpf.ViewModels
             Folder = folder;
             SortDate = note.DateValue ?? DateTime.MinValue;
             IsQuickNote = true;
+            IsNoteEntry = true;
         }
 
         /// <summary>Obsidian olay notundan kart oluşturur (toplantı, karar …); tıklayınca not açılır.</summary>
@@ -332,20 +333,49 @@ namespace Pusula.Wpf.ViewModels
             {
                 Detail = string.Join(" · ", links);
             }
+
+            IsRevision = EventKinds.IsRevision(note.Kind);
+            IsNoteEntry = !IsRevision;
+        }
+
+        /// <summary>
+        /// Stokun kullandığı jig / kablo kaydının Günlük'ündeki bir olaydan kart oluşturur (revizyon, arıza …); başlıkta kaydın
+        /// numarası yazar. Stok sayfasından düzenlenmez (olay kaydın kendi notunda); tıklayınca kaydın notu açılır.
+        /// </summary>
+        public TimelineItem(Pusula.Core.Notes.EventNote note, Pusula.Core.Inventory.InventoryItem item, Pusula.Core.Types.TypeDefinition type)
+        {
+            Title = item.Record.Number + " · " + note.Title;
+            Result = new StatusChip(EventKinds.Label(note.Kind), EventKinds.ToneFor(note.Kind, note.Importance));
+            Summary = note.Excerpt;
+            var date = note.Date.TimeOfDay == TimeSpan.Zero ? note.Date.ToString(Resources.Format_Date) : note.Date.ToString(Resources.Format_DateTime);
+            Meta = type.Name + " · " + (note.Person.Length == 0 ? date : date + " · " + note.Person);
+            Detail = string.Empty;
+            Photo = string.Empty;
+            NotePath = note.Path;
+            Folder = item.Folder;
+            SortDate = note.Date;
+            IsInventory = true;
+            IsRevision = EventKinds.IsRevision(note.Kind);
+            IsNoteEntry = !IsRevision;
         }
 
         /// <summary>
         /// Stokun kullandığı jig / kablo kaydındaki bir durum değişikliğinden kart oluşturur (Talep, Hazırlanıyor, Teslim alındı …).
         /// Kendiliğinden gelir; düzenlenmez, kaydın kendi sayfasından değişir. <paramref name="notePath"/> kaydın notu (yoksa boş: klasör açılır).
         /// </summary>
-        public TimelineItem(Pusula.Core.Inventory.InventoryEvent inventoryEvent, Pusula.Core.Inventory.InventoryItem item, Pusula.Core.Types.TypeDefinition type, string notePath)
+        public TimelineItem(Pusula.Core.Inventory.InventoryEvent inventoryEvent, Pusula.Core.Inventory.InventoryItem item, Pusula.Core.Types.TypeDefinition type, string notePath, string previousLocation = "")
         {
             Title = item.Record.Number + " · " + item.Record.Name;
             Result = StatusChip.For(type, inventoryEvent.Status);
             Summary = inventoryEvent.Note;
             var date = inventoryEvent.DateValue.HasValue ? inventoryEvent.DateValue.Value.ToString(Resources.Format_Date) : inventoryEvent.Date;
             Meta = type.Name + " · " + (inventoryEvent.Person.Length == 0 ? date : date + " · " + inventoryEvent.Person);
-            Detail = inventoryEvent.Location.Length > 0 ? Resources.Inv_Location + ": " + inventoryEvent.Location : string.Empty;
+            var previous = (previousLocation ?? string.Empty).Trim();
+            IsLocationChange = inventoryEvent.Location.Length > 0 && !string.Equals(previous, inventoryEvent.Location, StringComparison.CurrentCultureIgnoreCase);
+            Detail = inventoryEvent.Location.Length == 0 ? string.Empty
+                : previous.Length > 0 && IsLocationChange ? string.Format(Resources.Inv_LocationChange, previous, inventoryEvent.Location)
+                : Resources.Inv_Location + ": " + inventoryEvent.Location;
+            IsStage = true;
             Photo = string.Empty;
             NotePath = notePath;
             Folder = item.Folder;
@@ -353,8 +383,44 @@ namespace Pusula.Wpf.ViewModels
             IsInventory = true;
         }
 
-        /// <summary>Jig / kablo kaydından gelen durum olayı mı.</summary>
+        /// <summary>Jig / kablo kaydından gelen olay mı (durum değişikliği ya da kaydın Günlük olayı).</summary>
         public bool IsInventory { get; }
+
+        /// <summary>Aşama (durum) olayı mı.</summary>
+        public bool IsStage { get; }
+
+        /// <summary>Revizyon olayı mı.</summary>
+        public bool IsRevision { get; }
+
+        /// <summary>Konum değişikliği var mı.</summary>
+        public bool IsLocationChange { get; }
+
+        /// <summary>Not mu (kısa not ya da revizyon dışındaki günlük olayı).</summary>
+        public bool IsNoteEntry { get; }
+
+        /// <summary>Bağlı kayıttan mı (stoka bağlı jig / kablo).</summary>
+        public bool IsLinked
+        {
+            get { return IsInventory; }
+        }
+
+        /// <summary>Renk anlamı.</summary>
+        public string PointTone
+        {
+            get { return Result.Tone; }
+        }
+
+        /// <summary>Eksendeki ad.</summary>
+        public string PointLabel
+        {
+            get { return Result.Name; }
+        }
+
+        /// <summary>Bağlı kaydın numarası (başlığın ilk parçası); stokun kendi olayında boş.</summary>
+        public string PointSource
+        {
+            get { return IsInventory ? Title.Split(' ')[0] : string.Empty; }
+        }
 
         /// <summary>Sıralama tarihi (koşu tarihi ya da notun zamanı).</summary>
         public DateTime SortDate { get; }

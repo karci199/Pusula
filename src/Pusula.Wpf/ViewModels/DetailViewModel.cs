@@ -165,6 +165,23 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Genel sekmesi: zaman çizelgesi.</summary>
         public ObservableCollection<TimelineItem> Timeline { get; } = new ObservableCollection<TimelineItem>();
 
+        private TimelineFilter? timelineFilter;
+
+        /// <summary>Zaman çizelgesi süzgeci (Hepsi / Aşama / Revizyon / Konum / Not / Yalnız stok).</summary>
+        public TimelineFilter TimelineFilter
+        {
+            get
+            {
+                if (timelineFilter == null)
+                {
+                    timelineFilter = new TimelineFilter(true);
+                    timelineFilter.Attach(Timeline);
+                }
+
+                return timelineFilter;
+            }
+        }
+
         /// <summary>Testler sekmesi: geliştirme koşuları.</summary>
         public ObservableCollection<TestRunRow> DevelopmentRuns { get; } = new ObservableCollection<TestRunRow>();
 
@@ -600,12 +617,26 @@ namespace Pusula.Wpf.ViewModels
             }
 
             // Kullanılan kayıtların durum değişiklikleri (Talep, Hazırlanıyor, Teslim …) zaman çizelgesine kendiliğinden düşer.
-            var inventoryEvents = used
-                .Where(i => i.Record.Events.Count > 0)
-                .Select(i => new { item = i, type = types.Find(i.Record.Type), note = NoteFile.Find(i.Folder, i.Record.Number) })
-                .Where(x => x.type != null)
-                .SelectMany(x => x.item.Record.Events.Select(e => new TimelineItem(e, x.item, x.type!, x.note)))
-                .ToList();
+            // Kaydın Günlük olayları (revizyon, arıza …) da düşer; konum değişikliği "eski → yeni" yazar.
+            var inventoryEvents = new List<TimelineItem>();
+            foreach (var x in used.Select(i => new { item = i, type = types.Find(i.Record.Type), note = NoteFile.Find(i.Folder, i.Record.Number) }).Where(x => x.type != null))
+            {
+                var location = string.Empty;
+                foreach (var inventoryEvent in x.item.Record.Events)
+                {
+                    inventoryEvents.Add(new TimelineItem(inventoryEvent, x.item, x.type!, x.note, location));
+                    if (inventoryEvent.Location.Length > 0)
+                    {
+                        location = inventoryEvent.Location;
+                    }
+                }
+
+                if (x.note.Length > 0)
+                {
+                    inventoryEvents.AddRange(Journal.Read(x.note).Select(e => new TimelineItem(e, x.item, x.type!)));
+                }
+            }
+
             if (inventoryEvents.Count > 0)
             {
                 var all = Timeline.Where(t => !t.IsInventory).Concat(inventoryEvents).OrderByDescending(t => t.SortDate).ToList();

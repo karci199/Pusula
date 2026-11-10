@@ -1226,7 +1226,20 @@
                         <ColumnDefinition Width="16" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <!-- Zaman çizgisi: olaylar tarihlerine göre yatay eksende (Geçmiş süzgeciyle birlikte süzülür) -->
+                    <Border Grid.ColumnSpan="3" Padding="16,12" Margin="0,0,0,16"
+                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                            CornerRadius="{DynamicResource OverlayCornerRadius}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.TimeAxis_Title}" />
+                            <local:TimeAxis x:Name="RecordTimeAxis" Margin="0,4,0,0" Items="{Binding Inventory.History}" />
+                        </StackPanel>
+                    </Border>
+                    <StackPanel Grid.Row="1" Grid.Column="0">
                     <!-- Etiketler (#SATIMO …): çip olarak -->
                     <ItemsControl Margin="0,0,0,12" ItemsSource="{Binding Inventory.Tags}" Visibility="{Binding Inventory.HasTags, Converter={StaticResource BoolToVis}}">
                         <ItemsControl.ItemsPanel>
@@ -1349,7 +1362,7 @@
                     </Border>
                     <ContentControl Content="{Binding}" ContentTemplate="{StaticResource MentionsCardTemplate}" Focusable="False" />
                     </StackPanel>
-                    <StackPanel Grid.Column="2">
+                    <StackPanel Grid.Row="1" Grid.Column="2">
                     <Border VerticalAlignment="Top" Padding="16,12"
                             Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
                             CornerRadius="{DynamicResource OverlayCornerRadius}">
@@ -1375,6 +1388,18 @@
                                     </StackPanel>
                                 </Button>
                             </Grid>
+                            <ItemsControl Margin="0,0,0,10" ItemsSource="{Binding Inventory.HistoryFilter.Options}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <controls:FilterChip Margin="0,0,6,6" Content="{Binding Label}" IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
                             <ItemsControl ItemsSource="{Binding Inventory.History}" ItemTemplate="{StaticResource HistoryTemplate}" />
                         </StackPanel>
                     </Border>
@@ -1710,6 +1735,19 @@
                                                     </StackPanel>
                                                 </Button>
                                             </Grid>
+                                            <ItemsControl Margin="0,0,0,10" ItemsSource="{Binding Detail.TimelineFilter.Options}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <WrapPanel />
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <controls:FilterChip Margin="0,0,6,6" Content="{Binding Label}" IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                            <local:TimeAxis x:Name="StockTimeAxis" Margin="0,0,0,8" Items="{Binding Detail.Timeline}" />
                                             <ItemsControl ItemsSource="{Binding Detail.Timeline}" ItemTemplate="{StaticResource TimelineTemplate}" />
                                         </StackPanel>
                                     </Border>

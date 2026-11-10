@@ -31,19 +31,27 @@ namespace Pusula.Wpf.ViewModels
         public bool IsEmpty { get; }
     }
 
-    /// <summary>Geçmiş listesinde bir olay.</summary>
-    public sealed class HistoryRow
+    /// <summary>Geçmiş listesinde bir olay (zaman çizgisinde de bir nokta).</summary>
+    public sealed class HistoryRow : ITimelinePoint
     {
-        /// <summary>Olaydan satır oluşturur.</summary>
-        public HistoryRow(InventoryEvent inventoryEvent, TypeDefinition type)
+        /// <summary>
+        /// Durum olayından satır oluşturur. <paramref name="previousLocation"/> bu olaydan önceki konumdur; olayda başka bir
+        /// konum yazılmışsa satır "Konum: eski → yeni" gösterir ve Konum süzgecine girer.
+        /// </summary>
+        public HistoryRow(InventoryEvent inventoryEvent, TypeDefinition type, string previousLocation = "")
         {
             Status = StatusChip.For(type, inventoryEvent.Status);
+            IsStage = true;
             var date = inventoryEvent.DateValue.HasValue ? inventoryEvent.DateValue.Value.ToString(Resources.Format_Date) : inventoryEvent.Date;
             Meta = inventoryEvent.Person.Length == 0 ? date : date + " · " + inventoryEvent.Person;
             var details = new List<string>();
             if (inventoryEvent.Location.Length > 0)
             {
-                details.Add(Resources.Inv_Location + ": " + inventoryEvent.Location);
+                var previous = (previousLocation ?? string.Empty).Trim();
+                IsLocationChange = !string.Equals(previous, inventoryEvent.Location, StringComparison.CurrentCultureIgnoreCase);
+                details.Add(previous.Length > 0 && IsLocationChange
+                    ? string.Format(Resources.Inv_LocationChange, previous, inventoryEvent.Location)
+                    : Resources.Inv_Location + ": " + inventoryEvent.Location);
             }
 
             if (inventoryEvent.Note.Length > 0)
@@ -63,6 +71,7 @@ namespace Pusula.Wpf.ViewModels
             Meta = note.Person.Length == 0 ? date : date + " · " + note.Person;
             Detail = note.Text;
             SortDate = note.DateValue ?? DateTime.MinValue;
+            IsNoteEntry = true;
         }
 
         /// <summary>Obsidian olay notundan satır oluşturur (revizyon, arıza …).</summary>
@@ -75,10 +84,48 @@ namespace Pusula.Wpf.ViewModels
             Detail = note.Excerpt.Length == 0 ? note.Title : note.Title + " · " + note.Excerpt;
             SortDate = note.Date;
             NotePath = note.Path;
+            IsRevision = EventKinds.IsRevision(note.Kind);
+            IsNoteEntry = !IsRevision;
         }
 
         /// <summary>Sıralama tarihi.</summary>
         public DateTime SortDate { get; }
+
+        /// <summary>Aşama (durum) olayı mı.</summary>
+        public bool IsStage { get; }
+
+        /// <summary>Revizyon olayı mı.</summary>
+        public bool IsRevision { get; }
+
+        /// <summary>Konum değişikliği var mı.</summary>
+        public bool IsLocationChange { get; }
+
+        /// <summary>Not mu (kısa not ya da revizyon dışındaki günlük olayı).</summary>
+        public bool IsNoteEntry { get; }
+
+        /// <summary>Bağlı kayıttan mı (kayıt sayfasında hep kendi olayları).</summary>
+        public bool IsLinked
+        {
+            get { return false; }
+        }
+
+        /// <summary>Renk anlamı.</summary>
+        public string PointTone
+        {
+            get { return Status.Tone; }
+        }
+
+        /// <summary>Eksendeki ad.</summary>
+        public string PointLabel
+        {
+            get { return Status.Name; }
+        }
+
+        /// <summary>Kayıt sayfasında olaylar hep kaydın kendisinden.</summary>
+        public string PointSource
+        {
+            get { return string.Empty; }
+        }
 
         /// <summary>Notun Günlük bölümündeki olay (düzenlenebilir / silinebilir); değilse <c>null</c>.</summary>
         public Pusula.Core.Notes.EventNote? Journal { get; }
@@ -336,6 +383,23 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Geçmiş (yeniden eskiye).</summary>
         public ObservableCollection<HistoryRow> History { get; } = new ObservableCollection<HistoryRow>();
+
+        private TimelineFilter? historyFilter;
+
+        /// <summary>Geçmiş süzgeci (Hepsi / Aşama / Revizyon / Konum / Not); Geçmiş listesini ve zaman çizgisini süzer.</summary>
+        public TimelineFilter HistoryFilter
+        {
+            get
+            {
+                if (historyFilter == null)
+                {
+                    historyFilter = new TimelineFilter(false);
+                    historyFilter.Attach(History);
+                }
+
+                return historyFilter;
+            }
+        }
 
         /// <summary>Kayıt klasörünün alt klasörleri.</summary>
         public ObservableCollection<RecordFolderTile> FolderTiles { get; } = new ObservableCollection<RecordFolderTile>();
@@ -728,7 +792,18 @@ namespace Pusula.Wpf.ViewModels
             OnPropertyChanged(nameof(PropertiesHeader));
 
             // Geçmiş: durum olayları ve kısa notlar, yeniden eskiye (aynı gün: not olaydan sonra yazılmış sayılır).
-            var rows = record.Events.Select(e => new HistoryRow(e, shownType))
+            var location = string.Empty;
+            var eventRows = new List<HistoryRow>();
+            foreach (var inventoryEvent in record.Events)
+            {
+                eventRows.Add(new HistoryRow(inventoryEvent, shownType, location));
+                if (inventoryEvent.Location.Length > 0)
+                {
+                    location = inventoryEvent.Location;
+                }
+            }
+
+            var rows = eventRows
                 .Concat(record.Notes.Select(n => new HistoryRow(n)))
                 .Select((row, index) => new { row, index })
                 .OrderByDescending(x => x.row.SortDate)

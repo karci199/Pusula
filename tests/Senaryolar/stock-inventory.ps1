@@ -75,7 +75,7 @@ try {
     Check 'envantersiz stokta envanter olayı yok' (@($vm.Detail.Timeline | Where-Object IsInventory).Count -eq 0)
     $vm.RefreshCommand.Execute($null); Wait; $vm.SelectedNode = (FindNode $vm.Nodes 'AB-7000-0003'); Wait
     $top = @($vm.Detail.Timeline)[0]
-    Check 'yeni durum en üstte' ($top.IsInventory -and $top.Title -like 'JIG-1000-0009*' -and $top.Result.Name -eq 'Teslim alındı' -and $top.Detail -eq 'Konum: Lab-B') ($top.Title + ' ' + $top.Result.Name)
+    Check 'yeni durum en üstte' ($top.IsInventory -and $top.Title -like 'JIG-1000-0009*' -and $top.Result.Name -eq 'Teslim alındı' -and $top.Detail -match '^Konum: (.+ → )?Lab-B$' -and $top.IsStage) ($top.Title + ' ' + $top.Result.Name + ' ' + $top.Detail)
     $vm.SetStockLink('JT-0001-0002', $false); $vm.SetStockLink('JIG-1000-0009', $false); Wait
     Check 'yalnız stokun kendi kayıtları kalır' ((InvTitles) -eq 'JIG-1000-0014,JT-0001-0102') (InvTitles)
     $d = @($vm.Detail.Timeline | ForEach-Object SortDate)

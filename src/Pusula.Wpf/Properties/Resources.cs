@@ -1925,6 +1925,36 @@ namespace Pusula.Wpf.Properties
         /// <summary>Tanım ipucu: test gereci.</summary>
         public static string Placeholder_NameEquipment { get { return Get("Placeholder_NameEquipment"); } }
 
+        /// <summary>Çizelge süzgeci: hepsi.</summary>
+        public static string Timeline_FilterAll { get { return Get("Timeline_FilterAll"); } }
+
+        /// <summary>Çizelge süzgeci: aşama olayları.</summary>
+        public static string Timeline_FilterStage { get { return Get("Timeline_FilterStage"); } }
+
+        /// <summary>Çizelge süzgeci: revizyonlar.</summary>
+        public static string Timeline_FilterRevision { get { return Get("Timeline_FilterRevision"); } }
+
+        /// <summary>Çizelge süzgeci: konum değişiklikleri.</summary>
+        public static string Timeline_FilterLocation { get { return Get("Timeline_FilterLocation"); } }
+
+        /// <summary>Çizelge süzgeci: notlar.</summary>
+        public static string Timeline_FilterNote { get { return Get("Timeline_FilterNote"); } }
+
+        /// <summary>Çizelge süzgeci: yalnız stokun kendi olayları.</summary>
+        public static string Timeline_FilterOwn { get { return Get("Timeline_FilterOwn"); } }
+
+        /// <summary>Kayıt sayfası: zaman çizgisi kartı başlığı.</summary>
+        public static string TimeAxis_Title { get { return Get("TimeAxis_Title"); } }
+
+        /// <summary>Zaman çizgisi: bugün işareti.</summary>
+        public static string TimeAxis_Today { get { return Get("TimeAxis_Today"); } }
+
+        /// <summary>Zaman çizgisi: gösterilecek olay yok.</summary>
+        public static string TimeAxis_Empty { get { return Get("TimeAxis_Empty"); } }
+
+        /// <summary>Geçmiş: konum değişikliği (eski → yeni).</summary>
+        public static string Inv_LocationChange { get { return Get("Inv_LocationChange"); } }
+
         #endregion
     }
 }

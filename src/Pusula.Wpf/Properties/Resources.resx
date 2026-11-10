@@ -1698,4 +1698,34 @@
   <data name="Placeholder_NameEquipment" xml:space="preserve">
     <value>TST GRÇ XXXX</value>
   </data>
+  <data name="Timeline_FilterAll" xml:space="preserve">
+    <value>Hepsi</value>
+  </data>
+  <data name="Timeline_FilterStage" xml:space="preserve">
+    <value>Aşama</value>
+  </data>
+  <data name="Timeline_FilterRevision" xml:space="preserve">
+    <value>Revizyon</value>
+  </data>
+  <data name="Timeline_FilterLocation" xml:space="preserve">
+    <value>Konum</value>
+  </data>
+  <data name="Timeline_FilterNote" xml:space="preserve">
+    <value>Not</value>
+  </data>
+  <data name="Timeline_FilterOwn" xml:space="preserve">
+    <value>Yalnız stok</value>
+  </data>
+  <data name="TimeAxis_Title" xml:space="preserve">
+    <value>Zaman çizgisi</value>
+  </data>
+  <data name="TimeAxis_Today" xml:space="preserve">
+    <value>Bugün</value>
+  </data>
+  <data name="TimeAxis_Empty" xml:space="preserve">
+    <value>Bu süzgeçte olay yok.</value>
+  </data>
+  <data name="Inv_LocationChange" xml:space="preserve">
+    <value>Konum: {0} → {1}</value>
+  </data>
 </root>
