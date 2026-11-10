@@ -212,6 +212,7 @@
                      AllowDrop="True"
                      Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
                      PreviewKeyDown="Editor_PreviewKeyDown"
+                     PreviewTextInput="Editor_PreviewTextInput"
                      TextChanged="Editor_TextChanged"
                      SelectionChanged="Editor_SelectionChanged"
                      PreviewDragOver="Editor_PreviewDragOver"

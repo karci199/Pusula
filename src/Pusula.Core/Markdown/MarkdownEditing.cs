@@ -281,6 +281,179 @@ namespace Pusula.Core.Markdown
             return Tuple.Create(line, caret - lineStart + 1);
         }
 
+        private const string Openers = "([{\"`";
+        private const string Closers = ")]}\"`";
+        private const string WrapOnly = "*_~=";
+        private static readonly Regex PlainUrl = new Regex(@"^(?:https?://|mailto:|file:///)\S+$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+        /// <summary>Seçimin kapsadığı satırları bir satır yukarı / aşağı taşır (Alt+↑ / Alt+↓). Kenardaysa <c>null</c>.</summary>
+        public static EditResult? MoveLines(string text, int start, int length, bool up)
+        {
+            text = text ?? string.Empty;
+            int blockStart, blockEnd;
+            LineBlock(text, start, length, out blockStart, out blockEnd);
+            var block = text.Substring(blockStart, blockEnd - blockStart);
+            if (up)
+            {
+                if (blockStart == 0)
+                {
+                    return null;
+                }
+
+                var prevEnd = blockStart - (blockStart >= 2 && text[blockStart - 2] == '\r' ? 2 : 1);
+                var prevStart = LineStart(text, prevEnd);
+                var prev = text.Substring(prevStart, prevEnd - prevStart);
+                var sep = text.Substring(prevEnd, blockStart - prevEnd);
+                var moved = text.Substring(0, prevStart) + block + sep + prev + text.Substring(blockEnd);
+                return new EditResult(moved, start - prev.Length - sep.Length, length);
+            }
+
+            if (blockEnd >= text.Length)
+            {
+                return null;
+            }
+
+            var nextStart = blockEnd + (text[blockEnd] == '\r' ? 2 : 1);
+            var nextEnd = LineEnd(text, nextStart);
+            var next = text.Substring(nextStart, nextEnd - nextStart);
+            var gap = text.Substring(blockEnd, nextStart - blockEnd);
+            var result = text.Substring(0, blockStart) + next + gap + block + text.Substring(nextEnd);
+            return new EditResult(result, start + next.Length + gap.Length, length);
+        }
+
+        /// <summary>Seçimin kapsadığı satırları altına çoğaltır (Ctrl+D); seçim kopyaya geçer.</summary>
+        public static EditResult DuplicateLines(string text, int start, int length)
+        {
+            text = text ?? string.Empty;
+            int blockStart, blockEnd;
+            LineBlock(text, start, length, out blockStart, out blockEnd);
+            var block = text.Substring(blockStart, blockEnd - blockStart);
+            var newline = NewlineOf(text);
+            var result = text.Substring(0, blockEnd) + newline + block + text.Substring(blockEnd);
+            return new EditResult(result, start + block.Length + newline.Length, length);
+        }
+
+        /// <summary>Seçimin kapsadığı satırları siler (Ctrl+Shift+K); imleç aynı yerdeki satırın başına gelir.</summary>
+        public static EditResult DeleteLines(string text, int start, int length)
+        {
+            text = text ?? string.Empty;
+            int blockStart, blockEnd;
+            LineBlock(text, start, length, out blockStart, out blockEnd);
+            int from = blockStart, to = blockEnd;
+            if (to < text.Length)
+            {
+                to += text[to] == '\r' ? 2 : 1;
+            }
+            else if (from > 0)
+            {
+                from -= from >= 2 && text[from - 2] == '\r' ? 2 : 1;
+            }
+
+            var result = text.Remove(from, to - from);
+            return new EditResult(result, Math.Min(LineStart(result, Math.Min(from, result.Length)), result.Length), 0);
+        }
+
+        /// <summary>
+        /// Yazılan karakter için otomatik çift: <c>( [ { " `</c> kapanışıyla eklenir (imleç arada; yalnız önü boş ya da kapanışsa;
+        /// tırnak ve ters tırnak harften sonra açılmaz), seçim varsa sarılır. <c>* _ ~ =</c> yalnız seçimi sarar. Kapanış
+        /// karakteri yazılırken sağda zaten varsa üzerinden geçilir. Tek tırnak çiftlenmez (Türkçe kesme işareti). İş
+        /// yoksa <c>null</c>.
+        /// </summary>
+        public static EditResult? AutoPair(string text, int start, int length, char typed)
+        {
+            text = text ?? string.Empty;
+            start = Clamp(start, 0, text.Length);
+            length = Clamp(length, 0, text.Length - start);
+            var open = Openers.IndexOf(typed);
+            if (length > 0)
+            {
+                if (open < 0 && WrapOnly.IndexOf(typed) < 0)
+                {
+                    return null;
+                }
+
+                var close = open >= 0 ? Closers[open] : typed;
+                var selected = text.Substring(start, length);
+                return new EditResult(text.Substring(0, start) + typed + selected + close + text.Substring(start + length), start + 1, length);
+            }
+
+            var next = start < text.Length ? text[start] : '\0';
+            if (Closers.IndexOf(typed) >= 0 && next == typed)
+            {
+                return new EditResult(text, start + 1, 0);
+            }
+
+            if (open < 0)
+            {
+                return null;
+            }
+
+            var free = next == '\0' || char.IsWhiteSpace(next) || Closers.IndexOf(next) >= 0 || ",.;:!?".IndexOf(next) >= 0;
+            var prev = start > 0 ? text[start - 1] : '\0';
+            if (!free || (typed == '"' || typed == '`') && (char.IsLetterOrDigit(prev) || prev == typed))
+            {
+                return null;
+            }
+
+            return new EditResult(text.Insert(start, typed.ToString() + Closers[open]), start + 1, 0);
+        }
+
+        /// <summary>İmleç boş bir çiftin arasındaysa (<c>(|)</c>, <c>[|]</c> …) Backspace ikisini birden siler; değilse <c>null</c>.</summary>
+        public static EditResult? DeletePair(string text, int caret)
+        {
+            text = text ?? string.Empty;
+            if (caret <= 0 || caret >= text.Length)
+            {
+                return null;
+            }
+
+            var open = Openers.IndexOf(text[caret - 1]);
+            if (open < 0 || text[caret] != Closers[open])
+            {
+                return null;
+            }
+
+            return new EditResult(text.Remove(caret - 1, 2), caret - 1, 0);
+        }
+
+        /// <summary>
+        /// Seçili metnin üzerine bir web adresi yapıştırılınca bağlantı olur: <c>[seçim](adres)</c>. Seçim yoksa, birden çok
+        /// satırsa ya da kendisi adresse ya da panodaki bir adres değilse <c>null</c> (normal yapıştırma).
+        /// </summary>
+        public static EditResult? PasteLink(string text, int start, int length, string clipboard)
+        {
+            text = text ?? string.Empty;
+            var url = (clipboard ?? string.Empty).Trim();
+            if (length <= 0 || start < 0 || start + length > text.Length || !PlainUrl.IsMatch(url))
+            {
+                return null;
+            }
+
+            var selected = text.Substring(start, length);
+            if (selected.IndexOf('\n') >= 0 || PlainUrl.IsMatch(selected.Trim()))
+            {
+                return null;
+            }
+
+            var link = "[" + selected + "](" + url + ")";
+            return new EditResult(text.Substring(0, start) + link + text.Substring(start + length), start + link.Length, 0);
+        }
+
+        // Seçimin kapsadığı tam satırlar (satır sonu hariç). Seçim bir satırın başında bitiyorsa o satır sayılmaz.
+        private static void LineBlock(string text, int start, int length, out int blockStart, out int blockEnd)
+        {
+            start = Clamp(start, 0, text.Length);
+            length = Clamp(length, 0, text.Length - start);
+            var end = start + length;
+            if (length > 0 && text[end - 1] == '\n')
+            {
+                end--;
+            }
+
+            blockStart = LineStart(text, start);
+            blockEnd = Math.Max(blockStart, LineEnd(text, Math.Max(blockStart, end)));
+        }
+
         private static int LineStart(string text, int index)
         {
             if (index <= 0 || text.Length == 0)

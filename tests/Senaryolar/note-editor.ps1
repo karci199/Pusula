@@ -250,6 +250,27 @@ $bi = $ed.Text.IndexOf('Ölçüm düzeni'); $ed.Select($bi, 5); $nw.HandleKey($K
 Check 'Ctrl+B uygulandı' ($ed.Text.Contains('**Ölçüm** düzeni'))
 $ed.Undo()
 Check 'Ctrl+Z: biçim geri alınır (geçmiş korunur)' ($ed.Text -eq $orig)
+$li = $ed.Text.IndexOf('- [x] Kablo'); $ed.Select($li + 3, 0)
+$nw.MoveLine($true)
+Check 'Alt+↑: satır yukarı' ($ed.Text -match "- \[x\] Kablo değişti`r`n- \[.\] SN02" -and $ed.SelectionStart -lt $li)
+$ed.Undo(); Check 'geri alınır' ($ed.Text -eq $orig)
+$ed.Select($li + 3, 0); $nw.HandleKey($K::D, $true, $false) | Out-Null
+Check 'Ctrl+D: satır çoğalır' ($ed.Text.Contains("- [x] Kablo değişti`r`n- [x] Kablo değişti"))
+$ed.Undo(); $ed.Select($li + 3, 0); $nw.HandleKey($K::K, $true, $true) | Out-Null
+Check 'Ctrl+Shift+K: satır silinir' (-not $ed.Text.Contains('Kablo değişti'))
+$ed.Undo(); Check 'geri alınır (2)' ($ed.Text -eq $orig)
+$end = $ed.Text.Length; $ed.Select($end, 0)
+Check 'parantez yazınca kapanır' ($nw.TypeChar([char]'(') -and $ed.Text.EndsWith('()') -and $ed.CaretIndex -eq $end + 1)
+$nw.HandleKey($K::Back, $false, $false) | Out-Null
+Check 'Backspace boş çifti siler' ($ed.Text -eq $orig)
+$wi = $ed.Text.IndexOf('Ölçüm düzeni'); $ed.Select($wi, 5)
+Check 'seçiliyken * sarar' ($nw.TypeChar([char]'*') -and $ed.Text.Contains('*Ölçüm* düzeni') -and $ed.SelectedText -eq 'Ölçüm')
+$ed.Undo(); $ed.Select($wi, 5)
+Check 'seçime adres yapıştır: bağlantı' ($nw.PasteText('https://example.com/olcum') -and $ed.Text.Contains('[Ölçüm](https://example.com/olcum) düzeni'))
+$ed.Undo(); Check 'geri alınır (3)' ($ed.Text -eq $orig)
+$e.AutoPair = $false; $ed.Select($end, 0)
+Check 'ayar kapalı: çift eklenmez, kaydedildi' (-not $nw.TypeChar([char]'(') -and -not $vm.Settings.NoteEditor.AutoPair)
+$e.AutoPair = $true
 $nw.HandleKey($K::D3, $true, $false) | Out-Null; Wait
 $nw.HandleGlobalKey($K::F, $true, $false) | Out-Null; Pump
 Check 'yalnız görünümde Ctrl+F: yan yanaya geçer' ($e.IsSplitMode -and $nw.IsFindOpen)

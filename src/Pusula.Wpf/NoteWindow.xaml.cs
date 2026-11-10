@@ -750,7 +750,16 @@ namespace Pusula.Wpf
                 }
             }
 
-            e.Handled = HandleKey(e.Key == Key.System ? e.SystemKey : e.Key, ctrl, shift);
+            // Alt+↑ / Alt+↓: satır taşı.
+            var systemKey = e.Key == Key.System ? e.SystemKey : e.Key;
+            if (alt && !ctrl && !shift && (systemKey == Key.Up || systemKey == Key.Down))
+            {
+                MoveLine(systemKey == Key.Up);
+                e.Handled = true;
+                return;
+            }
+
+            e.Handled = HandleKey(systemKey, ctrl, shift);
         }
 
         // Pencere kısayolları: odak nerede olursa olsun (yalnız görünüm açıkken, bul kutusundayken de) çalışır.
@@ -888,6 +897,19 @@ namespace Pusula.Wpf
                     case Key.H:
                         ApplyFormat("heading");
                         return true;
+                    case Key.D:
+                        Apply(MarkdownEditing.DuplicateLines(Editor.Text, Editor.SelectionStart, Editor.SelectionLength));
+                        return true;
+                }
+            }
+
+            if (key == Key.Back && !ctrl && !shift && viewModel.AutoPair && Editor.SelectionLength == 0)
+            {
+                var pair = MarkdownEditing.DeletePair(Editor.Text, Editor.CaretIndex);
+                if (pair != null)
+                {
+                    Apply(pair);
+                    return true;
                 }
             }
 
@@ -900,6 +922,9 @@ namespace Pusula.Wpf
                         return true;
                     case Key.C:
                         ApplyFormat("comment");
+                        return true;
+                    case Key.K:
+                        Apply(MarkdownEditing.DeleteLines(Editor.Text, Editor.SelectionStart, Editor.SelectionLength));
                         return true;
                     case Key.H:
                         ApplyFormat("highlight");
@@ -980,6 +1005,66 @@ namespace Pusula.Wpf
                 {
                     e.Handled = true;
                 }
+
+                return;
+            }
+
+            // Seçili metnin üzerine web adresi: [seçim](adres).
+            if (Clipboard.ContainsText() && PasteText(Clipboard.GetText()))
+            {
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Metin yapıştırır (testler için açık): seçim varken panodaki web adresi bağlantı olur (<c>[seçim](adres)</c>).
+        /// Bağlantı yaptıysa <c>true</c>; değilse hiçbir şey yapmaz (normal yapıştırma sürer).
+        /// </summary>
+        public bool PasteText(string clipboard)
+        {
+            var link = MarkdownEditing.PasteLink(Editor.Text, Editor.SelectionStart, Editor.SelectionLength, clipboard);
+            if (link == null)
+            {
+                return false;
+            }
+
+            Apply(link);
+            return true;
+        }
+
+        /// <summary>Seçili satırları bir satır yukarı / aşağı taşır (Alt+↑ / Alt+↓).</summary>
+        public void MoveLine(bool up)
+        {
+            var result = MarkdownEditing.MoveLines(Editor.Text, Editor.SelectionStart, Editor.SelectionLength, up);
+            if (result != null)
+            {
+                Apply(result);
+            }
+        }
+
+        /// <summary>Yazılan karakteri otomatik çift kurallarıyla işler (testler için açık); işlediyse <c>true</c>.</summary>
+        public bool TypeChar(char typed)
+        {
+            if (!viewModel.AutoPair)
+            {
+                return false;
+            }
+
+            var result = MarkdownEditing.AutoPair(Editor.Text, Editor.SelectionStart, Editor.SelectionLength, typed);
+            if (result == null)
+            {
+                return false;
+            }
+
+            Apply(result);
+            return true;
+        }
+
+        private void Editor_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if (e.Text.Length == 1 && TypeChar(e.Text[0]))
+            {
+                e.Handled = true;
             }
         }
 
