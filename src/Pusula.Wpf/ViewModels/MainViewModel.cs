@@ -369,6 +369,7 @@ namespace Pusula.Wpf.ViewModels
             OnPropertyChanged(nameof(UserRole));
             OnPropertyChanged(nameof(UserTeam));
             OnPropertyChanged(nameof(PersonRoles));
+            OnPropertyChanged(nameof(PersonTeams));
             types = TypeStore.LoadOrCreate(rootPath);
             foreach (var entry in FolderReader.ListChildren(rootPath))
             {

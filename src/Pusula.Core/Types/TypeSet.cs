@@ -18,6 +18,12 @@ namespace Pusula.Core.Types
         /// <summary>Proje türünün anahtarı.</summary>
         public const string ProjectKey = "project";
 
+        /// <summary>Kişi türünün anahtarı.</summary>
+        public const string PersonKey = "person";
+
+        /// <summary>Kişi türündeki ekip alanının anahtarı.</summary>
+        public const string TeamKey = "ekip";
+
         /// <summary>Serileştirici kurucuyu çağırmaz; dosyada olmayan alanlar boş değerle başlar.</summary>
         [OnDeserializing]
         private void OnDeserializing(StreamingContext context)
@@ -28,7 +34,6 @@ namespace Pusula.Core.Types
             FileTypes = new List<FileTypeDefinition>();
             TagList = new List<TagDefinition>();
             People = new List<PersonDefinition>();
-            PersonRoles = new List<string>();
         }
 
         /// <summary>Dosya biçiminin sürümü.</summary>
@@ -54,13 +59,31 @@ namespace Pusula.Core.Types
         [DataMember(Name = "tagList", Order = 4, EmitDefaultValue = false)]
         public List<TagDefinition> TagList { get; set; } = new List<TagDefinition>();
 
-        /// <summary>Kişiler (sürüm 10): ad soyad, rol (mühendis / teknisyen …), ekip. Talep eden, yapan gibi kutularda önerilir.</summary>
+        /// <summary>
+        /// Kişiler (sürüm 10): <see cref="PersonKey"/> türünden kayıtlar (ad soyad, rol = alt tür, alanlar: ekip …).
+        /// Klasörleri yoktur, burada tutulur; talep eden, yapan gibi kutularda önerilir.
+        /// </summary>
         [DataMember(Name = "people", Order = 5, EmitDefaultValue = false)]
         public List<PersonDefinition> People { get; set; } = new List<PersonDefinition>();
 
-        /// <summary>Kişi rolleri (seçim listesi: Mühendis, Teknisyen …).</summary>
-        [DataMember(Name = "personRoles", Order = 6, EmitDefaultValue = false)]
-        public List<string> PersonRoles { get; set; } = new List<string>();
+        /// <summary>Kişi türü (alt türleri roller, alanları ekip …); dosyada yoksa varsayılandan gelir.</summary>
+        public TypeDefinition Person
+        {
+            get { return Find(PersonKey) ?? CreateDefault().Find(PersonKey)!; }
+        }
+
+        /// <summary>Kişinin kısa açıklaması: rol ve alanları, türdeki sırayla ("Mühendis · Anten").</summary>
+        public string PersonSummary(PersonDefinition person)
+        {
+            var parts = new List<string> { person.Role };
+            foreach (var field in Person.FieldsFor(person.Role))
+            {
+                string value;
+                parts.Add(person.Fields.TryGetValue(field.Key, out value) ? value : string.Empty);
+            }
+
+            return string.Join(" · ", parts.Where(s => s.Length > 0));
+        }
 
         /// <summary>Adı verilen kişi (büyük / küçük harf duyarsız); yoksa <c>null</c>.</summary>
         public PersonDefinition? FindPerson(string name)
@@ -319,10 +342,10 @@ namespace Pusula.Core.Types
                 }
             }
 
-            // Sürüm 10 (10.11.2026): kişi listesi ve roller (Mühendis, Teknisyen).
-            if (PersonRoles.Count == 0)
+            // Sürüm 10 (10.11.2026): Kişi türü (rol = alt tür: Mühendis, Teknisyen; Ekip listeden) ve kişi listesi.
+            if (Find(PersonKey) == null)
             {
-                PersonRoles.AddRange(defaults.PersonRoles);
+                Types.Add(defaults.Find(PersonKey)!);
             }
 
             SchemaVersion = 10;
@@ -385,8 +408,6 @@ namespace Pusula.Core.Types
             set.TagList.Add(TagDefinition.For("faz_kararli", "cable", "RF kablo"));
             set.TagList.Add(TagDefinition.For("RS422", "cable", "Haberleşme kablosu"));
             set.TagList.Add(TagDefinition.For("RS232", "cable", "Haberleşme kablosu"));
-
-            set.PersonRoles.AddRange(new[] { "Mühendis", "Teknisyen" });
 
             set.Types.Add(new TypeDefinition
             {
@@ -461,6 +482,12 @@ namespace Pusula.Core.Types
             software.SideStatuses.Add(new StatusDefinition { Name = "Hata var", Tone = StatusTone.Warning, NeedsNote = true });
             software.SideStatuses.Add(new StatusDefinition { Name = "Kullanım dışı", Tone = StatusTone.Neutral });
             set.Types.Add(software);
+
+            // Kişi: klasörsüz tür; alt türler roller, Ekip listeden (Türler penceresinden değiştirilir).
+            var person = new TypeDefinition { Key = PersonKey, Name = "Kişi", PluralName = "Kişiler", Icon = "E77B", Color = "#F28CB1" };
+            person.SubTypes.AddRange(new[] { "Mühendis", "Teknisyen" });
+            person.Fields.Add(Field("Ekip", FieldKind.Choice, string.Empty, new[] { "Anten", "Mekanik", "Ölçüm", "Yazılım" }));
+            set.Types.Add(person);
 
             AddDefaultFields(set);
             return set;
@@ -920,7 +947,7 @@ namespace Pusula.Core.Types
         }
     }
 
-    /// <summary>Kişi: ad soyad (tek alan), rol ve ekip.</summary>
+    /// <summary>Kişi (<see cref="TypeSet.PersonKey"/> türünden kayıt): ad soyad (tek alan), rol (alt tür) ve alan değerleri.</summary>
     [DataContract]
     public sealed class PersonDefinition
     {
@@ -930,28 +957,31 @@ namespace Pusula.Core.Types
         {
             Name = string.Empty;
             Role = string.Empty;
-            Team = string.Empty;
+            Fields = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>Ad soyad ("Ahmet Yılmaz"); kayıtlara bu yazılır.</summary>
         [DataMember(Name = "name", Order = 0)]
         public string Name { get; set; } = string.Empty;
 
-        /// <summary>Rol (<see cref="TypeSet.PersonRoles"/>: Mühendis, Teknisyen …); boş olabilir.</summary>
+        /// <summary>Rol: kişi türünün alt türü (Mühendis, Teknisyen …); boş olabilir.</summary>
         [DataMember(Name = "role", Order = 1, EmitDefaultValue = false)]
         public string Role { get; set; } = string.Empty;
 
-        /// <summary>Çalıştığı ekip; boş olabilir.</summary>
-        [DataMember(Name = "team", Order = 2, EmitDefaultValue = false)]
-        public string Team { get; set; } = string.Empty;
+        /// <summary>Alan değerleri (alan anahtarı → değer: <c>ekip</c> → Anten).</summary>
+        [DataMember(Name = "fields", Order = 2, EmitDefaultValue = false)]
+        public Dictionary<string, string> Fields { get; set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        /// <summary>Kısa açıklama: "Mühendis · Anten ekibi" (boş parçalar atlanır).</summary>
-        public string Summary
+        /// <summary>Ekip (<see cref="TypeSet.TeamKey"/> alanı); yoksa boş.</summary>
+        public string Team
         {
-            get { return string.Join(" · ", new[] { Role, Team }.Where(s => s.Length > 0)); }
+            get
+            {
+                string value;
+                return Fields.TryGetValue(TypeSet.TeamKey, out value) ? value : string.Empty;
+            }
         }
     }
-
     /// <summary>Bir alt türün seçenek listesi (bkz. <see cref="FieldDefinition.SubTypeChoices"/>).</summary>    [DataContract]
     public sealed class SubTypeChoiceList
     {

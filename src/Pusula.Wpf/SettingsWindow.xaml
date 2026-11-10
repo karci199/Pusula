@@ -64,8 +64,8 @@
                          controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Placeholder_Person}" />
                 <ComboBox x:Name="UserRoleBox" Width="140" Margin="8,0,0,0" ItemsSource="{Binding PersonRoles}" SelectedItem="{Binding UserRole, Mode=TwoWay}"
                           ToolTip="{x:Static res:Resources.Types_PersonRole}" />
-                <TextBox x:Name="UserTeamBox" Width="160" Margin="8,0,0,0" Text="{Binding UserTeam, UpdateSourceTrigger=LostFocus}"
-                         controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Types_PersonTeam}" />
+                <ComboBox x:Name="UserTeamBox" Width="160" Margin="8,0,0,0" ItemsSource="{Binding PersonTeams}" SelectedItem="{Binding UserTeam, Mode=TwoWay}"
+                          ToolTip="{x:Static res:Resources.Types_PersonTeam}" />
             </StackPanel>
             <!-- Notları açan program: "Notu aç" düğmeleri .md notunu bununla açar -->
             <TextBlock Margin="0,20,0,2" Style="{DynamicResource SubtitleTextBlockStyle}" Text="{x:Static res:Resources.Settings_NoteApp}" />

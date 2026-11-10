@@ -105,7 +105,7 @@ namespace Pusula.Wpf.ViewModels
             {
                 if (seen.Add("@" + person))
                 {
-                    list.Add(new NoteSuggestion(person, types.FindPerson(person)?.Summary ?? string.Empty, Resources.Note_KindPerson, "", "@" + person));
+                    list.Add(new NoteSuggestion(person, (types.FindPerson(person) is Pusula.Core.Types.PersonDefinition known ? types.PersonSummary(known) : string.Empty), Resources.Note_KindPerson, "", "@" + person));
                 }
             }
 

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using DesignKit.Controls;
@@ -27,6 +28,38 @@ namespace Pusula.Wpf
         {
             e.Handled = true;
             Pane.ScrollToVerticalOffset(Pane.VerticalOffset - e.Delta);
+        }
+
+        // Kişi tablosu görünür olunca alan sütunları kişi türünün o anki alanlarından yeniden kurulur
+        // (metin alanı kutu, liste alanı açılır liste); ad ve rol sütunları sabit.
+        private void PeopleGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (!PeopleGrid.IsVisible)
+            {
+                return;
+            }
+
+            while (PeopleGrid.Columns.Count > 2)
+            {
+                PeopleGrid.Columns.RemoveAt(2);
+            }
+
+            var columns = viewModel.PersonColumns();
+            for (var i = 0; i < columns.Count; i++)
+            {
+                var field = columns[i];
+                var path = new System.Windows.Data.Binding("Values[" + TypeEditorViewModel.ColumnKey(field) + "]");
+                var width = i == columns.Count - 1 ? new DataGridLength(1, DataGridLengthUnitType.Star) : new DataGridLength(150);
+                var choices = field.Choices.Split(new[] { ',', ';' }, System.StringSplitOptions.RemoveEmptyEntries).Select(c => c.Trim()).Where(c => c.Length > 0).ToList();
+                if (field.Kind == Pusula.Core.Types.FieldKind.Choice && choices.Count > 0)
+                {
+                    PeopleGrid.Columns.Add(new DataGridComboBoxColumn { Header = field.Name, Width = width, ItemsSource = choices, SelectedItemBinding = path });
+                }
+                else
+                {
+                    PeopleGrid.Columns.Add(new DataGridTextColumn { Header = field.Name, Width = width, Binding = path, EditingElementStyle = (Style)FindResource("GridEditBox") });
+                }
+            }
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)

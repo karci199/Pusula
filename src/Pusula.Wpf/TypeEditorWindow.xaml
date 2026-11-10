@@ -151,7 +151,7 @@
                     </Border>
 
                     <!-- Numara biçimleri -->
-                    <Border Style="{StaticResource Section}">
+                    <Border Style="{StaticResource Section}" Visibility="{Binding IsNotPerson, Converter={StaticResource BoolToVis}}">
                         <StackPanel>
                             <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_Formats}" />
                             <DataGrid Style="{StaticResource EditGrid}" ItemsSource="{Binding Formats}" PreviewMouseWheel="Grid_PreviewMouseWheel">
@@ -185,7 +185,7 @@
                                 </DataGrid>
                             </StackPanel>
                         </Border>
-                        <Border Grid.Column="2" Style="{StaticResource Section}">
+                        <Border Grid.Column="2" Style="{StaticResource Section}" Visibility="{Binding IsNotPerson, Converter={StaticResource BoolToVis}}">
                             <StackPanel>
                                 <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_RecordFolders}" />
                                 <DataGrid Style="{StaticResource EditGrid}" ItemsSource="{Binding RecordFolders}" PreviewMouseWheel="Grid_PreviewMouseWheel">
@@ -217,6 +217,31 @@
                         </StackPanel>
                     </Border>
 
+                    <!-- Kişiler (yalnız Kişi türünde): ad soyad, rol (alt türlerden), alan sütunları (kod tarafında kurulur) -->
+                    <Border Style="{StaticResource Section}" Visibility="{Binding IsPerson, Converter={StaticResource BoolToVis}}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_People}" />
+                            <DataGrid x:Name="PeopleGrid" Style="{StaticResource EditGrid}" PreviewMouseWheel="Grid_PreviewMouseWheel" IsVisibleChanged="PeopleGrid_IsVisibleChanged"
+                                      ItemsSource="{Binding DataContext.People, RelativeSource={RelativeSource AncestorType=Window}}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_PersonName}" Width="200" Binding="{Binding Name}" />
+                                    <DataGridComboBoxColumn Header="{x:Static res:Resources.Types_PersonRole}" Width="150" SelectedItemBinding="{Binding Role}">
+                                        <DataGridComboBoxColumn.ElementStyle>
+                                            <Style TargetType="ComboBox">
+                                                <Setter Property="ItemsSource" Value="{Binding DataContext.Roles, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                            </Style>
+                                        </DataGridComboBoxColumn.ElementStyle>
+                                        <DataGridComboBoxColumn.EditingElementStyle>
+                                            <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                                                <Setter Property="ItemsSource" Value="{Binding DataContext.Roles, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                            </Style>
+                                        </DataGridComboBoxColumn.EditingElementStyle>
+                                    </DataGridComboBoxColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <TextBlock Margin="0,6,0,0" Style="{StaticResource HintText}" TextWrapping="Wrap" Text="{x:Static res:Resources.Types_PeopleHint}" />
+                        </StackPanel>
+                    </Border>
                     <!-- Etiketler: bütün türler için ortak; her etiketin geçerli olduğu yer -->
                     <Border Style="{StaticResource Section}">
                         <StackPanel>
@@ -232,39 +257,8 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- Kişiler: bütün türler için ortak (talep eden, yapan, olay kişisi) -->
-                    <Border Style="{StaticResource Section}">
-                        <StackPanel>
-                            <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_People}" />
-                            <DataGrid x:Name="PeopleGrid" Style="{StaticResource EditGrid}" PreviewMouseWheel="Grid_PreviewMouseWheel"
-                                      ItemsSource="{Binding DataContext.People, RelativeSource={RelativeSource AncestorType=Window}}">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_PersonName}" Width="200" Binding="{Binding Name}" />
-                                    <DataGridComboBoxColumn Header="{x:Static res:Resources.Types_PersonRole}" Width="140" SelectedItemBinding="{Binding Role}">
-                                        <DataGridComboBoxColumn.ElementStyle>
-                                            <Style TargetType="ComboBox">
-                                                <Setter Property="ItemsSource" Value="{Binding DataContext.Roles, RelativeSource={RelativeSource AncestorType=Window}}" />
-                                            </Style>
-                                        </DataGridComboBoxColumn.ElementStyle>
-                                        <DataGridComboBoxColumn.EditingElementStyle>
-                                            <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
-                                                <Setter Property="ItemsSource" Value="{Binding DataContext.Roles, RelativeSource={RelativeSource AncestorType=Window}}" />
-                                            </Style>
-                                        </DataGridComboBoxColumn.EditingElementStyle>
-                                    </DataGridComboBoxColumn>
-                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_PersonTeam}" Width="*" Binding="{Binding Team}" />
-                                </DataGrid.Columns>
-                            </DataGrid>
-                            <TextBlock Margin="0,6,0,0" Style="{StaticResource HintText}" TextWrapping="Wrap" Text="{x:Static res:Resources.Types_PeopleHint}" />
-                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                                <TextBlock Width="60" VerticalAlignment="Center" Text="{x:Static res:Resources.Types_Roles}" />
-                                <TextBox Width="300" Text="{Binding DataContext.RolesText, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=LostFocus}"
-                                         controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Types_RolesHint}" />
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
                     <!-- Durumlar -->
-                    <Border Style="{StaticResource Section}">
+                    <Border Style="{StaticResource Section}" Visibility="{Binding IsNotPerson, Converter={StaticResource BoolToVis}}">
                         <StackPanel>
                             <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_Statuses}" />
                             <DataGrid Style="{StaticResource EditGrid}" CanUserDeleteRows="False" ItemsSource="{Binding Statuses}" PreviewMouseWheel="Grid_PreviewMouseWheel">
@@ -294,7 +288,7 @@
                     </Border>
 
                     <!-- Düzey klasörleri: yalnızca yeni türde değiştirilebilir -->
-                    <Border Style="{StaticResource Section}">
+                    <Border Style="{StaticResource Section}" Visibility="{Binding IsNotPerson, Converter={StaticResource BoolToVis}}">
                         <StackPanel>
                             <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_LevelFolders}" />
                             <controls:FormField Header="{x:Static res:Resources.Inv_LevelGeneral}" LabelWidth="70">

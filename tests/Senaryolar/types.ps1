@@ -11,7 +11,7 @@ try {
     $app = New-Object Pusula.Wpf.App; $app.InitializeComponent(); $app.ShutdownMode = 'OnExplicitShutdown'
     $vm = New-Object Pusula.Wpf.ViewModels.TypeEditor.TypeEditorViewModel($root, $set)
     "--- 2. Düzenleme"
-    Check 'türler: Kablo, Jig, Yazılım' ((($vm.Types | ForEach-Object Name) -join ',') -eq 'Kablo,Jig,Yazılım')
+    Check 'türler: Kablo, Jig, Yazılım, Kişi' ((($vm.Types | ForEach-Object Name) -join ',') -eq 'Kablo,Jig,Yazılım,Kişi')
     $jig = $vm.Types | Where-Object Name -eq 'Jig'; $vm.Selected = $jig
     Check 'jigin hazır alanları gelir' ($jig.Fields.Count -eq 6)
     $jig.Fields.Clear()

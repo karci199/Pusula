@@ -121,10 +121,16 @@ namespace Pusula.Wpf.ViewModels
             }
         }
 
-        /// <summary>Kişi rolleri (Ayarlar'da kullanıcının rol seçimi).</summary>
+        /// <summary>Kişi rolleri: Kişi türünün alt türleri (Ayarlar'da kullanıcının rol seçimi).</summary>
         public System.Collections.Generic.List<string> PersonRoles
         {
-            get { return types.PersonRoles; }
+            get { return types.Person.SubTypes; }
+        }
+
+        /// <summary>Ekipler: Kişi türündeki Ekip alanının seçenekleri (Ayarlar'da kullanıcının ekip seçimi).</summary>
+        public System.Collections.Generic.List<string> PersonTeams
+        {
+            get { return types.Person.Fields.FirstOrDefault(f => string.Equals(f.Key, TypeSet.TeamKey, StringComparison.OrdinalIgnoreCase))?.Choices ?? new System.Collections.Generic.List<string>(); }
         }
 
         // Kullanıcının kişi satırını ekler / günceller (kök seçiliyse ve ad yazılmışsa); değişiklik varsa tür dosyasına yazar.
@@ -152,7 +158,7 @@ namespace Pusula.Wpf.ViewModels
 
             if (team != null && team.Trim() != person.Team)
             {
-                person.Team = team.Trim();
+                person.Fields[TypeSet.TeamKey] = team.Trim();
                 changed = true;
             }
 

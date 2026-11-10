@@ -62,7 +62,7 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
         public string Scope { get; set; } = string.Empty;
     }
 
-    /// <summary>Kişi satırı: ad soyad, rol, ekip.</summary>
+    /// <summary>Kişi satırı: ad soyad, rol (kişi türünün alt türü) ve alan değerleri (<c>Values[ekip]</c>).</summary>
     public sealed class PersonRow
     {
         /// <summary>Ad soyad.</summary>
@@ -71,8 +71,8 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
         /// <summary>Rol (Mühendis, Teknisyen …).</summary>
         public string Role { get; set; } = string.Empty;
 
-        /// <summary>Ekip.</summary>
-        public string Team { get; set; } = string.Empty;
+        /// <summary>Alan değerleri (alan anahtarı → değer); tablo sütunları buna bağlanır.</summary>
+        public Dictionary<string, string> Values { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     }
 
     /// <summary>Durum satırı. Var olan durumun adı değiştirilemez (kayıtların geçmişi bu ada bağlı).</summary>
@@ -202,6 +202,18 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
         /// <summary>Bu pencerede eklenen tür mü.</summary>
         public bool IsNew { get; }
 
+        /// <summary>Kişi türü mü (klasörü, numarası, durumu yok; sayfasında kişi listesi).</summary>
+        public bool IsPerson
+        {
+            get { return string.Equals(Source.Key, TypeSet.PersonKey, StringComparison.OrdinalIgnoreCase); }
+        }
+
+        /// <summary>Envanter türü mü (numara, durum, klasör bölümleri görünür).</summary>
+        public bool IsNotPerson
+        {
+            get { return !IsPerson; }
+        }
+
         /// <summary>Var olan türün düzey klasörleri kilitli mi (kayıtlar o klasörlerde durur).</summary>
         public bool AreFoldersLocked
         {
@@ -321,13 +333,13 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
             }
 
             var statuses = Statuses.Where(s => s.Name.Trim().Length > 0).ToList();
-            if (!statuses.Any(s => !s.IsSide))
+            if (!IsPerson && !statuses.Any(s => !s.IsSide))
             {
                 return string.Format(Resources.Types_ErrorStatus, title);
             }
 
             // Yeni türde klasörler elle değiştirilmediyse son çoğul addan yeniden üretilir.
-            if (IsNew && GeneralFolder == autoGeneral && ProjectFolder == autoProject && StockFolder == autoStock)
+            if (IsNew && !IsPerson && GeneralFolder == autoGeneral && ProjectFolder == autoProject && StockFolder == autoStock)
             {
                 var folder = FolderName(PluralName.Trim().Length == 0 ? title : PluralName.Trim());
                 GeneralFolder = @"ENVANTER\" + folder;
@@ -342,7 +354,7 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
                 PluralName = PluralName.Trim().Length == 0 ? title : PluralName.Trim(),
                 Icon = Icon,
                 Color = Color,
-                IsInventory = true,
+                IsInventory = !IsPerson,
                 Folder = Source.Folder,
                 GeneralFolder = GeneralFolder.Trim(),
                 ProjectFolder = ProjectFolder.Trim(),
@@ -419,6 +431,9 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
                 Types.Add(new TypeEditItem(type, false));
             }
 
+            PersonItem = new TypeEditItem(types.Person, false);
+            Types.Add(PersonItem);
+
             selected = Types.FirstOrDefault();
             AddTypeCommand = new RelayCommand(AddType);
             foreach (var tag in types.TagList)
@@ -428,33 +443,55 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
 
             foreach (var person in types.People)
             {
-                People.Add(new PersonRow { Name = person.Name, Role = person.Role, Team = person.Team });
-            }
+                var row = new PersonRow { Name = person.Name, Role = person.Role };
+                foreach (var pair in person.Fields)
+                {
+                    row.Values[pair.Key] = pair.Value;
+                }
 
-            rolesText = string.Join(", ", types.PersonRoles);
+                People.Add(row);
+            }
         }
 
-        private string rolesText;
+        /// <summary>Kişi türünün düzenleme kopyası (rolleri alt türleri, sütunları alanları).</summary>
+        public TypeEditItem PersonItem { get; }
 
-        /// <summary>Kişiler: ad soyad, rol, ekip.</summary>
+        /// <summary>Kişiler: ad soyad, rol ve alan değerleri.</summary>
         public ObservableCollection<PersonRow> People { get; } = new ObservableCollection<PersonRow>();
 
-        /// <summary>Roller, virgülle ("Mühendis, Teknisyen"); değişince rol seçim listesi yenilenir.</summary>
-        public string RolesText
+        /// <summary>Rol seçim listesi: kişi türünün alt türleri (tabloda o an yazılanlar).</summary>
+        public List<string> Roles
         {
-            get { return rolesText; }
-            set
-            {
-                rolesText = value ?? string.Empty;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(Roles));
-            }
+            get { return PersonItem.SubTypes.Select(s => s.Text.Trim()).Where(s => s.Length > 0).Distinct(StringComparer.CurrentCultureIgnoreCase).ToList(); }
         }
 
-        /// <summary>Rol seçim listesi (<see cref="RolesText"/> parçaları).</summary>
-        public System.Collections.Generic.List<string> Roles
+        /// <summary>
+        /// Kişi tablosunun alan sütunları: kişi türünün alanları (tabloda o an yazılanlar). Satırlarda eksik değer boş
+        /// metinle doldurulur (sütun bağlaması <c>Values[anahtar]</c> okurken hata vermesin).
+        /// </summary>
+        public List<FieldRow> PersonColumns()
         {
-            get { return rolesText.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries).Select(r => r.Trim()).Where(r => r.Length > 0).Distinct(StringComparer.CurrentCultureIgnoreCase).ToList(); }
+            var columns = PersonItem.Fields.Where(f => f.Name.Trim().Length > 0).ToList();
+            foreach (var row in People)
+            {
+                foreach (var column in columns)
+                {
+                    var key = ColumnKey(column);
+                    if (!row.Values.ContainsKey(key))
+                    {
+                        row.Values[key] = string.Empty;
+                    }
+                }
+            }
+
+            OnPropertyChanged(nameof(Roles));
+            return columns;
+        }
+
+        /// <summary>Alan satırının anahtarı (yeni alanda addan üretilir).</summary>
+        public static string ColumnKey(FieldRow row)
+        {
+            return row.Key.Length > 0 ? row.Key : FieldDefinition.KeyFrom(row.Name);
         }
 
         // Satırlardan kişi listesi: adı boş satır atlanır, aynı ad bir kez.
@@ -469,7 +506,13 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
                     continue;
                 }
 
-                list.Add(new PersonDefinition { Name = name, Role = (row.Role ?? string.Empty).Trim(), Team = (row.Team ?? string.Empty).Trim() });
+                var person = new PersonDefinition { Name = name, Role = (row.Role ?? string.Empty).Trim() };
+                foreach (var pair in row.Values.Where(p => (p.Value ?? string.Empty).Trim().Length > 0))
+                {
+                    person.Fields[pair.Key] = pair.Value.Trim();
+                }
+
+                list.Add(person);
             }
 
             return list;
@@ -520,13 +563,13 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
         /// <summary>Simge seçenekleri.</summary>
         public static IReadOnlyList<IconOption> Icons { get; } = new[]
         {
-            "E703", "E90F", "E943", "E74C", "E8F1", "E7EE", "E950", "E964", "E83F", "E7F8", "E80F", "E1D3", "E88E", "E8B7", "E945", "E9F5",
+            "E703", "E90F", "E943", "E74C", "E8F1", "E7EE", "E950", "E964", "E83F", "E7F8", "E80F", "E1D3", "E88E", "E8B7", "E945", "E9F5", "E77B",
         }.Select(h => new IconOption(h)).ToList();
 
         /// <summary>Renk seçenekleri.</summary>
         public static IReadOnlyList<string> Colors { get; } = new[]
         {
-            "#F7A35C", "#B4A7F5", "#6CCB5F", "#60CDFF", "#E8B04B", "#F08080", "#5FD4C4", "#C9C9C9",
+            "#F7A35C", "#B4A7F5", "#6CCB5F", "#60CDFF", "#E8B04B", "#F08080", "#5FD4C4", "#C9C9C9", "#F28CB1",
         };
 
         /// <summary>Alan çeşitleri (anahtar → görünen ad).</summary>
@@ -672,9 +715,8 @@ namespace Pusula.Wpf.ViewModels.TypeEditor
             set.Tags.AddRange(original.Tags);
             set.TagList.AddRange(BuildTags());
             set.People.AddRange(BuildPeople());
-            set.PersonRoles.AddRange(Roles);
             set.FileTypes.AddRange(original.FileTypes);
-            set.Types.AddRange(original.Types.Where(t => !t.IsInventory));
+            set.Types.AddRange(original.Types.Where(t => !t.IsInventory && !string.Equals(t.Key, TypeSet.PersonKey, StringComparison.OrdinalIgnoreCase)));
             set.Types.AddRange(built);
             var failure = TypeStore.Save(root, set);
             if (failure.Length > 0)
