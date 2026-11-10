@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <doc>
     <assembly>
         <name>DesignKit.Wpf</name>
@@ -525,7 +525,12 @@
             <summary>Hooks the popup and its buttons once the template is applied.</summary>
         </member>
         <member name="M:DesignKit.Controls.ContentDialog.HookWindow">
-            <summary>Sizes the popup to cover the containing window and keeps it in sync as the window is resized.</summary>
+            <summary>
+            Sizes the popup to cover the window's client content and keeps it in sync as the window is resized, moved,
+            maximized or restored. The content (not the window) is the target: a maximized window overhangs the screen
+            by its resize border, and WPF shifts a popup that does not fit on screen, which left part of the page
+            undimmed.
+            </summary>
         </member>
         <member name="M:DesignKit.Controls.ContentDialog.OnUnloaded(System.Object,System.Windows.RoutedEventArgs)">
             <summary>

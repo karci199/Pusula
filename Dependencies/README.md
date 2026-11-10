@@ -5,7 +5,7 @@ Güncellerken bu tabloyu da güncelle.
 
 | Kütüphane | Sürüm | Kaynak | Lisans |
 |---|---|---|---|
-| `DesignKit/DesignKit.Wpf.dll` (+ `.xml`) | 0.3.6 | `C:\Projeler\Aktif\DesignKit`, 30db891 + ContentDialog `DialogWidth` + `TextBoxHelper.PlaceholderText` (10.11.2026), `MSBuild src\DesignKit.Wpf\DesignKit.Wpf.csproj /p:Configuration=Release` (restore yok) | İç kütüphane |
+| `DesignKit/DesignKit.Wpf.dll` (+ `.xml`) | 0.3.7 | `C:\Projeler\Aktif\DesignKit`, 30db891 + ContentDialog `DialogWidth`, karartma içeriğe göre + `TextBoxHelper.PlaceholderText` (10.11.2026), `MSBuild src\DesignKit.Wpf\DesignKit.Wpf.csproj /p:Configuration=Release` (restore yok) | İç kütüphane |
 | `NuGet/microsoft.netframework.referenceassemblies.net48.1.0.3.nupkg` | 1.0.3 | nuget.org, Microsoft | MIT |
 | `Markdig/Markdig.dll` (+ `.xml`) | 0.37.0 (`lib/net462`) | nuget.org `Markdig` 0.37.0, Alexandre Mutel, github.com/xoofx/markdig | BSD-2-Clause |
 | `SystemMemory/System.Memory.dll` | 4.5.5 (derleme 4.0.1.2, `lib/net461`) | nuget.org, Microsoft (Markdig'in .NET 4.x bağımlılığı) | MIT |

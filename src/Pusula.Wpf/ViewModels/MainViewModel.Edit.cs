@@ -184,6 +184,12 @@ namespace Pusula.Wpf.ViewModels
             return string.Join(", ", tag.Scopes.Select(s => (types.Find(s.Type)?.Name ?? s.Type) + (s.SubType.Length > 0 ? " · " + s.SubType : string.Empty)));
         }
 
+        /// <summary>Düzenlenen türün alt türü var mı (yoksa Alt tür satırı gizli).</summary>
+        public bool HasEditSubTypes
+        {
+            get { return EditSubTypes.Count > 0; }
+        }
+
         /// <summary>Tanım kutusunun ipucu, türe göre (kablo: <c>TST KBL XXXX</c>, jig: <c>TST MKNK XXXX</c> …).</summary>
         public string EditNamePlaceholder
         {
@@ -371,7 +377,7 @@ namespace Pusula.Wpf.ViewModels
                         EditSubTypes.Add(sub);
                     }
 
-                    var currentSub = record?.SubType ?? string.Empty;
+                    var currentSub = type?.CanonicalSubType(record?.SubType ?? string.Empty) ?? record?.SubType ?? string.Empty;
                     if (currentSub.Length > 0 && !EditSubTypes.Contains(currentSub))
                     {
                         EditSubTypes.Add(currentSub);
@@ -379,6 +385,7 @@ namespace Pusula.Wpf.ViewModels
 
                     editType = type;
                     OnPropertyChanged(nameof(EditNamePlaceholder));
+                    OnPropertyChanged(nameof(HasEditSubTypes));
                     editValues = new System.Collections.Generic.Dictionary<string, string>(record?.Fields ?? new System.Collections.Generic.Dictionary<string, string>(), StringComparer.OrdinalIgnoreCase);
                     EditTags = MarkdownEditing.FormatTags(record?.EffectiveTags() ?? new System.Collections.Generic.List<string>());
                     var request = record?.Events.FirstOrDefault();

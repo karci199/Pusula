@@ -19,15 +19,17 @@ function Fact($label) { (@($vm.Inventory.Facts) + @($vm.Inventory.Properties) | 
 $types = [Pusula.Core.Types.TypeStore]::LoadOrCreate($Data)
 $cableType = $types.Find('cable'); $jigType = $types.Find('jig'); $swType = $types.Find('software')
 Check 'kablo alanları (adet, uç, faz kararlı, protokol yok)' ($cableType.Fields.Count -eq 5 -and -not (@($cableType.Fields | % Key) -contains 'uc_a') -and -not (@($cableType.Fields | % Key) -contains 'faz_kararli') -and -not (@($cableType.Fields | % Key) -contains 'protokol') -and -not (@($cableType.Fields | % Key) -contains 'adet')) ([string]$cableType.Fields.Count)
-Check 'jig alanları (adet yok)' ($jigType.Fields.Count -eq 7 -and -not (@($jigType.Fields | % Key) -contains 'adet')) ([string]$jigType.Fields.Count)
+Check 'jig alanları (adet yok)' ($jigType.Fields.Count -eq 6 -and -not (@($jigType.Fields | % Key) -contains 'olcum_sistemi') -and -not (@($jigType.Fields | % Key) -contains 'adet')) ([string]$jigType.Fields.Count)
 Check 'yazılım envanter türü' ($swType -ne $null -and $swType.IsInventory)
 Check 'RF kablo: frekans var, protokol yok' ((@($cableType.FieldsFor('RF') | % Key) -contains 'frekans') -and -not (@($cableType.FieldsFor('RF') | % Key) -contains 'protokol'))
 Check 'Haberleşme: pin yapısı (protokol etiket oldu)' (-not (@($cableType.FieldsFor('Haberleşme') | % Key) -contains 'protokol') -and (@($cableType.FieldsFor('Haberleşme') | % Key) -contains 'pin_yapisi'))
-Check 'kablo alt türleri: RF, Haberleşme, Güç, Diğer' (($cableType.SubTypes -join ',') -eq 'RF,Haberleşme,Güç,Diğer') ($cableType.SubTypes -join ',')
+Check 'kablo alt türleri: RF kablo, Haberleşme kablosu, Güç kablosu, Diğer' (($cableType.SubTypes -join ',') -eq 'RF kablo,Haberleşme kablosu,Güç kablosu,Diğer') ($cableType.SubTypes -join ',')
 # Sürüm 7: kablo uçları (konnektör) alan değil; ileride etiket / not.
 Check 'uç alanları kalktı' (-not (@($cableType.Fields | % Key) -contains 'uc_b'))
 Check 'Güç: AWG kesit, akım' ((@($cableType.FieldsFor('Güç') | % Key) -contains 'kesit_awg') -and (@($cableType.FieldsFor('Güç') | % Key) -contains 'akim') -and -not (@($cableType.FieldsFor('RF') | % Key) -contains 'kesit_awg'))
-Check 'jig Montaj: tork var, yüzey yok' ((@($jigType.FieldsFor('Montaj') | % Key) -contains 'tork') -and -not (@($jigType.FieldsFor('Montaj') | % Key) -contains 'yuzey'))
+Check 'jig: alt türler ölçüm altyapısı, alanlar her alt türde' (($jigType.SubTypes -join ',') -eq 'SATIMO,Yankısız oda,Kompakt range,Test sahası,Diğer' -and (@($jigType.FieldsFor('SATIMO') | % Key) -contains 'tork') -and (@($jigType.FieldsFor('Diğer') | % Key) -contains 'yuzey')) ($jigType.SubTypes -join ',')
+Check 'yazılımda alt tür yok' ($swType.SubTypes.Count -eq 0)
+Check 'eski alt tür adı yeni karşılığıyla eşleşir (RF → RF kablo)' ($cableType.CanonicalSubType('RF') -eq 'RF kablo' -and $cableType.CanonicalSubType('Güç / veri') -eq 'Güç kablosu' -and $jigType.CanonicalSubType('Mekanik') -eq 'Mekanik')
 
 "--- 1b. Sürüm 3 → 4 dönüşümü (Güç / veri, Kablaj, Adet, mm² kesit)"
 $old = [Pusula.Core.Types.TypeSet]::CreateDefault(); $oc = $old.Find('cable')
@@ -39,7 +41,7 @@ $adet = New-Object Pusula.Core.Types.FieldDefinition; $adet.Key = 'adet'; $adet.
 $mm = New-Object Pusula.Core.Types.FieldDefinition; $mm.Key = 'kesit'; $mm.Name = 'Kesit'; $mm.Kind = 'number'; $mm.Unit = 'mm²'; $mm.SubTypes.Add('Güç / veri'); $oc.Fields.Add($mm)
 $jadet = New-Object Pusula.Core.Types.FieldDefinition; $jadet.Key = 'adet'; $jadet.Name = 'Adet'; $jadet.Kind = 'number'; $old.Find('jig').Fields.Insert(0, $jadet)
 $old.SchemaVersion = 3; $old.Normalize()
-Check 'dönüşüm: alt türler RF, Haberleşme, Güç, Diğer' (($oc.SubTypes -join ',') -eq 'RF,Haberleşme,Güç,Diğer') ($oc.SubTypes -join ',')
+Check 'dönüşüm: alt türler RF kablo, Haberleşme kablosu, Güç kablosu, Diğer (sıra korunur)' (($oc.SubTypes -join ',') -eq 'RF kablo,Haberleşme kablosu,Güç kablosu,Diğer') ($oc.SubTypes -join ',')
 Check 'dönüşüm: alanların alt türü de Güç oldu' ((@($oc.FieldsFor('Güç') | % Key) -contains 'akim') -and -not (@($oc.Fields | ForEach-Object { $_.SubTypes }) -contains 'Güç / veri'))
 Check 'dönüşüm: adet kablo ve jigden kalktı' (-not (@($oc.Fields | % Key) -contains 'adet') -and -not (@($old.Find('jig').Fields | % Key) -contains 'adet'))
 Check 'dönüşüm: mm² kesit yerine AWG' (-not (@($oc.Fields | % Key) -contains 'kesit') -and (@($oc.FieldsFor('Güç') | % Key) -contains 'kesit_awg'))
@@ -118,7 +120,7 @@ Check 'kartta #RS422' (($vm.Inventory.Tags -join ' ') -eq '#RS422')
 "--- 6. Mekanik jig"
 $jig = Join-Path $Data 'ENVANTER\Jigler\JIG-1000-0009_SATIMO_adaptor_plakasi'
 Check 'düzenle açılır' ($vm.OpenEdit($jig) -and $vm.EditSubType -eq 'Mekanik')
-Check 'Mekanik alanları' ((Keys) -contains 'malzeme' -and (Keys) -contains 'yuzey' -and -not ((Keys) -contains 'tork') -and -not ((Keys) -contains 'olcum_sistemi')) ((Keys) -join ',')
+Check 'jig alanları (eski alt tür Mekanik da)' ((Keys) -contains 'malzeme' -and (Keys) -contains 'yuzey' -and (Keys) -contains 'tork' -and -not ((Keys) -contains 'olcum_sistemi')) ((Keys) -join ',')
 (Input 'malzeme').Value = 'Al 6061'; (Input 'olculer').Value = '300x200x12'; (Input 'yuzey').Value = 'Eloksal'
 (Input 'baglanti').Value = 'M6 x 4, SATIMO direk flanşı'; (Input 'cizim_revizyonu').Value = 'AB'
 Snap $win "$Out\fields-edit-jig.png"
@@ -131,11 +133,11 @@ Check 'kartta malzeme, ölçüler' ((Fact 'Malzeme') -eq 'Al 6061' -and (Fact '�
 Snap $win "$Out\fields-card-jig.png"
 $vm.OpenEdit($jig) | Out-Null
 $vm.EditSubType = 'Montaj'; Pump
-Check 'Montaj: tork görünür, yüzey gizli' ((Keys) -contains 'tork' -and -not ((Keys) -contains 'yuzey'))
+Check 'alt tür değişse de jig alanları aynı' ((Keys) -contains 'tork' -and (Keys) -contains 'yuzey')
 (Input 'tork').Value = '9'
 Check 'kaydedildi' ($vm.ConfirmEdit())
 $jn = Join-Path $jig 'JIG-1000-0009.md'
 $y = Yaml $jn
-Check 'YAML: tork birimli, yüzey başlıktan kalktı' ($y -match '(?m)^tork: "?9 Nm' -and -not ($y -match '(?m)^yuzey:')) $y
+Check 'YAML: tork birimli' ($y -match '(?m)^tork: "?9 Nm') $y
 Check 'yüzey değeri kayıtta saklı' ((Rec $jig).Fields['yuzey'] -eq 'Eloksal')
 "SONUÇ OK=$ok HATA=$fail"

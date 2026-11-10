@@ -237,6 +237,7 @@ namespace Pusula.Wpf.ViewModels
             OnPropertyChanged(nameof(InventoryDialogTitle));
             OnPropertyChanged(nameof(InventoryNumberHint));
             OnPropertyChanged(nameof(NewInventoryNamePlaceholder));
+            OnPropertyChanged(nameof(HasInventorySubTypes));
             IsInventoryDialogOpen = true;
         }
 
@@ -252,6 +253,12 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Alt tür seçenekleri.</summary>
         public ObservableCollection<string> InventorySubTypes { get; } = new ObservableCollection<string>();
+
+        /// <summary>Türün alt türü var mı (yoksa pencerede Alt tür satırı gizli; örn. yazılım).</summary>
+        public bool HasInventorySubTypes
+        {
+            get { return InventorySubTypes.Count > 0; }
+        }
 
         /// <summary>Girilen numara.</summary>
         public string NewInventoryNumber
@@ -466,6 +473,7 @@ namespace Pusula.Wpf.ViewModels
             OnPropertyChanged(nameof(InventoryDialogTitle));
             OnPropertyChanged(nameof(InventoryNumberHint));
             OnPropertyChanged(nameof(NewInventoryNamePlaceholder));
+            OnPropertyChanged(nameof(HasInventorySubTypes));
             IsInventoryDialogOpen = true;
         }
 

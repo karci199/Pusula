@@ -31,7 +31,7 @@ namespace Pusula.Core.Types
 
         /// <summary>Dosya biçiminin sürümü.</summary>
         [DataMember(Name = "schemaVersion", Order = 0)]
-        public int SchemaVersion { get; set; } = 8;
+        public int SchemaVersion { get; set; } = 9;
 
         /// <summary>Kayıt türleri.</summary>
         [DataMember(Name = "types", Order = 1)]
@@ -55,7 +55,8 @@ namespace Pusula.Core.Types
         /// <summary>Bu türde (ve alt türde) geçerli etiketler, listedeki sırayla.</summary>
         public IEnumerable<TagDefinition> TagsFor(string typeKey, string subType)
         {
-            return TagList.Where(t => t.AppliesTo(typeKey, subType));
+            var canonical = Find(typeKey)?.CanonicalSubType(subType) ?? subType;
+            return TagList.Where(t => t.AppliesTo(typeKey, canonical));
         }
 
         /// <summary>Uzantısı (".vsdx" ya da "vsdx") verilen dosya türü; tanımlı değilse <c>null</c>.</summary>
@@ -159,7 +160,8 @@ namespace Pusula.Core.Types
                 {
                     RenameSubType(cable, "Güç / veri", "Güç");
                     RenameSubType(cable, "Kablaj", "Diğer");
-                    foreach (var sub in CableSubTypes.Where(s => !cable.SubTypes.Contains(s, StringComparer.OrdinalIgnoreCase)))
+                    // Sürüm 4 adları (RF, Haberleşme, Güç, Diğer); sürüm 9 bunları yerinde yeni adlara çevirir.
+                    foreach (var sub in new[] { "RF", "Haberleşme", "Güç", "Diğer" }.Where(s => !cable.SubTypes.Contains(s, StringComparer.OrdinalIgnoreCase) && !cable.SubTypes.Contains(SubTypeAliases.TryGetValue(s, out var renamed) ? renamed : s, StringComparer.OrdinalIgnoreCase)))
                     {
                         cable.SubTypes.Add(sub);
                     }
@@ -255,7 +257,58 @@ namespace Pusula.Core.Types
                 }
             }
 
-            SchemaVersion = 8;
+            // Sürüm 9 (10.11.2026): kablo alt türleri "RF kablo, Haberleşme kablosu, Güç kablosu, Diğer"; jig alt türleri
+            // ölçüm altyapısı (SATIMO, Yankısız oda, Kompakt range, Test sahası, Diğer), jig alanları her alt türde,
+            // "Ölçüm sistemi" alanı kalkar; yazılımda alt tür yok. Alan, etiket ve seçenek listelerindeki adlar da değişir.
+            if (SchemaVersion < 9)
+            {
+                var cable = Find("cable");
+                if (cable != null)
+                {
+                    foreach (var pair in new[] { Tuple.Create("RF", "RF kablo"), Tuple.Create("Haberleşme", "Haberleşme kablosu"), Tuple.Create("Güç", "Güç kablosu") })
+                    {
+                        RenameSubType(cable, pair.Item1, pair.Item2);
+                        foreach (var choice in cable.Fields.SelectMany(x => x.SubTypeChoices).Where(c => string.Equals(c.SubType, pair.Item1, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            choice.SubType = pair.Item2;
+                        }
+
+                        foreach (var scope in TagList.SelectMany(x => x.Scopes).Where(s => s.Type == "cable" && string.Equals(s.SubType, pair.Item1, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            scope.SubType = pair.Item2;
+                        }
+                    }
+                }
+
+                var jig = Find("jig");
+                if (jig != null && SameSet(jig.SubTypes, OldJigSubTypes))
+                {
+                    jig.SubTypes = JigSubTypes.ToList();
+                    foreach (var field in jig.Fields.Where(x => new[] { "malzeme", "olculer", "yuzey", "baglanti", "tork" }.Contains(x.Key)))
+                    {
+                        field.SubTypes.Clear();
+                    }
+
+                    jig.Fields.RemoveAll(x => x.Key == "olcum_sistemi");
+                }
+
+                var software = Find("software");
+                if (software != null && SameSet(software.SubTypes, OldSoftwareSubTypes))
+                {
+                    software.SubTypes.Clear();
+                    foreach (var field in software.Fields)
+                    {
+                        field.SubTypes.Clear();
+                    }
+                }
+            }
+
+            SchemaVersion = 9;
+        }
+
+        private static bool SameSet(IEnumerable<string> a, IEnumerable<string> b)
+        {
+            return new HashSet<string>(a, StringComparer.OrdinalIgnoreCase).SetEquals(b);
         }
 
         private void AddTagIfMissing(TagDefinition tag)
@@ -307,9 +360,9 @@ namespace Pusula.Core.Types
             }
 
             // Basit örnekler: kapsamlı etiketler (yalnız RF kabloda, yalnız haberleşme kablosunda).
-            set.TagList.Add(TagDefinition.For("faz_kararli", "cable", "RF"));
-            set.TagList.Add(TagDefinition.For("RS422", "cable", "Haberleşme"));
-            set.TagList.Add(TagDefinition.For("RS232", "cable", "Haberleşme"));
+            set.TagList.Add(TagDefinition.For("faz_kararli", "cable", "RF kablo"));
+            set.TagList.Add(TagDefinition.For("RS422", "cable", "Haberleşme kablosu"));
+            set.TagList.Add(TagDefinition.For("RS232", "cable", "Haberleşme kablosu"));
 
             set.Types.Add(new TypeDefinition
             {
@@ -368,10 +421,10 @@ namespace Pusula.Core.Types
             set.Types.Add(Inventory("cable", "Kablo", "Kablolar", "E703", "#F7A35C", "JT-####-####", "Kablo numarası", "Kablolar", "05_Kablolar",
                 CableSubTypes, new[] { "01_Belgeler", "02_Fotograflar" }));
             set.Types.Add(Inventory("jig", "Jig", "Jigler", "E90F", "#B4A7F5", "JIG-####-####", "Jig numarası", "Jigler", "05_Jigler",
-                new[] { "Mekanik", "Ölçüm adaptörü", "Montaj", "Elektriksel" }, new[] { "01_Cizimler", "02_Belgeler", "03_Fotograflar" }));
+                JigSubTypes, new[] { "01_Cizimler", "02_Belgeler", "03_Fotograflar" }));
 
             var software = Inventory("software", "Yazılım", "Yazılımlar", "E943", "#4CC38A", "YZ-####-####", "Yazılım numarası", "Yazilimlar", "06_Yazilimlar",
-                new[] { "Test betiği", "Analiz aracı", "Firmware", "Kütüphane" }, new[] { "01_Kaynak", "02_Belgeler" });
+                new string[0], new[] { "01_Kaynak", "02_Belgeler" });
             software.Statuses.Clear();
             software.Statuses.AddRange(new[]
             {
@@ -391,7 +444,26 @@ namespace Pusula.Core.Types
 
         // Türlerin hazır alanları (Türler penceresinden değiştirilebilir). Alt tür verilen alan yalnız o alt türlerde görünür.
         /// <summary>Kablo alt türleri (10.11.2026: RF, Haberleşme, Güç, Diğer).</summary>
-        public static readonly string[] CableSubTypes = { "RF", "Haberleşme", "Güç", "Diğer" };
+        public static readonly string[] CableSubTypes = { "RF kablo", "Haberleşme kablosu", "Güç kablosu", "Diğer" };
+
+        /// <summary>Jig alt türleri (10.11.2026: kullanıldığı ölçüm altyapısı).</summary>
+        public static readonly string[] JigSubTypes = { "SATIMO", "Yankısız oda", "Kompakt range", "Test sahası", "Diğer" };
+
+        private static readonly string[] OldJigSubTypes = { "Mekanik", "Ölçüm adaptörü", "Montaj", "Elektriksel" };
+        private static readonly string[] OldSoftwareSubTypes = { "Test betiği", "Analiz aracı", "Firmware", "Kütüphane" };
+
+        /// <summary>
+        /// Eski alt tür adlarının yeni karşılığı (kayıtlarda eski ad kalabilir; dosyalara toplu yazılmaz, karşılaştırmada
+        /// yeni ad sayılır): RF → RF kablo, Haberleşme → Haberleşme kablosu, Güç (/ veri) → Güç kablosu, Kablaj → Diğer.
+        /// </summary>
+        public static readonly IReadOnlyDictionary<string, string> SubTypeAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "RF", "RF kablo" },
+            { "Haberleşme", "Haberleşme kablosu" },
+            { "Güç", "Güç kablosu" },
+            { "Güç / veri", "Güç kablosu" },
+            { "Kablaj", "Diğer" },
+        };
 
         // Kablo uçları alt türe göre: tek alan (aynı anahtar), liste alt türe göre değişir.
         private static readonly string[] RfConnectors = { "SMA (E)", "SMA (D)", "N (E)", "N (D)", "BNC", "TNC", "2.92 mm", "3.5 mm", "Açık uç" };
@@ -415,19 +487,18 @@ namespace Pusula.Core.Types
             set.Find("cable")?.Fields.AddRange(new[]
             {
                 Field("Boy", FieldKind.Number, "m"),
-                Field("Frekans", FieldKind.Text, "MHz", null, "RF"),
-                Field("Pin yapısı", FieldKind.Text, string.Empty, null, "Haberleşme"),
-                Field("Akım", FieldKind.Number, "A", null, "Güç"),
-                Field("Kesit (AWG)", FieldKind.Choice, string.Empty, AwgSizes, "Güç"),
+                Field("Frekans", FieldKind.Text, "MHz", null, "RF kablo"),
+                Field("Pin yapısı", FieldKind.Text, string.Empty, null, "Haberleşme kablosu"),
+                Field("Akım", FieldKind.Number, "A", null, "Güç kablosu"),
+                Field("Kesit (AWG)", FieldKind.Choice, string.Empty, AwgSizes, "Güç kablosu"),
             });
             set.Find("jig")?.Fields.AddRange(new[]
             {
-                Field("Malzeme", FieldKind.Choice, string.Empty, new[] { "Al 6061", "Al 7075", "Paslanmaz", "Delrin", "PLA (baskı)", "Diğer" }, "Mekanik", "Montaj", "Ölçüm adaptörü"),
-                Field("Ölçüler", FieldKind.Text, "mm", null, "Mekanik", "Montaj", "Ölçüm adaptörü"),
-                Field("Yüzey", FieldKind.Choice, string.Empty, new[] { "Eloksal", "Boya", "Ham" }, "Mekanik", "Ölçüm adaptörü"),
-                Field("Bağlantı", FieldKind.Text, string.Empty, null, "Mekanik", "Montaj", "Ölçüm adaptörü"),
-                Field("Tork", FieldKind.Number, "Nm", null, "Montaj"),
-                Field("Ölçüm sistemi", FieldKind.Choice, string.Empty, new[] { "SATIMO", "Yankısız", "VNA", "Diğer" }, "Ölçüm adaptörü"),
+                Field("Malzeme", FieldKind.Choice, string.Empty, new[] { "Al 6061", "Al 7075", "Paslanmaz", "Delrin", "PLA (baskı)", "Diğer" }),
+                Field("Ölçüler", FieldKind.Text, "mm"),
+                Field("Yüzey", FieldKind.Choice, string.Empty, new[] { "Eloksal", "Boya", "Ham" }),
+                Field("Bağlantı", FieldKind.Text, string.Empty),
+                Field("Tork", FieldKind.Number, "Nm"),
                 Field("Çizim revizyonu", FieldKind.Text, string.Empty),
             });
             set.Find("software")?.Fields.AddRange(new[]
@@ -435,7 +506,7 @@ namespace Pusula.Core.Types
                 Field("Sürüm", FieldKind.Text, string.Empty),
                 Field("Dil / platform", FieldKind.Choice, string.Empty, new[] { "C#", "Python", "MATLAB", "LabVIEW", "C", "Diğer" }),
                 Field("Konum", FieldKind.Text, string.Empty),
-                Field("Bağlı cihaz", FieldKind.Text, string.Empty, null, "Test betiği", "Firmware"),
+                Field("Bağlı cihaz", FieldKind.Text, string.Empty),
             });
         }
 
@@ -587,7 +658,24 @@ namespace Pusula.Core.Types
         /// <summary>Alt türe göre geçerli alanlar (alanın alt tür listesi boşsa her alt türde geçerlidir).</summary>
         public IEnumerable<FieldDefinition> FieldsFor(string subType)
         {
-            return Fields.Where(f => f.SubTypes.Count == 0 || f.SubTypes.Any(s => string.Equals(s, subType, StringComparison.OrdinalIgnoreCase)));
+            var canonical = CanonicalSubType(subType);
+            return Fields.Where(f => f.SubTypes.Count == 0 || f.SubTypes.Any(s => string.Equals(s, canonical, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        /// <summary>
+        /// Kayıttaki alt tür adının bu türdeki karşılığı: listede varsa kendisi; eski adsa (RF, Haberleşme …) yeni adı
+        /// (<see cref="TypeSet.SubTypeAliases"/>); hiçbiri değilse olduğu gibi.
+        /// </summary>
+        public string CanonicalSubType(string subType)
+        {
+            var value = (subType ?? string.Empty).Trim();
+            if (value.Length == 0 || SubTypes.Contains(value, StringComparer.OrdinalIgnoreCase))
+            {
+                return SubTypes.FirstOrDefault(s => string.Equals(s, value, StringComparison.OrdinalIgnoreCase)) ?? value;
+            }
+
+            string target;
+            return TypeSet.SubTypeAliases.TryGetValue(value, out target) && SubTypes.Contains(target, StringComparer.OrdinalIgnoreCase) ? target : value;
         }
 
         /// <summary>Numaraya uyan ilk biçim; uymuyorsa <c>null</c>.</summary>
