@@ -1922,6 +1922,9 @@ namespace Pusula.Wpf.Properties
         /// <summary>Türler: rol listesi açıklaması.</summary>
         public static string Types_RolesHint { get { return Get("Types_RolesHint"); } }
 
+        /// <summary>Tanım ipucu: test gereci.</summary>
+        public static string Placeholder_NameEquipment { get { return Get("Placeholder_NameEquipment"); } }
+
         #endregion
     }
 }

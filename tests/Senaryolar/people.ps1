@@ -9,7 +9,7 @@ Check 'Kişi türü: roller alt tür, klasörsüz' ($pt.Key -eq 'person' -and ($
 Check 'Ekip liste alanı' (@($pt.Fields | ? { $_.Key -eq 'ekip' -and $_.Kind -eq 'choice' -and $_.Choices.Count -gt 0 }).Count -eq 1)
 Check 'envanter türleri arasında değil' (-not (@($set.InventoryTypes | % Key) -contains 'person'))
 $v9 = [Pusula.Core.Types.TypeSet]::CreateDefault(); $v9.Types.RemoveAll([Predicate[Pusula.Core.Types.TypeDefinition]]{ param($x) $x.Key -eq 'person' }) | Out-Null; $v9.SchemaVersion = 9; $v9.Normalize()
-Check 'sürüm 9 → 10: Kişi türü eklendi' ($v9.SchemaVersion -eq 10 -and $v9.Find('person') -ne $null)
+Check 'sürüm 9 → 11: Kişi ve Test gereci türleri eklendi' ($v9.SchemaVersion -eq 11 -and $v9.Find('person') -ne $null -and $v9.Find('equipment') -ne $null)
 $p = New-Object Pusula.Core.Types.PersonDefinition; $p.Name = 'Ayşe Demir'; $p.Role = 'Mühendis'; $p.Fields['ekip'] = 'Anten'
 $set.People.Add($p)
 Check 'özet: rol · ekip' ($set.PersonSummary($p) -eq 'Mühendis · Anten' -and $p.Team -eq 'Anten') $set.PersonSummary($p)

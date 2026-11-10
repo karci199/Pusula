@@ -1695,4 +1695,7 @@
   <data name="Types_RolesHint" xml:space="preserve">
     <value>Virgülle ayrılır: Mühendis, Teknisyen</value>
   </data>
+  <data name="Placeholder_NameEquipment" xml:space="preserve">
+    <value>TST GRÇ XXXX</value>
+  </data>
 </root>

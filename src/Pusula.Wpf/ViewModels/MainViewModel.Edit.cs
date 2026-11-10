@@ -207,6 +207,8 @@ namespace Pusula.Wpf.ViewModels
                     return Resources.Placeholder_NameJig;
                 case "software":
                     return Resources.Placeholder_NameSoftware;
+                case Pusula.Core.Types.TypeSet.EquipmentKey:
+                    return Resources.Placeholder_NameEquipment;
                 default:
                     return string.Empty;
             }

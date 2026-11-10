@@ -20,7 +20,7 @@ try {
     "--- 1. Ağaç"
     $group = $vm.Nodes | Where-Object { $_.Kind -eq 'InventoryGroup' }
     Check 'Envanter bölümü var' ($group -ne $null)
-    Check 'türler: Kablolar, Jigler' ((($group.Children | ForEach-Object Title) -join ',') -eq 'Kablolar,Jigler,Yazılımlar')
+    Check 'türler: Kablolar, Jigler, Yazılımlar, Test gereçleri' ((($group.Children | ForEach-Object Title) -join ',') -eq 'Kablolar,Jigler,Yazılımlar,Test gereçleri') (($group.Children | ForEach-Object Title) -join ',')
     Check 'ENVANTER klasörü proje gibi görünmüyor' (-not ($vm.Nodes | Where-Object { $_.Title -ceq 'ENVANTER' }))
 
     "--- 2. Yeni kablo"

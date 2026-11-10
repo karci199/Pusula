@@ -6,7 +6,7 @@ try {
     "--- 1. Tür kalıbı"
     $types = [Pusula.Core.Types.TypeStore]::LoadOrCreate($root)
     $cable = $types.Find('cable'); $jig = $types.Find('jig')
-    Check 'kablo ve jig envanter türü' ($cable.IsInventory -and $jig.IsInventory -and @($types.InventoryTypes).Count -eq 3 -and $types.Find('software').IsInventory)
+    Check 'kablo, jig, yazılım, test gereci envanter türü' ($cable.IsInventory -and $jig.IsInventory -and @($types.InventoryTypes).Count -eq 4 -and $types.Find('software').IsInventory -and $types.Find('equipment').IsInventory)
     Check 'kablo biçimi JT' ($cable.AcceptsNumber('JT-0001-0002') -and -not $cable.AcceptsNumber('JIG-0001-0002'))
     Check 'durumlar' (($cable.Statuses | ForEach-Object Name) -join ',' -eq 'Talep,Hazırlanıyor,Teslim alındı,Kullanımda,Üretime teslim edildi')
     Check 'sıra dışı durumlar' (($cable.SideStatuses | ForEach-Object Name) -join ',' -eq 'Onarım / değişim gerekiyor,Çoğaltma isteniyor')

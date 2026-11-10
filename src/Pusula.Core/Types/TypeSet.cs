@@ -18,6 +18,9 @@ namespace Pusula.Core.Types
         /// <summary>Proje türünün anahtarı.</summary>
         public const string ProjectKey = "project";
 
+        /// <summary>Test gereci türünün anahtarı.</summary>
+        public const string EquipmentKey = "equipment";
+
         /// <summary>Kişi türünün anahtarı.</summary>
         public const string PersonKey = "person";
 
@@ -38,7 +41,7 @@ namespace Pusula.Core.Types
 
         /// <summary>Dosya biçiminin sürümü.</summary>
         [DataMember(Name = "schemaVersion", Order = 0)]
-        public int SchemaVersion { get; set; } = 10;
+        public int SchemaVersion { get; set; } = 11;
 
         /// <summary>Kayıt türleri.</summary>
         [DataMember(Name = "types", Order = 1)]
@@ -348,7 +351,13 @@ namespace Pusula.Core.Types
                 Types.Add(defaults.Find(PersonKey)!);
             }
 
-            SchemaVersion = 10;
+            // Sürüm 11 (10.11.2026): Test gereci türü (kablo ve jig dışındaki yardımcı araçlar).
+            if (SchemaVersion < 11 && Find(EquipmentKey) == null)
+            {
+                Types.Add(defaults.Find(EquipmentKey)!);
+            }
+
+            SchemaVersion = 11;
         }
 
         private static bool SameSet(IEnumerable<string> a, IEnumerable<string> b)
@@ -483,6 +492,9 @@ namespace Pusula.Core.Types
             software.SideStatuses.Add(new StatusDefinition { Name = "Kullanım dışı", Tone = StatusTone.Neutral });
             set.Types.Add(software);
 
+            // Test gereci: kablo ve jig dışındaki yardımcı araçlar (adaptör, zayıflatıcı, yük …); kablo / jig durumları.
+            set.Types.Add(Inventory(EquipmentKey, "Test gereci", "Test gereçleri", "E950", "#5FD4C4", "TG-####-####", "Test gereci numarası", "Test_Gerecleri", "07_Test_Gerecleri",
+                EquipmentSubTypes, new[] { "01_Belgeler", "02_Fotograflar" }));
             // Kişi: klasörsüz tür; alt türler roller, Ekip listeden (Türler penceresinden değiştirilir).
             var person = new TypeDefinition { Key = PersonKey, Name = "Kişi", PluralName = "Kişiler", Icon = "E77B", Color = "#F28CB1" };
             person.SubTypes.AddRange(new[] { "Mühendis", "Teknisyen" });
@@ -496,6 +508,9 @@ namespace Pusula.Core.Types
         // Türlerin hazır alanları (Türler penceresinden değiştirilebilir). Alt tür verilen alan yalnız o alt türlerde görünür.
         /// <summary>Kablo alt türleri (10.11.2026: RF, Haberleşme, Güç, Diğer).</summary>
         public static readonly string[] CableSubTypes = { "RF kablo", "Haberleşme kablosu", "Güç kablosu", "Diğer" };
+
+        /// <summary>Test gereci alt türleri (10.11.2026).</summary>
+        public static readonly string[] EquipmentSubTypes = { "Adaptör", "Zayıflatıcı", "Yük (sonlandırıcı)", "Ayırıcı / birleştirici", "Diğer" };
 
         /// <summary>Jig alt türleri (10.11.2026: kullanıldığı ölçüm altyapısı).</summary>
         public static readonly string[] JigSubTypes = { "SATIMO", "Yankısız oda", "Kompakt range", "Test sahası", "Diğer" };
@@ -551,6 +566,13 @@ namespace Pusula.Core.Types
                 Field("Bağlantı", FieldKind.Text, string.Empty),
                 Field("Tork", FieldKind.Number, "Nm"),
                 Field("Çizim revizyonu", FieldKind.Text, string.Empty),
+            });
+            set.Find(EquipmentKey)?.Fields.AddRange(new[]
+            {
+                Field("Marka / model", FieldKind.Text, string.Empty),
+                Field("Seri no", FieldKind.Text, string.Empty),
+                Field("Frekans", FieldKind.Text, "MHz"),
+                Field("Kalibrasyon bitişi", FieldKind.Text, string.Empty),
             });
             set.Find("software")?.Fields.AddRange(new[]
             {

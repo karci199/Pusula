@@ -11,7 +11,7 @@ try {
     $app = New-Object Pusula.Wpf.App; $app.InitializeComponent(); $app.ShutdownMode = 'OnExplicitShutdown'
     $vm = New-Object Pusula.Wpf.ViewModels.TypeEditor.TypeEditorViewModel($root, $set)
     "--- 2. Düzenleme"
-    Check 'türler: Kablo, Jig, Yazılım, Kişi' ((($vm.Types | ForEach-Object Name) -join ',') -eq 'Kablo,Jig,Yazılım,Kişi')
+    Check 'türler: Kablo, Jig, Yazılım, Test gereci, Kişi' ((($vm.Types | ForEach-Object Name) -join ',') -eq 'Kablo,Jig,Yazılım,Test gereci,Kişi')
     $jig = $vm.Types | Where-Object Name -eq 'Jig'; $vm.Selected = $jig
     Check 'jigin hazır alanları gelir' ($jig.Fields.Count -eq 6)
     $jig.Fields.Clear()
@@ -66,6 +66,11 @@ $grid.CancelEdit() | Out-Null
     Check 'öteki etiketler ve kapsamları korundu' (@($re.TagList | Where-Object { $_.Name -eq 'faz_kararli' -and $_.Scopes[0].SubType -eq 'RF kablo' }).Count -eq 1)
     Check 'kaydetme dosya türlerini, sürümü ve uç listelerini korur' ($re.FileTypes.Count -eq $fileTypes -and $re.SchemaVersion -ge 5 -and $j.Fields[0].SubTypeChoices.Count -eq 1 -and $j.Fields[0].ChoicesFor('Montaj')[0] -eq 'Delrin') ("$($re.FileTypes.Count)/$fileTypes v$($re.SchemaVersion)")
     Check 'yeni tür: anahtar ve klasör son addan, stok/proje korunur' ($re.Find('olcum_cihazi').Name -eq 'Ölçüm cihazı' -and $re.Find('olcum_cihazi').GeneralFolder -eq 'ENVANTER\Olcum_cihazlari' -and $re.Find('stock') -ne $null -and $re.Find('project') -ne $null)
+    $old10 = [Pusula.Core.Types.TypeSet]::CreateDefault(); $old10.Types.RemoveAll([Predicate[Pusula.Core.Types.TypeDefinition]]{ param($x) $x.Key -eq 'equipment' }) | Out-Null; $old10.SchemaVersion = 10; $old10.Normalize()
+    $eq = $old10.Find('equipment')
+    Check 'sürüm 10 → 11: Test gereci eklendi' ($eq -ne $null -and $eq.IsInventory -and $eq.SubTypes -contains 'Adaptör' -and @($eq.Fields | % Key) -contains 'seri_no' -and $eq.StockFolder -eq '07_Test_Gerecleri') (@($eq.Fields | % Key) -join ',')
+    $kept = [Pusula.Core.Types.TypeSet]::CreateDefault(); $kept.Types.RemoveAll([Predicate[Pusula.Core.Types.TypeDefinition]]{ param($x) $x.Key -eq 'equipment' }) | Out-Null; $kept.SchemaVersion = 11; $kept.Normalize()
+    Check 'sürüm 11 dosyada silinen Test gereci geri gelmez' ($kept.Find('equipment') -eq $null)
 } finally { Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue }
 ""
 "SONUC: $ok basarili, $fail hata"
