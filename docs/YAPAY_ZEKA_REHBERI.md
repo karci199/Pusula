@@ -68,7 +68,7 @@ urun: SH2000
 frekans: 2–32 GHz
 konnektor: N(F)
 sorumlu: katan
-etiketler: [anten, boynuz, SATIMO]
+tags: [anten, boynuz, SATIMO]   # Obsidian etiketleri; # yazılmaz, boşluk yerine _
 ---
 ```
 
@@ -123,6 +123,7 @@ Ham veriler `Ham\`, fotolar `Foto\`, analiz çıktıları `Analiz\` altına.
 - Kişi: `@Ad Soyad` (ayrı kişi notu açma).
 - Resim: `![[foto_01.png]]`, genişlikle `![[foto_01.png|360]]`, klasörle `![[Ekler/yapistirilan_….png]]`. Ad tek ise klasör gerekmez.
   Web adresindeki resim gösterilmez (dış ağ çağrısı yok).
+- Etiket: notta `#faz_kararli` ya da YAML'da `tags: [faz_kararli, RS422]`. Etiket listesi ve hangi türde geçerli oldukları Pusula'da Türler → Etiketler'de; listede olmayan etiket de yazılabilir.
 - Kutu: `> [!warning] Başlık` (warning, danger, tip, success, question, note, quote). Vurgu `==metin==`, üstü çizili `~~metin~~`.
 - Olmayan bir nota `[[…]]` verme: Pusula yeni not oluşturmaz, bağlantı boşa düşer.
 - Yorum: `<!-- … -->` (her yerde gizlenir) ya da `%% … %%` (Obsidian / Pusula). Bütün md yazım kuralları, örnekli: [MD_KILAVUZU.md](MD_KILAVUZU.md).

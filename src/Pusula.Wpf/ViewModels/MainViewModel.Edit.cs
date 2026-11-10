@@ -307,7 +307,7 @@ namespace Pusula.Wpf.ViewModels
 
                     editType = type;
                     editValues = new System.Collections.Generic.Dictionary<string, string>(record?.Fields ?? new System.Collections.Generic.Dictionary<string, string>(), StringComparer.OrdinalIgnoreCase);
-                    EditTags = MarkdownEditing.FormatTags(record?.Tags ?? new System.Collections.Generic.List<string>());
+                    EditTags = MarkdownEditing.FormatTags(record?.EffectiveTags() ?? new System.Collections.Generic.List<string>());
                     EditFields.Clear();
                     EditSubType = currentSub;
                     BuildEditFields();
@@ -371,6 +371,15 @@ namespace Pusula.Wpf.ViewModels
                     foreach (var input in EditFields)
                     {
                         editValues[input.Key] = input.Value;
+                    }
+
+                    // Etikete dönen eski alanlar (faz_kararli, protokol): türde artık alan değilse kayıttan düşer; etiket listesi esas.
+                    foreach (var legacy in new[] { "faz_kararli", "protokol" })
+                    {
+                        if (editType == null || !editType.Fields.Any(x => string.Equals(x.Key, legacy, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            editValues.Remove(legacy);
+                        }
                     }
 
                     var tags = MarkdownEditing.ParseTags(EditTags);

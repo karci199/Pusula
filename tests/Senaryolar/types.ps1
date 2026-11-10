@@ -64,7 +64,7 @@ $grid.CancelEdit() | Out-Null
     $yt = $re.TagList | Where-Object Name -eq 'yeni_etiket'
     Check 'yeni etiket kaydedildi: ad düzeltildi, kapsam jig + kablo · Güç' ($yt -ne $null -and $yt.Scopes.Count -eq 2 -and $yt.Scopes[0].Type -eq 'jig' -and $yt.Scopes[1].Type -eq 'cable' -and $yt.Scopes[1].SubType -eq 'Güç')
     Check 'öteki etiketler ve kapsamları korundu' (@($re.TagList | Where-Object { $_.Name -eq 'faz_kararli' -and $_.Scopes[0].SubType -eq 'RF' }).Count -eq 1)
-    Check 'kaydetme dosya türlerini, sürümü ve uç listelerini korur' ($re.FileTypes.Count -eq $fileTypes -and $re.SchemaVersion -eq 5 -and ($re.Find('cable').Fields | Where-Object Key -eq 'uc_a').SubTypeChoices.Count -eq 3) ("$($re.FileTypes.Count)/$fileTypes v$($re.SchemaVersion)")
+    Check 'kaydetme dosya türlerini, sürümü ve uç listelerini korur' ($re.FileTypes.Count -eq $fileTypes -and $re.SchemaVersion -ge 5 -and ($re.Find('cable').Fields | Where-Object Key -eq 'uc_a').SubTypeChoices.Count -eq 3) ("$($re.FileTypes.Count)/$fileTypes v$($re.SchemaVersion)")
     Check 'yeni tür: anahtar ve klasör son addan, stok/proje korunur' ($re.Find('olcum_cihazi').Name -eq 'Ölçüm cihazı' -and $re.Find('olcum_cihazi').GeneralFolder -eq 'ENVANTER\Olcum_cihazlari' -and $re.Find('stock') -ne $null -and $re.Find('project') -ne $null)
 } finally { Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue }
 ""

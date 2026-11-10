@@ -18,11 +18,11 @@ function Fact($label) { (@($vm.Inventory.Facts) + @($vm.Inventory.Properties) | 
 "--- 1. Türler: hazır alanlar (eski sürümlü turler.json göçü)"
 $types = [Pusula.Core.Types.TypeStore]::LoadOrCreate($Data)
 $cableType = $types.Find('cable'); $jigType = $types.Find('jig'); $swType = $types.Find('software')
-Check 'kablo alanları (adet yok)' ($cableType.Fields.Count -eq 9 -and -not (@($cableType.Fields | % Key) -contains 'adet')) ([string]$cableType.Fields.Count)
+Check 'kablo alanları (adet, faz kararlı, protokol yok)' ($cableType.Fields.Count -eq 7 -and -not (@($cableType.Fields | % Key) -contains 'faz_kararli') -and -not (@($cableType.Fields | % Key) -contains 'protokol') -and -not (@($cableType.Fields | % Key) -contains 'adet')) ([string]$cableType.Fields.Count)
 Check 'jig alanları (adet yok)' ($jigType.Fields.Count -eq 7 -and -not (@($jigType.Fields | % Key) -contains 'adet')) ([string]$jigType.Fields.Count)
 Check 'yazılım envanter türü' ($swType -ne $null -and $swType.IsInventory)
 Check 'RF kablo: frekans var, protokol yok' ((@($cableType.FieldsFor('RF') | % Key) -contains 'frekans') -and -not (@($cableType.FieldsFor('RF') | % Key) -contains 'protokol'))
-Check 'Haberleşme: protokol, pin yapısı' ((@($cableType.FieldsFor('Haberleşme') | % Key) -contains 'protokol') -and (@($cableType.FieldsFor('Haberleşme') | % Key) -contains 'pin_yapisi'))
+Check 'Haberleşme: pin yapısı (protokol etiket oldu)' (-not (@($cableType.FieldsFor('Haberleşme') | % Key) -contains 'protokol') -and (@($cableType.FieldsFor('Haberleşme') | % Key) -contains 'pin_yapisi'))
 Check 'kablo alt türleri: RF, Haberleşme, Güç, Diğer' (($cableType.SubTypes -join ',') -eq 'RF,Haberleşme,Güç,Diğer') ($cableType.SubTypes -join ',')
 $ucA = $cableType.Fields | Where-Object Key -eq 'uc_a'
 Check 'uç listesi alt türe göre: RF konnektör, Güç banana / pabuç, Haberleşme D-Sub' (($ucA.ChoicesFor('RF') -contains 'SMA (E)') -and -not ($ucA.ChoicesFor('RF') -contains 'Banana') -and ($ucA.ChoicesFor('Güç') -contains 'Pabuç') -and -not ($ucA.ChoicesFor('Güç') -contains 'SMA (E)') -and ($ucA.ChoicesFor('Haberleşme') -contains 'D-Sub 9') -and ($ucA.ChoicesFor('Diğer') -contains 'Banana')) $ucA.Name
@@ -50,33 +50,33 @@ $rf = Join-Path $Data 'ENVANTER\Kablolar\JT-0001-0001_SATIMO_RF_kablosu'
 $note = Join-Path $rf 'JT-0001-0001.md'
 $bodyBefore = Body $note
 Check 'düzenle açılır, alanlar görünür' ($vm.OpenEdit($rf) -and $vm.HasEditFields)
-Check 'RF alanları' ((Keys) -contains 'frekans' -and (Keys) -contains 'faz_kararli' -and (Keys) -contains 'uc_a' -and -not ((Keys) -contains 'protokol')) ((Keys) -join ',')
+Check 'RF alanları (faz kararlı etiket oldu)' ((Keys) -contains 'frekans' -and -not ((Keys) -contains 'faz_kararli') -and (Keys) -contains 'uc_a' -and -not ((Keys) -contains 'protokol')) ((Keys) -join ',')
 Check 'uç tipi seçim listesi (RF: konnektörler)' ((Input 'uc_a').IsChoice -and (Input 'uc_a').Choices -contains 'SMA (E)' -and -not ((Input 'uc_a').Choices -contains 'Banana') -and (Input 'uc_a').Label -eq '1. uç (konnektör)')
-Check 'faz kararlı evet/hayır' ((Input 'faz_kararli').IsYesNo)
+Check 'RF etiket önerisinde faz_kararli' (@($vm.TagSuggestions() | % Key) -contains '#faz_kararli')
 Check 'boy etiketi birimli' ((Input 'boy').Label -eq 'Boy (m)') ((Input 'boy').Label)
 (Input 'boy').Value = '1'; (Input 'uc_a').Value = 'SMA (E)'; (Input 'uc_b').Value = 'SMA (E)'
-(Input 'frekans').Value = '0.5-18'; (Input 'faz_kararli').IsYes = $true
+(Input 'frekans').Value = '0.5-18'; $vm.EditTags = '#faz_kararli'
 $vm.EditSubType = 'Haberleşme'; Pump
-Check 'alt tür değişince alanlar değişir' ((Keys) -contains 'protokol' -and -not ((Keys) -contains 'frekans')) ((Keys) -join ',')
+Check 'alt tür değişince alanlar değişir' ((Keys) -contains 'pin_yapisi' -and -not ((Keys) -contains 'frekans')) ((Keys) -join ',')
 Check 'ortak alan değeri korunur' ((Input 'boy').Value -eq '1')
 $vm.EditSubType = 'RF'; Pump
-Check 'geri dönünce değer korunmuş' ((Input 'frekans').Value -eq '0.5-18' -and (Input 'faz_kararli').IsYes)
+Check 'geri dönünce değer korunmuş' ((Input 'frekans').Value -eq '0.5-18' -and $vm.EditTags -eq '#faz_kararli')
 Snap $win "$Out\fields-edit-rf.png"
 Check 'kaydedildi' ($vm.ConfirmEdit())
 $r = Rec $rf
-Check 'kayit.json alanları' ($r.Fields['boy'] -eq '1' -and $r.Fields['uc_a'] -eq 'SMA (E)' -and $r.Fields['faz_kararli'] -eq 'Evet') (($r.Fields.Keys | % { $_ + '=' + $r.Fields[$_] }) -join ', ')
+Check 'kayit.json alanları' ($r.Fields['boy'] -eq '1' -and $r.Fields['uc_a'] -eq 'SMA (E)' -and ($r.Tags -contains 'faz_kararli')) (($r.Fields.Keys | % { $_ + '=' + $r.Fields[$_] }) -join ', ')
 Check 'boş alan yazılmaz' (-not $r.Fields.ContainsKey('protokol'))
 $y = Yaml $note
 Check 'YAML: boy birimli' ($y -match '(?m)^boy: "?1 m"?\r?$') $y
-Check 'YAML: uç A, frekans, faz' ($y -match '(?m)^uc_a: ' -and $y -match '(?m)^frekans: ' -and $y -match '(?m)^faz_kararli: "?Evet')
+Check 'YAML: uç A, frekans, faz' ($y -match '(?m)^uc_a: ' -and $y -match '(?m)^frekans: ' -and $y -match '(?m)^tags: \[faz_kararli\]')
 Check 'not gövdesi değişmedi' ((Body $note) -eq $bodyBefore)
 
 "--- 3. Bilgiler kartı"
 $vm.SelectNodeByPath($rf); Wait
 Check 'Boy satırı birimli' ((Fact 'Boy') -eq '1 m') (Fact 'Boy')
 Check '1. uç satırı' ((Fact '1. uç (konnektör)') -eq 'SMA (E)')
-Check 'Faz kararlı satırı' ((Fact 'Faz kararlı') -eq 'Evet')
-Check 'başka alt türün alanı yok' (-not (@($vm.Inventory.Properties | % Label) -contains 'Protokol'))
+Check 'faz kararlı çip olarak' (($vm.Inventory.Tags -join ' ') -eq '#faz_kararli')
+Check 'başka alt türün alanı yok' (-not (@($vm.Inventory.Properties | % Label) -contains 'Pin yapısı'))
 Check 'özellikler ayrı bölümde, genel bilgilerde değil' ($vm.Inventory.HasProperties -and -not (@($vm.Inventory.Facts | % Label) -contains 'Boy') -and $vm.Inventory.PropertiesHeader -match '^Özellikler · RF · \d+ / \d+ dolu$') $vm.Inventory.PropertiesHeader
 $vm.SelectNodeByPath((Join-Path $Data 'ENVANTER\Kablolar\JT-0001-0003_RS422_kablosu_Brainbox')); Wait
 Check 'doldurulmamış kablo: alanlar boş ve soluk, 0 dolu' ($vm.Inventory.Properties.Count -gt 0 -and @($vm.Inventory.Properties | Where-Object { -not $_.IsEmpty }).Count -eq 0 -and $vm.Inventory.PropertiesHeader -match ' 0 / ') $vm.Inventory.PropertiesHeader
@@ -107,13 +107,13 @@ Check 'gövde yine aynı' ((Body $note) -eq $bodyBefore)
 $rs = Join-Path $Data 'ENVANTER\Kablolar\JT-0001-0002_RS422_test_kablosu'
 Check 'düzenle açılır' ($vm.OpenEdit($rs))
 $vm.EditSubType = 'Haberleşme'; Pump
-Check 'protokol listesi RS422/RS232' ((Input 'protokol').Choices -contains 'RS422' -and (Input 'protokol').Choices -contains 'RS232')
-(Input 'protokol').Value = 'RS422'; (Input 'pin_yapisi').Value = 'DB9 2-3-5'; (Input 'uc_a').Value = 'D-Sub 9'; (Input 'uc_b').Value = 'Açık uç'
+Check 'haberleşme etiketleri RS422 / RS232' (@($vm.TagSuggestions() | % Key) -contains '#RS422' -and @($vm.TagSuggestions() | % Key) -contains '#RS232')
+$vm.EditTags = '#RS422'; (Input 'pin_yapisi').Value = 'DB9 2-3-5'; (Input 'uc_a').Value = 'D-Sub 9'; (Input 'uc_b').Value = 'Açık uç'
 Check 'kaydedildi' ($vm.ConfirmEdit())
 $r = Rec $rs
-Check 'kayit.json protokol + pin' ($r.SubType -eq 'Haberleşme' -and $r.Fields['protokol'] -eq 'RS422' -and $r.Fields['pin_yapisi'] -eq 'DB9 2-3-5')
+Check 'kayit.json RS422 etiketi + pin' ($r.SubType -eq 'Haberleşme' -and ($r.Tags -contains 'RS422') -and $r.Fields['pin_yapisi'] -eq 'DB9 2-3-5')
 $vm.SelectNodeByPath($rs); Wait
-Check 'kartta protokol' ((Fact 'Protokol') -eq 'RS422')
+Check 'kartta #RS422' (($vm.Inventory.Tags -join ' ') -eq '#RS422')
 
 "--- 6. Mekanik jig"
 $jig = Join-Path $Data 'ENVANTER\Jigler\JIG-1000-0009_SATIMO_adaptor_plakasi'

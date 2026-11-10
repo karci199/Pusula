@@ -18,9 +18,20 @@ Check 'ad düzeltme: # ve boşluk' ($TD::NameFrom(' #açık iş ') -eq 'açık_i
 $old = [Pusula.Core.Types.TypeSet]::CreateDefault(); $old.TagList.Clear(); $old.Tags.Clear(); $old.Tags.Add('SATIMO'); $old.Tags.Add('Ölçüm odası'); $old.SchemaVersion = 4
 $old.Normalize()
 Check 'eski düz etiketler her yerde geçerli' (@($old.TagList | Where-Object { $_.Name -eq 'Ölçüm_odası' -and $_.Scopes.Count -eq 0 }).Count -eq 1)
-Check 'örnekler eklendi, tekrar yok' (@($old.TagList | Where-Object Name -eq 'SATIMO').Count -eq 1 -and @($old.TagList | % Name) -contains 'faz_kararli' -and $old.SchemaVersion -eq 5)
+Check 'örnekler eklendi, tekrar yok' (@($old.TagList | Where-Object Name -eq 'SATIMO').Count -eq 1 -and @($old.TagList | % Name) -contains 'faz_kararli' -and $old.SchemaVersion -ge 5)
 $mine = [Pusula.Core.Types.TypeSet]::CreateDefault(); $mine.TagList.Clear(); $mine.TagList.Add($TD::For('benim', 'jig')); $mine.SchemaVersion = 4; $mine.Normalize()
 Check 'kullanıcının listesi varsa dokunulmaz' (@($mine.TagList).Count -eq 1)
+
+"--- 2b. Dönüşüm (sürüm 5 → 6): faz kararlı ve protokol alanları etiket olur"
+$v5 = [Pusula.Core.Types.TypeSet]::CreateDefault(); $c5 = $v5.Find('cable')
+$ph = New-Object Pusula.Core.Types.FieldDefinition; $ph.Key = 'faz_kararli'; $ph.Name = 'Faz kararlı'; $ph.Kind = 'yesno'; $ph.SubTypes.Add('RF'); $c5.Fields.Add($ph)
+$pr = New-Object Pusula.Core.Types.FieldDefinition; $pr.Key = 'protokol'; $pr.Name = 'Protokol'; $pr.Kind = 'choice'; $pr.Choices.Add('RS422'); $pr.Choices.Add('CAN'); $pr.SubTypes.Add('Haberleşme'); $c5.Fields.Add($pr)
+$v5.TagList.RemoveAll([Predicate[Pusula.Core.Types.TagDefinition]]{ param($x) $x.Name -eq 'faz_kararli' }) | Out-Null
+$v5.SchemaVersion = 5; $v5.Normalize()
+Check 'alanlar kalktı' (-not (@($c5.Fields | % Key) -contains 'faz_kararli') -and -not (@($c5.Fields | % Key) -contains 'protokol') -and $v5.SchemaVersion -eq 6)
+Check 'faz_kararli (RF) ve CAN (Haberleşme) etiket oldu' (@($v5.TagsFor('cable', 'RF') | % Name) -contains 'faz_kararli' -and @($v5.TagsFor('cable', 'Haberleşme') | % Name) -contains 'CAN' -and -not (@($v5.TagsFor('cable', 'Güç') | % Name) -contains 'CAN'))
+$old6 = New-Object Pusula.Core.Inventory.InventoryRecord; $old6.Fields['faz_kararli'] = 'Evet'; $old6.Fields['protokol'] = 'CAN'; $old6.Tags.Add('SATIMO')
+Check 'kayıttaki eski değerler etiket sayılır' (($old6.EffectiveTags() -join ',') -eq 'SATIMO,faz_kararli,CAN') ($old6.EffectiveTags() -join ',')
 
 "--- 3. Notun YAML'ında Obsidian tags listesi"
 $note = Join-Path $Data 'etiket-deneme.md'

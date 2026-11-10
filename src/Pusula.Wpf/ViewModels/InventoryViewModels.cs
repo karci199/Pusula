@@ -697,7 +697,7 @@ namespace Pusula.Wpf.ViewModels
             Facts.Add(new FactRow(Resources.Inv_Location, record.Location));
             Facts.Add(new FactRow(Resources.Inv_Note, record.Note));
 
-            foreach (var tag in record.Tags)
+            foreach (var tag in record.EffectiveTags())
             {
                 Tags.Add("#" + tag);
             }

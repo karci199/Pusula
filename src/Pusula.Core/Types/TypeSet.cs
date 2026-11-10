@@ -31,7 +31,7 @@ namespace Pusula.Core.Types
 
         /// <summary>Dosya biçiminin sürümü.</summary>
         [DataMember(Name = "schemaVersion", Order = 0)]
-        public int SchemaVersion { get; set; } = 5;
+        public int SchemaVersion { get; set; } = 6;
 
         /// <summary>Kayıt türleri.</summary>
         [DataMember(Name = "types", Order = 1)]
@@ -211,7 +211,42 @@ namespace Pusula.Core.Types
                 }
             }
 
-            SchemaVersion = 5;
+            // Sürüm 6: kablonun "Faz kararlı" (evet / hayır) ve "Protokol" (liste) alanları etikete döner: faz_kararli
+            // (Kablo · RF), protokol seçenekleri (Kablo · Haberleşme). Kayıtlardaki eski değerler etiket sayılır
+            // (bkz. InventoryRecord.EffectiveTags); dosyalara toplu yazılmaz.
+            if (SchemaVersion < 6)
+            {
+                var cable = Find("cable");
+                if (cable != null)
+                {
+                    var phase = cable.Fields.FirstOrDefault(x => x.Key == "faz_kararli" && x.Kind == FieldKind.YesNo);
+                    if (phase != null)
+                    {
+                        cable.Fields.Remove(phase);
+                        AddTagIfMissing(TagDefinition.For("faz_kararli", "cable", "RF"));
+                    }
+
+                    var protocol = cable.Fields.FirstOrDefault(x => x.Key == "protokol" && x.Kind == FieldKind.Choice);
+                    if (protocol != null)
+                    {
+                        cable.Fields.Remove(protocol);
+                        foreach (var choice in protocol.Choices)
+                        {
+                            AddTagIfMissing(TagDefinition.For(choice, "cable", "Haberleşme"));
+                        }
+                    }
+                }
+            }
+
+            SchemaVersion = 6;
+        }
+
+        private void AddTagIfMissing(TagDefinition tag)
+        {
+            if (tag.Name.Length > 0 && !TagList.Any(t => string.Equals(t.Name, tag.Name, StringComparison.OrdinalIgnoreCase)))
+            {
+                TagList.Add(tag);
+            }
         }
 
         // Alt tür adını değiştirir; alanların "geçerli alt türler" listesi de aynı adla güncellenir.
@@ -366,8 +401,6 @@ namespace Pusula.Core.Types
                 CableEnd("uc_a", "1. uç (konnektör)"),
                 CableEnd("uc_b", "2. uç (konnektör)"),
                 Field("Frekans", FieldKind.Text, "GHz", null, "RF"),
-                Field("Faz kararlı", FieldKind.YesNo, string.Empty, null, "RF"),
-                Field("Protokol", FieldKind.Choice, string.Empty, new[] { "RS422", "RS232", "RS485", "CAN", "Ethernet", "USB", "MIL-STD-1553" }, "Haberleşme"),
                 Field("Pin yapısı", FieldKind.Text, string.Empty, null, "Haberleşme"),
                 Field("Akım", FieldKind.Number, "A", null, "Güç"),
                 Field("Kesit (AWG)", FieldKind.Choice, string.Empty, AwgSizes, "Güç"),

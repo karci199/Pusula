@@ -69,6 +69,27 @@ namespace Pusula.Core.Inventory
         [DataMember(Name = "tags", Order = 8, EmitDefaultValue = false)]
         public List<string> Tags { get; set; } = new List<string>();
 
+        /// <summary>
+        /// Etiketler ve alandan etikete dönen eski değerler (sürüm 6): <c>faz_kararli = Evet</c> → <c>faz_kararli</c>,
+        /// <c>protokol = RS422</c> → <c>RS422</c>. Kayıt düzenlenip kaydedilince bunlar etiket olarak yazılır.
+        /// </summary>
+        public List<string> EffectiveTags()
+        {
+            var list = new List<string>(Tags);
+            string value;
+            if (Fields.TryGetValue("faz_kararli", out value) && string.Equals(value, "Evet", StringComparison.OrdinalIgnoreCase))
+            {
+                list.Add("faz_kararli");
+            }
+
+            if (Fields.TryGetValue("protokol", out value) && value.Trim().Length > 0)
+            {
+                list.Add(Types.TagDefinition.NameFrom(value));
+            }
+
+            return list.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
         /// <summary>Durum olayları, eskiden yeniye.</summary>
         [DataMember(Name = "events", Order = 7)]
         public List<InventoryEvent> Events { get; set; } = new List<InventoryEvent>();
