@@ -116,6 +116,6 @@ $host2.Close()
 $modes = New-Object System.Collections.Generic.List[string]
 $stack = New-Object System.Collections.Stack; $stack.Push($win)
 while ($stack.Count -gt 0) { $node = $stack.Pop(); if ($node -is [System.Windows.Controls.TextBox]) { $m = $MA::GetMode($node); if ($m) { $modes.Add($m) } }; if ($node -is [System.Windows.DependencyObject]) { foreach ($c in [System.Windows.LogicalTreeHelper]::GetChildren($node)) { if ($c -is [System.Windows.DependencyObject]) { $stack.Push($c) } } } }
-Check 'öneri takılı kutular: 3 kısa not + not ekle + durum notu (düz), olay başlığı + açıklaması (bağlantı)' (@($modes | Where-Object { $_ -eq 'plain' }).Count -eq 5 -and @($modes | Where-Object { $_ -eq 'link' }).Count -eq 2) ($modes -join ',')
+Check 'öneri takılı kutular: 3 kısa not + not ekle + durum notu (düz), olay başlığı + açıklaması + 2 yapılacak iş (bağlantı), 3 etiket, 2 kişi' (@($modes | Where-Object { $_ -eq 'plain' }).Count -eq 5 -and @($modes | Where-Object { $_ -eq 'link' }).Count -eq 4 -and @($modes | Where-Object { $_ -eq 'tag' }).Count -eq 3 -and @($modes | Where-Object { $_ -eq 'person' }).Count -eq 2) ($modes -join ',')
 $win.Close()
 "SONUÇ OK=$ok HATA=$fail"
