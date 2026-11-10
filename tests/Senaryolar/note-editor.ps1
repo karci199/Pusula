@@ -213,4 +213,27 @@ Check 'kaydedilmemişse kapanmaz, soru açılır' ($nw.IsVisible -and $nw.FindNa
 Snap $nw "$Out\note-close.png"
 $nw.GetType().GetMethod('CloseDialog_Discard', [Reflection.BindingFlags]'NonPublic,Instance').Invoke($nw, @($null, $null)); Wait
 Check 'kaydetme seçilince kapanır, disk değişmedi' (-not $nw.IsVisible -and -not ([IO.File]::ReadAllText($note).EndsWith('benim')) -and @($win.NoteWindows).Count -eq 0)
+
+"--- 11. md kılavuzu çizilir"
+$guide = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '..\..\docs\MD_KILAVUZU.md'))
+$gctx = New-Object Pusula.Wpf.Markdown.MarkdownRenderContext
+$gdoc = [Pusula.Wpf.Markdown.MarkdownRenderer]::Render($guide, $gctx)
+$gblocks = Blocks $gdoc
+$gtext = (New-Object System.Windows.Documents.TextRange($gdoc.ContentStart, $gdoc.ContentEnd)).Text
+Check 'kılavuz: tablolar' (@($gblocks | Where-Object { $_ -is [System.Windows.Documents.Table] }).Count -eq 5) (@($gblocks | Where-Object { $_ -is [System.Windows.Documents.Table] }).Count)
+Check 'kılavuz: uyarı kutuları' (@($gblocks | Where-Object { $_ -is [System.Windows.Documents.Section] -and $_.BorderThickness.Left -eq 3 }).Count -ge 4)
+Check 'kılavuz: kod bloğundaki yorum örneği görünür' ($gtext.Contains('<!-- Bu bir yorumdur') -and $gtext.Contains('%% Obsidian yorumu'))
+Check 'kılavuz: son başlık var' ($gtext.Contains('Tam örnek not'))
+$R = [Pusula.Wpf.Markdown.MarkdownRenderer]
+Check 'başlık bağlantısı: GitHub ve Obsidian biçimi aynı' ($R::AnchorKey('3-yazı-biçimi-kalın-italik-') -eq $R::AnchorKey('3. Yazı Biçimi (kalın, italik …)') -and $R::AnchorKey('İçindekiler') -eq $R::AnchorKey('içindekiler'))
+$gparsed = [Pusula.Core.Markdown.MarkdownNotes]::Parse($guide)
+$hkeys = @([Markdig.Syntax.MarkdownObjectExtensions]::Descendants($gparsed) | Where-Object { $_ -is [Markdig.Syntax.HeadingBlock] } | ForEach-Object { $R::AnchorKey((@([Markdig.Syntax.MarkdownObjectExtensions]::Descendants($_.Inline) | Where-Object { $_ -is [Markdig.Syntax.Inlines.LiteralInline] } | ForEach-Object { $_.Content.ToString() }) -join '')) })
+$anchors = @([Markdig.Syntax.MarkdownObjectExtensions]::Descendants($gparsed) | Where-Object { $_ -is [Markdig.Syntax.Inlines.LinkInline] -and "$($_.Url)".StartsWith('#') } | ForEach-Object { $_.Url })
+$broken = @($anchors | Where-Object { $hkeys -notcontains $R::AnchorKey([Uri]::UnescapeDataString($_.Substring(1))) })
+Check 'kılavuz: içindekiler bağlantıları başlıklara denk' ($anchors.Count -ge 20 -and $broken.Count -eq 0) ("$($anchors.Count) bağlantı; kırık: " + ($broken -join ', '))
+$toc = @($gblocks | Where-Object { $_ -is [System.Windows.Documents.List] -and $_.MarkerStyle -eq 'Decimal' -and $_.ListItems.Count -eq 20 })
+Check 'iki basamaklı numaraya yer var (20 maddelik liste)' ($toc.Count -eq 1 -and $toc[0].Padding.Left -ge 30) $(if ($toc.Count) { $toc[0].Padding.Left })
+$gview = New-Object System.Windows.Controls.FlowDocumentScrollViewer; $gview.Document = $gdoc; $gview.Width = 900; $gview.Height = 1400
+$gwin = New-Object System.Windows.Window; $gwin.SetResourceReference([System.Windows.Controls.Control]::BackgroundProperty, 'SurfaceBaseBrush'); $gwin.Content = $gview; $gwin.Width = 920; $gwin.Height = 1440; $gwin.ShowInTaskbar = $false; $gwin.WindowStyle = 'None'; $gwin.Left = -3000; $gwin.Show(); Pump
+Snap $gwin "$Out\md-kilavuzu.png"; $gwin.Close()
 "SONUÇ OK=$ok HATA=$fail"

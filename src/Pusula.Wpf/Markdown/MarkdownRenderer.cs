@@ -96,6 +96,9 @@ namespace Pusula.Wpf.Markdown
 
         private readonly MarkdownRenderContext context;
 
+        // Başlıklar (AnchorKey → paragraf): not içi #bağlantılar için.
+        private readonly Dictionary<string, Paragraph> headings = new Dictionary<string, Paragraph>(StringComparer.Ordinal);
+
         private MarkdownRenderer(MarkdownRenderContext context)
         {
             this.context = context;
@@ -236,6 +239,12 @@ namespace Pusula.Wpf.Markdown
             }
 
             AddInlines(paragraph.Inlines, heading.Inline);
+            var key = AnchorKey(ChildText(heading.Inline));
+            if (key.Length > 0 && !headings.ContainsKey(key))
+            {
+                headings[key] = paragraph;
+            }
+
             return paragraph;
         }
 
@@ -259,6 +268,14 @@ namespace Pusula.Wpf.Markdown
             if (list.IsOrdered && int.TryParse(list.OrderedStart, out start) && start > 1)
             {
                 wpfList.StartIndex = start;
+            }
+
+            // WPF numarayı içeriğin soluna, dolgu alanına çizer; "10." gibi iki basamaklı numara 24 px'e sığmaz, solu kesilir.
+            if (list.IsOrdered)
+            {
+                var last = wpfList.StartIndex + list.OfType<ListItemBlock>().Count() - 1;
+                var digits = last.ToString(System.Globalization.CultureInfo.InvariantCulture).Length;
+                wpfList.Padding = new Thickness(Math.Max(24, (digits + 1) * context.FontSize * 0.62 + 8), 0, 0, 0);
             }
 
             foreach (var item in list.OfType<ListItemBlock>())
@@ -669,6 +686,18 @@ namespace Pusula.Wpf.Markdown
             var url = link.Url ?? string.Empty;
             return Hyperlink(span, () =>
             {
+                // Not içi bağlantı (#başlık): o başlığa kaydırılır.
+                if (url.StartsWith("#", StringComparison.Ordinal))
+                {
+                    Paragraph target;
+                    if (headings.TryGetValue(AnchorKey(Uri.UnescapeDataString(url.Substring(1))), out target))
+                    {
+                        target.BringIntoView();
+                    }
+
+                    return;
+                }
+
                 if (url.Contains("://") || url.StartsWith("mailto:", StringComparison.OrdinalIgnoreCase))
                 {
                     context.UrlClicked?.Invoke(url);
@@ -688,8 +717,23 @@ namespace Pusula.Wpf.Markdown
             }, url);
         }
 
-        private static string ChildText(ContainerInline container)
+        /// <summary>
+        /// Başlık bağlantısı karşılaştırma anahtarı: yalnız harf ve rakam, küçük harf. Böylece GitHub / VS Code biçimi
+        /// (<c>#1-paragraf-ve-satır</c>) ve Obsidian biçimi (<c>#1. Paragraf ve satır</c>) aynı başlığa denk gelir.
+        /// </summary>
+        public static string AnchorKey(string text)
         {
+            var culture = System.Globalization.CultureInfo.GetCultureInfo("tr-TR");
+            return new string((text ?? string.Empty).Where(char.IsLetterOrDigit).ToArray()).ToLower(culture);
+        }
+
+        private static string ChildText(ContainerInline? container)
+        {
+            if (container == null)
+            {
+                return string.Empty;
+            }
+
             return string.Concat(container.Descendants<LiteralInline>().Select(l => l.Content.ToString()));
         }
 
