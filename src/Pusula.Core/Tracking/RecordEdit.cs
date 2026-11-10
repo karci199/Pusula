@@ -107,6 +107,30 @@ namespace Pusula.Core.Tracking
         }
 
         /// <summary>
+        /// Kaydın ilk durum olayının (Talep) tarihini ve kişisini değiştirir; olay yoksa bir şey yapmaz. Hata metni;
+        /// başarıda boş.
+        /// </summary>
+        public static string SetRequest(string folder, DateTime date, string person)
+        {
+            var path = InventoryService.RecordFile(folder);
+            var record = JsonFile.TryRead<InventoryRecord>(path);
+            if (record == null)
+            {
+                return path;
+            }
+
+            var first = record.Events.FirstOrDefault();
+            if (first == null)
+            {
+                return string.Empty;
+            }
+
+            var index = record.Events.IndexOf(first);
+            record.Events[index] = InventoryEvent.Create(first.Status, date.Date, (person ?? string.Empty).Trim(), first.Location, first.Note);
+            return Write(path, record);
+        }
+
+        /// <summary>
         /// Takipten çıkarır: takip dosyası silinmez, <c>…json.kaldirildi-&lt;zaman&gt;</c> olarak yeniden adlandırılır
         /// (geri almak için eski adına çevirmek yeter). Klasör ve içindekiler olduğu gibi kalır; klasör ağaçta
         /// işaretsiz görünür. Hata metni; başarıda boş.

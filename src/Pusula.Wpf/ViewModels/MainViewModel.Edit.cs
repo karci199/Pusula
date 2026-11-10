@@ -108,6 +108,47 @@ namespace Pusula.Wpf.ViewModels
             }
         }
 
+        private string editRequestDateText = string.Empty;
+        private string editRequester = string.Empty;
+        private string editMaker = string.Empty;
+        private bool editDocsReady;
+        private DateTime? editRequestOriginal;
+        private string editRequesterOriginal = string.Empty;
+
+        /// <summary>Süreç (isteğe bağlı): talep tarihi, elle (gg.aa.yyyy).</summary>
+        public string EditRequestDateText
+        {
+            get { return editRequestDateText; }
+            set { SetProperty(ref editRequestDateText, value ?? string.Empty); }
+        }
+
+        /// <summary>Süreç: talep eden (# ile kişi önerisi).</summary>
+        public string EditRequester
+        {
+            get { return editRequester; }
+            set { SetProperty(ref editRequester, value ?? string.Empty); }
+        }
+
+        /// <summary>Süreç: yapan kişi (kablonun / jigin yapanı).</summary>
+        public string EditMaker
+        {
+            get { return editMaker; }
+            set { SetProperty(ref editMaker, value ?? string.Empty); }
+        }
+
+        /// <summary>Süreç: doküman hazır mı.</summary>
+        public bool EditDocsReady
+        {
+            get { return editDocsReady; }
+            set { SetProperty(ref editDocsReady, value); }
+        }
+
+        /// <summary>Kayıt alanında yapan kişinin anahtarı (türe özel alan değil, süreç bilgisi).</summary>
+        public const string MakerKey = "yapan";
+
+        /// <summary>Kayıt alanında "doküman hazır" anahtarı ("Evet" ya da yok).</summary>
+        public const string DocsReadyKey = "dokuman_hazir";
+
         private string editTags = string.Empty;
 
         /// <summary>Kaydın etiketleri, kutuda yazıldığı gibi: <c>#SATIMO #faz_kararli</c>.</summary>
@@ -340,6 +381,15 @@ namespace Pusula.Wpf.ViewModels
                     OnPropertyChanged(nameof(EditNamePlaceholder));
                     editValues = new System.Collections.Generic.Dictionary<string, string>(record?.Fields ?? new System.Collections.Generic.Dictionary<string, string>(), StringComparer.OrdinalIgnoreCase);
                     EditTags = MarkdownEditing.FormatTags(record?.EffectiveTags() ?? new System.Collections.Generic.List<string>());
+                    var request = record?.Events.FirstOrDefault();
+                    editRequestOriginal = request?.DateValue?.Date;
+                    editRequesterOriginal = request?.Person ?? string.Empty;
+                    EditRequestDateText = editRequestOriginal.HasValue ? editRequestOriginal.Value.ToString("dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture) : string.Empty;
+                    EditRequester = editRequesterOriginal;
+                    string maker, docs;
+                    var making = type != null && type.Statuses.Count > 1 ? record?.FirstEventOf(type.Statuses[1].Name) : null;
+                    EditMaker = record != null && record.Fields.TryGetValue(MakerKey, out maker) ? maker : making?.Person ?? string.Empty;
+                    EditDocsReady = record != null && record.Fields.TryGetValue(DocsReadyKey, out docs) && string.Equals(docs, Resources.Field_Yes, StringComparison.OrdinalIgnoreCase);
                     EditFields.Clear();
                     EditSubType = currentSub;
                     BuildEditFields();
@@ -414,11 +464,30 @@ namespace Pusula.Wpf.ViewModels
                         }
                     }
 
+                    // Süreç bilgisi (isteğe bağlı): tarih denetlenir; yapan ve doküman kayıt alanında saklanır.
+                    DateTime? requestDay = null;
+                    if (EditRequestDateText.Trim().Length > 0)
+                    {
+                        requestDay = ParseDay(EditRequestDateText);
+                        if (!requestDay.HasValue || requestDay.Value > DateTime.Today)
+                        {
+                            EditError = requestDay.HasValue ? Resources.Date_Future : string.Format(Resources.Date_Invalid, EditRequestDateText);
+                            return false;
+                        }
+                    }
+
+                    editValues[MakerKey] = EditMaker.Trim();
+                    editValues[DocsReadyKey] = EditDocsReady ? Resources.Field_Yes : string.Empty;
                     var tags = MarkdownEditing.ParseTags(EditTags);
                     error = RecordEdit.EditInventory(editFolder, EditName, EditSubType, EditNote, editValues, tags);
                     if (error.Length == 0)
                     {
                         WriteFieldsToNote(editFolder, editType, EditName, EditSubType, editValues, tags);
+                        var requester = EditRequester.Trim();
+                        if ((requestDay.HasValue && requestDay != editRequestOriginal) || !string.Equals(requester, editRequesterOriginal, StringComparison.Ordinal))
+                        {
+                            error = RecordEdit.SetRequest(editFolder, requestDay ?? editRequestOriginal ?? DateTime.Today, requester);
+                        }
                     }
 
                     break;
@@ -624,9 +693,9 @@ namespace Pusula.Wpf.ViewModels
                 Choices.Add(current);
             }
             IsChoice = field.Kind == Pusula.Core.Types.FieldKind.Choice;
-            Placeholder = field.Kind == Pusula.Core.Types.FieldKind.Number
-                ? (field.Unit.Length > 0 ? string.Format(Pusula.Wpf.Properties.Resources.Placeholder_NumberUnit, field.Unit) : Pusula.Wpf.Properties.Resources.Placeholder_Number)
-                : Pusula.Wpf.Properties.Resources.Placeholder_Text;
+            // İpucu birimin kendisi ("m", "MHz"); birimsizse "sayı" / "yaz…".
+            Placeholder = field.Unit.Length > 0 ? field.Unit
+                : field.Kind == Pusula.Core.Types.FieldKind.Number ? Pusula.Wpf.Properties.Resources.Placeholder_Number : Pusula.Wpf.Properties.Resources.Placeholder_Text;
             IsYesNo = field.Kind == Pusula.Core.Types.FieldKind.YesNo;
             value = current ?? string.Empty;
         }

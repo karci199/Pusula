@@ -51,7 +51,7 @@ $note = Join-Path $rf 'JT-0001-0001.md'
 $bodyBefore = Body $note
 Check 'düzenle açılır, alanlar görünür' ($vm.OpenEdit($rf) -and $vm.HasEditFields)
 Check 'RF alanları (faz kararlı etiket oldu)' ((Keys) -contains 'frekans' -and -not ((Keys) -contains 'faz_kararli') -and -not ((Keys) -contains 'uc_a') -and -not ((Keys) -contains 'protokol')) ((Keys) -join ',')
-Check 'alan ipuçları: sayı (m), yaz…' ((Input 'boy').Placeholder -eq 'sayı (m)' -and (Input 'frekans').Placeholder -eq 'yaz…') ((Input 'boy').Placeholder)
+Check 'alan ipuçları birimin kendisi: m, MHz' ((Input 'boy').Placeholder -eq 'm' -and (Input 'frekans').Placeholder -eq 'MHz' -and (Input 'frekans').Label -eq 'Frekans (MHz)') ((Input 'boy').Placeholder + ' / ' + (Input 'frekans').Placeholder)
 Check 'RF etiket önerisinde faz_kararli' (@($vm.TagSuggestions() | % Key) -contains '#faz_kararli')
 Check 'boy etiketi birimli' ((Input 'boy').Label -eq 'Boy (m)') ((Input 'boy').Label)
 (Input 'boy').Value = '1'

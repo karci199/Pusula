@@ -692,10 +692,12 @@ namespace Pusula.Wpf.ViewModels
             Facts.Add(new FactRow(Resources.Inv_SubType, record.SubType));
             Facts.Add(new FactRow(Resources.Inv_Level, LevelText(shown)));
             Facts.Add(new FactRow(Resources.Inv_Requested, EventText(request)));
-            Facts.Add(new FactRow(Resources.Inv_MadeBy, making?.Person ?? string.Empty));
+            string maker, docs;
+            Facts.Add(new FactRow(Resources.Inv_MadeBy, record.Fields.TryGetValue(MainViewModel.MakerKey, out maker) && maker.Length > 0 ? maker : making?.Person ?? string.Empty));
             Facts.Add(new FactRow(Resources.Inv_Delivered, delivered?.DateValue?.ToString(Resources.Format_Date) ?? string.Empty));
             Facts.Add(new FactRow(Resources.Inv_Location, record.Location));
             Facts.Add(new FactRow(Resources.Inv_Note, record.Note));
+            Facts.Add(new FactRow(Resources.Inv_Docs, record.Fields.TryGetValue(MainViewModel.DocsReadyKey, out docs) && docs == Resources.Field_Yes ? Resources.Inv_DocsReady : string.Empty));
 
             foreach (var tag in record.EffectiveTags())
             {
@@ -706,7 +708,7 @@ namespace Pusula.Wpf.ViewModels
 
             // Sayfadaki "Süreç" kartı: başlıkta yazanlar (numara, tanım, alt tür, konum) tekrarlanmaz.
             foreach (var fact in Facts.Where(f => f.Label == Resources.Inv_Level || f.Label == Resources.Inv_Requested
-                || f.Label == Resources.Inv_MadeBy || f.Label == Resources.Inv_Delivered || f.Label == Resources.Inv_Note))
+                || f.Label == Resources.Inv_MadeBy || f.Label == Resources.Inv_Delivered || f.Label == Resources.Inv_Docs || f.Label == Resources.Inv_Note))
             {
                 ProcessFacts.Add(fact);
             }

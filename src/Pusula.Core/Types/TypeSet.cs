@@ -31,7 +31,7 @@ namespace Pusula.Core.Types
 
         /// <summary>Dosya biçiminin sürümü.</summary>
         [DataMember(Name = "schemaVersion", Order = 0)]
-        public int SchemaVersion { get; set; } = 7;
+        public int SchemaVersion { get; set; } = 8;
 
         /// <summary>Kayıt türleri.</summary>
         [DataMember(Name = "types", Order = 1)]
@@ -245,7 +245,17 @@ namespace Pusula.Core.Types
                 Find("cable")?.Fields.RemoveAll(x => x.Key == "uc_a" || x.Key == "uc_b");
             }
 
-            SchemaVersion = 7;
+            // Sürüm 8 (10.11.2026): kablo frekansı MHz (kullanıcı kararı; önceki kayıtlarda değer yoktu).
+            if (SchemaVersion < 8)
+            {
+                var frequency = Find("cable")?.Fields.FirstOrDefault(x => x.Key == "frekans" && x.Unit == "GHz");
+                if (frequency != null)
+                {
+                    frequency.Unit = "MHz";
+                }
+            }
+
+            SchemaVersion = 8;
         }
 
         private void AddTagIfMissing(TagDefinition tag)
@@ -405,7 +415,7 @@ namespace Pusula.Core.Types
             set.Find("cable")?.Fields.AddRange(new[]
             {
                 Field("Boy", FieldKind.Number, "m"),
-                Field("Frekans", FieldKind.Text, "GHz", null, "RF"),
+                Field("Frekans", FieldKind.Text, "MHz", null, "RF"),
                 Field("Pin yapısı", FieldKind.Text, string.Empty, null, "Haberleşme"),
                 Field("Akım", FieldKind.Number, "A", null, "Güç"),
                 Field("Kesit (AWG)", FieldKind.Choice, string.Empty, AwgSizes, "Güç"),

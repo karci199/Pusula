@@ -1991,33 +1991,15 @@
                     <controls:FormField Header="{x:Static res:Resources.Inv_SubType}" LabelWidth="130" Margin="0,0,16,0">
                         <ComboBox ItemsSource="{Binding InventorySubTypes}" SelectedItem="{Binding NewInventorySubType, Mode=TwoWay}" />
                     </controls:FormField>
-                    <controls:FormField Header="{x:Static res:Resources.Inv_RequestDate}" LabelWidth="130"
-                                        Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}">
-                        <TextBox Text="{Binding NewInventoryRequestDateText, UpdateSourceTrigger=PropertyChanged}"
-                                 controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Date_Placeholder}" ToolTip="{x:Static res:Resources.Date_Placeholder}" />
-                    </controls:FormField>
                 </UniformGrid>
-                <UniformGrid Columns="2" Margin="0,10,0,0">
-                    <controls:FormField Header="{x:Static res:Resources.Inv_RequestedBy}" LabelWidth="130" Margin="0,0,16,0"
-                                        Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}">
-                        <TextBox Text="{Binding NewInventoryRequester, UpdateSourceTrigger=PropertyChanged}" local:MentionAssist.Mode="person" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Placeholder_Person}" />
-                    </controls:FormField>
-                    <controls:FormField Header="{x:Static res:Resources.Inv_Note}" LabelWidth="130"
-                                        ErrorText="{Binding InventoryError}">
-                        <TextBox Text="{Binding NewInventoryNote, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Placeholder_Note}" />
-                    </controls:FormField>
-                </UniformGrid>
+                <controls:FormField Header="{x:Static res:Resources.Inv_Note}" LabelWidth="130" Margin="0,10,0,0" ErrorText="{Binding InventoryError}">
+                    <TextBox Text="{Binding NewInventoryNote, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Placeholder_Note}" />
+                </controls:FormField>
                 <controls:FormField Header="{x:Static res:Resources.Inv_Tags}" LabelWidth="130" Margin="0,10,0,0">
                     <local:TagBox Tags="{Binding NewInventoryTags, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Tag_Placeholder}" />
                 </controls:FormField>
-                <StackPanel Visibility="{Binding HasNewInventoryFields, Converter={StaticResource BoolToVis}}">
-                    <Border Margin="0,16,0,10" Padding="0,0,0,6" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
-                        <TextBlock FontWeight="SemiBold" Text="{Binding NewInventoryFieldsHeader}" />
-                    </Border>
-                    <ScrollViewer MaxHeight="320" VerticalScrollBarVisibility="Auto">
-                        <ItemsControl ItemsSource="{Binding NewInventoryFields}" ItemTemplate="{StaticResource FieldInputTemplate}" ItemsPanel="{StaticResource TwoColumnPanel}" />
-                    </ScrollViewer>
-                </StackPanel>
+                <TextBlock Margin="0,10,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
+                           TextWrapping="Wrap" Text="{x:Static res:Resources.Inv_DetailsLater}" />
                 <TextBlock Margin="0,10,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
                            TextWrapping="Wrap"
                            Text="{x:Static res:Resources.Inv_TemplateHint}"
@@ -2084,13 +2066,33 @@
                     <controls:FormField Header="{x:Static res:Resources.Edit_SubType}" LabelWidth="130" Margin="0,0,16,0">
                         <ComboBox x:Name="EditSubTypeBox" ItemsSource="{Binding EditSubTypes}" SelectedItem="{Binding EditSubType, Mode=TwoWay}" />
                     </controls:FormField>
-                    <controls:FormField Header="{x:Static res:Resources.Edit_Note}" LabelWidth="130">
-                        <TextBox Text="{Binding EditNote, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Placeholder_Note}" />
-                    </controls:FormField>
                 </UniformGrid>
+                <controls:FormField Header="{x:Static res:Resources.Edit_Note}" LabelWidth="130" Margin="0,10,0,0" Visibility="{Binding IsEditInventory, Converter={StaticResource BoolToVis}}">
+                    <TextBox Text="{Binding EditNote, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Placeholder_Note}" />
+                </controls:FormField>
                 <controls:FormField Header="{x:Static res:Resources.Inv_Tags}" LabelWidth="130" Margin="0,10,0,0" Visibility="{Binding IsEditInventory, Converter={StaticResource BoolToVis}}">
                     <local:TagBox Tags="{Binding EditTags, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Tag_Placeholder}" />
-                </controls:FormField>                <!-- Türe özel alanlar (alt türe göre), iki sütun -->
+                </controls:FormField>                <!-- Süreç (isteğe bağlı): talep, yapan, doküman -->
+                <StackPanel Visibility="{Binding IsEditInventory, Converter={StaticResource BoolToVis}}">
+                    <Border Margin="0,16,0,10" Padding="0,0,0,6" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+                        <TextBlock FontWeight="SemiBold" Text="{x:Static res:Resources.Edit_Process}" />
+                    </Border>
+                    <UniformGrid Columns="2">
+                        <controls:FormField Header="{x:Static res:Resources.Inv_RequestDate}" LabelWidth="130" Margin="0,0,16,10">
+                            <TextBox Text="{Binding EditRequestDateText, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Date_Placeholder}" />
+                        </controls:FormField>
+                        <controls:FormField Header="{x:Static res:Resources.Inv_RequestedBy}" LabelWidth="130" Margin="0,0,0,10">
+                            <TextBox Text="{Binding EditRequester, UpdateSourceTrigger=PropertyChanged}" local:MentionAssist.Mode="person" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Placeholder_Person}" />
+                        </controls:FormField>
+                        <controls:FormField Header="{x:Static res:Resources.Inv_MadeBy}" LabelWidth="130" Margin="0,0,16,10">
+                            <TextBox Text="{Binding EditMaker, UpdateSourceTrigger=PropertyChanged}" local:MentionAssist.Mode="person" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Placeholder_Person}" />
+                        </controls:FormField>
+                        <controls:FormField Header="{x:Static res:Resources.Inv_Docs}" LabelWidth="130" Margin="0,0,0,10">
+                            <CheckBox IsChecked="{Binding EditDocsReady}" VerticalAlignment="Center" Content="{x:Static res:Resources.Inv_DocsReady}" />
+                        </controls:FormField>
+                    </UniformGrid>
+                </StackPanel>
+                <!-- Türe özel alanlar (alt türe göre), iki sütun -->
                 <StackPanel Visibility="{Binding HasEditFields, Converter={StaticResource BoolToVis}}">
                     <Border Margin="0,16,0,10" Padding="0,0,0,6" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
                         <TextBlock FontWeight="SemiBold" Text="{Binding EditFieldsHeader}" />

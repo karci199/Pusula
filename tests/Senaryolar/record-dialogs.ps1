@@ -64,6 +64,18 @@ Check 'alt türü listeden seçince hemen işler' ($vm.EditSubType -eq $other -a
 $combo.SelectedItem = 'Mekanik'; Pump
 Check 'geri dönünce girilen değer kaybolmaz' (@($vm.EditFields | Where-Object { $_.Key -eq $choice.Key })[0].Value -eq $pick)
 $vm.IsEditOpen = $false; Pump
+"--- 1b. Düzenle: Süreç (isteğe bağlı)"
+$vm.OpenEdit($jig) | Out-Null; Pump
+Check 'süreç: talep tarihi ve kişisi ilk olaydan' ($vm.EditRequestDateText -eq '02.09.2026' -and $vm.EditRequester -eq 'katan') "$($vm.EditRequestDateText) $($vm.EditRequester)"
+$vm.EditRequestDateText = '31.13.2026'
+Check 'geçersiz tarih: kaydedilmez' (-not $vm.ConfirmEdit() -and $vm.EditError -match 'okunamadı')
+$vm.EditRequestDateText = '01.09.2026'; $vm.EditRequester = 'M. Yılmaz'; $vm.EditMaker = 'Atölye A'; $vm.EditDocsReady = $true
+Check 'süreç kaydedildi' ($vm.ConfirmEdit()) $vm.EditError
+$jr = [IO.File]::ReadAllText((Join-Path $jig '_TAKIP\kayit.json'))
+Check 'ilk olay: yeni tarih ve kişi; yapan, doküman kayıtta' ($jr -match '"date":\s*"2026-09-01"' -and $jr -match '"person":\s*"M. Yılmaz"' -and $jr -match '"Key":\s*"yapan",\s*"Value":\s*"Atölye A"' -and $jr -match '"Key":\s*"dokuman_hazir",\s*"Value":\s*"Evet"')
+$vm.ShowInventory($jig); Wait
+$pf = @{}; foreach ($x in $vm.Inventory.ProcessFacts) { $pf[$x.Label] = $x.Value }
+Check 'kayıt sayfası: Yapan, Doküman Hazır, Talep' ($pf['Yapan'] -eq 'Atölye A' -and $pf['Doküman'] -eq 'Hazır' -and $pf['Talep'] -match '^01\.09\.2026') (($pf.Keys | % { $_ + '=' + $pf[$_] }) -join ', ')
 Check 'yeniden açınca kutu yine dolu (aynı kayıt)' ($vm.OpenEdit($jig) -and $combo.SelectedItem -eq 'Mekanik') "[$($combo.SelectedItem)]"
 $vm.IsEditOpen = $false; Pump
 
@@ -103,7 +115,7 @@ if ($md.Count -gt 0) { Check 'alan değeri notun YAML başlığında' ([IO.File]
 "--- 3. Kayıt sayfası: Süreç kartı başlıkta yazanları tekrarlamaz"
 $vm.ShowInventory($jig); Wait
 $labels = @($vm.Inventory.ProcessFacts | ForEach-Object { $_.Label }) -join ','
-Check 'süreç: düzey, talep, yapan, teslim, not' ($labels -eq 'Düzey,Talep,Yapan,Teslim,Not') $labels
+Check 'süreç: düzey, talep, yapan, teslim, not, doküman' ($labels -eq 'Düzey,Talep,Yapan,Teslim,Not,Doküman') $labels
 Check 'bilgiler listesi (eski) yerinde: numara dahil' (@($vm.Inventory.Facts | ForEach-Object { $_.Label }) -contains 'Numara')
 
 "--- 3b. Etiket kutusu: rozetler"

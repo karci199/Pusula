@@ -1883,6 +1883,18 @@ namespace Pusula.Wpf.Properties
         /// <summary>Yazı alanı ipucu.</summary>
         public static string Placeholder_Text { get { return Get("Placeholder_Text"); } }
 
+        /// <summary>Süreç: doküman satırı.</summary>
+        public static string Inv_Docs { get { return Get("Inv_Docs"); } }
+
+        /// <summary>Doküman hazır.</summary>
+        public static string Inv_DocsReady { get { return Get("Inv_DocsReady"); } }
+
+        /// <summary>Düzenle: süreç bölümü.</summary>
+        public static string Edit_Process { get { return Get("Edit_Process"); } }
+
+        /// <summary>Yeni kayıt ipucu.</summary>
+        public static string Inv_DetailsLater { get { return Get("Inv_DetailsLater"); } }
+
         #endregion
     }
 }
