@@ -1,13 +1,13 @@
 ﻿# Dependencies
 
-Repoya kopyalanmış derlenmiş kütüphaneler. NuGet restore gerekmez; projeler `HintPath` ile referans verir.
+Repoya kopyalanmış derlenmiş kütüphaneler. NuGet restore yok (hiç PackageReference yok): projeler `HintPath` ile referans verir, .NET 4.8 başvuru derlemeleri de buradan gelir. Depo yeni kopyalandığında internetsiz derlenir.
 Güncellerken bu tabloyu da güncelle.
 
 | Kütüphane | Sürüm | Kaynak | Lisans |
 |---|---|---|---|
 | `DesignKit/DesignKit.Wpf.dll` (+ `.xml`) | 0.3.8 | `C:\Projeler\Aktif\DesignKit`, 30db891 + ContentDialog `DialogWidth`, karartma içeriğe göre (tam ekranda ve pencere değişince de yeniden ölçülür) + `TextBoxHelper.PlaceholderText` (10.11.2026), `MSBuild src\DesignKit.Wpf\DesignKit.Wpf.csproj /p:Configuration=Release` (restore yok) | İç kütüphane |
 | `AvalonEdit/ICSharpCode.AvalonEdit.dll` (+ `.xml`) | 6.3.1.120 (`lib/net462`) | nuget.org `AvalonEdit` 6.3.1.120 (AvalonEdit Contributors, github.com/icsharpcode/AvalonEdit), indirildi 10.11.2026, SHA256 B0032716…0B10C7; bağımlılığı yalnız .NET Framework. md penceresinde renklendirme / satır numarası için (henüz bağlanmadı) | MIT |
-| `NuGet/microsoft.netframework.referenceassemblies.net48.1.0.3.nupkg` | 1.0.3 | nuget.org, Microsoft | MIT |
+| `ReferenceAssemblies/.NETFramework/v4.8/` (238 dosya, ~43 MB) | 1.0.3 | nuget.org `Microsoft.NETFramework.ReferenceAssemblies.net48` paketinin `build/.NETFramework` içi açıldı (10.11.2026); `TargetFrameworkRootPath` buraya bakar, paket ve restore yok | MIT |
 | `Markdig/Markdig.dll` (+ `.xml`) | 0.37.0 (`lib/net462`) | nuget.org `Markdig` 0.37.0, Alexandre Mutel, github.com/xoofx/markdig | BSD-2-Clause |
 | `SystemMemory/System.Memory.dll` | 4.5.5 (derleme 4.0.1.2, `lib/net461`) | nuget.org, Microsoft (Markdig'in .NET 4.x bağımlılığı) | MIT |
 | `SystemMemory/System.Buffers.dll` | 4.5.1 (derleme 4.0.3.0, `lib/net461`) | nuget.org, Microsoft (System.Memory bağımlılığı) | MIT |
@@ -39,6 +39,6 @@ SHA-256 (`DesignKit.Wpf.dll`): `041277C9E117D6F3279A1ADE1CF66D4D8FEECCC5E7DCB76A
 
 ## .NET Framework 4.8 başvuru derlemeleri
 
-Derleme için makinede .NET 4.8 "targeting pack" kurulu olması gerekmesin diye paket burada durur (bazı Visual Studio kurulumlarında yok; restore internet ister). `Directory.Build.props` paketi açıkça kullanır, kökteki `nuget.config` yalnız bu klasörü kaynak sayar. Yalnız derlemede kullanılır, `Pusula.exe` ile dağıtılmaz.
+Derleme için makinede .NET 4.8 "targeting pack" kurulu olması gerekmesin diye başvuru derlemeleri burada durur (bazı Visual Studio kurulumlarında yok). `Directory.Build.props` `TargetFrameworkRootPath` ile buraya bakar; SDK'nın restore çıktısı araması kapalıdır (`SkipResolvePackageAssets`, `IncludePackageReferencesDuringMarkupCompilation=false`). Kökteki `nuget.config` hiç kaynak tanımlamaz. Yalnız derlemede kullanılır, `Pusula.exe` ile dağıtılmaz.
 
 SHA-256: `8A7E348538E7EB91351696911689F49E3D4F63F8BAB517432BBE159B8B1104A2`

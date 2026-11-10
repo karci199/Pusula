@@ -21,7 +21,7 @@ uygulama takip eder.
     (`SurfaceBaseBrush`, `LayerBrush`, `TextPrimaryBrush`, `PadCard`, `BodyTextBlockStyle` …).
   - Önce standart WPF kontrolü (DesignKit onu zaten temalar), yoksa DesignKit özel kontrolü.
     Katalog: `C:\Projeler\Aktif\DesignKit\USAGE.md`.
-- **Bağımlılık:** NuGet restore yok. Gereken derlenmiş kütüphane `Dependencies/<Ad>/` altına konur,
+- **Bağımlılık:** NuGet restore yok, hiç `PackageReference` yok (.NET 4.8 başvuru derlemeleri de `Dependencies/ReferenceAssemblies` altında). Gereken derlenmiş kütüphane `Dependencies/<Ad>/` altına konur,
   `HintPath` ile referans verilir, README'ye kaynak/sürüm/lisans yazılır. **Her yeni paket için
   lisans ve gerekçe kullanıcıya sorulur.**
 

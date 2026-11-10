@@ -32,13 +32,16 @@
 
   <!--
     .NET Framework 4.8 başvuru derlemeleri: makinede kurulu "targeting pack"e güvenilmez (her bilgisayarda yok).
-    Paket Dependencies\NuGet altından gelir (nuget.config yalnız o klasörü kaynak sayar); internet gerekmez.
+    Microsoft.NETFramework.ReferenceAssemblies.net48 1.0.3 paketinin içi Dependencies\ReferenceAssemblies altına
+    açılmıştır; derleme doğrudan oradan yapılır. Hiç PackageReference yoktur: NuGet restore hiç çalışmaz, depo yeni
+    kopyalandığında da (obj yokken) internetsiz derlenir. Aşağıdaki iki anahtar SDK'nın restore çıktısı
+    (project.assets.json, *.nuget.g.props) aramasını kapatır; paket olmadığı için güvenlidir.
   -->
   <PropertyGroup>
     <AutomaticallyUseReferenceAssemblyPackages>false</AutomaticallyUseReferenceAssemblyPackages>
+    <TargetFrameworkRootPath>$(DependenciesDir)ReferenceAssemblies\</TargetFrameworkRootPath>
+    <SkipResolvePackageAssets>true</SkipResolvePackageAssets>
+    <IncludePackageReferencesDuringMarkupCompilation>false</IncludePackageReferencesDuringMarkupCompilation>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3" PrivateAssets="all" />
-  </ItemGroup>
 
 </Project>
