@@ -366,7 +366,9 @@ namespace Pusula.Wpf.ViewModels
             }
 
             templates = TemplateStore.LoadOrCreate(rootPath);
-            OnPropertyChanged(nameof(UserSummary));
+            OnPropertyChanged(nameof(UserRole));
+            OnPropertyChanged(nameof(UserTeam));
+            OnPropertyChanged(nameof(PersonRoles));
             types = TypeStore.LoadOrCreate(rootPath);
             foreach (var entry in FolderReader.ListChildren(rootPath))
             {

@@ -1901,9 +1901,6 @@ namespace Pusula.Wpf.Properties
         /// <summary>Ayarlar: kullanıcı açıklaması.</summary>
         public static string Settings_UserHint { get { return Get("Settings_UserHint"); } }
 
-        /// <summary>Ayarlar: kullanıcı kişi listesinde değil.</summary>
-        public static string Settings_UserNotListed { get { return Get("Settings_UserNotListed"); } }
-
         /// <summary>Türler: kişiler bölümü.</summary>
         public static string Types_People { get { return Get("Types_People"); } }
 

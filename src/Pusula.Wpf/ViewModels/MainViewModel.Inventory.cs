@@ -73,13 +73,16 @@ namespace Pusula.Wpf.ViewModels
             get { return userName.Length > 0 ? userName : Environment.UserName; }
         }
 
-        /// <summary>Ayarlar'daki kullanıcı adı (ad soyad); değişince ayarlara yazılır.</summary>
+        /// <summary>
+        /// Ayarlar'daki kullanıcı adı (ad soyad); değişince ayarlara yazılır. Kullanıcı da bir kişidir: kişi listesinde yoksa
+        /// eklenir (listedeki satırlar değiştirilmez, başka bir kişinin satırı yanlışlıkla değişmesin).
+        /// </summary>
         public string UserName
         {
             get { return userName; }
             set
             {
-                var text = (value ?? string.Empty).Trim();
+                var text = string.Join(" ", (value ?? string.Empty).Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries));
                 if (text == userName)
                 {
                     return;
@@ -88,18 +91,83 @@ namespace Pusula.Wpf.ViewModels
                 userName = text;
                 settings.UserName = text;
                 settings.Save();
+                UpdateUserPerson(null, null);
+
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(UserSummary));
+                OnPropertyChanged(nameof(UserRole));
+                OnPropertyChanged(nameof(UserTeam));
             }
         }
 
-        /// <summary>Kullanıcının kişi listesindeki rolü ve ekibi ("Mühendis · Anten ekibi"); listede değilse ipucu.</summary>
-        public string UserSummary
+        /// <summary>Kullanıcının rolü (kişi listesindeki satırı); değişince tür dosyasına yazılır.</summary>
+        public string UserRole
         {
-            get
+            get { return types.FindPerson(CurrentUser)?.Role ?? string.Empty; }
+            set
             {
-                var person = types.FindPerson(CurrentUser);
-                return person == null ? Resources.Settings_UserNotListed : person.Summary;
+                UpdateUserPerson(value, null);
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>Kullanıcının ekibi (kişi listesindeki satırı); değişince tür dosyasına yazılır.</summary>
+        public string UserTeam
+        {
+            get { return types.FindPerson(CurrentUser)?.Team ?? string.Empty; }
+            set
+            {
+                UpdateUserPerson(null, value);
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>Kişi rolleri (Ayarlar'da kullanıcının rol seçimi).</summary>
+        public System.Collections.Generic.List<string> PersonRoles
+        {
+            get { return types.PersonRoles; }
+        }
+
+        // Kullanıcının kişi satırını ekler / günceller (kök seçiliyse ve ad yazılmışsa); değişiklik varsa tür dosyasına yazar.
+        private void UpdateUserPerson(string? role, string? team)
+        {
+            if (rootPath.Length == 0 || userName.Length == 0)
+            {
+                return;
+            }
+
+            var person = types.FindPerson(userName);
+            var changed = false;
+            if (person == null)
+            {
+                person = new PersonDefinition { Name = userName };
+                types.People.Add(person);
+                changed = true;
+            }
+
+            if (role != null && role.Trim() != person.Role)
+            {
+                person.Role = role.Trim();
+                changed = true;
+            }
+
+            if (team != null && team.Trim() != person.Team)
+            {
+                person.Team = team.Trim();
+                changed = true;
+            }
+
+            if (changed)
+            {
+                SaveTypes();
+            }
+        }
+
+        private void SaveTypes()
+        {
+            var failure = TypeStore.Save(rootPath, types);
+            if (failure.Length > 0)
+            {
+                Status = string.Format(Resources.Types_ErrorSave, failure);
             }
         }
 

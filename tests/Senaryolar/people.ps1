@@ -23,8 +23,18 @@ $win.Show(); Pump
 $vm = $win.DataContext; $vm.RootPath = $Data; Wait
 Check 'kullanıcı boşken Windows adı' ([Pusula.Wpf.ViewModels.MainViewModel]::CurrentUser -eq $env:USERNAME)
 $vm.UserName = '  Ayşe Demir '
-Check 'kullanıcı ayarlandı' ([Pusula.Wpf.ViewModels.MainViewModel]::CurrentUser -eq 'Ayşe Demir' -and $vm.UserSummary -eq 'Mühendis · Anten') $vm.UserSummary
+Check 'kullanıcı ayarlandı, listedeki rolü' ([Pusula.Wpf.ViewModels.MainViewModel]::CurrentUser -eq 'Ayşe Demir' -and $vm.UserRole -eq 'Mühendis' -and $vm.UserTeam -eq 'Anten') $vm.UserRole
 Check 'ayarlara yazıldı' ([IO.File]::ReadAllText($env:PUSULA_AYARLAR) -match '"user":\s*"Ayşe Demir"')
+$vm.UserName = 'Zeynep   Ak'
+$tf = [Pusula.Core.Types.TypeStore]::LoadOrCreate($Data)
+Check 'listede olmayan kullanıcı kişi olarak eklendi' ($tf.FindPerson('Zeynep Ak') -ne $null -and $tf.FindPerson('Ayşe Demir') -ne $null) (@($tf.People | % Name) -join ',')
+$vm.UserRole = 'Teknisyen'; $vm.UserTeam = ' Ölçüm '
+$tf = [Pusula.Core.Types.TypeStore]::LoadOrCreate($Data)
+Check 'rol ve ekip tür dosyasına yazıldı' ($tf.FindPerson('Zeynep Ak').Role -eq 'Teknisyen' -and $tf.FindPerson('Zeynep Ak').Team -eq 'Ölçüm')
+$vm.UserName = 'Zeynep Akın'
+$tf = [Pusula.Core.Types.TypeStore]::LoadOrCreate($Data)
+Check 'ad değişince yeni kişi eklenir, eskisi kalır' ($tf.FindPerson('Zeynep Ak').Role -eq 'Teknisyen' -and $tf.FindPerson('Zeynep Akın') -ne $null -and $tf.FindPerson('Ayşe Demir').Role -eq 'Mühendis') (@($tf.People | % Name) -join ',')
+$vm.UserName = 'Ayşe Demir'
 $sug = @($vm.PersonSuggestions())
 Check 'öneride kişi ve rolü' (@($sug | ? { $_.Key -eq 'Ayşe Demir' -and $_.Title -eq 'Mühendis · Anten' }).Count -eq 1) (($sug | % { $_.Key + '=' + $_.Title }) -join ' | ')
 $types = [Pusula.Core.Types.TypeStore]::LoadOrCreate($Data)
@@ -36,13 +46,13 @@ Check 'temizlenince yine Windows adı' ([Pusula.Wpf.ViewModels.MainViewModel]::C
 
 "--- 3. Türler penceresi"
 $ed = New-Object Pusula.Wpf.ViewModels.TypeEditor.TypeEditorViewModel($Data, $types)
-Check 'kişiler yüklendi' ($ed.People.Count -eq 1 -and $ed.RolesText -eq 'Mühendis, Teknisyen')
+Check 'kişiler yüklendi' ($ed.People.Count -eq 3 -and $ed.RolesText -eq 'Mühendis, Teknisyen')
 $r = New-Object Pusula.Wpf.ViewModels.TypeEditor.PersonRow; $r.Name = ' Mehmet   Kaya '; $r.Role = 'Teknisyen'; $r.Team = 'Mekanik'; $ed.People.Add($r)
 $dup = New-Object Pusula.Wpf.ViewModels.TypeEditor.PersonRow; $dup.Name = 'ayşe demir'; $ed.People.Add($dup)
 $ed.RolesText = 'Mühendis, Teknisyen, Stajyer'
 Check 'rol listesi' ($ed.Roles.Count -eq 3)
 Check 'kaydedildi' ($ed.Save()) $ed.Error
 $after = [Pusula.Core.Types.TypeStore]::LoadOrCreate($Data)
-Check 'ad boşlukları düzeltildi, tekrar atıldı' ((@($after.People | % Name) -join ',') -eq 'Ayşe Demir,Mehmet Kaya') (@($after.People | % Name) -join ',')
+Check 'ad boşlukları düzeltildi, tekrar atıldı' ((@($after.People | % Name) -join ',') -eq 'Ayşe Demir,Zeynep Ak,Zeynep Akın,Mehmet Kaya') (@($after.People | % Name) -join ',')
 Check 'roller ve etiketler korundu' ($after.PersonRoles.Count -eq 3 -and $after.TagList.Count -eq $types.TagList.Count)
 $win.Close()

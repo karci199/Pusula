@@ -1672,10 +1672,7 @@
     <value>Kullanıcı (ben)</value>
   </data>
   <data name="Settings_UserHint" xml:space="preserve">
-    <value>Adın soyadın. Yeni kayıtta talep eden ve olaylarda kişi olarak kendiliğinden yazılır; # ile kişi listesinden seçilir. Boşsa Windows kullanıcı adı kullanılır.</value>
-  </data>
-  <data name="Settings_UserNotListed" xml:space="preserve">
-    <value>Kişi listesinde yok · Türler penceresinden eklenebilir</value>
+    <value>Sen de bir kişisin: ad soyad, rol ve ekip kişi listesine (Türler) yazılır. Yeni kayıtta talep eden ve olaylarda kişi olarak kendiliğinden bu ad gelir. Boşsa Windows kullanıcı adı kullanılır.</value>
   </data>
   <data name="Types_People" xml:space="preserve">
     <value>Kişiler</value>
