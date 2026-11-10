@@ -26,11 +26,12 @@ namespace Pusula.Core.Types
             Types = new List<TypeDefinition>();
             Tags = new List<string>();
             FileTypes = new List<FileTypeDefinition>();
+            TagList = new List<TagDefinition>();
         }
 
         /// <summary>Dosya biçiminin sürümü.</summary>
         [DataMember(Name = "schemaVersion", Order = 0)]
-        public int SchemaVersion { get; set; } = 4;
+        public int SchemaVersion { get; set; } = 5;
 
         /// <summary>Kayıt türleri.</summary>
         [DataMember(Name = "types", Order = 1)]
@@ -43,6 +44,19 @@ namespace Pusula.Core.Types
         /// <summary>Dosya türleri (uzantıya göre: Visio, STEP, Touchstone …); klasör kutucuklarında sayılır.</summary>
         [DataMember(Name = "fileTypes", Order = 3, EmitDefaultValue = false)]
         public List<FileTypeDefinition> FileTypes { get; set; } = new List<FileTypeDefinition>();
+
+        /// <summary>
+        /// Etiketler ve geçerli oldukları yer (sürüm 5): ad (<c>#</c>'sız, Obsidian etiketi gibi boşluksuz) ve kapsam
+        /// (tür, istenirse alt tür; boşsa her yerde). Kayıtta ve notun YAML'ındaki <c>tags:</c> alanında bu adlar durur.
+        /// </summary>
+        [DataMember(Name = "tagList", Order = 4, EmitDefaultValue = false)]
+        public List<TagDefinition> TagList { get; set; } = new List<TagDefinition>();
+
+        /// <summary>Bu türde (ve alt türde) geçerli etiketler, listedeki sırayla.</summary>
+        public IEnumerable<TagDefinition> TagsFor(string typeKey, string subType)
+        {
+            return TagList.Where(t => t.AppliesTo(typeKey, subType));
+        }
 
         /// <summary>Uzantısı (".vsdx" ya da "vsdx") verilen dosya türü; tanımlı değilse <c>null</c>.</summary>
         public FileTypeDefinition? FindFileType(string extension)
@@ -179,7 +193,25 @@ namespace Pusula.Core.Types
                 Find("jig")?.Fields.RemoveAll(x => x.Key == "adet");
             }
 
-            SchemaVersion = 4;
+            // Sürüm 5: etiketler kapsamlı listeye geçer; eski düz etiketler her yerde geçerli olur, örnek etiketler eklenir.
+            if (SchemaVersion < 5 && TagList.Count == 0)
+            {
+                foreach (var name in Tags)
+                {
+                    var tag = TagDefinition.NameFrom(name);
+                    if (tag.Length > 0 && !TagList.Any(t => string.Equals(t.Name, tag, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        TagList.Add(new TagDefinition { Name = tag });
+                    }
+                }
+
+                foreach (var sample in defaults.TagList.Where(d => !TagList.Any(t => string.Equals(t.Name, d.Name, StringComparison.OrdinalIgnoreCase))))
+                {
+                    TagList.Add(sample);
+                }
+            }
+
+            SchemaVersion = 5;
         }
 
         // Alt tür adını değiştirir; alanların "geçerli alt türler" listesi de aynı adla güncellenir.
@@ -217,6 +249,15 @@ namespace Pusula.Core.Types
         {
             var set = new TypeSet();
             set.Tags.AddRange(new[] { "SATIMO", "VNA", "Yankısız", "ÇK", "Kalifikasyon" });
+            foreach (var name in set.Tags)
+            {
+                set.TagList.Add(new TagDefinition { Name = TagDefinition.NameFrom(name) });
+            }
+
+            // Basit örnekler: kapsamlı etiketler (yalnız RF kabloda, yalnız haberleşme kablosunda).
+            set.TagList.Add(TagDefinition.For("faz_kararli", "cable", "RF"));
+            set.TagList.Add(TagDefinition.For("RS422", "cable", "Haberleşme"));
+            set.TagList.Add(TagDefinition.For("RS232", "cable", "Haberleşme"));
 
             set.Types.Add(new TypeDefinition
             {
@@ -646,6 +687,76 @@ namespace Pusula.Core.Types
             }
 
             return builder.ToString().Trim('_');
+        }
+    }
+
+    /// <summary>Etiket: ad ve geçerli olduğu yerler (boşsa her yerde).</summary>
+    [DataContract]
+    public sealed class TagDefinition
+    {
+        /// <summary>Serileştirici kurucuyu çağırmaz; dosyada olmayan alanlar boş değerle başlar.</summary>
+        [OnDeserializing]
+        private void OnDeserializing(StreamingContext context)
+        {
+            Name = string.Empty;
+            Scopes = new List<TagScope>();
+        }
+
+        /// <summary>Ad (<c>#</c>'sız, boşluksuz: <c>faz_kararli</c>, <c>RS422</c>).</summary>
+        [DataMember(Name = "name", Order = 0)]
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>Geçerli olduğu yerler; boşsa her yerde.</summary>
+        [DataMember(Name = "scopes", Order = 1, EmitDefaultValue = false)]
+        public List<TagScope> Scopes { get; set; } = new List<TagScope>();
+
+        /// <summary>Bu türde (alt türde) geçerli mi.</summary>
+        public bool AppliesTo(string typeKey, string subType)
+        {
+            return Scopes.Count == 0 || Scopes.Any(s => s.Matches(typeKey, subType));
+        }
+
+        /// <summary>Etiket adını düzeltir: baştaki <c>#</c> ve boşluklar atılır, aradaki boşluk alt çizgi olur (Obsidian etiketi).</summary>
+        public static string NameFrom(string text)
+        {
+            var name = (text ?? string.Empty).Trim().TrimStart('#').Trim();
+            return string.Join("_", name.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries));
+        }
+
+        /// <summary>Tek kapsamlı etiket (örn. <c>faz_kararli</c> yalnız <c>cable</c> · <c>RF</c>).</summary>
+        public static TagDefinition For(string name, string typeKey, string subType = "")
+        {
+            var tag = new TagDefinition { Name = NameFrom(name) };
+            tag.Scopes.Add(new TagScope { Type = typeKey, SubType = subType });
+            return tag;
+        }
+    }
+
+    /// <summary>Etiketin geçerli olduğu yer: tür (anahtar) ve istenirse alt tür.</summary>
+    [DataContract]
+    public sealed class TagScope
+    {
+        /// <summary>Serileştirici kurucuyu çağırmaz; dosyada olmayan alanlar boş değerle başlar.</summary>
+        [OnDeserializing]
+        private void OnDeserializing(StreamingContext context)
+        {
+            Type = string.Empty;
+            SubType = string.Empty;
+        }
+
+        /// <summary>Tür anahtarı (<c>cable</c>, <c>jig</c>, <c>stock</c>, <c>project</c> …).</summary>
+        [DataMember(Name = "type", Order = 0)]
+        public string Type { get; set; } = string.Empty;
+
+        /// <summary>Alt tür; boşsa türün hepsi.</summary>
+        [DataMember(Name = "subType", Order = 1, EmitDefaultValue = false)]
+        public string SubType { get; set; } = string.Empty;
+
+        /// <summary>Verilen tür ve alt türe uyuyor mu.</summary>
+        public bool Matches(string typeKey, string subType)
+        {
+            return string.Equals(Type, typeKey, StringComparison.OrdinalIgnoreCase)
+                && (SubType.Length == 0 || string.Equals(SubType, subType, StringComparison.OrdinalIgnoreCase));
         }
     }
 

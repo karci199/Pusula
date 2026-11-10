@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using Pusula.Core.Inventory;
+using Pusula.Core.Types;
 
 namespace Pusula.Core.Tracking
 {
@@ -71,8 +73,8 @@ namespace Pusula.Core.Tracking
             return Write(path, info);
         }
 
-        /// <summary>Envanter kaydının adını, alt türünü, kısa açıklamasını ve alan değerlerini değiştirir. Hata metni; başarıda boş.</summary>
-        public static string EditInventory(string folder, string name, string subType, string note, IDictionary<string, string>? fields = null)
+        /// <summary>Envanter kaydının adını, alt türünü, kısa açıklamasını, alan değerlerini ve etiketlerini (verildiyse) değiştirir. Hata metni; başarıda boş.</summary>
+        public static string EditInventory(string folder, string name, string subType, string note, IDictionary<string, string>? fields = null, IEnumerable<string>? tags = null)
         {
             var path = InventoryService.RecordFile(folder);
             var record = JsonFile.TryRead<InventoryRecord>(path);
@@ -94,6 +96,11 @@ namespace Pusula.Core.Tracking
                         record.Fields[pair.Key] = pair.Value.Trim();
                     }
                 }
+            }
+
+            if (tags != null)
+            {
+                record.Tags = tags.Select(TagDefinition.NameFrom).Where(t => t.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
             }
 
             return Write(path, record);

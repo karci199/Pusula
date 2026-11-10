@@ -256,7 +256,17 @@ namespace Pusula.Core.Notes
         /// </summary>
         public static string SetFrontMatter(string notePath, IDictionary<string, string> values)
         {
-            if (string.IsNullOrEmpty(notePath) || !File.Exists(notePath) || values.Count == 0)
+            return SetFrontMatter(notePath, values, null);
+        }
+
+        /// <summary>
+        /// <see cref="SetFrontMatter(string, IDictionary{string, string})"/> gibi; ayrıca liste alanları (Obsidian <c>tags</c>)
+        /// tek satırda <c>tags: [a, b]</c> olarak yazılır, boş liste satırı kaldırır. Değiştirilen ya da kaldırılan
+        /// anahtarın altındaki çok satırlı değer (Obsidian'ın yazdığı <c>  - a</c> satırları) da temizlenir.
+        /// </summary>
+        public static string SetFrontMatter(string notePath, IDictionary<string, string> values, IDictionary<string, IList<string>>? lists)
+        {
+            if (string.IsNullOrEmpty(notePath) || !File.Exists(notePath) || values.Count + (lists?.Count ?? 0) == 0)
             {
                 return string.Empty;
             }
@@ -288,7 +298,14 @@ namespace Pusula.Core.Notes
                 close = 1;
             }
 
-            foreach (var pair in values)
+            var entries = values.Select(p => new KeyValuePair<string, string>(p.Key, Pusula.Core.Testing.FrontMatter.Quote(p.Value ?? string.Empty))).ToList();
+            foreach (var list in lists ?? new Dictionary<string, IList<string>>())
+            {
+                var items = (list.Value ?? new List<string>()).Select(i => (i ?? string.Empty).Trim()).Where(i => i.Length > 0).Select(Pusula.Core.Testing.FrontMatter.Quote).ToList();
+                entries.Add(new KeyValuePair<string, string>(list.Key, items.Count == 0 ? string.Empty : "[" + string.Join(", ", items) + "]"));
+            }
+
+            foreach (var pair in entries)
             {
                 var key = pair.Key.Trim();
                 if (key.Length == 0)
@@ -297,7 +314,18 @@ namespace Pusula.Core.Notes
                 }
 
                 var index = lines.FindIndex(1, close - 1, l => l.TrimStart().StartsWith(key + ":", StringComparison.OrdinalIgnoreCase));
-                var value = Pusula.Core.Testing.FrontMatter.Quote(pair.Value ?? string.Empty);
+                var value = pair.Value;
+
+                // Anahtarın altındaki çok satırlı değer (girintili ya da "- " ile başlayan satırlar) da onun parçasıdır.
+                if (index > 0)
+                {
+                    while (index + 1 < close && (lines[index + 1].StartsWith(" ", StringComparison.Ordinal) || lines[index + 1].StartsWith("\t", StringComparison.Ordinal) || lines[index + 1].StartsWith("- ", StringComparison.Ordinal)))
+                    {
+                        lines.RemoveAt(index + 1);
+                        close--;
+                    }
+                }
+
                 if (value.Length == 0)
                 {
                     if (index > 0)
