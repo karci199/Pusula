@@ -77,6 +77,9 @@ Son güncelleme: 08.11.2026. Dal: `claude/pusula-project-setup-c6ce02` (push edi
 - **Özellikler bölümü:** Bilgiler kartında türe özel alanlar ayrı, iki sütunlu kutucuklar; "Özellikler · Mekanik · 6 / 6 dolu".
 - **md not penceresi (Markdig 0.37, BSD-2):** Ayarlar → Not programı → "Pusula (yerleşik)" (yeni kurulumda varsayılan).
   Yorumlar (`<!-- -->`, `%% %%`) görünümde gizlenir, Ctrl+Shift+C; not içi `#başlık` bağlantısı kaydırır. Yazım kılavuzu: [MD_KILAVUZU.md](MD_KILAVUZU.md).
+  Bul / değiştir (Ctrl+F / Ctrl+R; harf, tam kelime, regex), başlık paneli (Ctrl+Shift+O), yan yana birlikte kaydırma (başlıklar çapa),
+  satır taşı / çoğalt / sil (Alt+↑↓, Ctrl+D, Ctrl+Shift+K), otomatik çift, seçime adres yapıştırınca bağlantı, tablo hizalama
+  (Ctrl+Shift+T, tabloda Tab). Bütün düzenlemeler Ctrl+Z ile tek adımda geri alınır.
   Ekranı kaplar; Düz / Yan yana / Görünüm (Ctrl+1/2/3); Görünüm Obsidian'a benzer: YAML özellik kutusu, başlık, liste, görev
   kutusu (tıklanınca metinde işaretlenir), kutular (`> [!warning]`), tablo, kod, vurgu, çizili, dipnot, `#etiket`, resim
   (`![[a.png|300]]`, `![](yol)`; adla da bulunur), `[[bağ]]` (tıklayınca ana pencerede kaydı seçer, not adıysa o notu açar,
@@ -148,8 +151,8 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 - **İnceleme sonrası kalanlar (08.11.2026):** stok seçilince 5 okuma artık aynı anda yapılıyor; tek taramada birleştirmek ileride. Kısa not / bağ / not oluşturma UI thread'inde eşzamanlı dosya yazıyor. JSON oku-değiştir-yaz kalıbı 4 yerde
   tekrar (`JsonFile.Update<T>` yapılmalı). Süzgeç kutularının "Tümü" düzeltmesi geçici çözüm.
 
-- **md penceresi, sonraki adımlar:** arama / değiştir (Ctrl+F), düz görünümde md renklendirme (AvalonEdit, MIT; ayrı onay),
-  başlık ana hattı (outline) paneli, yan yana görünümde kaydırma eşleme, kısa not / + Olay kutularında da @ listesi.
+- **md penceresi, sonraki adımlar:** düz görünümde md renklendirme ve satır numarası (AvalonEdit, MIT; ayrı onay), kısa not /
+  + Olay kutularında da @ listesi, görev kutusu tıklamasının da Ctrl+Z ile geri alınması.
 - **Jenerik test dokümanı üretme:** yeni stok açınca (ya da istenince) stok no/ad dolu test planı vb. doküman.
   Şablon modüllerine "başlangıç dosyaları" eklenebilir. DOCX üretimi için kullanıcının
   `C:\Projeler\Aktif\Divit` projesine bakılacak (orada docx üretimi var).

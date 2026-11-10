@@ -435,7 +435,20 @@ sonuc: geçti
 | Enter (listede)     | Yeni madde                                     |
 | Tab / Shift+Tab     | Girinti artır / azalt                          |
 | Ctrl+V (resim)      | Resmi `Ekler`e kaydet ve ekle                  |
+| Ctrl+V (adres, seçim varken) | `[seçim](adres)` bağlantısı           |
 | Ctrl + / −, Ctrl+tekerlek | Yazı boyutu                              |
+| Ctrl+F / Ctrl+R     | Bul / Bul ve değiştir                          |
+| F3, Shift+F3        | Sonraki / önceki sonuç                         |
+| Ctrl+Shift+O        | Başlık paneli (içindekiler)                    |
+| Alt+↑ / Alt+↓       | Satırı yukarı / aşağı taşı                     |
+| Ctrl+D              | Satırı çoğalt                                  |
+| Ctrl+Shift+K        | Satırı sil                                     |
+| Ctrl+Shift+T        | Tabloyu hizala                                 |
+| Tab (tabloda)       | Sonraki hücre (son hücrede yeni satır)         |
+| Ctrl+Z / Ctrl+Y     | Geri al / yinele (her işlem tek adım)          |
+
+Ayrıca: `(`, `[`, `{`, `"` ve `` ` `` yazınca kapanışı kendiliğinden gelir; seçili metinde `*`, `_`, `~`, `=` seçimi sarar
+(Ayarlar → "Parantez ve işaretleri kendiliğinden kapat"). Yan yana görünümde iki taraf birlikte kayar (Ayarlar'dan kapatılabilir).
 
 AltGr ile yazılan karakterler (`#`, `@`, `{`, `[`, `|`, `~` …) kısayol sayılmaz, normal yazılır.
 
