@@ -1955,18 +1955,8 @@
                            Text="{x:Static res:Resources.Mark_Hint}"
                            Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource BoolToVis}}" />
                 <UniformGrid Columns="2">
-                    <controls:FormField Header="{x:Static res:Resources.Inv_Number}" IsRequired="True" LabelWidth="110" Margin="0,0,16,0">
+                    <controls:FormField Header="{x:Static res:Resources.Inv_StockNo}" IsRequired="True" LabelWidth="110" Margin="0,0,16,0">
                         <TextBox Text="{Binding NewInventoryNumber, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
-                    </controls:FormField>
-                    <controls:FormField Header="{x:Static res:Resources.Inv_Name}" IsRequired="True" LabelWidth="110">
-                        <TextBox Text="{Binding NewInventoryName, UpdateSourceTrigger=PropertyChanged}" />
-                    </controls:FormField>
-                </UniformGrid>
-                <TextBlock Margin="118,4,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
-                           Text="{Binding InventoryNumberHint}" />
-                <UniformGrid Columns="2" Margin="0,10,0,0">
-                    <controls:FormField Header="{x:Static res:Resources.Inv_SubType}" LabelWidth="110" Margin="0,0,16,0">
-                        <ComboBox ItemsSource="{Binding InventorySubTypes}" SelectedItem="{Binding NewInventorySubType, Mode=TwoWay}" />
                     </controls:FormField>
                     <Grid>
                         <controls:FormField Header="{x:Static res:Resources.Inv_Level}" LabelWidth="110"
@@ -1979,10 +1969,30 @@
                         </controls:FormField>
                     </Grid>
                 </UniformGrid>
-                <controls:FormField Header="{x:Static res:Resources.Inv_Note}" LabelWidth="110" Margin="0,10,0,0"
-                                    ErrorText="{Binding InventoryError}">
-                    <TextBox Text="{Binding NewInventoryNote, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Margin="118,4,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
+                           Text="{Binding InventoryNumberHint}" />
+                <controls:FormField Header="{x:Static res:Resources.Inv_Name}" IsRequired="True" LabelWidth="110" Margin="0,10,0,0">
+                    <TextBox Text="{Binding NewInventoryName, UpdateSourceTrigger=PropertyChanged}" />
                 </controls:FormField>
+                <UniformGrid Columns="2" Margin="0,10,0,0">
+                    <controls:FormField Header="{x:Static res:Resources.Inv_SubType}" LabelWidth="110" Margin="0,0,16,0">
+                        <ComboBox ItemsSource="{Binding InventorySubTypes}" SelectedItem="{Binding NewInventorySubType, Mode=TwoWay}" />
+                    </controls:FormField>
+                    <controls:FormField Header="{x:Static res:Resources.Inv_RequestDate}" LabelWidth="110"
+                                        Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}">
+                        <DatePicker SelectedDate="{Binding NewInventoryRequestDate, Mode=TwoWay}" />
+                    </controls:FormField>
+                </UniformGrid>
+                <UniformGrid Columns="2" Margin="0,10,0,0">
+                    <controls:FormField Header="{x:Static res:Resources.Inv_RequestedBy}" LabelWidth="110" Margin="0,0,16,0"
+                                        Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}">
+                        <TextBox Text="{Binding NewInventoryRequester, UpdateSourceTrigger=PropertyChanged}" />
+                    </controls:FormField>
+                    <controls:FormField Header="{x:Static res:Resources.Inv_Note}" LabelWidth="110"
+                                        ErrorText="{Binding InventoryError}">
+                        <TextBox Text="{Binding NewInventoryNote, UpdateSourceTrigger=PropertyChanged}" />
+                    </controls:FormField>
+                </UniformGrid>
                 <StackPanel Visibility="{Binding HasNewInventoryFields, Converter={StaticResource BoolToVis}}">
                     <Border Margin="0,16,0,10" Padding="0,0,0,6" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
                         <TextBlock FontWeight="SemiBold" Text="{Binding NewInventoryFieldsHeader}" />

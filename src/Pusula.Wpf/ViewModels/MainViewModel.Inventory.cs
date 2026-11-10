@@ -228,6 +228,8 @@ namespace Pusula.Wpf.ViewModels
             BuildNewInventoryFields();
             NewInventoryStatus = InventoryStatuses.Contains(Resources.Inv_DefaultMarkStatus) ? Resources.Inv_DefaultMarkStatus : type.InitialStatus;
             NewInventoryNote = string.Empty;
+            NewInventoryRequestDate = DateTime.Today;
+            NewInventoryRequester = CurrentUser;
             InventoryError = string.Empty;
             OnPropertyChanged(nameof(InventoryDialogTitle));
             OnPropertyChanged(nameof(InventoryNumberHint));
@@ -311,12 +313,29 @@ namespace Pusula.Wpf.ViewModels
                 foreach (var field in newInventoryType.FieldsFor(newInventorySubType))
                 {
                     string value;
-                    NewInventoryFields.Add(new FieldInput(field, newInventoryValues.TryGetValue(field.Key, out value) ? value : string.Empty));
+                    NewInventoryFields.Add(new FieldInput(field, newInventoryValues.TryGetValue(field.Key, out value) ? value : string.Empty, newInventorySubType));
                 }
             }
 
             OnPropertyChanged(nameof(HasNewInventoryFields));
             OnPropertyChanged(nameof(NewInventoryFieldsHeader));
+        }
+
+        private DateTime? newInventoryRequestDate = DateTime.Today;
+        private string newInventoryRequester = string.Empty;
+
+        /// <summary>Talep tarihi (ilk durum olayının tarihi); varsayılan bugün.</summary>
+        public DateTime? NewInventoryRequestDate
+        {
+            get { return newInventoryRequestDate; }
+            set { SetProperty(ref newInventoryRequestDate, value); }
+        }
+
+        /// <summary>Talep eden (ilk durum olayının kişisi); varsayılan bu bilgisayarın kullanıcısı.</summary>
+        public string NewInventoryRequester
+        {
+            get { return newInventoryRequester; }
+            set { SetProperty(ref newInventoryRequester, value ?? string.Empty); }
         }
 
         /// <summary>Girilen not.</summary>
@@ -385,6 +404,8 @@ namespace Pusula.Wpf.ViewModels
             NewInventorySubType = InventorySubTypes.FirstOrDefault() ?? string.Empty;
             BuildNewInventoryFields();
             NewInventoryNote = string.Empty;
+            NewInventoryRequestDate = DateTime.Today;
+            NewInventoryRequester = CurrentUser;
             InventoryError = string.Empty;
             OnPropertyChanged(nameof(InventoryDialogTitle));
             OnPropertyChanged(nameof(InventoryNumberHint));
@@ -402,7 +423,8 @@ namespace Pusula.Wpf.ViewModels
             var result = isInventoryMarkMode
                 ? InventoryService.Mark(rootPath, newInventoryType, markInventoryFolder, NewInventoryNumber, NewInventoryName, NewInventorySubType, NewInventoryStatus, CurrentUser, NewInventoryNote)
                 : InventoryService.Create(rootPath, newInventoryType, newInventoryLevel!.Level, newInventoryLevel.Owner,
-                    NewInventoryNumber, NewInventoryName, NewInventorySubType, NewInventoryNote, CurrentUser);
+                    NewInventoryNumber, NewInventoryName, NewInventorySubType, NewInventoryNote,
+                    NewInventoryRequester.Trim().Length > 0 ? NewInventoryRequester.Trim() : CurrentUser, NewInventoryRequestDate);
             if (!result.Succeeded)
             {
                 InventoryError = result.Error == CreateError.NumberFormat

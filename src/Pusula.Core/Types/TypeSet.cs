@@ -30,7 +30,7 @@ namespace Pusula.Core.Types
 
         /// <summary>Dosya biçiminin sürümü.</summary>
         [DataMember(Name = "schemaVersion", Order = 0)]
-        public int SchemaVersion { get; set; } = 2;
+        public int SchemaVersion { get; set; } = 4;
 
         /// <summary>Kayıt türleri.</summary>
         [DataMember(Name = "types", Order = 1)]
@@ -136,7 +136,80 @@ namespace Pusula.Core.Types
                 }
             }
 
-            SchemaVersion = 3;
+            // Sürüm 4 (10.11.2026): kablo alt türleri RF / Haberleşme / Güç / Diğer; Adet alanı kablo ve jigden kalkar
+            // (kayıtlardaki değerler silinmez); kablo uçları alt türe göre liste; Güç'te kesit AWG.
+            if (SchemaVersion < 4)
+            {
+                var cable = Find("cable");
+                if (cable != null)
+                {
+                    RenameSubType(cable, "Güç / veri", "Güç");
+                    RenameSubType(cable, "Kablaj", "Diğer");
+                    foreach (var sub in CableSubTypes.Where(s => !cable.SubTypes.Contains(s, StringComparer.OrdinalIgnoreCase)))
+                    {
+                        cable.SubTypes.Add(sub);
+                    }
+
+                    foreach (var key in new[] { "uc_a", "uc_b" })
+                    {
+                        var end = cable.Fields.FirstOrDefault(x => string.Equals(x.Key, key, StringComparison.OrdinalIgnoreCase));
+                        if (end != null && end.SubTypeChoices.Count == 0 && end.Kind == FieldKind.Choice)
+                        {
+                            var fresh = CableEnd(key, key == "uc_a" ? "1. uç (konnektör)" : "2. uç (konnektör)");
+                            end.Name = fresh.Name;
+                            end.Choices = fresh.Choices.Union(end.Choices).ToList();
+                            end.SubTypeChoices = fresh.SubTypeChoices;
+                        }
+                    }
+
+                    var mm2 = cable.Fields.FirstOrDefault(x => x.Key == "kesit" && x.Unit == "mm²" && x.SubTypes.Contains("Güç"));
+                    if (mm2 != null)
+                    {
+                        cable.Fields.Remove(mm2);
+                    }
+
+                    if (!cable.Fields.Any(x => x.Key == "kesit_awg"))
+                    {
+                        cable.Fields.Add(Field("Kesit (AWG)", FieldKind.Choice, string.Empty, AwgSizes, "Güç"));
+                    }
+
+                    cable.Fields.RemoveAll(x => x.Key == "adet");
+                }
+
+                Find("jig")?.Fields.RemoveAll(x => x.Key == "adet");
+            }
+
+            SchemaVersion = 4;
+        }
+
+        // Alt tür adını değiştirir; alanların "geçerli alt türler" listesi de aynı adla güncellenir.
+        private static void RenameSubType(TypeDefinition type, string from, string to)
+        {
+            var index = type.SubTypes.FindIndex(s => string.Equals(s, from, StringComparison.OrdinalIgnoreCase));
+            if (index < 0)
+            {
+                return;
+            }
+
+            if (type.SubTypes.Contains(to, StringComparer.OrdinalIgnoreCase))
+            {
+                type.SubTypes.RemoveAt(index);
+            }
+            else
+            {
+                type.SubTypes[index] = to;
+            }
+
+            foreach (var field in type.Fields)
+            {
+                for (var i = 0; i < field.SubTypes.Count; i++)
+                {
+                    if (string.Equals(field.SubTypes[i], from, StringComparison.OrdinalIgnoreCase))
+                    {
+                        field.SubTypes[i] = to;
+                    }
+                }
+            }
         }
 
         /// <summary>İlk kullanımda yazılan varsayılan içerik.</summary>
@@ -200,7 +273,7 @@ namespace Pusula.Core.Types
             });
 
             set.Types.Add(Inventory("cable", "Kablo", "Kablolar", "E703", "#F7A35C", "JT-####-####", "Kablo numarası", "Kablolar", "05_Kablolar",
-                new[] { "RF", "Haberleşme", "Güç / veri", "Kablaj" }, new[] { "01_Belgeler", "02_Fotograflar" }));
+                CableSubTypes, new[] { "01_Belgeler", "02_Fotograflar" }));
             set.Types.Add(Inventory("jig", "Jig", "Jigler", "E90F", "#B4A7F5", "JIG-####-####", "Jig numarası", "Jigler", "05_Jigler",
                 new[] { "Mekanik", "Ölçüm adaptörü", "Montaj", "Elektriksel" }, new[] { "01_Cizimler", "02_Belgeler", "03_Fotograflar" }));
 
@@ -224,25 +297,42 @@ namespace Pusula.Core.Types
         }
 
         // Türlerin hazır alanları (Türler penceresinden değiştirilebilir). Alt tür verilen alan yalnız o alt türlerde görünür.
+        /// <summary>Kablo alt türleri (10.11.2026: RF, Haberleşme, Güç, Diğer).</summary>
+        public static readonly string[] CableSubTypes = { "RF", "Haberleşme", "Güç", "Diğer" };
+
+        // Kablo uçları alt türe göre: tek alan (aynı anahtar), liste alt türe göre değişir.
+        private static readonly string[] RfConnectors = { "SMA (E)", "SMA (D)", "N (E)", "N (D)", "BNC", "TNC", "2.92 mm", "3.5 mm", "Açık uç" };
+        private static readonly string[] DataConnectors = { "D-Sub 9", "D-Sub 15", "D-Sub 25", "M12", "RJ45", "Açık uç" };
+        private static readonly string[] PowerEnds = { "Banana", "Krokodil", "Pabuç", "Açık uç" };
+        private static readonly string[] AllEnds = RfConnectors.Concat(DataConnectors).Concat(PowerEnds).Distinct().ToArray();
+        private static readonly string[] AwgSizes = { "10", "12", "14", "16", "18", "20", "22", "24", "26", "28" };
+
+        private static FieldDefinition CableEnd(string key, string name)
+        {
+            var field = Field(name, FieldKind.Choice, string.Empty, AllEnds);
+            field.Key = key;
+            field.SubTypeChoices.Add(new SubTypeChoiceList { SubType = "RF", Choices = RfConnectors.ToList() });
+            field.SubTypeChoices.Add(new SubTypeChoiceList { SubType = "Haberleşme", Choices = DataConnectors.ToList() });
+            field.SubTypeChoices.Add(new SubTypeChoiceList { SubType = "Güç", Choices = PowerEnds.ToList() });
+            return field;
+        }
+
         private static void AddDefaultFields(TypeSet set)
         {
-            var connectors = new[] { "SMA (E)", "SMA (D)", "N (E)", "N (D)", "BNC", "TNC", "2.92 mm", "Banana", "Krokodil", "D-Sub 9", "D-Sub 15", "RJ45", "Açık uç" };
             set.Find("cable")?.Fields.AddRange(new[]
             {
-                Field("Adet", FieldKind.Number, string.Empty),
                 Field("Boy", FieldKind.Number, "m"),
-                Field("Uç A", FieldKind.Choice, string.Empty, connectors),
-                Field("Uç B", FieldKind.Choice, string.Empty, connectors),
+                CableEnd("uc_a", "1. uç (konnektör)"),
+                CableEnd("uc_b", "2. uç (konnektör)"),
                 Field("Frekans", FieldKind.Text, "GHz", null, "RF"),
                 Field("Faz kararlı", FieldKind.YesNo, string.Empty, null, "RF"),
                 Field("Protokol", FieldKind.Choice, string.Empty, new[] { "RS422", "RS232", "RS485", "CAN", "Ethernet", "USB", "MIL-STD-1553" }, "Haberleşme"),
                 Field("Pin yapısı", FieldKind.Text, string.Empty, null, "Haberleşme"),
-                Field("Akım", FieldKind.Number, "A", null, "Güç / veri"),
-                Field("Kesit", FieldKind.Number, "mm²", null, "Güç / veri"),
+                Field("Akım", FieldKind.Number, "A", null, "Güç"),
+                Field("Kesit (AWG)", FieldKind.Choice, string.Empty, AwgSizes, "Güç"),
             });
             set.Find("jig")?.Fields.AddRange(new[]
             {
-                Field("Adet", FieldKind.Number, string.Empty),
                 Field("Malzeme", FieldKind.Choice, string.Empty, new[] { "Al 6061", "Al 7075", "Paslanmaz", "Delrin", "PLA (baskı)", "Diğer" }, "Mekanik", "Montaj", "Ölçüm adaptörü"),
                 Field("Ölçüler", FieldKind.Text, "mm", null, "Mekanik", "Montaj", "Ölçüm adaptörü"),
                 Field("Yüzey", FieldKind.Choice, string.Empty, new[] { "Eloksal", "Boya", "Ham" }, "Mekanik", "Ölçüm adaptörü"),
@@ -495,6 +585,7 @@ namespace Pusula.Core.Types
             Unit = string.Empty;
             Choices = new List<string>();
             SubTypes = new List<string>();
+            SubTypeChoices = new List<SubTypeChoiceList>();
         }
 
         /// <summary>Değişmez anahtar (<c>kayit.json</c> ve YAML'da kullanılır, örn. <c>konnektor_a</c>).</summary>
@@ -521,6 +612,20 @@ namespace Pusula.Core.Types
         [DataMember(Name = "subTypes", Order = 5, EmitDefaultValue = false)]
         public List<string> SubTypes { get; set; } = new List<string>();
 
+        /// <summary>
+        /// Alt türe göre seçenekler (örn. kablo ucu: RF'de SMA, N …; Güç'te Banana, Krokodil, Pabuç). Alt tür burada yoksa
+        /// <see cref="Choices"/> kullanılır. Alan tek (aynı anahtar), yalnız liste değişir; kayıtlı değerler kaybolmaz.
+        /// </summary>
+        [DataMember(Name = "subTypeChoices", Order = 6, EmitDefaultValue = false)]
+        public List<SubTypeChoiceList> SubTypeChoices { get; set; } = new List<SubTypeChoiceList>();
+
+        /// <summary>Bu alt türde gösterilecek seçenekler.</summary>
+        public List<string> ChoicesFor(string subType)
+        {
+            var own = SubTypeChoices.FirstOrDefault(c => string.Equals(c.SubType, subType, StringComparison.OrdinalIgnoreCase));
+            return own != null && own.Choices.Count > 0 ? own.Choices : Choices;
+        }
+
         /// <summary>Addan anahtar üretir: küçük harf, Türkçe harfler sadeleşir, boşluk yerine alt çizgi ("Konnektör A" → "konnektor_a").</summary>
         public static string KeyFrom(string name)
         {
@@ -542,6 +647,27 @@ namespace Pusula.Core.Types
 
             return builder.ToString().Trim('_');
         }
+    }
+
+    /// <summary>Bir alt türün seçenek listesi (bkz. <see cref="FieldDefinition.SubTypeChoices"/>).</summary>
+    [DataContract]
+    public sealed class SubTypeChoiceList
+    {
+        /// <summary>Serileştirici kurucuyu çağırmaz; dosyada olmayan alanlar boş değerle başlar.</summary>
+        [OnDeserializing]
+        private void OnDeserializing(StreamingContext context)
+        {
+            SubType = string.Empty;
+            Choices = new List<string>();
+        }
+
+        /// <summary>Alt tür ("RF", "Güç" …).</summary>
+        [DataMember(Name = "subType", Order = 0)]
+        public string SubType { get; set; } = string.Empty;
+
+        /// <summary>Bu alt türdeki seçenekler.</summary>
+        [DataMember(Name = "choices", Order = 1)]
+        public List<string> Choices { get; set; } = new List<string>();
     }
 
     /// <summary>Numara biçimi ve etiketi.</summary>

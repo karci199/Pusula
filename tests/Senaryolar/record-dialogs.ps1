@@ -74,7 +74,9 @@ $vm.OpenNewInventory($jigType); Pump
 Check 'yeni kayıt: alanlar gelir' ($vm.IsInventoryDialogOpen -and $vm.HasNewInventoryFields -and $vm.NewInventoryFieldsHeader -eq ('Özellikler · ' + $vm.NewInventorySubType)) $vm.NewInventoryFieldsHeader
 $newCombo = FindLogical $win { param($x) $x -is [System.Windows.Controls.ComboBox] -and [object]::ReferenceEquals($x.ItemsSource, $vm.InventorySubTypes) }
 Check 'yeni kayıt: alt tür kutusu dolu' ($newCombo.SelectedItem -eq $vm.NewInventorySubType -and $vm.NewInventorySubType.Length -gt 0)
+Check 'talep tarihi bugün, talep eden bu kullanıcı (varsayılan)' ($vm.NewInventoryRequestDate -eq [DateTime]::Today -and $vm.NewInventoryRequester -eq [Environment]::UserName)
 $vm.NewInventoryNumber = 'JIG-1000-0099'; $vm.NewInventoryName = 'Deneme aparatı'
+$vm.NewInventoryRequestDate = [DateTime]'2026-11-03'; $vm.NewInventoryRequester = 'A. Test'
 $first = $vm.NewInventoryFields[0]; $first.Value = '7'
 $sub2 = @($vm.InventorySubTypes | Where-Object { $_ -ne $vm.NewInventorySubType })[0]
 $keep = $vm.NewInventorySubType
@@ -87,6 +89,7 @@ $fkey = $vm.NewInventoryFields[0].Key
 Check 'oluşturuldu' ($vm.ConfirmNewInventory()); Wait
 $folder = @(Get-ChildItem (Join-Path $Data 'ENVANTER\Jigler') -Directory | Where-Object { $_.Name -like 'JIG-1000-0099*' })[0].FullName
 $rec = [IO.File]::ReadAllText((Join-Path $folder '_TAKIP\kayit.json'))
+Check 'talep olayı girilen tarih ve kişiyle' ($rec -match '"date":\s*"2026-11-03"' -and $rec -match '"person":\s*"A. Test"')
 Check 'alan değeri kayda yazıldı' ($rec -match ('"Key":\s*"' + $fkey + '",\s*"Value":\s*"7"')) $rec.Substring(0, [Math]::Min(300, $rec.Length))
 $md = @(Get-ChildItem $folder -Filter '*.md' | Where-Object { $_.Name -like 'JIG-1000-0099*' })
 if ($md.Count -gt 0) { Check 'alan değeri notun YAML başlığında' ([IO.File]::ReadAllText($md[0].FullName) -match ($fkey + ':\s*"?7')) }

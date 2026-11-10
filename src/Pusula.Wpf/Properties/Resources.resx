@@ -1590,4 +1590,13 @@
   <data name="QuickNote_Placeholder" xml:space="preserve">
     <value>Kısa not yaz, Enter ile ekle · @ ile jig, kablo, stok bağla</value>
   </data>
+  <data name="Inv_StockNo" xml:space="preserve">
+    <value>Stok no</value>
+  </data>
+  <data name="Inv_RequestedBy" xml:space="preserve">
+    <value>Talep eden</value>
+  </data>
+  <data name="Inv_RequestDate" xml:space="preserve">
+    <value>Talep tarihi</value>
+  </data>
 </root>

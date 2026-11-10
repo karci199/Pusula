@@ -13,7 +13,7 @@ try {
     "--- 2. Düzenleme"
     Check 'türler: Kablo, Jig, Yazılım' ((($vm.Types | ForEach-Object Name) -join ',') -eq 'Kablo,Jig,Yazılım')
     $jig = $vm.Types | Where-Object Name -eq 'Jig'; $vm.Selected = $jig
-    Check 'jigin hazır alanları gelir' ($jig.Fields.Count -eq 8)
+    Check 'jigin hazır alanları gelir' ($jig.Fields.Count -eq 7)
     $jig.Fields.Clear()
     $f = New-Object Pusula.Wpf.ViewModels.TypeEditor.FormatRow; $f.Pattern = 'JT-####-####'; $f.Label = 'Test jigi'; $jig.Formats.Add($f)
     $f = New-Object Pusula.Wpf.ViewModels.TypeEditor.FormatRow; $f.Pattern = 'JX-####-####'; $f.Label = 'Üretim jigi'; $jig.Formats.Add($f)

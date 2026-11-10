@@ -139,7 +139,7 @@ namespace Pusula.Wpf.ViewModels
                 foreach (var field in editType.FieldsFor(editSubType))
                 {
                     string value;
-                    EditFields.Add(new FieldInput(field, editValues.TryGetValue(field.Key, out value) ? value : string.Empty));
+                    EditFields.Add(new FieldInput(field, editValues.TryGetValue(field.Key, out value) ? value : string.Empty, editSubType));
                 }
             }
 
@@ -531,12 +531,13 @@ namespace Pusula.Wpf.ViewModels
         private string value;
 
         /// <summary>Alanı ve şimdiki değerini kurar.</summary>
-        public FieldInput(Pusula.Core.Types.FieldDefinition field, string current)
+        public FieldInput(Pusula.Core.Types.FieldDefinition field, string current, string subType = "")
         {
             Key = field.Key;
             Label = field.Unit.Length > 0 ? field.Name + " (" + field.Unit + ")" : field.Name;
-            // Başta boş seçenek (değeri silmek için); kayıtlı değer listede yoksa o da eklenir (seçili görünsün).
-            Choices = new[] { string.Empty }.Concat(field.Choices).ToList();
+            // Başta boş seçenek (değeri silmek için); liste alt türe göre (kablo ucu: RF'de SMA, Güç'te Banana …);
+            // kayıtlı değer listede yoksa o da eklenir (seçili görünsün).
+            Choices = new[] { string.Empty }.Concat(field.ChoicesFor(subType)).ToList();
             if (!string.IsNullOrEmpty(current) && !Choices.Contains(current, StringComparer.CurrentCultureIgnoreCase))
             {
                 Choices.Add(current);

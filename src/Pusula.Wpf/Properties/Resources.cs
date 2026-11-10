@@ -1817,6 +1817,15 @@ namespace Pusula.Wpf.Properties
         /// <summary>Kısa not kutusunun ipucu metni.</summary>
         public static string QuickNote_Placeholder { get { return Get("QuickNote_Placeholder"); } }
 
+        /// <summary>Yeni kayıt: numara alanının adı.</summary>
+        public static string Inv_StockNo { get { return Get("Inv_StockNo"); } }
+
+        /// <summary>Yeni kayıt: ilk durumun kişisi.</summary>
+        public static string Inv_RequestedBy { get { return Get("Inv_RequestedBy"); } }
+
+        /// <summary>Yeni kayıt: ilk durumun tarihi.</summary>
+        public static string Inv_RequestDate { get { return Get("Inv_RequestDate"); } }
+
         #endregion
     }
 }

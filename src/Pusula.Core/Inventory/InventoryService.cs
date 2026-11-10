@@ -67,7 +67,7 @@ namespace Pusula.Core.Inventory
         /// Kayıt açar: <c>&lt;düzey klasörü&gt;\&lt;numara&gt;_&lt;tanım&gt;\_TAKIP\kayit.json</c> (gizli _TAKIP) ve ilk olay.
         /// Numara biçime uymuyorsa ya da aynı numara kökte zaten varsa açmaz.
         /// </summary>
-        public static CreateResult Create(string root, TypeDefinition type, InventoryLevel level, string owner, string number, string name, string subType, string note, string person)
+        public static CreateResult Create(string root, TypeDefinition type, InventoryLevel level, string owner, string number, string name, string subType, string note, string person, DateTime? requestDate = null)
         {
             number = (number ?? string.Empty).Trim().ToUpperInvariant();
             name = (name ?? string.Empty).Trim();
@@ -115,7 +115,8 @@ namespace Pusula.Core.Inventory
             };
             if (type.InitialStatus.Length > 0)
             {
-                record.Events.Add(InventoryEvent.Create(type.InitialStatus, DateTime.Today, person, string.Empty, string.Empty));
+                // İlk durum (Talep): tarihi ve kişisi pencereden girilir; boşsa bugün ve bu bilgisayarın kullanıcısı.
+                record.Events.Add(InventoryEvent.Create(type.InitialStatus, (requestDate ?? DateTime.Today).Date, person, string.Empty, string.Empty));
             }
 
             try
