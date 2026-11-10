@@ -125,6 +125,7 @@ Ham veriler `Ham\`, fotolar `Foto\`, analiz çıktıları `Analiz\` altına.
   Web adresindeki resim gösterilmez (dış ağ çağrısı yok).
 - Kutu: `> [!warning] Başlık` (warning, danger, tip, success, question, note, quote). Vurgu `==metin==`, üstü çizili `~~metin~~`.
 - Olmayan bir nota `[[…]]` verme: Pusula yeni not oluşturmaz, bağlantı boşa düşer.
+- Yorum: `<!-- … -->` (her yerde gizlenir) ya da `%% … %%` (Obsidian / Pusula). Bütün md yazım kuralları, örnekli: [MD_KILAVUZU.md](MD_KILAVUZU.md).
 
 ### 4. Kısa not
 

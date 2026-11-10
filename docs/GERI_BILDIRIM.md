@@ -15,14 +15,14 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 
 - [x] Stok sayfası yavaştı → klasör tek seferde taranıyor (FolderSnapshot), bütün okuyucular bu taramadan çalışıyor, md notları bir kez okunuyor. Ağ yolunda 148 → 28 ms (5,2 kat).
 - [x] **Yenile** en başa atıyordu → seçili düğüm, açık klasörler ve stok sekmesi korunuyor; içerik yeniden okunuyor.
-- [x] Otomatik izleme → **sonraya** bırakıldı (aşağıda "Sonra yapılacaklar").
+- [x] Otomatik izleme → yapıldı (aşağıda "Sonra yapılacaklar").
 
 ## 3. Düzenleme (eksik)
 
 - [x] **Düzenle / Takipten çıkar** her kayıtta (proje, stok, jig, kablo …): ağaç sağ tık, proje stok tablosu, envanter listeleri.
   Düzenle: ad (+ stokta şablon, envanterde alt tür ve açıklama). Takipten çıkar: takip dosyası `….json.kaldirildi-<zaman>` olur, dosyalar yerinde; klasör işaretsiz görünür.
 - [x] **Sil…**: klasör kalıcı silinmez, kökteki `_SILINENLER\<zaman>\<göreli yol>` altına taşınır, `silinenler.log` tutulur; onayda ad yazılmadan Sil düğmesi çıkmaz. Ayarlar → "Silinenler klasörünü aç".
-- [ ] Envanter alan değerleri (Tork, Boy …) düzenleme penceresinde yok.
+- [x] Envanter alan değerleri (Tork, Boy …) **Düzenle** penceresinde; türün alanları (yazı / sayı / evet-hayır / seçim, birim) Türler → Alanlar'dan. Kayıt sayfasında "Özellikler · x / y dolu" kartı (10.11.2026).
 
 ## 4. Görünüm
 
@@ -33,12 +33,14 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 - [x] **Sekmeler sürüklenebilir** (stok sekmeleri, Genel sabit; sıra hatırlanır). Tablo sütunlarının sırası ve genişliği hatırlanır (40–600 px). Ayarlar → "Sekme ve sütun düzenini sıfırla".
 - [ ] Stok açılınca **anten hakkında ön bilgi + foto** gelsin (Genel kartı; zaten var, iyileştirilecek).
 - [ ] Jig ve kablo **tamamen ayrılsın**. "Genel sayfası açıldığı zaman ne ekliyse o gelsin" → konuşulacak.
+  - [x] Kısmen: stok Genel'inde her tür (Jig, Kablo, Yazılım) **ayrı kart**; kökte hiç kaydı olmayan tür kart açmaz.
+  - [ ] Kalan: kartlar hâlâ tek "Jig ve kablo" başlığı altında; stokta o türden kayıt **yoksa** da kart görünüyor (kökte varsa). Ayrı bölümler mi, yalnız eklenenler mi → karar.
 - [ ] ?Genel / Kablolar sekmeli yapı daha iyi olabilir mi
 
 ## 5. Notlar ve md
 
-- [ ] Uygulamadan eklenen not **basit** kalsın, **md olmasın** (şimdiki gibi).
-- [ ] **Alınan notlar md olarak görünsün:** Notlar kısmında md içeriği, **ayrı pencere** gibi açılsın (okuma görünümü).
+- [x] Uygulamadan eklenen not **basit** kalsın, **md olmasın** (şimdiki gibi; kısa not JSON'da).
+- [x] **Alınan notlar md olarak görünsün:** Pusula'nın md not penceresi (10.11.2026): ekranı kaplar, Düz / Yan yana / Görünüm (Ctrl+1/2/3), resim, görev kutusu, uyarı kutusu, tablo, yorum. Ayarlar → Not programı → "Pusula (yerleşik)". Yazım kuralları: [MD_KILAVUZU.md](MD_KILAVUZU.md).
 - [ ] Ana md'yi "Not oluştur" deyince yapıyor. ?Otomatik oluşturulsun mu; ayar olabilir
 - [ ] ?Zaman çizelgesine elle eklenen notlar hepsi `<StokNo>.md` içinde mi dursun
 - [ ] ?Proje geneli md olsun mu, içinde neler olur
@@ -47,7 +49,7 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 
 ## 6. Bağlantılar (@)
 
-- [ ] Not yazarken **@** basınca kablo, jig, stok, proje, **kişi** taransın ve **bağlantı** olarak eklensin
+- [x] Not yazarken **@** (ya da `[[`) basınca kablo, jig, stok, proje, **kişi** listesi açılır, `[[bağlantı]]` olarak eklenir; tıklanınca ana pencerede kayıt seçilir (10.11.2026). Kısa not / + Olay kutularında henüz yok.
   (her nesnenin md dosyası olmalı).
 - [ ] **SATIMO, yankısız oda** gibi ölçüm altyapısı da bağlanabilir nesne olsun.
 - [ ] **161 / DGÖ** maddelerine bağlantı; bunun için ayrı arayüz.
@@ -85,7 +87,7 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 - [ ] Test sonuçları nasıl tanınıyor: `SNP1_T1` klasöründen ve **_kosu.md** (KIWI) dosyasından "GEÇTİ" okundu. Kural yazılsın.
 - [x] **Test planları** Testler / Kalifikasyon sekmesinin üstünde kart olarak (KIWI planının adı, açıklaması, adım/limit, revizyon; "bu planla n koşu").
 - [ ] Test sonucu md dosyası varsa doğrudan ondan okunsun.
-- [ ] **Test tarihi ve analiz tarihi ayrı:** test bir gün yapılır, analiz sonra yapılabilir (aynı gün de olabilir). `test.md`'de `tarih:` = test yapıldığı gün, isteğe bağlı `analiz:` = analiz günü; Günlük ve tabloda ikisi de görünsün.
+- [x] **Test tarihi ve analiz tarihi ayrı** (10.11.2026: `analiz_tarihi`, `analiz_notu`; koşu sağ tık → "Analiz tarihi ve notu…", tabloda Analiz sütunu, Günlük'te "analiz …"): test bir gün yapılır, analiz sonra yapılabilir (aynı gün de olabilir). `test.md`'de `tarih:` = test yapıldığı gün, isteğe bağlı `analiz:` = analiz günü; Günlük ve tabloda ikisi de görünsün.
 - [ ] Test notu uzun olabilir (sonuç, gözlem, düzeltme …); Günlük'te kısa özet, tamamı notta.
 
 ## 11. Takip ve iş listesi
@@ -93,7 +95,7 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 - [ ] **Bekleyen işler** listesi (o anlık): "SAP REDO verildi" gibi, ayrıntısız, basit.
   - [x] İlk adım: stok Genel sayfasında **Açık işler** (md notlarındaki `- [ ]` maddeleri; tıklayınca not açılır). Proje ve haftalık rapor sonra.
 - [ ] **İlerleme durumu** (jig hazır mı, yazılım var mı / hazır mı) — büyük ölçüde elle.
-- [ ] Jig teslim edildi mi takibi (envanter durumu var; stok ekranında görünürlüğü).
+- [x] Jig teslim edildi mi takibi: jig / kablo / yazılım durum değişiklikleri (Talep, Hazırlanıyor, Teslim …) stokun Günlük'üne kendiliğinden düşer (10.11.2026).
 
 ## Sonra yapılacaklar
 
@@ -101,7 +103,7 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 
 - [ ] Tablolara **arama kutusu ve filtre** (stok tablosu, test koşuları).
 
-- [ ] **Otomatik izleme:** diskte (iç ağda) değişiklik olunca alt durum çubuğunda haber ver; "Yenile" ile gelsin.
+- [x] **Otomatik izleme:** diskte değişiklik olunca **Yenile** düğmesi sarı olur (bildirim yok); yenileyince söner (10.11.2026).
 - [ ] **Durum çubuğunda son yapılan iş:** ör. "AB-7000-0002 kaydedildi · 21:55" kalıcı görünsün.
 - [ ] Açık işler ve kısa notlardan **haftalık / aylık rapor**.
 

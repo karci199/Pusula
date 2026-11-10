@@ -76,6 +76,7 @@ Son güncelleme: 08.11.2026. Dal: `claude/pusula-project-setup-c6ce02` (push edi
   kayıt sayfasında kart; kendi klasöründeki notlar, gizli / `_SILINENLER` / `_TAKIP` / arşiv klasörleri ve kod blokları sayılmaz.
 - **Özellikler bölümü:** Bilgiler kartında türe özel alanlar ayrı, iki sütunlu kutucuklar; "Özellikler · Mekanik · 6 / 6 dolu".
 - **md not penceresi (Markdig 0.37, BSD-2):** Ayarlar → Not programı → "Pusula (yerleşik)" (yeni kurulumda varsayılan).
+  Yorumlar (`<!-- -->`, `%% %%`) görünümde gizlenir, Ctrl+Shift+C; not içi `#başlık` bağlantısı kaydırır. Yazım kılavuzu: [MD_KILAVUZU.md](MD_KILAVUZU.md).
   Ekranı kaplar; Düz / Yan yana / Görünüm (Ctrl+1/2/3); Görünüm Obsidian'a benzer: YAML özellik kutusu, başlık, liste, görev
   kutusu (tıklanınca metinde işaretlenir), kutular (`> [!warning]`), tablo, kod, vurgu, çizili, dipnot, `#etiket`, resim
   (`![[a.png|300]]`, `![](yol)`; adla da bulunur), `[[bağ]]` (tıklayınca ana pencerede kaydı seçer, not adıysa o notu açar,
