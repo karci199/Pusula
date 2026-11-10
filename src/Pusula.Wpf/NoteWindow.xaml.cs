@@ -649,7 +649,7 @@ namespace Pusula.Wpf
             UpdateEditorPadding();
         }
 
-        private void Editor_TextChanged(object sender, TextChangedEventArgs e)
+        private void Editor_TextChanged(object sender, EventArgs e)
         {
             renderTimer.Stop();
             renderTimer.Start();

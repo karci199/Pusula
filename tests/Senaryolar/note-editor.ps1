@@ -105,6 +105,13 @@ Snap $nw "$Out\note-edit.png"
 $nw.HandleKey($K::D2, $true, $false) | Out-Null; Wait
 Check 'Ctrl+2: yan yana, ayar kaydedildi' ($e.IsSplitMode -and $vm.Settings.NoteEditor.View -eq 'split')
 $ed = $nw.FindName('Editor')
+Check 'düzenleyici AvalonEdit: satır numarası, geçerli satır, md renklendirme' ($ed -is [Pusula.Wpf.MarkdownTextEditor] -and $ed.ShowLineNumbers -and $ed.Options.HighlightCurrentLine -and @($ed.TextArea.TextView.LineTransformers | ? { $_ -is [Pusula.Wpf.MarkdownColorizer] }).Count -eq 1)
+Check 'metin görünüm modeliyle aynı' ($ed.Text -eq $e.Text)
+$ed.TextArea.TextView.EnsureVisualLines()
+$hl = $ed.Document.GetLineByNumber(1 + @($ed.Text -split "`r?`n").IndexOf(@($ed.Text -split "`r?`n" | ? { $_ -match '^# ' })[0]))
+$vl = $ed.TextArea.TextView.GetOrConstructVisualLine($hl)
+$accent = [System.Windows.Application]::Current.TryFindResource('AccentTextFillColorPrimaryBrush')
+Check 'başlık satırı vurgu renginde' (@($vl.Elements | ? { $_.TextRunProperties.ForegroundBrush -eq $accent }).Count -ge 1)
 $i = $ed.Text.IndexOf('Ölçüm düzeni'); $ed.Select($i, 5)
 $nw.HandleKey($K::B, $true, $false) | Out-Null
 Check 'Ctrl+B kalın' ($ed.Text.Contains('**Ölçüm** düzeni') -and $e.IsDirty)

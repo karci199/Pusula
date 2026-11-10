@@ -201,16 +201,11 @@
                 </DockPanel>
             </Border>
 
-            <TextBox x:Name="Editor" Grid.Column="1"
-                     AcceptsReturn="True" AcceptsTab="True"
-                     VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
-                     VerticalContentAlignment="Top"
-                     BorderThickness="0" Background="Transparent"
+            <!-- md düzenleyicisi: AvalonEdit (renklendirme, satır numarası, geçerli satır) -->
+            <local:MarkdownTextEditor x:Name="Editor" Grid.Column="1"
                      Padding="28,20,28,40"
-                     SpellCheck.IsEnabled="False"
-                     IsInactiveSelectionHighlightEnabled="True"
                      AllowDrop="True"
-                     Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
+                     BoundText="{Binding Text, Mode=TwoWay}"
                      PreviewKeyDown="Editor_PreviewKeyDown"
                      PreviewTextInput="Editor_PreviewTextInput"
                      TextChanged="Editor_TextChanged"

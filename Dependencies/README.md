@@ -6,7 +6,7 @@ Güncellerken bu tabloyu da güncelle.
 | Kütüphane | Sürüm | Kaynak | Lisans |
 |---|---|---|---|
 | `DesignKit/DesignKit.Wpf.dll` (+ `.xml`) | 0.3.8 | `C:\Projeler\Aktif\DesignKit`, 30db891 + ContentDialog `DialogWidth`, karartma içeriğe göre (tam ekranda ve pencere değişince de yeniden ölçülür) + `TextBoxHelper.PlaceholderText` (10.11.2026), `MSBuild src\DesignKit.Wpf\DesignKit.Wpf.csproj /p:Configuration=Release` (restore yok) | İç kütüphane |
-| `AvalonEdit/ICSharpCode.AvalonEdit.dll` (+ `.xml`) | 6.3.1.120 (`lib/net462`) | nuget.org `AvalonEdit` 6.3.1.120 (AvalonEdit Contributors, github.com/icsharpcode/AvalonEdit), indirildi 10.11.2026, SHA256 B0032716…0B10C7; bağımlılığı yalnız .NET Framework. md penceresinde renklendirme / satır numarası için (henüz bağlanmadı) | MIT |
+| `AvalonEdit/ICSharpCode.AvalonEdit.dll` (+ `.xml`) | 6.3.1.120 (`lib/net462`) | nuget.org `AvalonEdit` 6.3.1.120 (AvalonEdit Contributors, github.com/icsharpcode/AvalonEdit), indirildi 10.11.2026, SHA256 B0032716…0B10C7; bağımlılığı yalnız .NET Framework. md penceresinin düzenleyicisi (renklendirme, satır numarası, geçerli satır; `MarkdownTextEditor`) | MIT |
 | `ReferenceAssemblies/.NETFramework/v4.8/` (238 dosya, ~43 MB) | 1.0.3 | nuget.org `Microsoft.NETFramework.ReferenceAssemblies.net48` paketinin `build/.NETFramework` içi açıldı (10.11.2026); `TargetFrameworkRootPath` buraya bakar, paket ve restore yok | MIT |
 | `Markdig/Markdig.dll` (+ `.xml`) | 0.37.0 (`lib/net462`) | nuget.org `Markdig` 0.37.0, Alexandre Mutel, github.com/xoofx/markdig | BSD-2-Clause |
 | `SystemMemory/System.Memory.dll` | 4.5.5 (derleme 4.0.1.2, `lib/net461`) | nuget.org, Microsoft (Markdig'in .NET 4.x bağımlılığı) | MIT |

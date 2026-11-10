@@ -30,6 +30,9 @@
     <Reference Include="Markdig">
       <HintPath>$(DependenciesDir)Markdig\Markdig.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.AvalonEdit">
+      <HintPath>$(DependenciesDir)AvalonEdit\ICSharpCode.AvalonEdit.dll</HintPath>
+    </Reference>
     <Reference Include="System.Memory">
       <HintPath>$(DependenciesDir)SystemMemory\System.Memory.dll</HintPath>
     </Reference>
