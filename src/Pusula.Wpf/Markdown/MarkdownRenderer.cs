@@ -75,6 +75,9 @@ namespace Pusula.Wpf.Markdown
         /// <summary>Çizimde bulunan resimler (tam yol).</summary>
         public List<string> Images { get; } = new List<string>();
 
+        /// <summary>Çizilen başlıklar, belge sırasıyla (başlık panelinden görünüme gitmek için; <c>MarkdownNotes.Outline</c> ile aynı sıra).</summary>
+        public List<Paragraph> Headings { get; } = new List<Paragraph>();
+
         /// <summary>Dosyayı bulur (ad dizini ilk adla aramada bir kez kurulur).</summary>
         public string Resolve(string target)
         {
@@ -239,6 +242,7 @@ namespace Pusula.Wpf.Markdown
             }
 
             AddInlines(paragraph.Inlines, heading.Inline);
+            context.Headings.Add(paragraph);
             var key = AnchorKey(ChildText(heading.Inline));
             if (key.Length > 0 && !headings.ContainsKey(key))
             {

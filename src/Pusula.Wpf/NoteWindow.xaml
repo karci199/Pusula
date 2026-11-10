@@ -16,6 +16,7 @@
 
     <controls:ChromeWindow.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <local:IndentToMarginConverter x:Key="IndentToMargin" />
 
         <!-- Araç çubuğundaki ikon düğmesi -->
         <Style x:Key="ToolButton" TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
@@ -48,6 +49,10 @@
         <Border Grid.Row="0" Padding="14,6" Background="{DynamicResource LayerBrush}"
                 BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
             <DockPanel LastChildFill="False">
+                <ToggleButton x:Name="OutlineToggle" DockPanel.Dock="Left" Style="{StaticResource ViewToggle}" Padding="8,4" Margin="0,0,12,0"
+                              VerticalAlignment="Center" Click="OutlineToggle_Click" ToolTip="{x:Static res:Resources.Note_OutlineToggle}">
+                    <controls:FontIcon Glyph="&#xE8A4;" FontSize="14" />
+                </ToggleButton>
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,0">
                     <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="18" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" VerticalAlignment="Center" />
                     <StackPanel Margin="10,0,0,0" VerticalAlignment="Center" MaxWidth="320">
@@ -154,12 +159,49 @@
         <!-- Gövde: düz metin | ayraç | görünüm -->
         <Grid x:Name="Body" Grid.Row="2">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="OutlineColumn" Width="Auto" />
                 <ColumnDefinition x:Name="EditorColumn" Width="*" />
                 <ColumnDefinition x:Name="SplitterColumn" Width="Auto" />
                 <ColumnDefinition x:Name="PreviewColumn" Width="*" />
             </Grid.ColumnDefinitions>
 
-            <TextBox x:Name="Editor" Grid.Column="0"
+            <!-- Başlık paneli (Ctrl+Shift+O): tıklanınca başlığa gidilir, imlecin bulunduğu başlık seçili -->
+            <Border x:Name="OutlinePanel" Grid.Column="0" Width="250" Visibility="Collapsed"
+                    Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0">
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="14,10,6,6">
+                        <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Click="OutlineClose_Click" ToolTip="{x:Static res:Resources.Note_FindClose}">
+                            <controls:FontIcon Glyph="&#xE711;" FontSize="11" />
+                        </Button>
+                        <TextBlock x:Name="OutlineHeader" VerticalAlignment="Center" FontWeight="SemiBold" Text="{x:Static res:Resources.Note_Outline}" />
+                    </DockPanel>
+                    <TextBlock x:Name="OutlineEmpty" DockPanel.Dock="Top" Margin="14,4,14,0" TextWrapping="Wrap" Visibility="Collapsed"
+                               Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
+                               Text="{x:Static res:Resources.Note_OutlineEmpty}" />
+                    <ListBox x:Name="OutlineList" BorderThickness="0" Background="Transparent" Padding="4,0,4,8"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             SelectionChanged="OutlineList_SelectionChanged">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Margin="{Binding Indent, Converter={StaticResource IndentToMargin}}" Text="{Binding Title}"
+                                           TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Level}" Value="1">
+                                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+            <TextBox x:Name="Editor" Grid.Column="1"
                      AcceptsReturn="True" AcceptsTab="True"
                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                      VerticalContentAlignment="Top"
@@ -176,18 +218,18 @@
                      PreviewDrop="Editor_PreviewDrop"
                      PreviewMouseWheel="Editor_PreviewMouseWheel" />
 
-            <GridSplitter x:Name="Splitter" Grid.Column="1" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+            <GridSplitter x:Name="Splitter" Grid.Column="2" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch"
                           ResizeBehavior="PreviousAndNext" Background="{DynamicResource DividerStrokeColorDefaultBrush}"
                           DragCompleted="Splitter_DragCompleted" />
 
-            <FlowDocumentScrollViewer x:Name="Preview" Grid.Column="2"
+            <FlowDocumentScrollViewer x:Name="Preview" Grid.Column="3"
                                       VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
                                       IsToolBarVisible="False" Focusable="False"
                                       SizeChanged="Preview_SizeChanged"
                                       PreviewMouseWheel="Preview_PreviewMouseWheel" />
 
             <!-- Bul / değiştir (Ctrl+F, Ctrl+R): düz metnin sağ üstünde -->
-            <Border x:Name="FindBar" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,22,0"
+            <Border x:Name="FindBar" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,22,0"
                     Visibility="Collapsed" Padding="6" CornerRadius="8" BorderThickness="1"
                     Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
                 <Grid>

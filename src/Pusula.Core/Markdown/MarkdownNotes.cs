@@ -11,6 +11,37 @@ using Markdig.Syntax.Inlines;
 
 namespace Pusula.Core.Markdown
 {
+    /// <summary>Notun bir başlığı (içindekiler / başlık paneli için).</summary>
+    public sealed class OutlineItem
+    {
+        /// <summary>Başlığı kurar.</summary>
+        public OutlineItem(int level, string title, int line, int start)
+        {
+            Level = level;
+            Title = title ?? string.Empty;
+            Line = line;
+            Start = start;
+        }
+
+        /// <summary>Düzey (1–6).</summary>
+        public int Level { get; }
+
+        /// <summary>Başlık metni (# işaretleri olmadan).</summary>
+        public string Title { get; }
+
+        /// <summary>Satır (0'dan).</summary>
+        public int Line { get; }
+
+        /// <summary>Metindeki konum (karakter).</summary>
+        public int Start { get; }
+
+        /// <summary>Listede girinti (piksel): düzey başına 14.</summary>
+        public double Indent
+        {
+            get { return (Math.Max(1, Level) - 1) * 14; }
+        }
+    }
+
     /// <summary>Obsidian kutusu (<c>&gt; [!uyari] Başlık</c>): tür, başlık, kapalı başlasın mı.</summary>
     public sealed class Callout
     {
@@ -65,6 +96,31 @@ namespace Pusula.Core.Markdown
         public static MarkdownDocument Parse(string text)
         {
             return Markdig.Markdown.Parse(text ?? string.Empty, Pipeline);
+        }
+
+        /// <summary>
+        /// Notun başlıkları (içindekiler), belge sırasıyla: düzey, başlık metni (işaretsiz), satır ve konum. Kod bloğundaki
+        /// <c>#</c> satırları ve yorum içindeki başlıklar sayılmaz.
+        /// </summary>
+        public static IList<OutlineItem> Outline(string text)
+        {
+            var source = MaskComments(text ?? string.Empty);
+            var list = new List<OutlineItem>();
+            foreach (var heading in Parse(source).Descendants<HeadingBlock>())
+            {
+                var start = heading.Span.Start;
+                if (start < 0 || start >= source.Length)
+                {
+                    continue;
+                }
+
+                var end = source.IndexOf('\n', start);
+                var line = (end < 0 ? source.Substring(start) : source.Substring(start, end - start)).Trim();
+                var title = heading.IsSetext ? line : line.TrimStart('#').Trim().TrimEnd('#').Trim();
+                list.Add(new OutlineItem(heading.Level, title, heading.Line, start));
+            }
+
+            return list;
         }
 
         /// <summary>

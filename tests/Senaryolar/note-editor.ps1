@@ -284,4 +284,30 @@ Check 'iki basamaklı numaraya yer var (20 maddelik liste)' ($toc.Count -eq 1 -a
 $gview = New-Object System.Windows.Controls.FlowDocumentScrollViewer; $gview.Document = $gdoc; $gview.Width = 900; $gview.Height = 1400
 $gwin = New-Object System.Windows.Window; $gwin.SetResourceReference([System.Windows.Controls.Control]::BackgroundProperty, 'SurfaceBaseBrush'); $gwin.Content = $gview; $gwin.Width = 920; $gwin.Height = 1440; $gwin.ShowInTaskbar = $false; $gwin.WindowStyle = 'None'; $gwin.Left = -3000; $gwin.Show(); Pump
 Snap $gwin "$Out\md-kilavuzu.png"; $gwin.Close()
+
+"--- 12. Başlık paneli"
+$gnote = Join-Path $stock 'MD_KILAVUZU.md'; [IO.File]::WriteAllText($gnote, $guide, (New-Object Text.UTF8Encoding $true))
+$vm.OpenNoteOrFolder($gnote, $stock); Pump
+$gw = @($win.NoteWindows)[0]; $gw.WindowStartupLocation = 'Manual'; $gw.Left = -20000; $gw.Top = -20000; $gw.Width = 1500; $gw.Height = 940; Wait
+$ge = $gw.ViewModel; $ged = $gw.FindName('Editor')
+Check 'panel kapalı başlar' (-not $gw.IsOutlineOpen)
+$gw.HandleGlobalKey($K::O, $true, $true) | Out-Null; Wait
+$expectHeads = @([Markdig.Syntax.MarkdownObjectExtensions]::Descendants($gparsed) | Where-Object { $_ -is [Markdig.Syntax.HeadingBlock] }).Count
+Check 'Ctrl+Shift+O: panel açılır, başlıklar listelenir, ayar kaydedildi' ($gw.IsOutlineOpen -and $gw.OutlineItems.Count -eq $expectHeads -and $vm.Settings.NoteEditor.ShowOutline) ("$($gw.OutlineItems.Count) / $expectHeads")
+Check 'panel başlığı sayıyla' ($gw.FindName('OutlineHeader').Text -eq "Başlıklar · $expectHeads") $gw.FindName('OutlineHeader').Text
+$target = -1; for ($x = 0; $x -lt $gw.OutlineItems.Count; $x++) { if ($gw.OutlineItems[$x].Title -like '12. Yorum*') { $target = $x } }
+$gw.GoToHeading($target); Wait
+$gline = $ged.GetLineIndexFromCharacterIndex($ged.CaretIndex)
+Check 'başlığa gidildi: imleç başlıkta' ($ged.Text.Substring($ged.CaretIndex, 12) -eq '## 12. Yorum')
+Check 'düz metin başlığa kaydı' ($gline -ge $ged.GetFirstVisibleLineIndex() -and $gline -le $ged.GetLastVisibleLineIndex())
+$gscroll = $gw.GetType().GetMethod('FindScroll', [Reflection.BindingFlags]'NonPublic,Static').Invoke($null, @($gw.FindName('Preview')))
+$hp = $gw.LastRender.Headings[$target]; $hr = $hp.ContentStart.GetCharacterRect('Forward')
+Check 'görünüm başlığa kaydı (üstte)' ($gscroll.VerticalOffset -gt 500 -and $hr.Top -ge -5 -and $hr.Top -lt 200) ("offset=$($gscroll.VerticalOffset) top=$($hr.Top)")
+Check 'imlecin başlığı panelde seçili' ($gw.FindName('OutlineList').SelectedIndex -eq $target)
+$ged.Select($ged.Text.IndexOf('## 3. Yazı'), 0); Pump
+Check 'imleç değişince seçim izler' ($gw.OutlineItems[$gw.FindName('OutlineList').SelectedIndex].Title -like '3. Yazı*')
+Snap $gw "$Out\note-outline.png"
+$gw.ToggleOutline(); Pump
+Check 'panel kapanır, ayar kaydedildi' (-not $gw.IsOutlineOpen -and -not $vm.Settings.NoteEditor.ShowOutline)
+$gw.Close(); Pump
 "SONUÇ OK=$ok HATA=$fail"

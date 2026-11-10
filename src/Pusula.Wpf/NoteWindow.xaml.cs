@@ -54,6 +54,7 @@ namespace Pusula.Wpf
             {
                 renderTimer.Stop();
                 RenderPreview();
+                UpdateOutline();
             };
             autoSaveTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
             autoSaveTimer.Tick += (s, e) =>
@@ -85,6 +86,7 @@ namespace Pusula.Wpf
                 }
 
                 ApplySettings();
+                ApplyOutline();
                 Editor.Focus();
                 Editor.CaretIndex = 0;
                 viewModel.SetCaret(0);
@@ -651,6 +653,7 @@ namespace Pusula.Wpf
         private void Editor_SelectionChanged(object sender, RoutedEventArgs e)
         {
             viewModel.SetCaret(Editor.CaretIndex);
+            HighlightOutline();
             if (SuggestPopup.IsOpen)
             {
                 UpdateSuggestions();
@@ -797,6 +800,12 @@ namespace Pusula.Wpf
                         viewModel.PreviewSize -= 1;
                         return true;
                 }
+            }
+
+            if (ctrl && shift && key == Key.O)
+            {
+                ToggleOutline();
+                return true;
             }
 
             if (key == Key.F3 && !ctrl)

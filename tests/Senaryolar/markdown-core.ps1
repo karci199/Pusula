@@ -117,4 +117,12 @@ $e1 = $TS::Replace($txt, $res.Matches[0], 'SN(\d+)', 'Seri-$1', (Opt $false $fal
 $cnt = 0; $all = $TS::ReplaceAll($txt, 'ölçül', 'test edil', (Opt $false $false $false), [ref]$cnt); Check 'tümünü değiştir' ($cnt -eq 2 -and $all.Contains('test edildü') -and $all.Contains('test edilmedi'))
 $cnt = 0; $same = $TS::ReplaceAll($txt, 'yok', 'x', (Opt $false $false $false), [ref]$cnt); Check 'eşleşme yoksa metin aynı' ($cnt -eq 0 -and $same -eq $txt)
 $stale = New-Object Pusula.Core.Markdown.TextMatch(0, 3); Check 'eskimiş eşleşme değiştirilmez' ($TS::Replace('abc', $stale, 'xyz', 'q', (Opt $false $false $false)) -eq $null)
+"--- 9. Başlıklar (içindekiler)"
+$osrc = "---`r`nbaslik: x`r`n---`r`n# Ana **kalın**`r`n`r`nmetin`r`n`r`n## Alt ##`r`n`r`n" + '```' + "`r`n# kod değil`r`n" + '```' + "`r`n%%`r`n# yorum değil`r`n%%`r`nSetext`r`n------`r`n`r`n> ## Alıntıda`r`n"
+$ol = @($MN::Outline($osrc))
+Check 'başlık sayısı (kod, yorum, YAML hariç)' ($ol.Count -eq 4) (($ol | ForEach-Object { "$($_.Level):$($_.Title)" }) -join ' | ')
+Check 'düzey ve metin' ($ol[0].Level -eq 1 -and $ol[0].Title -eq 'Ana **kalın**' -and $ol[1].Level -eq 2 -and $ol[1].Title -eq 'Alt')
+Check 'setext başlık' ($ol[2].Level -eq 2 -and $ol[2].Title -eq 'Setext')
+Check 'satır ve konum' ($ol[0].Line -eq 3 -and $osrc.Substring($ol[0].Start, 5) -eq '# Ana' -and $ol[1].Indent -eq 14)
+Check 'başlıksız not: boş' (@($MN::Outline('düz metin')).Count -eq 0)
 "SONUÇ OK=$ok HATA=$fail"

@@ -1521,4 +1521,16 @@
   <data name="Note_FindTotal" xml:space="preserve">
     <value>{0} sonuç</value>
   </data>
+  <data name="Note_Outline" xml:space="preserve">
+    <value>Başlıklar</value>
+  </data>
+  <data name="Note_OutlineCount" xml:space="preserve">
+    <value>Başlıklar · {0}</value>
+  </data>
+  <data name="Note_OutlineEmpty" xml:space="preserve">
+    <value>Bu notta başlık yok. Satır başına # ve boşluk yazarak başlık ekleyebilirsin.</value>
+  </data>
+  <data name="Note_OutlineToggle" xml:space="preserve">
+    <value>Başlık paneli (Ctrl+Shift+O)</value>
+  </data>
 </root>

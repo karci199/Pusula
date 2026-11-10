@@ -1748,6 +1748,18 @@ namespace Pusula.Wpf.Properties
         /// <summary>Toplam eşleşme.</summary>
         public static string Note_FindTotal { get { return Get("Note_FindTotal"); } }
 
+        /// <summary>Başlık paneli başlığı.</summary>
+        public static string Note_Outline { get { return Get("Note_Outline"); } }
+
+        /// <summary>Başlık paneli başlığı ve sayı.</summary>
+        public static string Note_OutlineCount { get { return Get("Note_OutlineCount"); } }
+
+        /// <summary>Başlık yokken.</summary>
+        public static string Note_OutlineEmpty { get { return Get("Note_OutlineEmpty"); } }
+
+        /// <summary>Araç çubuğu.</summary>
+        public static string Note_OutlineToggle { get { return Get("Note_OutlineToggle"); } }
+
         #endregion
     }
 }
