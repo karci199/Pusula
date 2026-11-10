@@ -99,11 +99,18 @@ namespace Pusula.Wpf.ViewModels
             get { return editSubType; }
             set
             {
-                if (SetProperty(ref editSubType, value ?? string.Empty))
+                // Seçenekler yenilenirken açılır kutu boş (null) yazar; yok sayılır, yoksa alt tür silinirdi.
+                if (value != null && SetProperty(ref editSubType, value))
                 {
                     BuildEditFields();
                 }
             }
+        }
+
+        /// <summary>Alan bölümünün başlığı: "Özellikler · Mekanik".</summary>
+        public string EditFieldsHeader
+        {
+            get { return FieldsHeader(editSubType); }
         }
 
         private Pusula.Core.Types.TypeDefinition? editType;
@@ -137,6 +144,7 @@ namespace Pusula.Wpf.ViewModels
             }
 
             OnPropertyChanged(nameof(HasEditFields));
+            OnPropertyChanged(nameof(EditFieldsHeader));
         }
 
         /// <summary>Envanter kısa açıklaması.</summary>
@@ -239,6 +247,7 @@ namespace Pusula.Wpf.ViewModels
                     }
 
                     EditTemplate = current;
+                    OnPropertyChanged(nameof(EditTemplate));
                     break;
                 }
 
@@ -265,6 +274,9 @@ namespace Pusula.Wpf.ViewModels
                     EditFields.Clear();
                     EditSubType = currentSub;
                     BuildEditFields();
+
+                    // Liste yenilenince kutunun seçimi boşalmış olabilir; değer aynı kalsa da yeniden bildirilir.
+                    OnPropertyChanged(nameof(EditSubType));
                     break;
                 }
             }
@@ -274,6 +286,34 @@ namespace Pusula.Wpf.ViewModels
             EditTitle = string.Format(Resources.Edit_Title, EditNumber);
             IsEditOpen = true;
             return true;
+        }
+
+        // Alan değerleri notun YAML başlığına da yazılır (gövdeye dokunulmaz). Başlıkta yalnız bu alt türde geçerli alanlar
+        // durur; ötekiler başlıktan kalkar (değerleri kayıtta saklı kalır). Not yoksa yalnız kayıt dosyası yazılmıştır.
+        private void WriteFieldsToNote(string folder, Pusula.Core.Types.TypeDefinition? type, string name, string subType, System.Collections.Generic.IDictionary<string, string> values)
+        {
+            var record = JsonFile.TryRead<InventoryRecord>(InventoryService.RecordFile(folder));
+            var note = NoteFile.Find(folder, record?.Number ?? Path.GetFileName(folder));
+            if (string.IsNullOrEmpty(note) || !File.Exists(note))
+            {
+                return;
+            }
+
+            var yaml = new System.Collections.Generic.Dictionary<string, string> { { "tanim", name }, { "alt_tur", subType } };
+            var applies = new System.Collections.Generic.HashSet<string>(type?.FieldsFor(subType).Select(f => f.Key) ?? Enumerable.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+            foreach (var field in type?.Fields ?? new System.Collections.Generic.List<Pusula.Core.Types.FieldDefinition>())
+            {
+                string value;
+                yaml[field.Key] = applies.Contains(field.Key) && values.TryGetValue(field.Key, out value) && value.Trim().Length > 0
+                    ? value.Trim() + (field.Unit.Length > 0 && field.Kind == Pusula.Core.Types.FieldKind.Number ? " " + field.Unit : string.Empty)
+                    : string.Empty;
+            }
+
+            var yamlError = Journal.SetFrontMatter(note, yaml);
+            if (yamlError.Length > 0)
+            {
+                Status = string.Format(Resources.Error_Io, yamlError);
+            }
         }
 
         /// <summary>Düzenlemeyi kaydeder; başarılıysa ağaç yenilenir (seçim korunur). Kaydedildiyse <c>true</c>.</summary>
@@ -297,26 +337,9 @@ namespace Pusula.Wpf.ViewModels
                     error = RecordEdit.EditInventory(editFolder, EditName, EditSubType, EditNote, editValues);
                     if (error.Length == 0)
                     {
-                        // Alan değerleri notun YAML başlığına da yazılır (gövdeye dokunulmaz).
-                        var record = JsonFile.TryRead<InventoryRecord>(InventoryService.RecordFile(editFolder));
-                        var note = NoteFile.Find(editFolder, record?.Number ?? Path.GetFileName(editFolder));
-                        var yaml = new System.Collections.Generic.Dictionary<string, string> { { "tanim", EditName }, { "alt_tur", EditSubType } };
-                        // Başlıkta yalnız bu alt türde geçerli alanlar durur; ötekiler başlıktan kalkar (değerleri kayıtta saklı kalır).
-                        var applies = new System.Collections.Generic.HashSet<string>(editType?.FieldsFor(EditSubType).Select(f => f.Key) ?? Enumerable.Empty<string>(), StringComparer.OrdinalIgnoreCase);
-                        foreach (var field in editType?.Fields ?? new System.Collections.Generic.List<Pusula.Core.Types.FieldDefinition>())
-                        {
-                            string value;
-                            yaml[field.Key] = applies.Contains(field.Key) && editValues.TryGetValue(field.Key, out value) && value.Trim().Length > 0
-                                ? value.Trim() + (field.Unit.Length > 0 && field.Kind == Pusula.Core.Types.FieldKind.Number ? " " + field.Unit : string.Empty)
-                                : string.Empty;
-                        }
-
-                        var yamlError = Journal.SetFrontMatter(note, yaml);
-                        if (yamlError.Length > 0)
-                        {
-                            Status = string.Format(Resources.Error_Io, yamlError);
-                        }
+                        WriteFieldsToNote(editFolder, editType, EditName, EditSubType, editValues);
                     }
+
                     break;
             }
 
@@ -502,7 +525,7 @@ namespace Pusula.Wpf.ViewModels
         }
     }
 
-    /// <summary>Düzenle penceresinde bir alan: metin, sayı, evet/hayır ya da seçim.</summary>
+    /// <summary>Türe özel bir alanın girişi (düzenle ve yeni kayıt pencereleri ortak): metin, sayı, evet/hayır ya da seçim.</summary>
     public sealed class FieldInput : Mvvm.ViewModelBase
     {
         private string value;
@@ -512,7 +535,12 @@ namespace Pusula.Wpf.ViewModels
         {
             Key = field.Key;
             Label = field.Unit.Length > 0 ? field.Name + " (" + field.Unit + ")" : field.Name;
-            Choices = field.Choices.ToList();
+            // Başta boş seçenek (değeri silmek için); kayıtlı değer listede yoksa o da eklenir (seçili görünsün).
+            Choices = new[] { string.Empty }.Concat(field.Choices).ToList();
+            if (!string.IsNullOrEmpty(current) && !Choices.Contains(current, StringComparer.CurrentCultureIgnoreCase))
+            {
+                Choices.Add(current);
+            }
             IsChoice = field.Kind == Pusula.Core.Types.FieldKind.Choice;
             IsYesNo = field.Kind == Pusula.Core.Types.FieldKind.YesNo;
             value = current ?? string.Empty;

@@ -23,6 +23,29 @@
 
     <controls:ChromeWindow.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <!-- Türe özel alan girişi (düzenle ve yeni kayıt): yazı / sayı, seçim listesi, evet-hayır -->
+        <!-- Düzenle penceresi: envanter kaydında (türe özel alanlar iki sütun) geniş, proje / stokta dar -->
+        <Style x:Key="RecordEditDialog" TargetType="controls:ContentDialog">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsEditInventory}" Value="True">
+                    <Setter Property="DialogWidth" Value="680" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>        <ItemsPanelTemplate x:Key="TwoColumnPanel">
+            <UniformGrid Columns="2" VerticalAlignment="Top" />
+        </ItemsPanelTemplate>
+        <DataTemplate x:Key="FieldInputTemplate">
+            <controls:FormField Margin="0,0,16,10" Header="{Binding Label}" LabelWidth="110" ToolTip="{Binding Label}">
+                <Grid>
+                    <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
+                             Visibility="{Binding IsText, Converter={StaticResource BoolToVis}}" />
+                    <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Value, Mode=TwoWay}"
+                              Visibility="{Binding IsChoice, Converter={StaticResource BoolToVis}}" />
+                    <CheckBox IsChecked="{Binding IsYes}" VerticalAlignment="Center"
+                              Visibility="{Binding IsYesNo, Converter={StaticResource BoolToVis}}" />
+                </Grid>
+            </controls:FormField>
+        </DataTemplate>
         <local:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
         <local:PathToImageConverter x:Key="PathToImage" />
 
@@ -1465,13 +1488,9 @@
                                                 <controls:FontIcon Glyph="{x:Static local:AppIcons.FullScreen}" FontSize="12" />
                                             </Button>
                                         </Grid>
+                                        <!-- Not önizlemesi kaldırıldı (ham md kötü görünüyordu, 10.11.2026); yalnız düğmeler kalır. -->
                                         <StackPanel Grid.Column="1">
-                                            <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.Inv_NoteTitle}" />
-                                            <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding NoteExcerpt}"
-                                                       Visibility="{Binding HasNote, Converter={StaticResource BoolToVis}}" />
-                                            <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Stock_NoNote}"
-                                                       Visibility="{Binding HasNote, Converter={StaticResource InverseBoolToVis}}" />
-                                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                            <StackPanel Orientation="Horizontal">
                                                 <Button Click="StockNote_Click" Visibility="{Binding HasNote, Converter={StaticResource BoolToVis}}">
                                                     <StackPanel Orientation="Horizontal">
                                                         <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
@@ -1940,43 +1959,58 @@
             </StackPanel>
         </controls:ContentDialog>
 
-        <!-- Yeni envanter kaydı (kablo, jig …) -->
+        <!-- Yeni envanter kaydı (kablo, jig …): üstte genel bilgiler iki sütun, altta türe özel alanlar iki sütun -->
         <controls:ContentDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsInventoryDialogOpen, Mode=TwoWay}"
-                                                                Title="{Binding InventoryDialogTitle}"
+                                DialogWidth="680"
+                                Title="{Binding InventoryDialogTitle}"
                                 PrimaryButtonText="{x:Static res:Resources.Dialog_Create}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="InventoryDialog_PrimaryButtonClick">
-            <StackPanel Width="300">
+            <StackPanel>
                 <TextBlock Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}"
-                           TextWrapping="Wrap" MaxWidth="400" HorizontalAlignment="Left" Margin="0,0,0,10"
+                           TextWrapping="Wrap" Margin="0,0,0,10"
                            Text="{x:Static res:Resources.Mark_Hint}"
                            Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource BoolToVis}}" />
-                <controls:FormField Header="{x:Static res:Resources.Inv_Level}" LabelWidth="90"
-                                    Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}">
-                    <ComboBox ItemsSource="{Binding InventoryLevels}" SelectedItem="{Binding NewInventoryLevel, Mode=TwoWay}" DisplayMemberPath="Label" />
-                </controls:FormField>
-                <controls:FormField Header="{x:Static res:Resources.Col_Status}" LabelWidth="90"
-                                    Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource BoolToVis}}">
-                    <ComboBox ItemsSource="{Binding InventoryStatuses}" SelectedItem="{Binding NewInventoryStatus, Mode=TwoWay}" />
-                </controls:FormField>
-                <controls:FormField Header="{x:Static res:Resources.Inv_Number}" IsRequired="True" LabelWidth="90" Margin="0,8,0,0">
-                    <TextBox Text="{Binding NewInventoryNumber, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
-                </controls:FormField>
-                <TextBlock Margin="98,4,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
+                <UniformGrid Columns="2">
+                    <controls:FormField Header="{x:Static res:Resources.Inv_Number}" IsRequired="True" LabelWidth="110" Margin="0,0,16,0">
+                        <TextBox Text="{Binding NewInventoryNumber, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+                    </controls:FormField>
+                    <controls:FormField Header="{x:Static res:Resources.Inv_Name}" IsRequired="True" LabelWidth="110">
+                        <TextBox Text="{Binding NewInventoryName, UpdateSourceTrigger=PropertyChanged}" />
+                    </controls:FormField>
+                </UniformGrid>
+                <TextBlock Margin="118,4,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
                            Text="{Binding InventoryNumberHint}" />
-                <controls:FormField Header="{x:Static res:Resources.Inv_Name}" IsRequired="True" LabelWidth="90" Margin="0,8,0,0">
-                    <TextBox Text="{Binding NewInventoryName, UpdateSourceTrigger=PropertyChanged}" />
-                </controls:FormField>
-                <controls:FormField Header="{x:Static res:Resources.Inv_SubType}" LabelWidth="90" Margin="0,8,0,0">
-                    <ComboBox ItemsSource="{Binding InventorySubTypes}" SelectedItem="{Binding NewInventorySubType, Mode=TwoWay}" />
-                </controls:FormField>
-                <controls:FormField Header="{x:Static res:Resources.Inv_Note}" LabelWidth="90" Margin="0,8,0,0"
+                <UniformGrid Columns="2" Margin="0,10,0,0">
+                    <controls:FormField Header="{x:Static res:Resources.Inv_SubType}" LabelWidth="110" Margin="0,0,16,0">
+                        <ComboBox ItemsSource="{Binding InventorySubTypes}" SelectedItem="{Binding NewInventorySubType, Mode=TwoWay}" />
+                    </controls:FormField>
+                    <Grid>
+                        <controls:FormField Header="{x:Static res:Resources.Inv_Level}" LabelWidth="110"
+                                            Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}">
+                            <ComboBox ItemsSource="{Binding InventoryLevels}" SelectedItem="{Binding NewInventoryLevel, Mode=TwoWay}" DisplayMemberPath="Label" />
+                        </controls:FormField>
+                        <controls:FormField Header="{x:Static res:Resources.Col_Status}" LabelWidth="110"
+                                            Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource BoolToVis}}">
+                            <ComboBox ItemsSource="{Binding InventoryStatuses}" SelectedItem="{Binding NewInventoryStatus, Mode=TwoWay}" />
+                        </controls:FormField>
+                    </Grid>
+                </UniformGrid>
+                <controls:FormField Header="{x:Static res:Resources.Inv_Note}" LabelWidth="110" Margin="0,10,0,0"
                                     ErrorText="{Binding InventoryError}">
                     <TextBox Text="{Binding NewInventoryNote, UpdateSourceTrigger=PropertyChanged}" />
                 </controls:FormField>
-                <TextBlock Margin="98,8,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
-                           TextWrapping="Wrap" Width="220" HorizontalAlignment="Left"
+                <StackPanel Visibility="{Binding HasNewInventoryFields, Converter={StaticResource BoolToVis}}">
+                    <Border Margin="0,16,0,10" Padding="0,0,0,6" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+                        <TextBlock FontWeight="SemiBold" Text="{Binding NewInventoryFieldsHeader}" />
+                    </Border>
+                    <ScrollViewer MaxHeight="320" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding NewInventoryFields}" ItemTemplate="{StaticResource FieldInputTemplate}" ItemsPanel="{StaticResource TwoColumnPanel}" />
+                    </ScrollViewer>
+                </StackPanel>
+                <TextBlock Margin="0,10,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
+                           TextWrapping="Wrap"
                            Text="{x:Static res:Resources.Inv_TemplateHint}"
                            Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}" />
             </StackPanel>
@@ -2017,53 +2051,43 @@
         </controls:ContentDialog>
 
         <!-- Düzenle: proje, stok, envanter kaydı (ortak) -->
-        <controls:ContentDialog Grid.RowSpan="3"
+        <controls:ContentDialog
+                                Style="{StaticResource RecordEditDialog}" Grid.RowSpan="3"
                                 IsOpen="{Binding IsEditOpen, Mode=TwoWay}"
                                                                 Title="{Binding EditTitle}"
                                 PrimaryButtonText="{x:Static res:Resources.Edit_Save}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="Edit_PrimaryButtonClick">
-            <StackPanel Width="300">
-                <controls:FormField Header="{x:Static res:Resources.Edit_Number}" LabelWidth="80">
+            <StackPanel>
+                <controls:FormField Header="{x:Static res:Resources.Edit_Number}" LabelWidth="110">
                     <TextBlock Text="{Binding EditNumber}" FontWeight="SemiBold" VerticalAlignment="Center" />
                 </controls:FormField>
-                <TextBlock Margin="80,2,0,10" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
+                <TextBlock Margin="118,2,0,10" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
                            Text="{x:Static res:Resources.Edit_NumberHint}" />
-                <controls:FormField Header="{x:Static res:Resources.Edit_Name}" LabelWidth="80">
+                <controls:FormField Header="{x:Static res:Resources.Edit_Name}" LabelWidth="110">
                     <TextBox x:Name="EditNameBox" Text="{Binding EditName, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
                 </controls:FormField>
-                <controls:FormField Margin="0,8,0,0" Header="{x:Static res:Resources.Edit_Template}" LabelWidth="80"
+                <controls:FormField Margin="0,10,0,0" Header="{x:Static res:Resources.Edit_Template}" LabelWidth="110"
                                     Visibility="{Binding IsEditStock, Converter={StaticResource BoolToVis}}">
                     <ComboBox ItemsSource="{Binding EditTemplates}" SelectedItem="{Binding EditTemplate, Mode=TwoWay}" />
                 </controls:FormField>
-                <controls:FormField Margin="0,8,0,0" Header="{x:Static res:Resources.Edit_SubType}" LabelWidth="80"
-                                    Visibility="{Binding IsEditInventory, Converter={StaticResource BoolToVis}}">
-                    <ComboBox ItemsSource="{Binding EditSubTypes}" Text="{Binding EditSubType, Mode=TwoWay}" IsEditable="True" />
-                </controls:FormField>
-                <controls:FormField Margin="0,8,0,0" Header="{x:Static res:Resources.Edit_Note}" LabelWidth="80"
-                                    Visibility="{Binding IsEditInventory, Converter={StaticResource BoolToVis}}">
-                    <TextBox Text="{Binding EditNote, UpdateSourceTrigger=PropertyChanged}" />
-                </controls:FormField>
-                <!-- Türe özel alanlar (alt türe göre): yazı, seçim ya da evet/hayır -->
-                <ScrollViewer Margin="0,4,0,0" MaxHeight="240" VerticalScrollBarVisibility="Auto"
-                              Visibility="{Binding HasEditFields, Converter={StaticResource BoolToVis}}">
-                    <ItemsControl ItemsSource="{Binding EditFields}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <controls:FormField Margin="0,8,0,0" Header="{Binding Label}" LabelWidth="80">
-                                    <Grid>
-                                        <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
-                                                 Visibility="{Binding IsText, Converter={StaticResource BoolToVis}}" />
-                                        <ComboBox IsEditable="True" ItemsSource="{Binding Choices}" Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                  Visibility="{Binding IsChoice, Converter={StaticResource BoolToVis}}" />
-                                        <CheckBox IsChecked="{Binding IsYes}" VerticalAlignment="Center"
-                                                  Visibility="{Binding IsYesNo, Converter={StaticResource BoolToVis}}" />
-                                    </Grid>
-                                </controls:FormField>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+                <UniformGrid Columns="2" Margin="0,10,0,0" Visibility="{Binding IsEditInventory, Converter={StaticResource BoolToVis}}">
+                    <controls:FormField Header="{x:Static res:Resources.Edit_SubType}" LabelWidth="110" Margin="0,0,16,0">
+                        <ComboBox x:Name="EditSubTypeBox" ItemsSource="{Binding EditSubTypes}" SelectedItem="{Binding EditSubType, Mode=TwoWay}" />
+                    </controls:FormField>
+                    <controls:FormField Header="{x:Static res:Resources.Edit_Note}" LabelWidth="110">
+                        <TextBox Text="{Binding EditNote, UpdateSourceTrigger=PropertyChanged}" />
+                    </controls:FormField>
+                </UniformGrid>
+                <!-- Türe özel alanlar (alt türe göre), iki sütun -->
+                <StackPanel Visibility="{Binding HasEditFields, Converter={StaticResource BoolToVis}}">
+                    <Border Margin="0,16,0,10" Padding="0,0,0,6" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+                        <TextBlock FontWeight="SemiBold" Text="{Binding EditFieldsHeader}" />
+                    </Border>
+                    <ScrollViewer MaxHeight="360" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding EditFields}" ItemTemplate="{StaticResource FieldInputTemplate}" ItemsPanel="{StaticResource TwoColumnPanel}" />
+                    </ScrollViewer>
+                </StackPanel>
                 <TextBlock Margin="0,10,0,0" TextWrapping="Wrap" Foreground="{DynamicResource SystemFillColorCriticalBrush}" Text="{Binding EditError}" />
             </StackPanel>
         </controls:ContentDialog>

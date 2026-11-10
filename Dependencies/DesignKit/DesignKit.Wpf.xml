@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <doc>
     <assembly>
         <name>DesignKit.Wpf</name>
@@ -493,6 +493,15 @@
         </member>
         <member name="F:DesignKit.Controls.ContentDialog.TitleProperty">
             <summary>Identifies the <see cref="P:DesignKit.Controls.ContentDialog.Title"/> dependency property.</summary>
+        </member>
+        <member name="P:DesignKit.Controls.ContentDialog.DialogWidth">
+            <summary>
+            Width of the floating dialog surface, in device-independent pixels. Defaults to 360 — the
+            confirm/alert size; raise it for a form whose fields sit in two columns.
+            </summary>
+        </member>
+        <member name="F:DesignKit.Controls.ContentDialog.DialogWidthProperty">
+            <summary>Identifies the <see cref="P:DesignKit.Controls.ContentDialog.DialogWidth"/> dependency property.</summary>
         </member>
         <member name="P:DesignKit.Controls.ContentDialog.PrimaryButtonText">
             <summary>Text of the accent (primary) action button. Empty (the default) hides it.</summary>

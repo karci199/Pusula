@@ -222,7 +222,10 @@ namespace Pusula.Wpf.ViewModels
 
             NewInventoryNumber = suggestion.Item1;
             NewInventoryName = suggestion.Item2;
+            newInventoryValues.Clear();
+            newInventorySubType = string.Empty;
             NewInventorySubType = InventorySubTypes.FirstOrDefault() ?? string.Empty;
+            BuildNewInventoryFields();
             NewInventoryStatus = InventoryStatuses.Contains(Resources.Inv_DefaultMarkStatus) ? Resources.Inv_DefaultMarkStatus : type.InitialStatus;
             NewInventoryNote = string.Empty;
             InventoryError = string.Empty;
@@ -258,11 +261,62 @@ namespace Pusula.Wpf.ViewModels
             set { SetProperty(ref newInventoryName, value ?? string.Empty); }
         }
 
-        /// <summary>Seçilen alt tür.</summary>
+        /// <summary>Seçilen alt tür; değişince türe özel alanlar o alt türe göre yeniden kurulur (girilenler kaybolmaz).</summary>
         public string NewInventorySubType
         {
             get { return newInventorySubType; }
-            set { SetProperty(ref newInventorySubType, value ?? string.Empty); }
+            set
+            {
+                // Seçenekler yenilenirken açılır kutu boş yazar; yok sayılır.
+                if (value != null && SetProperty(ref newInventorySubType, value))
+                {
+                    BuildNewInventoryFields();
+                }
+            }
+        }
+
+        private readonly System.Collections.Generic.Dictionary<string, string> newInventoryValues = new System.Collections.Generic.Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>Yeni kayıtta türe özel alanlar (alt türe göre: Adet, Malzeme, Tork …).</summary>
+        public ObservableCollection<FieldInput> NewInventoryFields { get; } = new ObservableCollection<FieldInput>();
+
+        /// <summary>Yeni kayıtta alan var mı.</summary>
+        public bool HasNewInventoryFields
+        {
+            get { return NewInventoryFields.Count > 0; }
+        }
+
+        /// <summary>Alan bölümünün başlığı: "Özellikler · Mekanik".</summary>
+        public string NewInventoryFieldsHeader
+        {
+            get { return FieldsHeader(newInventorySubType); }
+        }
+
+        /// <summary>"Özellikler" ya da "Özellikler · alt tür".</summary>
+        public static string FieldsHeader(string subType)
+        {
+            return string.IsNullOrEmpty(subType) ? Resources.Fields_Header : string.Format(Resources.Fields_HeaderSub, subType);
+        }
+
+        private void BuildNewInventoryFields()
+        {
+            foreach (var input in NewInventoryFields)
+            {
+                newInventoryValues[input.Key] = input.Value;
+            }
+
+            NewInventoryFields.Clear();
+            if (newInventoryType != null)
+            {
+                foreach (var field in newInventoryType.FieldsFor(newInventorySubType))
+                {
+                    string value;
+                    NewInventoryFields.Add(new FieldInput(field, newInventoryValues.TryGetValue(field.Key, out value) ? value : string.Empty));
+                }
+            }
+
+            OnPropertyChanged(nameof(HasNewInventoryFields));
+            OnPropertyChanged(nameof(NewInventoryFieldsHeader));
         }
 
         /// <summary>Girilen not.</summary>
@@ -326,7 +380,10 @@ namespace Pusula.Wpf.ViewModels
             NewInventoryLevel = InventoryLevels.Last();
             NewInventoryNumber = string.Empty;
             NewInventoryName = string.Empty;
+            newInventoryValues.Clear();
+            newInventorySubType = string.Empty;
             NewInventorySubType = InventorySubTypes.FirstOrDefault() ?? string.Empty;
+            BuildNewInventoryFields();
             NewInventoryNote = string.Empty;
             InventoryError = string.Empty;
             OnPropertyChanged(nameof(InventoryDialogTitle));
@@ -352,6 +409,25 @@ namespace Pusula.Wpf.ViewModels
                     ? string.Format(Resources.Error_StockNumberFormat, InventoryNumberHint)
                     : ErrorText(result);
                 return false;
+            }
+
+            // Türe özel alanlar: kayıt açıldıktan sonra kayda ve notun YAML başlığına yazılır.
+            foreach (var input in NewInventoryFields)
+            {
+                newInventoryValues[input.Key] = input.Value;
+            }
+
+            if (NewInventoryFields.Any(i => i.Value.Trim().Length > 0))
+            {
+                var fieldsError = RecordEdit.EditInventory(result.Folder, NewInventoryName, NewInventorySubType, NewInventoryNote, newInventoryValues);
+                if (fieldsError.Length == 0)
+                {
+                    WriteFieldsToNote(result.Folder, newInventoryType, NewInventoryName, NewInventorySubType, newInventoryValues);
+                }
+                else
+                {
+                    Status = string.Format(Resources.Error_Io, fieldsError);
+                }
             }
 
             Refresh();

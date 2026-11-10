@@ -1805,6 +1805,12 @@ namespace Pusula.Wpf.Properties
         /// <summary>Not penceresinde kaydedildi.</summary>
         public static string Note_SavedAction { get { return Get("Note_SavedAction"); } }
 
+        /// <summary>Türe özel alanlar başlığı.</summary>
+        public static string Fields_Header { get { return Get("Fields_Header"); } }
+
+        /// <summary>Türe özel alanlar başlığı ve alt tür.</summary>
+        public static string Fields_HeaderSub { get { return Get("Fields_HeaderSub"); } }
+
         #endregion
     }
 }

@@ -1578,4 +1578,10 @@
   <data name="Note_SavedAction" xml:space="preserve">
     <value>{0} kaydedildi</value>
   </data>
+  <data name="Fields_Header" xml:space="preserve">
+    <value>Özellikler</value>
+  </data>
+  <data name="Fields_HeaderSub" xml:space="preserve">
+    <value>Özellikler · {0}</value>
+  </data>
 </root>
