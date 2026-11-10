@@ -48,6 +48,8 @@ try {
     $vm.Detail.OpenTasksExpanded = $true
     $vm.SelectNodeByPath((Join-Path $Data '7000_MILKON')); Wait
     Snap $win "$Out\open-tasks-project.png"
+$list = $win.FindName('ProjectStockList')
+Check 'açık işler açıkken stok tablosu ezilmez' ($list.ActualHeight -ge 150) ([string][int]$list.ActualHeight)
     $vm.SelectNodeByPath((Join-Path $Data '7000_MILKON\AB-7000-0001')); Wait
     Check 'notsuz stokta liste boş' (-not $vm.Detail.HasOpenTasks)
 } finally {

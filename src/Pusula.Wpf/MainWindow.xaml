@@ -1115,13 +1115,15 @@
 
                 <!-- Proje: kısa notlar ve stok tablosu -->
                 <Grid Grid.Row="3" Margin="0,16,0,0" Visibility="{Binding Detail.IsProject, Converter={StaticResource BoolToVis}}">
+                    <!-- Not / açık işler kartı en çok 340 px büyür, fazlası kendi içinde kayar: stok tablosu ezilmesin. -->
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" MaxHeight="340" />
+                        <RowDefinition Height="*" MinHeight="180" />
                     </Grid.RowDefinitions>
                     <Border Grid.Row="0" Margin="0,0,0,14" Padding="14,10" TextElement.FontWeight="Normal"
                             Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
                             CornerRadius="{DynamicResource OverlayCornerRadius}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel>
                             <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.QuickNote_Section}" />
                             <Grid Margin="0,0,0,6">
@@ -1160,6 +1162,7 @@
                             </Expander>
                             <ContentControl Content="{Binding}" ContentTemplate="{StaticResource MentionsCardTemplate}" Focusable="False" />
                         </StackPanel>
+                        </ScrollViewer>
                     </Border>
                 <DockPanel Grid.Row="1">
                     <!-- Stok tablosu sÃ¼zgeci: metin, durum -->
