@@ -163,14 +163,21 @@ namespace Pusula.Wpf.ViewModels
         /// </summary>
         public System.Collections.Generic.IEnumerable<NoteSuggestion> TagSuggestions()
         {
-            var type = IsEditOpen ? editType : newInventoryType;
-            var subType = IsEditOpen ? editSubType : NewInventorySubType;
-            if (type == null)
+            // Bağlam: açık düzenle / yeni kayıt penceresi, yoksa gösterilen kayıt ya da stok; hiçbiri değilse bütün etiketler.
+            var type = IsEditOpen ? editType : IsInventoryDialogOpen ? newInventoryType : null;
+            var subType = IsEditOpen ? editSubType : IsInventoryDialogOpen ? NewInventorySubType : string.Empty;
+            if (type == null && Inventory.Item != null)
             {
-                return Enumerable.Empty<NoteSuggestion>();
+                type = types.Find(Inventory.Item.Record.Type);
+                subType = Inventory.Item.Record.SubType;
+            }
+            else if (type == null && Detail.IsStock)
+            {
+                type = types.Stock;
             }
 
-            return types.TagsFor(type.Key, subType).Select(t => new NoteSuggestion("#" + t.Name, TagScopeText(t), Resources.Tag_Kind, string.Empty, "#" + t.Name)).ToList();
+            var list = type == null ? types.TagList : types.TagsFor(type.Key, subType);
+            return list.Select(t => new NoteSuggestion("#" + t.Name, TagScopeText(t), Resources.Tag_Kind, string.Empty, "#" + t.Name)).ToList();
         }
 
         // "Her yerde" ya da "Kablo · RF, Jig".

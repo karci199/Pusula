@@ -30,6 +30,9 @@ namespace Pusula.Wpf
         /// <summary>Bütün öneriler (ana pencere kurar); yoksa öneri açılmaz.</summary>
         public static Func<IEnumerable<NoteSuggestion>>? Provider { get; set; }
 
+        /// <summary>Etiket önerileri (ana pencere kurar: açık sayfanın türünde geçerli etiketler); yoksa <c>#</c> önerisi açılmaz.</summary>
+        public static Func<IEnumerable<NoteSuggestion>>? TagProvider { get; set; }
+
         /// <summary>Ekleme biçimini okur.</summary>
         public static string GetMode(DependencyObject element)
         {
@@ -103,6 +106,7 @@ namespace Pusula.Wpf
             private readonly TextBox box;
             private SuggestQuery? query;
             private List<NoteSuggestion>? all;
+            private bool allAreTags;
 
             public AssistState(TextBox box)
             {
@@ -159,25 +163,53 @@ namespace Pusula.Wpf
                 // Mode="tag": # ile etiket önerisi (açık pencerenin türü ve alt türünde geçerli olanlar).
                 var main = Window.GetWindow(box)?.DataContext as MainViewModel;
                 // Mode="person": # ya da @ ile kişi önerisi (Talep eden gibi); seçilince yalnız ad yazılır.
+                // Mode="plain" / "link" (not, olay, kısa not): @ ve [[ ile kayıtlar, # ile etiketler.
                 var isTag = string.Equals(GetMode(box), "tag", StringComparison.OrdinalIgnoreCase);
                 var isPerson = string.Equals(GetMode(box), "person", StringComparison.OrdinalIgnoreCase);
-                Func<IEnumerable<NoteSuggestion>>? source = main == null ? (isTag || isPerson ? null : Provider)
-                    : isTag ? main.TagSuggestions : isPerson ? main.PersonSuggestions : (Func<IEnumerable<NoteSuggestion>>)main.NoteSuggestions;
-                var found = box.SelectionLength == 0
-                    ? (isTag ? MarkdownEditing.FindTagQuery(box.Text, box.CaretIndex)
-                        : isPerson ? MarkdownEditing.FindTagQuery(box.Text, box.CaretIndex) ?? MarkdownEditing.FindQuery(box.Text, box.CaretIndex)
-                        : MarkdownEditing.FindQuery(box.Text, box.CaretIndex))
-                    : null;
+                Func<IEnumerable<NoteSuggestion>>? tags = main != null ? main.TagSuggestions : TagProvider;
+                Func<IEnumerable<NoteSuggestion>>? source;
+                SuggestQuery? found = null;
+                var tagQuery = false;
+                if (box.SelectionLength != 0)
+                {
+                    source = null;
+                }
+                else if (isTag)
+                {
+                    found = MarkdownEditing.FindTagQuery(box.Text, box.CaretIndex);
+                    source = tags;
+                    tagQuery = true;
+                }
+                else if (isPerson)
+                {
+                    found = MarkdownEditing.FindTagQuery(box.Text, box.CaretIndex) ?? MarkdownEditing.FindQuery(box.Text, box.CaretIndex);
+                    source = main == null ? null : (Func<IEnumerable<NoteSuggestion>>)main.PersonSuggestions;
+                }
+                else
+                {
+                    found = MarkdownEditing.FindQuery(box.Text, box.CaretIndex);
+                    source = main == null ? Provider : main.NoteSuggestions;
+                    if (found == null)
+                    {
+                        // Serbest metinde # tek başına öneri açmaz (md başlığı "# " ile karışmasın); bir harf yazılınca açılır.
+                        found = MarkdownEditing.FindTagQuery(box.Text, box.CaretIndex);
+                        found = found != null && found.Text.Length > 0 ? found : null;
+                        source = tags;
+                        tagQuery = true;
+                    }
+                }
+
                 if (found == null || source == null)
                 {
                     Close();
                     return;
                 }
 
-                // Öneriler açılışta bir kez toplanır; liste kapanana dek aynı küme süzülür.
-                if (all == null)
+                // Öneriler açılışta bir kez toplanır; liste kapanana dek aynı küme süzülür (@ ile # arasında geçilirse yeniden).
+                if (all == null || allAreTags != tagQuery)
                 {
                     all = source().ToList();
+                    allAreTags = tagQuery;
                 }
 
                 var items = NoteSuggestion.Filter(all, found.Text);
@@ -204,7 +236,7 @@ namespace Pusula.Wpf
                     return false;
                 }
 
-                var insert = string.Equals(GetMode(box), "plain", StringComparison.OrdinalIgnoreCase) || string.Equals(GetMode(box), "person", StringComparison.OrdinalIgnoreCase) ? item.Key : item.Insert;
+                var insert = !allAreTags && (string.Equals(GetMode(box), "plain", StringComparison.OrdinalIgnoreCase) || string.Equals(GetMode(box), "person", StringComparison.OrdinalIgnoreCase)) ? item.Key : item.Insert;
                 var result = MarkdownEditing.ApplySuggestion(box.Text, box.CaretIndex, query, insert);
                 var at = result.SelectionStart;
                 if (at >= result.Text.Length || !char.IsWhiteSpace(result.Text[at]))

@@ -670,14 +670,26 @@ namespace Pusula.Wpf
 
         private void UpdateSuggestions()
         {
+            // @ ve [[ ile kayıtlar; # ile etiketler (Obsidian etiketi, ana pencerenin bağlamındaki etiketler).
             var found = Editor.SelectionLength == 0 ? MarkdownEditing.FindQuery(Editor.Text, Editor.CaretIndex) : null;
-            if (found == null)
+            List<NoteSuggestion> items;
+            if (found != null)
             {
-                CloseSuggestions();
-                return;
+                items = viewModel.Suggestions(found.Text);
+            }
+            else
+            {
+                // # tek başına öneri açmaz ("# Başlık" yazarken karışmasın); bir harf yazılınca açılır.
+                found = Editor.SelectionLength == 0 && MentionAssist.TagProvider != null ? MarkdownEditing.FindTagQuery(Editor.Text, Editor.CaretIndex) : null;
+                if (found == null || found.Text.Length == 0)
+                {
+                    CloseSuggestions();
+                    return;
+                }
+
+                items = NoteSuggestion.Filter(MentionAssist.TagProvider!().ToList(), found.Text);
             }
 
-            var items = viewModel.Suggestions(found.Text);
             if (items.Count == 0)
             {
                 CloseSuggestions();

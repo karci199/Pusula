@@ -196,7 +196,7 @@ namespace Pusula.Wpf.ViewModels
             JournalHeading = note.Title;
             JournalBody = note.Body;
             JournalImportance = note.Importance.Length > 0 ? note.Importance : Resources.Importance_Normal;
-            JournalTags = string.Join(", ", note.Tags);
+            JournalTags = Pusula.Core.Markdown.MarkdownEditing.FormatTags(note.Tags.ToList());
             OnPropertyChanged(nameof(JournalPrimaryText));
         }
 
@@ -340,7 +340,7 @@ namespace Pusula.Wpf.ViewModels
                 Person = CurrentUser,
             };
             entry.Related.AddRange(JournalRelated.Where(r => r.IsChecked).Select(r => r.Number));
-            entry.Tags.AddRange(JournalTags.Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+            entry.Tags.AddRange(JournalTags.Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(t => t.TrimStart('#')).Where(t => t.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase));
             var edited = editing;
             editing = null;
             if (edited != null)

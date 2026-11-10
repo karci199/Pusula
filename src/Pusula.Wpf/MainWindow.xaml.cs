@@ -31,6 +31,7 @@ namespace Pusula.Wpf
             DataContext = viewModel;
             viewModel.NoteEditorOpener = OpenNoteWindow;
             MentionAssist.Provider = viewModel.NoteSuggestions;
+            MentionAssist.TagProvider = viewModel.TagSuggestions;
             viewModel.ActivateMain = () =>
             {
                 if (WindowState == WindowState.Minimized)

@@ -82,6 +82,20 @@ Check 'liste kapalıyken Enter notu gönderir' ($vm.Detail.Timeline.Count -eq $n
 $tl = @($vm.Detail.Timeline | Where-Object { $_.IsQuickNote -and $_.Summary -match 'AB-7000-0002' })
 Check 'not numarayla kaydedildi' ($tl.Count -ge 1)
 
+"--- 1b. # ile etiket (kısa not, Günlük etiketi)"
+TypeText $box 'Ölçüm #'
+Check 'serbest metinde # tek başına açılmaz' (-not $MA::IsOpen($box))
+TypeText $box 'Ölçüm #SAT'
+Check '#SAT: etiket önerisi' ($MA::IsOpen($box) -and @($MA::Items($box) | Where-Object { $_.Key -eq '#SATIMO' }).Count -eq 1) (($MA::Items($box) | % Key) -join ', ')
+Key $box $K::Enter
+Check 'etiket #ile eklenir' ($box.Text -eq 'Ölçüm #SATIMO ') $box.Text
+$box.Text = ''; Pump
+$vm.OpenJournalHere() | Out-Null; Wait
+$jt = $null; $st = New-Object System.Collections.Stack; $st.Push($win)
+while ($st.Count -gt 0) { $n = $st.Pop(); if ($n -is [Pusula.Wpf.TagBox] -and $n.IsVisible) { $jt = $n; break }; foreach ($c in [System.Windows.LogicalTreeHelper]::GetChildren($n)) { if ($c -is [System.Windows.DependencyObject]) { $st.Push($c) } } }
+Check 'Günlük penceresinde etiket kutusu rozetli' ($jt -ne $null)
+if ($jt) { TypeText $jt.Input '#'; Check 'Günlük etiketinde # önerir' ($MA::IsOpen($jt.Input) -and $MA::Items($jt.Input).Count -ge 1) }
+$vm.IsJournalOpen = $false; Wait
 "--- 2. md'ye giden kutu ([[bağlantı]])"
 $host2 = New-Object System.Windows.Window; $host2.Left = -20000; $host2.Top = -20000; $host2.ShowActivated = $false; $host2.Width = 400; $host2.Height = 200
 $MA::Provider = [Delegate]::CreateDelegate([Func[System.Collections.Generic.IEnumerable[Pusula.Wpf.ViewModels.NoteSuggestion]]], $vm, 'NoteSuggestions')

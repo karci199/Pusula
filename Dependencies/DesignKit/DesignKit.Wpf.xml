@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <doc>
     <assembly>
         <name>DesignKit.Wpf</name>
@@ -432,6 +432,12 @@
             Look defined entirely by the default style in <c>Themes/Generic.xaml</c>.
             </summary>
         </member>
+        <member name="F:DesignKit.Controls.ContentDialog.ScrimBrush">
+            <summary>
+            The dimming scrim: a fixed #66000000, not a theme brush — it darkens whatever the window shows behind it
+            and stays the same in both themes, unlike every other colour in this kit.
+            </summary>
+        </member>
         <member name="M:DesignKit.Controls.ContentDialog.#ctor">
             <summary>Detaches the window handler when the dialog leaves the tree.</summary>
         </member>
@@ -481,6 +487,18 @@
         </member>
         <member name="F:DesignKit.Controls.ContentDialog.IsPopupOpenProperty">
             <summary>Identifies the <see cref="P:DesignKit.Controls.ContentDialog.IsPopupOpen"/> dependency property.</summary>
+        </member>
+        <member name="M:DesignKit.Controls.ContentDialog.SyncScrim">
+            <summary>
+            Shows the scrim over the window's content while the dialog is open. The scrim is an adorner inside the
+            window, not part of the popup: WPF caps a popup at roughly 75% of the screen's area, so a popup covering a
+            maximized window was cut short and left the bottom of the page undimmed. The adorner also takes the clicks
+            meant for the page behind. Without an adorner layer the popup covers the window and carries the scrim
+            itself, as before.
+            </summary>
+        </member>
+        <member name="T:DesignKit.Controls.ContentDialog.ScrimAdorner">
+            <summary>Dims the adorned element and swallows mouse input on it (a modal blocks the page behind).</summary>
         </member>
         <member name="M:DesignKit.Controls.ContentDialog.SyncPopupOpen">
             <summary>Recomputes <see cref="P:DesignKit.Controls.ContentDialog.IsPopupOpen"/> from the open state and the window's activation.</summary>
