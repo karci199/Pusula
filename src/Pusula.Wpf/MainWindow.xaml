@@ -1227,6 +1227,21 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
+                    <!-- Etiketler (#SATIMO …): çip olarak -->
+                    <ItemsControl Margin="0,0,0,12" ItemsSource="{Binding Inventory.Tags}" Visibility="{Binding Inventory.HasTags, Converter={StaticResource BoolToVis}}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Margin="0,0,6,6" Padding="10,3" CornerRadius="{DynamicResource ControlCornerRadius}" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                    <TextBlock Text="{Binding}" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                     <!-- Süreç: düzey, talep, yapan, teslim, not (numara, tanım, alt tür, konum başlıkta yazar) -->
                     <Border Padding="16,12" Margin="0,0,0,16"
                             Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
@@ -1992,7 +2007,10 @@
                                         ErrorText="{Binding InventoryError}">
                         <TextBox Text="{Binding NewInventoryNote, UpdateSourceTrigger=PropertyChanged}" />
                     </controls:FormField>
-                </UniformGrid>
+                </UniformGrid>                <controls:FormField Header="{x:Static res:Resources.Inv_Tags}" LabelWidth="110" Margin="0,10,0,0">
+                    <TextBox Text="{Binding NewInventoryTags, UpdateSourceTrigger=PropertyChanged}" local:MentionAssist.Mode="tag"
+                             controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Tag_Placeholder}" />
+                </controls:FormField>
                 <StackPanel Visibility="{Binding HasNewInventoryFields, Converter={StaticResource BoolToVis}}">
                     <Border Margin="0,16,0,10" Padding="0,0,0,6" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
                         <TextBlock FontWeight="SemiBold" Text="{Binding NewInventoryFieldsHeader}" />
@@ -2071,7 +2089,10 @@
                         <TextBox Text="{Binding EditNote, UpdateSourceTrigger=PropertyChanged}" />
                     </controls:FormField>
                 </UniformGrid>
-                <!-- Türe özel alanlar (alt türe göre), iki sütun -->
+                <controls:FormField Header="{x:Static res:Resources.Inv_Tags}" LabelWidth="110" Margin="0,10,0,0" Visibility="{Binding IsEditInventory, Converter={StaticResource BoolToVis}}">
+                    <TextBox Text="{Binding EditTags, UpdateSourceTrigger=PropertyChanged}" local:MentionAssist.Mode="tag"
+                             controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Tag_Placeholder}" />
+                </controls:FormField>                <!-- Türe özel alanlar (alt türe göre), iki sütun -->
                 <StackPanel Visibility="{Binding HasEditFields, Converter={StaticResource BoolToVis}}">
                     <Border Margin="0,16,0,10" Padding="0,0,0,6" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
                         <TextBlock FontWeight="SemiBold" Text="{Binding EditFieldsHeader}" />

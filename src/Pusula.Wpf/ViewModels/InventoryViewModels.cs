@@ -301,6 +301,15 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Bilgiler kartı.</summary>
         public ObservableCollection<FactRow> Facts { get; } = new ObservableCollection<FactRow>();
 
+        /// <summary>Kaydın etiketleri (<c>#</c>'lı: <c>#SATIMO</c>), sayfada çip olarak.</summary>
+        public ObservableCollection<string> Tags { get; } = new ObservableCollection<string>();
+
+        /// <summary>Etiket var mı.</summary>
+        public bool HasTags
+        {
+            get { return Tags.Count > 0; }
+        }
+
         /// <summary>Sayfadaki "Süreç" kartı: düzey, talep, yapan, teslim, not (başlıkta yazanlar tekrarlanmaz).</summary>
         public ObservableCollection<FactRow> ProcessFacts { get; } = new ObservableCollection<FactRow>();
 
@@ -397,6 +406,7 @@ namespace Pusula.Wpf.ViewModels
             Steps.Clear();
             Facts.Clear();
             ProcessFacts.Clear();
+            Tags.Clear();
             Properties.Clear();
             OnPropertyChanged(nameof(HasProperties));
             History.Clear();
@@ -686,6 +696,13 @@ namespace Pusula.Wpf.ViewModels
             Facts.Add(new FactRow(Resources.Inv_Delivered, delivered?.DateValue?.ToString(Resources.Format_Date) ?? string.Empty));
             Facts.Add(new FactRow(Resources.Inv_Location, record.Location));
             Facts.Add(new FactRow(Resources.Inv_Note, record.Note));
+
+            foreach (var tag in record.Tags)
+            {
+                Tags.Add("#" + tag);
+            }
+
+            OnPropertyChanged(nameof(HasTags));
 
             // Sayfadaki "Süreç" kartı: başlıkta yazanlar (numara, tanım, alt tür, konum) tekrarlanmaz.
             foreach (var fact in Facts.Where(f => f.Label == Resources.Inv_Level || f.Label == Resources.Inv_Requested

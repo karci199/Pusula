@@ -248,6 +248,48 @@ namespace Pusula.Core.Markdown
         }
 
         /// <summary>
+        /// Etiket sorgusu: imleçten geriye, kelime başındaki <c>#</c>'a kadar (harf, rakam, <c>_</c>, <c>-</c>). Yoksa <c>null</c>.
+        /// </summary>
+        public static SuggestQuery? FindTagQuery(string text, int caret)
+        {
+            text = text ?? string.Empty;
+            caret = Clamp(caret, 0, text.Length);
+            for (var i = caret - 1; i >= 0 && caret - i <= 40; i--)
+            {
+                var c = text[i];
+                if (c == '#')
+                {
+                    return i == 0 || char.IsWhiteSpace(text[i - 1]) || text[i - 1] == ','
+                        ? new SuggestQuery { Start = i, Text = text.Substring(i + 1, caret - i - 1), IsLink = false }
+                        : null;
+                }
+
+                if (!char.IsLetterOrDigit(c) && c != '_' && c != '-')
+                {
+                    return null;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>Metindeki etiketler: <c>#a #b, c</c> → <c>a, b, c</c> (<c>#</c>'sız, sırayla, tekrar yok).</summary>
+        public static List<string> ParseTags(string text)
+        {
+            return (text ?? string.Empty).Split(new[] { ' ', ',', ';', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(t => t.Trim().TrimStart('#'))
+                .Where(t => t.Length > 0)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+
+        /// <summary>Etiket listesini kutuda gösterilecek metne çevirir: <c>#a #b</c>.</summary>
+        public static string FormatTags(IEnumerable<string> tags)
+        {
+            return string.Join(" ", (tags ?? Enumerable.Empty<string>()).Where(t => !string.IsNullOrWhiteSpace(t)).Select(t => "#" + t.Trim().TrimStart('#')));
+        }
+
+        /// <summary>
         /// Öneriyi yerleştirir: tetikleyiciden imlece kadar olan yazı silinir, yerine <paramref name="insert"/> konur; imleç sonuna.
         /// <c>[[</c> ile açıldıysa ve sonra <c>]]</c> geliyorsa çift kapanış eklenmez.
         /// </summary>

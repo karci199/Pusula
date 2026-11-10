@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using Pusula.Core.Inventory;
+using Pusula.Core.Markdown;
 using Pusula.Core.Notes;
 using Pusula.Core.Tracking;
 using Pusula.Wpf.Properties;
@@ -105,6 +106,41 @@ namespace Pusula.Wpf.ViewModels
                     BuildEditFields();
                 }
             }
+        }
+
+        private string editTags = string.Empty;
+
+        /// <summary>Kaydın etiketleri, kutuda yazıldığı gibi: <c>#SATIMO #faz_kararli</c>.</summary>
+        public string EditTags
+        {
+            get { return editTags; }
+            set { SetProperty(ref editTags, value ?? string.Empty); }
+        }
+
+        /// <summary>
+        /// Açık kayıt penceresinin (düzenle ya da yeni kayıt) türünde ve alt türünde geçerli etiketler (<c>#</c> önerisi için).
+        /// </summary>
+        public System.Collections.Generic.IEnumerable<NoteSuggestion> TagSuggestions()
+        {
+            var type = IsEditOpen ? editType : newInventoryType;
+            var subType = IsEditOpen ? editSubType : NewInventorySubType;
+            if (type == null)
+            {
+                return Enumerable.Empty<NoteSuggestion>();
+            }
+
+            return types.TagsFor(type.Key, subType).Select(t => new NoteSuggestion("#" + t.Name, TagScopeText(t), Resources.Tag_Kind, string.Empty, "#" + t.Name)).ToList();
+        }
+
+        // "Her yerde" ya da "Kablo · RF, Jig".
+        private string TagScopeText(Pusula.Core.Types.TagDefinition tag)
+        {
+            if (tag.Scopes.Count == 0)
+            {
+                return Resources.Tag_Everywhere;
+            }
+
+            return string.Join(", ", tag.Scopes.Select(s => (types.Find(s.Type)?.Name ?? s.Type) + (s.SubType.Length > 0 ? " · " + s.SubType : string.Empty)));
         }
 
         /// <summary>Alan bölümünün başlığı: "Özellikler · Mekanik".</summary>
@@ -271,6 +307,7 @@ namespace Pusula.Wpf.ViewModels
 
                     editType = type;
                     editValues = new System.Collections.Generic.Dictionary<string, string>(record?.Fields ?? new System.Collections.Generic.Dictionary<string, string>(), StringComparer.OrdinalIgnoreCase);
+                    EditTags = MarkdownEditing.FormatTags(record?.Tags ?? new System.Collections.Generic.List<string>());
                     EditFields.Clear();
                     EditSubType = currentSub;
                     BuildEditFields();
@@ -290,7 +327,7 @@ namespace Pusula.Wpf.ViewModels
 
         // Alan değerleri notun YAML başlığına da yazılır (gövdeye dokunulmaz). Başlıkta yalnız bu alt türde geçerli alanlar
         // durur; ötekiler başlıktan kalkar (değerleri kayıtta saklı kalır). Not yoksa yalnız kayıt dosyası yazılmıştır.
-        private void WriteFieldsToNote(string folder, Pusula.Core.Types.TypeDefinition? type, string name, string subType, System.Collections.Generic.IDictionary<string, string> values)
+        private void WriteFieldsToNote(string folder, Pusula.Core.Types.TypeDefinition? type, string name, string subType, System.Collections.Generic.IDictionary<string, string> values, System.Collections.Generic.IList<string>? tags = null)
         {
             var record = JsonFile.TryRead<InventoryRecord>(InventoryService.RecordFile(folder));
             var note = NoteFile.Find(folder, record?.Number ?? Path.GetFileName(folder));
@@ -309,7 +346,9 @@ namespace Pusula.Wpf.ViewModels
                     : string.Empty;
             }
 
-            var yamlError = Journal.SetFrontMatter(note, yaml);
+            // Etiketler Obsidian'ın kendi alanına: tags: [a, b] (Obsidian'da etiket olarak görünür, aranır).
+            var lists = tags == null ? null : new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IList<string>> { { "tags", tags.Select(Pusula.Core.Types.TagDefinition.NameFrom).Where(t => t.Length > 0).ToList() } };
+            var yamlError = Journal.SetFrontMatter(note, yaml, lists);
             if (yamlError.Length > 0)
             {
                 Status = string.Format(Resources.Error_Io, yamlError);
@@ -334,10 +373,11 @@ namespace Pusula.Wpf.ViewModels
                         editValues[input.Key] = input.Value;
                     }
 
-                    error = RecordEdit.EditInventory(editFolder, EditName, EditSubType, EditNote, editValues);
+                    var tags = MarkdownEditing.ParseTags(EditTags);
+                    error = RecordEdit.EditInventory(editFolder, EditName, EditSubType, EditNote, editValues, tags);
                     if (error.Length == 0)
                     {
-                        WriteFieldsToNote(editFolder, editType, EditName, EditSubType, editValues);
+                        WriteFieldsToNote(editFolder, editType, EditName, EditSubType, editValues, tags);
                     }
 
                     break;

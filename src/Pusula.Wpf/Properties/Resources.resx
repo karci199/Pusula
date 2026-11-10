@@ -1599,4 +1599,16 @@
   <data name="Inv_RequestDate" xml:space="preserve">
     <value>Talep tarihi</value>
   </data>
+  <data name="Inv_Tags" xml:space="preserve">
+    <value>Etiketler</value>
+  </data>
+  <data name="Tag_Placeholder" xml:space="preserve">
+    <value># yazınca bu türde geçerli etiketler önerilir</value>
+  </data>
+  <data name="Tag_Kind" xml:space="preserve">
+    <value>Etiket</value>
+  </data>
+  <data name="Tag_Everywhere" xml:space="preserve">
+    <value>Her yerde</value>
+  </data>
 </root>

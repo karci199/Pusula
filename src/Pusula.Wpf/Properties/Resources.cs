@@ -1826,6 +1826,18 @@ namespace Pusula.Wpf.Properties
         /// <summary>Yeni kayıt: ilk durumun tarihi.</summary>
         public static string Inv_RequestDate { get { return Get("Inv_RequestDate"); } }
 
+        /// <summary>Kayıt penceresi: etiket kutusu.</summary>
+        public static string Inv_Tags { get { return Get("Inv_Tags"); } }
+
+        /// <summary>Etiket kutusu ipucu.</summary>
+        public static string Tag_Placeholder { get { return Get("Tag_Placeholder"); } }
+
+        /// <summary>Öneri listesinde tür adı.</summary>
+        public static string Tag_Kind { get { return Get("Tag_Kind"); } }
+
+        /// <summary>Etiketin kapsamı: her yerde.</summary>
+        public static string Tag_Everywhere { get { return Get("Tag_Everywhere"); } }
+
         #endregion
     }
 }

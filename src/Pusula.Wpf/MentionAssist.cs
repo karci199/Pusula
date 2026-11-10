@@ -156,8 +156,12 @@ namespace Pusula.Wpf
             public void Update()
             {
                 // Kaynak: kutunun penceresindeki ana görünüm modeli (birden çok pencerede doğru kök); yoksa genel kaynak.
-                var source = Window.GetWindow(box)?.DataContext is MainViewModel main ? main.NoteSuggestions : Provider;
-                var found = box.SelectionLength == 0 ? MarkdownEditing.FindQuery(box.Text, box.CaretIndex) : null;
+                // Mode="tag": # ile etiket önerisi (açık pencerenin türü ve alt türünde geçerli olanlar).
+                var main = Window.GetWindow(box)?.DataContext as MainViewModel;
+                var isTag = string.Equals(GetMode(box), "tag", StringComparison.OrdinalIgnoreCase);
+                Func<IEnumerable<NoteSuggestion>>? source = isTag ? (main != null ? main.TagSuggestions : (Func<IEnumerable<NoteSuggestion>>?)null)
+                    : main != null ? main.NoteSuggestions : Provider;
+                var found = box.SelectionLength == 0 ? (isTag ? MarkdownEditing.FindTagQuery(box.Text, box.CaretIndex) : MarkdownEditing.FindQuery(box.Text, box.CaretIndex)) : null;
                 if (found == null || source == null)
                 {
                     Close();

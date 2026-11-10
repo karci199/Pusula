@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using Pusula.Core.Inventory;
+using Pusula.Core.Markdown;
 using Pusula.Core.Tracking;
 using Pusula.Core.Types;
 using Pusula.Wpf.Properties;
@@ -230,6 +231,7 @@ namespace Pusula.Wpf.ViewModels
             NewInventoryNote = string.Empty;
             NewInventoryRequestDate = DateTime.Today;
             NewInventoryRequester = CurrentUser;
+            NewInventoryTags = string.Empty;
             InventoryError = string.Empty;
             OnPropertyChanged(nameof(InventoryDialogTitle));
             OnPropertyChanged(nameof(InventoryNumberHint));
@@ -338,6 +340,15 @@ namespace Pusula.Wpf.ViewModels
             set { SetProperty(ref newInventoryRequester, value ?? string.Empty); }
         }
 
+        private string newInventoryTags = string.Empty;
+
+        /// <summary>Yeni kaydın etiketleri, kutuda yazıldığı gibi: <c>#SATIMO #faz_kararli</c>.</summary>
+        public string NewInventoryTags
+        {
+            get { return newInventoryTags; }
+            set { SetProperty(ref newInventoryTags, value ?? string.Empty); }
+        }
+
         /// <summary>Girilen not.</summary>
         public string NewInventoryNote
         {
@@ -406,6 +417,7 @@ namespace Pusula.Wpf.ViewModels
             NewInventoryNote = string.Empty;
             NewInventoryRequestDate = DateTime.Today;
             NewInventoryRequester = CurrentUser;
+            NewInventoryTags = string.Empty;
             InventoryError = string.Empty;
             OnPropertyChanged(nameof(InventoryDialogTitle));
             OnPropertyChanged(nameof(InventoryNumberHint));
@@ -439,12 +451,13 @@ namespace Pusula.Wpf.ViewModels
                 newInventoryValues[input.Key] = input.Value;
             }
 
-            if (NewInventoryFields.Any(i => i.Value.Trim().Length > 0))
+            var newTags = MarkdownEditing.ParseTags(NewInventoryTags);
+            if (NewInventoryFields.Any(i => i.Value.Trim().Length > 0) || newTags.Count > 0)
             {
-                var fieldsError = RecordEdit.EditInventory(result.Folder, NewInventoryName, NewInventorySubType, NewInventoryNote, newInventoryValues);
+                var fieldsError = RecordEdit.EditInventory(result.Folder, NewInventoryName, NewInventorySubType, NewInventoryNote, newInventoryValues, newTags);
                 if (fieldsError.Length == 0)
                 {
-                    WriteFieldsToNote(result.Folder, newInventoryType, NewInventoryName, NewInventorySubType, newInventoryValues);
+                    WriteFieldsToNote(result.Folder, newInventoryType, NewInventoryName, NewInventorySubType, newInventoryValues, newTags);
                 }
                 else
                 {

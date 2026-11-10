@@ -99,5 +99,31 @@ $vm.ShowInventory($jig); Wait
 $labels = @($vm.Inventory.ProcessFacts | ForEach-Object { $_.Label }) -join ','
 Check 'süreç: düzey, talep, yapan, teslim, not' ($labels -eq 'Düzey,Talep,Yapan,Teslim,Not') $labels
 Check 'bilgiler listesi (eski) yerinde: numara dahil' (@($vm.Inventory.Facts | ForEach-Object { $_.Label }) -contains 'Numara')
+
+"--- 4. Etiketler"
+$vm.OpenEdit($jig) | Out-Null; Pump
+$jt = @($vm.TagSuggestions() | ForEach-Object { $_.Key })
+Check 'jigde: her yerde geçenler var, kablo etiketi yok' ($jt -contains '#SATIMO' -and -not ($jt -contains '#faz_kararli')) ($jt -join ',')
+$vm.IsEditOpen = $false; Pump
+$cableType = $types.Find('cable')
+$vm.OpenNewInventory($cableType); Pump; $vm.NewInventorySubType = 'RF'; Pump
+$ct = @($vm.TagSuggestions() | ForEach-Object { $_.Key })
+Check 'yeni RF kablo: #faz_kararli önerilir, RS422 önerilmez' ($ct -contains '#faz_kararli' -and -not ($ct -contains '#RS422')) ($ct -join ',')
+$vm.NewInventorySubType = 'Güç'; Pump
+Check 'güç kablosu: #faz_kararli önerilmez' (-not (@($vm.TagSuggestions() | ForEach-Object { $_.Key }) -contains '#faz_kararli'))
+$vm.NewInventorySubType = 'RF'; Pump
+$vm.NewInventoryNumber = 'JT-0001-0099'; $vm.NewInventoryName = 'Etiketli kablo'; $vm.NewInventoryTags = '#faz_kararli #SATIMO'
+Check 'oluşturuldu (etiketli)' ($vm.ConfirmNewInventory()); Wait
+$cf = @(Get-ChildItem (Join-Path $Data 'ENVANTER') -Recurse -Directory | Where-Object { $_.Name -like 'JT-0001-0099*' })[0].FullName
+$ck = [IO.File]::ReadAllText((Join-Path $cf '_TAKIP\kayit.json'))
+Check 'etiketler kayıtta' ($ck -match '"tags"\s*:\s*\[\s*"faz_kararli",\s*"SATIMO"') $ck.Substring(0, [Math]::Min(400, $ck.Length))
+$cmd = @(Get-ChildItem $cf -Filter 'JT-0001-0099*.md')
+if ($cmd.Count -gt 0) { Check 'notun YAML''ında Obsidian tags' ([IO.File]::ReadAllText($cmd[0].FullName) -match '(?m)^tags: \[faz_kararli, SATIMO\]') }
+$win.Width = 1500; Wait; Snap $win "$Out\tags-record.png"
+Check 'kayıt sayfasında çipler' ($vm.Inventory.HasTags -and ($vm.Inventory.Tags -join ' ') -eq '#faz_kararli #SATIMO') ($vm.Inventory.Tags -join ' ')
+$vm.OpenEdit($cf) | Out-Null; Pump
+Check 'düzenle: etiketler kutuda' ($vm.EditTags -eq '#faz_kararli #SATIMO') $vm.EditTags
+$vm.EditTags = '#SATIMO'; Check 'kaydedildi' ($vm.ConfirmEdit()); Wait
+Check 'etiket kaldırılınca kayıttan da kalkar' (-not ([IO.File]::ReadAllText((Join-Path $cf '_TAKIP\kayit.json')) -match 'faz_kararli'))
 $win.Close()
 "SONUÇ OK=$ok HATA=$fail"
