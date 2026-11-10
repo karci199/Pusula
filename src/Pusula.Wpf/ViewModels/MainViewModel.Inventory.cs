@@ -236,6 +236,7 @@ namespace Pusula.Wpf.ViewModels
             InventoryError = string.Empty;
             OnPropertyChanged(nameof(InventoryDialogTitle));
             OnPropertyChanged(nameof(InventoryNumberHint));
+            OnPropertyChanged(nameof(NewInventoryNamePlaceholder));
             IsInventoryDialogOpen = true;
         }
 
@@ -369,6 +370,12 @@ namespace Pusula.Wpf.ViewModels
             return DateTime.TryParseExact((text ?? string.Empty).Trim(), formats, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out value) ? value.Date : (DateTime?)null;
         }
 
+        /// <summary>Yeni kayıtta Tanım kutusunun ipucu, türe göre.</summary>
+        public string NewInventoryNamePlaceholder
+        {
+            get { return NamePlaceholder(newInventoryType?.Key); }
+        }
+
         /// <summary>Talep eden (ilk durum olayının kişisi); varsayılan bu bilgisayarın kullanıcısı.</summary>
         public string NewInventoryRequester
         {
@@ -458,6 +465,7 @@ namespace Pusula.Wpf.ViewModels
             InventoryError = string.Empty;
             OnPropertyChanged(nameof(InventoryDialogTitle));
             OnPropertyChanged(nameof(InventoryNumberHint));
+            OnPropertyChanged(nameof(NewInventoryNamePlaceholder));
             IsInventoryDialogOpen = true;
         }
 

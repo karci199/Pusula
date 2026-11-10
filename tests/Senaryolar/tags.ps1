@@ -28,7 +28,7 @@ $ph = New-Object Pusula.Core.Types.FieldDefinition; $ph.Key = 'faz_kararli'; $ph
 $pr = New-Object Pusula.Core.Types.FieldDefinition; $pr.Key = 'protokol'; $pr.Name = 'Protokol'; $pr.Kind = 'choice'; $pr.Choices.Add('RS422'); $pr.Choices.Add('CAN'); $pr.SubTypes.Add('Haberleşme'); $c5.Fields.Add($pr)
 $v5.TagList.RemoveAll([Predicate[Pusula.Core.Types.TagDefinition]]{ param($x) $x.Name -eq 'faz_kararli' }) | Out-Null
 $v5.SchemaVersion = 5; $v5.Normalize()
-Check 'alanlar kalktı' (-not (@($c5.Fields | % Key) -contains 'faz_kararli') -and -not (@($c5.Fields | % Key) -contains 'protokol') -and $v5.SchemaVersion -eq 6)
+Check 'alanlar kalktı' (-not (@($c5.Fields | % Key) -contains 'faz_kararli') -and -not (@($c5.Fields | % Key) -contains 'protokol') -and $v5.SchemaVersion -ge 6)
 Check 'faz_kararli (RF) ve CAN (Haberleşme) etiket oldu' (@($v5.TagsFor('cable', 'RF') | % Name) -contains 'faz_kararli' -and @($v5.TagsFor('cable', 'Haberleşme') | % Name) -contains 'CAN' -and -not (@($v5.TagsFor('cable', 'Güç') | % Name) -contains 'CAN'))
 $old6 = New-Object Pusula.Core.Inventory.InventoryRecord; $old6.Fields['faz_kararli'] = 'Evet'; $old6.Fields['protokol'] = 'CAN'; $old6.Tags.Add('SATIMO')
 Check 'kayıttaki eski değerler etiket sayılır' (($old6.EffectiveTags() -join ',') -eq 'SATIMO,faz_kararli,CAN') ($old6.EffectiveTags() -join ',')

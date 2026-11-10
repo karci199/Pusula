@@ -1632,4 +1632,28 @@
   <data name="Date_Future" xml:space="preserve">
     <value>Talep tarihi ileri bir gün olamaz.</value>
   </data>
+  <data name="Placeholder_NameCable" xml:space="preserve">
+    <value>TST KBL XXXX</value>
+  </data>
+  <data name="Placeholder_NameJig" xml:space="preserve">
+    <value>TST MKNK XXXX</value>
+  </data>
+  <data name="Placeholder_NameSoftware" xml:space="preserve">
+    <value>YAZILIM TEST XXXX</value>
+  </data>
+  <data name="Placeholder_Note" xml:space="preserve">
+    <value>Kısa açıklama (isteğe bağlı)</value>
+  </data>
+  <data name="Placeholder_Person" xml:space="preserve">
+    <value>Ad yaz ya da # ile seç</value>
+  </data>
+  <data name="Placeholder_Number" xml:space="preserve">
+    <value>sayı</value>
+  </data>
+  <data name="Placeholder_NumberUnit" xml:space="preserve">
+    <value>sayı ({0})</value>
+  </data>
+  <data name="Placeholder_Text" xml:space="preserve">
+    <value>yaz…</value>
+  </data>
 </root>

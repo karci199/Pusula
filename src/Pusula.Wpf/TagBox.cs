@@ -41,6 +41,15 @@ namespace Pusula.Wpf
             MinHeight = 32;
             Cursor = Cursors.IBeam;
             input.Background = System.Windows.Media.Brushes.Transparent;
+
+            // Yazma yeri sade: kendi çerçevesi / odak çizgisi yok (dış kutu yeter).
+            input.Template = (ControlTemplate)System.Windows.Markup.XamlReader.Parse(
+                "<ControlTemplate TargetType='TextBox' xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'>" +
+                "<ScrollViewer x:Name='PART_ContentHost' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Focusable='False' HorizontalScrollBarVisibility='Hidden' VerticalScrollBarVisibility='Hidden' />" +
+                "</ControlTemplate>");
+            input.SetResourceReference(TextBox.ForegroundProperty, "TextPrimaryBrush");
+            input.SetResourceReference(TextBox.CaretBrushProperty, "TextPrimaryBrush");
+            input.FocusVisualStyle = null;
             input.VerticalAlignment = VerticalAlignment.Center;
             MentionAssist.SetMode(input, "tag");
             panel.Children.Add(input);

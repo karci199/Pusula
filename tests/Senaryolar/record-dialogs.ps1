@@ -126,6 +126,9 @@ Check 'jigde: her yerde geçenler var, kablo etiketi yok' ($jt -contains '#SATIM
 $vm.IsEditOpen = $false; Pump
 $cableType = $types.Find('cable')
 $vm.OpenNewInventory($cableType); Pump; $vm.NewInventorySubType = 'RF'; Pump
+Check 'tanım ipucu türe göre (kablo: TST KBL XXXX)' ($vm.NewInventoryNamePlaceholder -eq 'TST KBL XXXX')
+$people = @($vm.PersonSuggestions() | ForEach-Object { $_.Key })
+Check 'talep eden: kişi önerisi, yalnız ad yazılır' ($people -contains [Environment]::UserName -and @($vm.PersonSuggestions() | Where-Object { $_.Insert -ne $_.Key }).Count -eq 0) ($people -join ',')
 $ct = @($vm.TagSuggestions() | ForEach-Object { $_.Key })
 Check 'yeni RF kablo: #faz_kararli önerilir, RS422 önerilmez' ($ct -contains '#faz_kararli' -and -not ($ct -contains '#RS422')) ($ct -join ',')
 $vm.NewInventorySubType = 'Güç'; Pump

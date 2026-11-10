@@ -1859,6 +1859,30 @@ namespace Pusula.Wpf.Properties
         /// <summary>İleri tarih.</summary>
         public static string Date_Future { get { return Get("Date_Future"); } }
 
+        /// <summary>Kablo tanım örneği.</summary>
+        public static string Placeholder_NameCable { get { return Get("Placeholder_NameCable"); } }
+
+        /// <summary>Jig tanım örneği.</summary>
+        public static string Placeholder_NameJig { get { return Get("Placeholder_NameJig"); } }
+
+        /// <summary>Yazılım tanım örneği.</summary>
+        public static string Placeholder_NameSoftware { get { return Get("Placeholder_NameSoftware"); } }
+
+        /// <summary>Not kutusu ipucu.</summary>
+        public static string Placeholder_Note { get { return Get("Placeholder_Note"); } }
+
+        /// <summary>Kişi kutusu ipucu.</summary>
+        public static string Placeholder_Person { get { return Get("Placeholder_Person"); } }
+
+        /// <summary>Sayı alanı ipucu.</summary>
+        public static string Placeholder_Number { get { return Get("Placeholder_Number"); } }
+
+        /// <summary>Birimli sayı alanı ipucu.</summary>
+        public static string Placeholder_NumberUnit { get { return Get("Placeholder_NumberUnit"); } }
+
+        /// <summary>Yazı alanı ipucu.</summary>
+        public static string Placeholder_Text { get { return Get("Placeholder_Text"); } }
+
         #endregion
     }
 }

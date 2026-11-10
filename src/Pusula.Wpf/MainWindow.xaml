@@ -51,7 +51,7 @@
         <DataTemplate x:Key="FieldInputTemplate">
             <controls:FormField Margin="0,0,16,10" Header="{Binding Label}" LabelWidth="130" ToolTip="{Binding Label}">
                 <Grid>
-                    <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
+                    <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{Binding Placeholder}"
                              Visibility="{Binding IsText, Converter={StaticResource BoolToVis}}" />
                     <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Value, Mode=TwoWay}"
                               Visibility="{Binding IsChoice, Converter={StaticResource BoolToVis}}" />
@@ -1970,7 +1970,7 @@
                            Text="{x:Static res:Resources.Mark_Hint}"
                            Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource BoolToVis}}" />
                 <controls:FormField Header="{x:Static res:Resources.Inv_Name}" IsRequired="True" LabelWidth="130">
-                    <TextBox Text="{Binding NewInventoryName, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+                    <TextBox Text="{Binding NewInventoryName, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" controls:TextBoxHelper.PlaceholderText="{Binding NewInventoryNamePlaceholder}" />
                 </controls:FormField>
                 <UniformGrid Columns="2" Margin="0,10,0,0">
                     <controls:FormField Header="{x:Static res:Resources.Inv_StockNo}" IsRequired="True" LabelWidth="130" Margin="0,0,16,0">
@@ -2000,11 +2000,11 @@
                 <UniformGrid Columns="2" Margin="0,10,0,0">
                     <controls:FormField Header="{x:Static res:Resources.Inv_RequestedBy}" LabelWidth="130" Margin="0,0,16,0"
                                         Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}">
-                        <TextBox Text="{Binding NewInventoryRequester, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Text="{Binding NewInventoryRequester, UpdateSourceTrigger=PropertyChanged}" local:MentionAssist.Mode="person" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Placeholder_Person}" />
                     </controls:FormField>
                     <controls:FormField Header="{x:Static res:Resources.Inv_Note}" LabelWidth="130"
                                         ErrorText="{Binding InventoryError}">
-                        <TextBox Text="{Binding NewInventoryNote, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Text="{Binding NewInventoryNote, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Placeholder_Note}" />
                     </controls:FormField>
                 </UniformGrid>
                 <controls:FormField Header="{x:Static res:Resources.Inv_Tags}" LabelWidth="130" Margin="0,10,0,0">
@@ -2074,7 +2074,7 @@
                 <TextBlock Margin="138,2,0,10" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
                            Text="{x:Static res:Resources.Edit_NumberHint}" />
                 <controls:FormField Header="{x:Static res:Resources.Edit_Name}" LabelWidth="130">
-                    <TextBox x:Name="EditNameBox" Text="{Binding EditName, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+                    <TextBox x:Name="EditNameBox" Text="{Binding EditName, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" controls:TextBoxHelper.PlaceholderText="{Binding EditNamePlaceholder}" />
                 </controls:FormField>
                 <controls:FormField Margin="0,10,0,0" Header="{x:Static res:Resources.Edit_Template}" LabelWidth="130"
                                     Visibility="{Binding IsEditStock, Converter={StaticResource BoolToVis}}">
@@ -2085,7 +2085,7 @@
                         <ComboBox x:Name="EditSubTypeBox" ItemsSource="{Binding EditSubTypes}" SelectedItem="{Binding EditSubType, Mode=TwoWay}" />
                     </controls:FormField>
                     <controls:FormField Header="{x:Static res:Resources.Edit_Note}" LabelWidth="130">
-                        <TextBox Text="{Binding EditNote, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Text="{Binding EditNote, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Placeholder_Note}" />
                     </controls:FormField>
                 </UniformGrid>
                 <controls:FormField Header="{x:Static res:Resources.Inv_Tags}" LabelWidth="130" Margin="0,10,0,0" Visibility="{Binding IsEditInventory, Converter={StaticResource BoolToVis}}">

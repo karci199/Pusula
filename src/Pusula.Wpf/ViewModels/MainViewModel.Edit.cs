@@ -143,6 +143,37 @@ namespace Pusula.Wpf.ViewModels
             return string.Join(", ", tag.Scopes.Select(s => (types.Find(s.Type)?.Name ?? s.Type) + (s.SubType.Length > 0 ? " · " + s.SubType : string.Empty)));
         }
 
+        /// <summary>Tanım kutusunun ipucu, türe göre (kablo: <c>TST KBL XXXX</c>, jig: <c>TST MKNK XXXX</c> …).</summary>
+        public string EditNamePlaceholder
+        {
+            get { return NamePlaceholder(editType?.Key); }
+        }
+
+        /// <summary>Türe göre tanım örneği; tanımlı değilse boş.</summary>
+        public static string NamePlaceholder(string? typeKey)
+        {
+            switch (typeKey)
+            {
+                case "cable":
+                    return Resources.Placeholder_NameCable;
+                case "jig":
+                    return Resources.Placeholder_NameJig;
+                case "software":
+                    return Resources.Placeholder_NameSoftware;
+                default:
+                    return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Talep eden kutusunda <c>#</c> (ya da <c>@</c>) ile önerilen kişiler: kayıtların olay ve notlarındaki kişiler ve
+        /// bu bilgisayarın kullanıcısı. Seçilince yalnız ad yazılır.
+        /// </summary>
+        public System.Collections.Generic.IEnumerable<NoteSuggestion> PersonSuggestions()
+        {
+            return NoteSuggestions().Where(s => s.Kind == Resources.Note_KindPerson).Select(s => new NoteSuggestion(s.Key, string.Empty, s.Kind, s.Glyph, s.Key)).ToList();
+        }
+
         /// <summary>Alan bölümünün başlığı: "Özellikler · Mekanik".</summary>
         public string EditFieldsHeader
         {
@@ -306,6 +337,7 @@ namespace Pusula.Wpf.ViewModels
                     }
 
                     editType = type;
+                    OnPropertyChanged(nameof(EditNamePlaceholder));
                     editValues = new System.Collections.Generic.Dictionary<string, string>(record?.Fields ?? new System.Collections.Generic.Dictionary<string, string>(), StringComparer.OrdinalIgnoreCase);
                     EditTags = MarkdownEditing.FormatTags(record?.EffectiveTags() ?? new System.Collections.Generic.List<string>());
                     EditFields.Clear();
@@ -592,6 +624,9 @@ namespace Pusula.Wpf.ViewModels
                 Choices.Add(current);
             }
             IsChoice = field.Kind == Pusula.Core.Types.FieldKind.Choice;
+            Placeholder = field.Kind == Pusula.Core.Types.FieldKind.Number
+                ? (field.Unit.Length > 0 ? string.Format(Pusula.Wpf.Properties.Resources.Placeholder_NumberUnit, field.Unit) : Pusula.Wpf.Properties.Resources.Placeholder_Number)
+                : Pusula.Wpf.Properties.Resources.Placeholder_Text;
             IsYesNo = field.Kind == Pusula.Core.Types.FieldKind.YesNo;
             value = current ?? string.Empty;
         }
@@ -604,6 +639,9 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Seçim listesi (seçim alanında).</summary>
         public System.Collections.Generic.List<string> Choices { get; }
+
+        /// <summary>Kutu boşken görünen ipucu ("sayı (m)", "yaz …").</summary>
+        public string Placeholder { get; }
 
         /// <summary>Seçim alanı mı (listeden ya da yazarak).</summary>
         public bool IsChoice { get; }

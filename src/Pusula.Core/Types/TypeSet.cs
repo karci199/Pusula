@@ -31,7 +31,7 @@ namespace Pusula.Core.Types
 
         /// <summary>Dosya biçiminin sürümü.</summary>
         [DataMember(Name = "schemaVersion", Order = 0)]
-        public int SchemaVersion { get; set; } = 6;
+        public int SchemaVersion { get; set; } = 7;
 
         /// <summary>Kayıt türleri.</summary>
         [DataMember(Name = "types", Order = 1)]
@@ -238,7 +238,14 @@ namespace Pusula.Core.Types
                 }
             }
 
-            SchemaVersion = 6;
+            // Sürüm 7 (10.11.2026): kablo uçları (konnektör tipi) alan olmaktan çıkar; ileride etiket ya da not olarak
+            // girilir. Kayıtlardaki eski değerler silinmez.
+            if (SchemaVersion < 7)
+            {
+                Find("cable")?.Fields.RemoveAll(x => x.Key == "uc_a" || x.Key == "uc_b");
+            }
+
+            SchemaVersion = 7;
         }
 
         private void AddTagIfMissing(TagDefinition tag)
@@ -398,8 +405,6 @@ namespace Pusula.Core.Types
             set.Find("cable")?.Fields.AddRange(new[]
             {
                 Field("Boy", FieldKind.Number, "m"),
-                CableEnd("uc_a", "1. uç (konnektör)"),
-                CableEnd("uc_b", "2. uç (konnektör)"),
                 Field("Frekans", FieldKind.Text, "GHz", null, "RF"),
                 Field("Pin yapısı", FieldKind.Text, string.Empty, null, "Haberleşme"),
                 Field("Akım", FieldKind.Number, "A", null, "Güç"),

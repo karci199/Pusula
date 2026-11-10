@@ -158,10 +158,16 @@ namespace Pusula.Wpf
                 // Kaynak: kutunun penceresindeki ana görünüm modeli (birden çok pencerede doğru kök); yoksa genel kaynak.
                 // Mode="tag": # ile etiket önerisi (açık pencerenin türü ve alt türünde geçerli olanlar).
                 var main = Window.GetWindow(box)?.DataContext as MainViewModel;
+                // Mode="person": # ya da @ ile kişi önerisi (Talep eden gibi); seçilince yalnız ad yazılır.
                 var isTag = string.Equals(GetMode(box), "tag", StringComparison.OrdinalIgnoreCase);
-                Func<IEnumerable<NoteSuggestion>>? source = isTag ? (main != null ? main.TagSuggestions : (Func<IEnumerable<NoteSuggestion>>?)null)
-                    : main != null ? main.NoteSuggestions : Provider;
-                var found = box.SelectionLength == 0 ? (isTag ? MarkdownEditing.FindTagQuery(box.Text, box.CaretIndex) : MarkdownEditing.FindQuery(box.Text, box.CaretIndex)) : null;
+                var isPerson = string.Equals(GetMode(box), "person", StringComparison.OrdinalIgnoreCase);
+                Func<IEnumerable<NoteSuggestion>>? source = main == null ? (isTag || isPerson ? null : Provider)
+                    : isTag ? main.TagSuggestions : isPerson ? main.PersonSuggestions : (Func<IEnumerable<NoteSuggestion>>)main.NoteSuggestions;
+                var found = box.SelectionLength == 0
+                    ? (isTag ? MarkdownEditing.FindTagQuery(box.Text, box.CaretIndex)
+                        : isPerson ? MarkdownEditing.FindTagQuery(box.Text, box.CaretIndex) ?? MarkdownEditing.FindQuery(box.Text, box.CaretIndex)
+                        : MarkdownEditing.FindQuery(box.Text, box.CaretIndex))
+                    : null;
                 if (found == null || source == null)
                 {
                     Close();
@@ -198,7 +204,7 @@ namespace Pusula.Wpf
                     return false;
                 }
 
-                var insert = string.Equals(GetMode(box), "plain", StringComparison.OrdinalIgnoreCase) ? item.Key : item.Insert;
+                var insert = string.Equals(GetMode(box), "plain", StringComparison.OrdinalIgnoreCase) || string.Equals(GetMode(box), "person", StringComparison.OrdinalIgnoreCase) ? item.Key : item.Insert;
                 var result = MarkdownEditing.ApplySuggestion(box.Text, box.CaretIndex, query, insert);
                 var at = result.SelectionStart;
                 if (at >= result.Text.Length || !char.IsWhiteSpace(result.Text[at]))
