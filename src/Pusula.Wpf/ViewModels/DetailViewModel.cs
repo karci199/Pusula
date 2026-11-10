@@ -594,7 +594,8 @@ namespace Pusula.Wpf.ViewModels
                     .ToList();
 
                 // Kökte hiç kaydı olmayan tür (örn. henüz kullanılmayan Yazılım) stokta boş sekme açmaz.
-                if (rows.Count == 0 && !InventoryItems.Any(i => string.Equals(i.Record.Type, type.Key, StringComparison.OrdinalIgnoreCase)))
+                // Bu stokta kaydı olmayan tür (bölüm ve sekme) gösterilmez; yeni kayıt "+ Yeni" menüsünden açılır.
+                if (rows.Count == 0)
                 {
                     continue;
                 }
