@@ -664,8 +664,16 @@ namespace Pusula.Wpf
 
         private void Editor_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            var ctrl = (Keyboard.Modifiers & ModifierKeys.Control) != 0;
+            // AltGr, Windows'ta Ctrl+Alt olarak gelir (Türkçe klavyede # = AltGr+3, @ = AltGr+Q);
+            // Alt basılıyken Ctrl kısayolu sayılmaz, yoksa # yazmak görünümü değiştirir.
+            var alt = (Keyboard.Modifiers & ModifierKeys.Alt) != 0;
+            var ctrl = !alt && (Keyboard.Modifiers & ModifierKeys.Control) != 0;
             var shift = (Keyboard.Modifiers & ModifierKeys.Shift) != 0;
+            if (alt && (Keyboard.Modifiers & ModifierKeys.Control) != 0)
+            {
+                return;
+            }
+
             if (SuggestPopup.IsOpen)
             {
                 switch (e.Key)
