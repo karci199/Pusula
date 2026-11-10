@@ -1811,6 +1811,9 @@ namespace Pusula.Wpf.Properties
         /// <summary>Türe özel alanlar başlığı ve alt tür.</summary>
         public static string Fields_HeaderSub { get { return Get("Fields_HeaderSub"); } }
 
+        /// <summary>Kayıt sayfası: düzey, talep, yapan, teslim, not kartı.</summary>
+        public static string Inv_Process { get { return Get("Inv_Process"); } }
+
         #endregion
     }
 }

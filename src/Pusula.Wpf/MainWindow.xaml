@@ -31,7 +31,21 @@
                     <Setter Property="DialogWidth" Value="680" />
                 </DataTrigger>
             </Style.Triggers>
-        </Style>        <ItemsPanelTemplate x:Key="TwoColumnPanel">
+        </Style>        <!-- Kayıt sayfasında bilgi hücresi: etiket üstte küçük, değer altta; üstte ince çizgi; boş değer ("—") soluk -->
+        <DataTemplate x:Key="FactCellTemplate">
+            <Border Margin="0,0,16,0" Padding="0,6,0,6" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+                <StackPanel>
+                    <TextBlock Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+                    <TextBlock x:Name="FactValue" Margin="0,2,0,0" TextWrapping="Wrap" Text="{Binding Value}" />
+                </StackPanel>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsEmpty}" Value="True">
+                    <Setter TargetName="FactValue" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+        <ItemsPanelTemplate x:Key="TwoColumnPanel">
             <UniformGrid Columns="2" VerticalAlignment="Top" />
         </ItemsPanelTemplate>
         <DataTemplate x:Key="FieldInputTemplate">
@@ -1213,41 +1227,85 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
-                    <!-- Dosyalar: alt klasör kutucukları ve fotoğraf şeridi -->
+                    <!-- Süreç: düzey, talep, yapan, teslim, not (numara, tanım, alt tür, konum başlıkta yazar) -->
+                    <Border Padding="16,12" Margin="0,0,0,16"
+                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                            CornerRadius="{DynamicResource OverlayCornerRadius}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.Inv_Process}" />
+                            <ItemsControl x:Name="ProcessList" ItemsSource="{Binding Inventory.ProcessFacts}" ItemTemplate="{StaticResource FactCellTemplate}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="2" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Özellikler: türe özel alanlar iki sütun; etiket üstte küçük, değer altta, ince çizgiyle ayrılır; boş olan soluk -->
+                    <Border Padding="16,12" Margin="0,0,0,16" Visibility="{Binding Inventory.HasProperties, Converter={StaticResource BoolToVis}}"
+                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                            CornerRadius="{DynamicResource OverlayCornerRadius}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource PaneLabel}" Text="{Binding Inventory.PropertiesHeader}" />
+                            <ItemsControl x:Name="PropertyList" ItemsSource="{Binding Inventory.Properties}" ItemTemplate="{StaticResource FactCellTemplate}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="2" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Dosyalar: alt klasör düğmeleri, not, fotoğraf küçük resimleri -->
                     <Border Padding="16,12" Margin="0,0,0,16"
                             Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
                             CornerRadius="{DynamicResource OverlayCornerRadius}">
                         <StackPanel>
                             <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.Inv_Files}" />
-                            <ItemsControl ItemsSource="{Binding Inventory.FolderTiles}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Rows="1" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Button Margin="0,0,6,0" Padding="10,6" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                                                Tag="{Binding Path}" Click="RecordFolder_Click" ToolTip="{Binding Path}">
-                                            <StackPanel>
-                                                <TextBlock Text="{Binding Label}" Style="{DynamicResource CaptionTextBlockStyle}"
-                                                           Foreground="{DynamicResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis" />
-                                                <TextBlock x:Name="TileValue" Text="{Binding Value}" FontWeight="SemiBold" />
-                                <TextBlock Text="{Binding Kinds}" Style="{DynamicResource CaptionTextBlockStyle}" TextTrimming="CharacterEllipsis"
-                                           Foreground="{DynamicResource TextTertiaryBrush}" ToolTip="{Binding Kinds}"
-                                           Visibility="{Binding HasKinds, Converter={StaticResource BoolToVis}}" />
-                                            </StackPanel>
-                                        </Button>
-                                        <DataTemplate.Triggers>
-                                            <DataTrigger Binding="{Binding IsEmpty}" Value="True">
-                                                <Setter TargetName="TileValue" Property="FontWeight" Value="Normal" />
-                                                <Setter TargetName="TileValue" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
-                                            </DataTrigger>
-                                        </DataTemplate.Triggers>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                            <Grid Margin="0,10,0,0">
+                            <WrapPanel>
+                                <ItemsControl ItemsSource="{Binding Inventory.FolderTiles}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Margin="0,0,6,6" Padding="10,5" Tag="{Binding Path}" Click="RecordFolder_Click" ToolTip="{Binding Path}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                                    <TextBlock Margin="8,0,0,0" Text="{Binding Label}" VerticalAlignment="Center" />
+                                                    <TextBlock x:Name="TileValue" Margin="6,0,0,0" Text="{Binding Value}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                                </StackPanel>
+                                            </Button>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding IsEmpty}" Value="True">
+                                                    <Setter TargetName="TileValue" Property="FontWeight" Value="Normal" />
+                                                    <Setter TargetName="TileValue" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <Button Margin="0,0,6,6" Padding="10,5" Click="RecordNote_Click"
+                                        Visibility="{Binding Inventory.HasNote, Converter={StaticResource BoolToVis}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="13" VerticalAlignment="Center" />
+                                        <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Inv_OpenNote}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                                <Button Margin="0,0,6,6" Padding="10,5" Click="RecordCreateNote_Click"
+                                        Visibility="{Binding Inventory.HasNote, Converter={StaticResource InverseBoolToVis}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" VerticalAlignment="Center" />
+                                        <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Inv_CreateNote}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                            </WrapPanel>
+                            <Grid Margin="0,6,0,0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
@@ -1260,8 +1318,11 @@
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Button Margin="0,0,6,0" Padding="0" Height="72" Tag="{Binding}" Click="RecordPhoto_Click" ToolTip="{Binding}">
-                                                <Image Source="{Binding Converter={StaticResource PathToImage}}" Stretch="UniformToFill" />
+                                            <Button Margin="0,0,6,0" Padding="0" Height="84" Tag="{Binding}" Click="RecordPhoto_Click" ToolTip="{Binding}"
+                                                    HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                                                <Border CornerRadius="{DynamicResource ControlCornerRadius}" ClipToBounds="True">
+                                                    <Image Source="{Binding Converter={StaticResource PathToImage}}" Stretch="UniformToFill" />
+                                                </Border>
                                             </Button>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
@@ -1271,88 +1332,9 @@
                             </Grid>
                         </StackPanel>
                     </Border>
-                    <Border VerticalAlignment="Top" Padding="16,12"
-                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
-                            CornerRadius="{DynamicResource OverlayCornerRadius}">
-                        <StackPanel>
-                            <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.Inv_Facts}" />
-                            <ItemsControl ItemsSource="{Binding Inventory.Facts}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid Margin="0,3">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="110" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Text="{Binding Label}" Foreground="{DynamicResource TextSecondaryBrush}" />
-                                            <TextBlock Grid.Column="1" Text="{Binding Value}" TextWrapping="Wrap" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-
-                            <!-- Özellikler: türe özel alanlar iki sütunda; etiket üstte küçük, değer altta; boş olan soluk -->
-                            <StackPanel Visibility="{Binding Inventory.HasProperties, Converter={StaticResource BoolToVis}}">
-                                <Border Height="1" Margin="0,12,0,10" Background="{DynamicResource DividerStrokeColorDefaultBrush}" />
-                                <TextBlock Style="{StaticResource PaneLabel}" Text="{Binding Inventory.PropertiesHeader}" />
-                                <ItemsControl x:Name="PropertyList" ItemsSource="{Binding Inventory.Properties}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <UniformGrid Columns="2" />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Border Margin="0,0,8,8" Padding="10,6" CornerRadius="{DynamicResource ControlCornerRadius}"
-                                                    Background="{DynamicResource SubtleFillColorSecondaryBrush}">
-                                                <StackPanel>
-                                                    <TextBlock Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Label}" />
-                                                    <TextBlock x:Name="PropValue" Margin="0,2,0,0" FontWeight="SemiBold" TextWrapping="Wrap" Text="{Binding Value}" />
-                                                </StackPanel>
-                                            </Border>
-                                            <DataTemplate.Triggers>
-                                                <DataTrigger Binding="{Binding IsEmpty}" Value="True">
-                                                    <Setter TargetName="PropValue" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
-                                                    <Setter TargetName="PropValue" Property="FontWeight" Value="Normal" />
-                                                </DataTrigger>
-                                            </DataTemplate.Triggers>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
                     <ContentControl Content="{Binding}" ContentTemplate="{StaticResource MentionsCardTemplate}" Focusable="False" />
                     </StackPanel>
                     <StackPanel Grid.Column="2">
-                    <!-- Obsidian notu: ilk satırlar; yoksa "Not oluştur" -->
-                    <Border Padding="16,12" Margin="0,0,0,16"
-                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
-                            CornerRadius="{DynamicResource OverlayCornerRadius}">
-                        <StackPanel>
-                            <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.Inv_NoteTitle}" />
-                            <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}"
-                                       Text="{Binding Inventory.NoteExcerpt}"
-                                       Visibility="{Binding Inventory.HasNote, Converter={StaticResource BoolToVis}}" />
-                            <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}"
-                                       Text="{x:Static res:Resources.Inv_NoNote}"
-                                       Visibility="{Binding Inventory.HasNote, Converter={StaticResource InverseBoolToVis}}" />
-                            <Button Margin="0,10,0,0" HorizontalAlignment="Left" Click="RecordNote_Click"
-                                    Visibility="{Binding Inventory.HasNote, Converter={StaticResource BoolToVis}}">
-                                <StackPanel Orientation="Horizontal">
-                                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
-                                    <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Inv_OpenNote}" />
-                                </StackPanel>
-                            </Button>
-                            <Button Margin="0,10,0,0" HorizontalAlignment="Left" Click="RecordCreateNote_Click"
-                                    Visibility="{Binding Inventory.HasNote, Converter={StaticResource InverseBoolToVis}}">
-                                <StackPanel Orientation="Horizontal">
-                                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="14" />
-                                    <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Inv_CreateNote}" />
-                                </StackPanel>
-                            </Button>
-                        </StackPanel>
-                    </Border>
                     <Border VerticalAlignment="Top" Padding="16,12"
                             Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
                             CornerRadius="{DynamicResource OverlayCornerRadius}">

@@ -90,5 +90,11 @@ $rec = [IO.File]::ReadAllText((Join-Path $folder '_TAKIP\kayit.json'))
 Check 'alan değeri kayda yazıldı' ($rec -match ('"Key":\s*"' + $fkey + '",\s*"Value":\s*"7"')) $rec.Substring(0, [Math]::Min(300, $rec.Length))
 $md = @(Get-ChildItem $folder -Filter '*.md' | Where-Object { $_.Name -like 'JIG-1000-0099*' })
 if ($md.Count -gt 0) { Check 'alan değeri notun YAML başlığında' ([IO.File]::ReadAllText($md[0].FullName) -match ($fkey + ':\s*"?7')) }
+
+"--- 3. Kayıt sayfası: Süreç kartı başlıkta yazanları tekrarlamaz"
+$vm.ShowInventory($jig); Wait
+$labels = @($vm.Inventory.ProcessFacts | ForEach-Object { $_.Label }) -join ','
+Check 'süreç: düzey, talep, yapan, teslim, not' ($labels -eq 'Düzey,Talep,Yapan,Teslim,Not') $labels
+Check 'bilgiler listesi (eski) yerinde: numara dahil' (@($vm.Inventory.Facts | ForEach-Object { $_.Label }) -contains 'Numara')
 $win.Close()
 "SONUÇ OK=$ok HATA=$fail"
