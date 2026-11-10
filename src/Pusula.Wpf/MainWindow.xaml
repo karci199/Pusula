@@ -1129,7 +1129,7 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBox Tag="Project" KeyDown="QuickNoteBox_KeyDown" local:MentionAssist.Mode="plain" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
+                                <TextBox Tag="Project" KeyDown="QuickNoteBox_KeyDown" local:MentionAssist.Mode="plain" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.QuickNote_Placeholder}" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
                                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                                     <Button Margin="6,0,0,0" Tag="Project" Click="QuickNoteAdd_Click">
                                         <StackPanel Orientation="Horizontal">
@@ -1352,7 +1352,7 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBox Tag="Record" KeyDown="QuickNoteBox_KeyDown" local:MentionAssist.Mode="plain" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
+                                <TextBox Tag="Record" KeyDown="QuickNoteBox_KeyDown" local:MentionAssist.Mode="plain" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.QuickNote_Placeholder}" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
                                 <Button Grid.Column="1" Margin="6,0,0,0" Tag="Record" Click="QuickNoteAdd_Click">
                                     <StackPanel Orientation="Horizontal">
                                         <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
@@ -1681,7 +1681,7 @@
                                                     <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
-                                                <TextBox Tag="Stock" KeyDown="QuickNoteBox_KeyDown" local:MentionAssist.Mode="plain" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
+                                                <TextBox Tag="Stock" KeyDown="QuickNoteBox_KeyDown" local:MentionAssist.Mode="plain" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.QuickNote_Placeholder}" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
                                                 <Button Grid.Column="1" Margin="6,0,0,0" Tag="Stock" Click="QuickNoteAdd_Click" ToolTip="{x:Static res:Resources.QuickNote_Hint}">
                                                     <StackPanel Orientation="Horizontal">
                                                         <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />

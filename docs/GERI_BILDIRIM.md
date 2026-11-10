@@ -99,7 +99,8 @@ Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `
 
 ## Sonra yapılacaklar
 
-- [ ] Bir kez stok Genel'inde "Jig ve kablo" altında fazladan "Jig 0" kutucuğu görüldü; yeniden üretilemedi (iki yükleme üst üste mi?).
+- [ ] Stok Genel'inde "Jig ve kablo" altında fazladan "Jig 0" kutucuğu (10.11.2026 yine görüldü, AB-7000-0002). Neden: sekmeler kart listesi değişirken yeniden kuruluyor, kartlar aynı öğeyi iki kez alıyordu. Düzeltme: sekmeler değişiklik bittikten sonra kuruluyor. Test ortamında üretilemiyor → **elle doğrula**.
+- [x] Kısa not kutusu silikti, ne olduğu anlaşılmıyordu → ipucu metni ("Kısa not yaz, Enter ile ekle · @ ile … bağla"), DesignKit 0.3.6 `TextBoxHelper.PlaceholderText`.
 
 - [ ] Tablolara **arama kutusu ve filtre** (stok tablosu, test koşuları).
 

@@ -83,6 +83,18 @@ try {
     $tabs = [System.Windows.Media.VisualTreeHelper]; 
     function FindTab($d) { if ($d -is [System.Windows.Controls.TabControl] -and $d.IsVisible) { return $d }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($d); $i++) { $r = FindTab ([System.Windows.Media.VisualTreeHelper]::GetChild($d, $i)); if ($r) { return $r } }; return $null }
     $tc = $win.FindName('StockTabs'); $tc.SelectedIndex = 4; Snap $win "$Out\stock-inventory.png"; $vm.SelectedNode = (FindNode $vm.Nodes 'AB-7000-0001'); Wait; $vm.SelectedNode = $stock; Wait; Check 'stok değişince Jigler sekmesi açık kalır' ($tc.SelectedItem.Tag -eq 'inventory:jig') $tc.SelectedItem.Tag
+    # Fazladan "Jig 0" kutucuğu: Genel açıkken stoklar arasında geçince çizilen kart sayısı listeyle aynı olmalı.
+    $tc.SelectedIndex = 0; Wait
+    function DrawnCards() {
+        $st = New-Object System.Collections.Stack; $st.Push($win); $ic = $null
+        while ($st.Count -gt 0) { $x = $st.Pop(); if ($x -is [System.Windows.Controls.ItemsControl] -and [object]::ReferenceEquals($x.ItemsSource, $vm.Detail.InventoryGroups)) { $ic = $x; break }; if ($x -is [System.Windows.Media.Visual]) { for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($x); $i++) { $st.Push([System.Windows.Media.VisualTreeHelper]::GetChild($x, $i)) } } }
+        if (-not $ic) { return -1 }
+        $p = $null; $s2 = New-Object System.Collections.Stack; $s2.Push($ic); while ($s2.Count -gt 0) { $y = $s2.Pop(); if ($y -is [System.Windows.Controls.Primitives.UniformGrid]) { $p = $y; break }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($y); $i++) { $s2.Push([System.Windows.Media.VisualTreeHelper]::GetChild($y, $i)) } }
+        if ($p) { $p.Children.Count } else { -2 }
+    }
+    $mismatch = @()
+    foreach ($round in 1..3) { foreach ($n in 'AB-7000-0001', 'AB-7000-0003') { $vm.SelectedNode = (FindNode $vm.Nodes $n); Wait; $drawn = DrawnCards; if ($drawn -ne $vm.Detail.InventoryGroups.Count) { $mismatch += "$n : çizilen=$drawn liste=$($vm.Detail.InventoryGroups.Count)" } } }
+    Check 'Genel: kart sayısı listeyle aynı (fazladan Jig kutucuğu yok)' ($mismatch.Count -eq 0 -and (DrawnCards) -ge 1) ($mismatch -join ' / ')
     $win.Close()
 } finally { if ($savedSettings -ne $null) { [IO.File]::WriteAllText($settingsFile, $savedSettings) } }
 ""

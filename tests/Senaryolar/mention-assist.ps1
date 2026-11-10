@@ -50,7 +50,10 @@ $vm = $win.DataContext; $vm.RootPath = $Data; Wait
 $stock = FindNode $vm.Nodes 'AB-7000-0003'; $vm.SelectedNode = $stock; Wait
 $box = FindBox $win 'Stock'
 Check 'kısa not kutusu bulundu, öneri takılı' ($box -ne $null -and [Pusula.Wpf.MentionAssist]::GetMode($box) -eq 'plain')
+$box.Text = ''; Pump
+Check 'boş kısa not kutusunda ipucu metni görünür' ([DesignKit.Controls.TextBoxHelper]::IsPlaceholderShown($box) -and [DesignKit.Controls.TextBoxHelper]::GetPlaceholderText($box) -match 'Kısa not yaz') ([DesignKit.Controls.TextBoxHelper]::GetPlaceholderText($box))
 TypeText $box 'Ölçüm @JIG'
+Check 'yazınca ipucu kaybolur' (-not [DesignKit.Controls.TextBoxHelper]::IsPlaceholderShown($box))
 $items = $MA::Items($box)
 Check '@JIG: liste açılır, jigler gelir' ($MA::IsOpen($box) -and $items.Count -ge 1 -and @($items | Where-Object { $_.Key -like 'JIG-*' }).Count -eq $items.Count) (($items | ForEach-Object { $_.Key }) -join ', ')
 SnapPopup $box "$Out\mention-popup.png"

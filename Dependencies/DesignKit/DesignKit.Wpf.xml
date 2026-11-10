@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <doc>
     <assembly>
         <name>DesignKit.Wpf</name>
@@ -2962,6 +2962,28 @@
         <member name="M:DesignKit.Controls.TeachingTip.ApplyPlacement">
             <summary>Anchors the popup below <see cref="P:DesignKit.Controls.TeachingTip.Target"/>, or centres it over the containing window when untargeted.</summary>
         </member>
+        <member name="T:DesignKit.Controls.TextBoxHelper">
+            <summary>
+            Attached helpers for a plain <see cref="T:System.Windows.Controls.TextBox"/>. <c>PlaceholderText</c> shows a muted hint while the box is empty
+            and hides it as soon as text is typed — the same idea as <see cref="T:DesignKit.Controls.SearchBox"/>'s placeholder, for boxes that are
+            not a search (a note, a comment). Drawn by an adorner, so the box keeps its own template, focus and hit testing.
+            </summary>
+        </member>
+        <member name="F:DesignKit.Controls.TextBoxHelper.PlaceholderTextProperty">
+            <summary>Identifies the <c>PlaceholderText</c> attached property.</summary>
+        </member>
+        <member name="M:DesignKit.Controls.TextBoxHelper.GetPlaceholderText(System.Windows.DependencyObject)">
+            <summary>Gets the hint shown while the box is empty.</summary>
+        </member>
+        <member name="M:DesignKit.Controls.TextBoxHelper.SetPlaceholderText(System.Windows.DependencyObject,System.String)">
+            <summary>Sets the hint shown while the box is empty; empty shows nothing.</summary>
+        </member>
+        <member name="M:DesignKit.Controls.TextBoxHelper.IsPlaceholderShown(System.Windows.Controls.TextBox)">
+            <summary>True when the hint is currently visible: a hint is set and the box is empty.</summary>
+        </member>
+        <member name="T:DesignKit.Controls.TextBoxHelper.PlaceholderAdorner">
+            <summary>Draws the hint over the box's text area; never takes the mouse or focus.</summary>
+        </member>
         <member name="T:DesignKit.Controls.TimePicker">
             <summary>
             Picks a time of day: a field showing the current value that drops down two lists, one of
@@ -3676,6 +3698,36 @@
             Apply any theme dictionary by Uri (built-in or a custom one that fills the same token
             contract). Removes the current theme (any app-level dictionary whose Source is under
             /Themes/) and adds the new one.
+            </summary>
+        </member>
+        <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">
+            <summary>
+            GeneratedInternalTypeHelper
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateInstance(System.Type,System.Globalization.CultureInfo)">
+            <summary>
+            CreateInstance
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.GetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            GetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.SetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            SetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateDelegate(System.Type,System.Object,System.String)">
+            <summary>
+            CreateDelegate
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo,System.Object,System.Delegate)">
+            <summary>
+            AddEventHandler
             </summary>
         </member>
     </members>

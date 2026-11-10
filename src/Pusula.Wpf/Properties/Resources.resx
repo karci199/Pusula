@@ -1587,4 +1587,7 @@
   <data name="Inv_Process" xml:space="preserve">
     <value>Süreç</value>
   </data>
+  <data name="QuickNote_Placeholder" xml:space="preserve">
+    <value>Kısa not yaz, Enter ile ekle · @ ile jig, kablo, stok bağla</value>
+  </data>
 </root>

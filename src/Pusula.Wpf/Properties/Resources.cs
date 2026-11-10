@@ -1814,6 +1814,9 @@ namespace Pusula.Wpf.Properties
         /// <summary>Kayıt sayfası: düzey, talep, yapan, teslim, not kartı.</summary>
         public static string Inv_Process { get { return Get("Inv_Process"); } }
 
+        /// <summary>Kısa not kutusunun ipucu metni.</summary>
+        public static string QuickNote_Placeholder { get { return Get("QuickNote_Placeholder"); } }
+
         #endregion
     }
 }

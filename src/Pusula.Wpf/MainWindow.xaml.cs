@@ -56,7 +56,10 @@ namespace Pusula.Wpf
                 ((ContextMenu)FindResource(key)).DataContext = viewModel;
             }
 
-            viewModel.Detail.InventoryGroups.CollectionChanged += (s, e) => RebuildInventoryTabs();
+            // Sekmeler, liste değişirken değil değişiklik bittikten sonra ve bir kez kurulur. Değişiklik anında kurulunca
+            // Genel'deki "Jig ve kablo" kartları, bildirim gelmeden listeyi yeniden okuyup aynı kartı iki kez ekliyordu
+            // (fazladan "Jig 0" kutucuğu).
+            viewModel.Detail.InventoryGroups.CollectionChanged += (s, e) => ScheduleInventoryTabs();
             StockTabs.SelectionChanged += StockTabs_SelectionChanged;
             SetUpLayout();
 
@@ -86,6 +89,23 @@ namespace Pusula.Wpf
 
             var tag = selected.Tag as string;
             preferredInventoryKey = tag != null && tag.StartsWith(InventoryTabTag, StringComparison.Ordinal) ? tag : null;
+        }
+
+        private bool inventoryTabsPending;
+
+        private void ScheduleInventoryTabs()
+        {
+            if (inventoryTabsPending)
+            {
+                return;
+            }
+
+            inventoryTabsPending = true;
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                inventoryTabsPending = false;
+                RebuildInventoryTabs();
+            }), DispatcherPriority.Loaded);
         }
 
         private void RebuildInventoryTabs()
