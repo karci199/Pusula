@@ -1092,7 +1092,7 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBox Tag="Project" KeyDown="QuickNoteBox_KeyDown" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
+                                <TextBox Tag="Project" KeyDown="QuickNoteBox_KeyDown" local:MentionAssist.Mode="plain" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
                                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                                     <Button Margin="6,0,0,0" Tag="Project" Click="QuickNoteAdd_Click">
                                         <StackPanel Orientation="Horizontal">
@@ -1335,7 +1335,7 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBox Tag="Record" KeyDown="QuickNoteBox_KeyDown" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
+                                <TextBox Tag="Record" KeyDown="QuickNoteBox_KeyDown" local:MentionAssist.Mode="plain" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
                                 <Button Grid.Column="1" Margin="6,0,0,0" Tag="Record" Click="QuickNoteAdd_Click">
                                     <StackPanel Orientation="Horizontal">
                                         <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
@@ -1668,7 +1668,7 @@
                                                     <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
-                                                <TextBox Tag="Stock" KeyDown="QuickNoteBox_KeyDown" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
+                                                <TextBox Tag="Stock" KeyDown="QuickNoteBox_KeyDown" local:MentionAssist.Mode="plain" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
                                                 <Button Grid.Column="1" Margin="6,0,0,0" Tag="Stock" Click="QuickNoteAdd_Click" ToolTip="{x:Static res:Resources.QuickNote_Hint}">
                                                     <StackPanel Orientation="Horizontal">
                                                         <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
@@ -1956,7 +1956,7 @@
                     <TextBox Text="{Binding EventLocation, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
                 </controls:FormField>
                 <controls:FormField Header="{x:Static res:Resources.Inv_Note}" LabelWidth="90" Margin="0,8,0,0">
-                    <TextBox Text="{Binding EventNote, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Text="{Binding EventNote, UpdateSourceTrigger=PropertyChanged}" local:MentionAssist.Mode="plain" />
                 </controls:FormField>
             </StackPanel>
         </controls:ContentDialog>
@@ -1969,7 +1969,7 @@
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="QuickNote_PrimaryButtonClick">
             <TextBox Width="300" MinHeight="70" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"
-                     Text="{Binding QuickNoteText, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+                     Text="{Binding QuickNoteText, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" local:MentionAssist.Mode="plain" />
         </controls:ContentDialog>
 
         <!-- Düzenle: proje, stok, envanter kaydı (ortak) -->
@@ -2099,11 +2099,11 @@
                          Text="{Binding JournalDateText, UpdateSourceTrigger=PropertyChanged}" ToolTip="{x:Static res:Resources.Journal_DateHint}" />
 
                 <TextBlock Grid.Row="2" Margin="0,10,0,0" Style="{StaticResource JournalLabel}" Text="{x:Static res:Resources.Journal_Heading}" />
-                <TextBox Grid.Row="2" Grid.Column="1" Margin="0,10,0,0" Text="{Binding JournalHeading, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+                <TextBox Grid.Row="2" Grid.Column="1" Margin="0,10,0,0" Text="{Binding JournalHeading, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" local:MentionAssist.Mode="link" />
 
                 <TextBlock Grid.Row="3" Margin="0,10,0,0" VerticalAlignment="Top" Padding="0,6,0,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Journal_Body}" />
                 <TextBox Grid.Row="3" Grid.Column="1" Margin="0,10,0,0" MinHeight="130" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"
-                         Text="{Binding JournalBody, UpdateSourceTrigger=PropertyChanged}" />
+                         Text="{Binding JournalBody, UpdateSourceTrigger=PropertyChanged}" local:MentionAssist.Mode="link" />
 
                 <TextBlock Grid.Row="4" Margin="0,10,0,0" Style="{StaticResource JournalLabel}" Text="{x:Static res:Resources.Journal_Importance}" />
                 <ComboBox Grid.Row="4" Grid.Column="1" Margin="0,10,0,0" Width="180" HorizontalAlignment="Left"

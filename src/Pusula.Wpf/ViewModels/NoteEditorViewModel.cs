@@ -42,6 +42,18 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Aramada kullanılan sadeleşmiş metin.</summary>
         public string Search { get; }
 
+        /// <summary>Sorguya uyan ilk 12 öneri: numarası / adı sorguyla başlayanlar önce (Türkçe harfler sadeleşmiş).</summary>
+        public static List<NoteSuggestion> Filter(IEnumerable<NoteSuggestion> all, string query)
+        {
+            var q = Fold(query ?? string.Empty).Trim();
+            return all
+                .Where(s => q.Length == 0 || s.Search.Contains(q))
+                .OrderBy(s => q.Length > 0 && Fold(s.Key).StartsWith(q, StringComparison.Ordinal) ? 0 : 1)
+                .ThenBy(s => s.Key, StringComparer.OrdinalIgnoreCase)
+                .Take(12)
+                .ToList();
+        }
+
         /// <summary>Küçük harf, Türkçe harfler sadeleşmiş.</summary>
         public static string Fold(string text)
         {
@@ -465,13 +477,7 @@ namespace Pusula.Wpf.ViewModels
         public List<NoteSuggestion> Suggestions(string query)
         {
             var all = suggestionCache ?? (suggestionCache = suggestionSource().ToList());
-            var q = NoteSuggestion.Fold(query ?? string.Empty).Trim();
-            return all
-                .Where(s => q.Length == 0 || s.Search.Contains(q))
-                .OrderBy(s => q.Length > 0 && NoteSuggestion.Fold(s.Key).StartsWith(q, StringComparison.Ordinal) ? 0 : 1)
-                .ThenBy(s => s.Key, StringComparer.OrdinalIgnoreCase)
-                .Take(12)
-                .ToList();
+            return NoteSuggestion.Filter(all, query);
         }
 
         private void Set(Action change)
