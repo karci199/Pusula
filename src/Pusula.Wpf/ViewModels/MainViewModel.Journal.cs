@@ -227,7 +227,7 @@ namespace Pusula.Wpf.ViewModels
                 return false;
             }
 
-            Status = string.Format(Resources.Journal_Deleted, note.Title);
+            Done(string.Format(Resources.Journal_Deleted, note.Title));
             RefreshShowing(journalFolder);
             return true;
         }
@@ -355,7 +355,7 @@ namespace Pusula.Wpf.ViewModels
                 return false;
             }
 
-            Status = string.Format(Resources.Journal_Added, Path.GetFileName(journalNotePath));
+            Done(string.Format(Resources.Journal_Added, Path.GetFileName(journalNotePath)));
             RefreshShowing(journalFolder);
             return true;
         }

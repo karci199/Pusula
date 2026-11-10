@@ -21,6 +21,7 @@ namespace Pusula.Wpf
             NoteApp = NoteOpener.Pusula;
             TabOrder = new List<string>();
             Columns = new Dictionary<string, List<ColumnLayout>>();
+            LastAction = string.Empty;
         }
 
         /// <summary>Son seçilen projeler klasörü.</summary>
@@ -50,6 +51,10 @@ namespace Pusula.Wpf
         /// <summary>md not penceresinin ayarları (görünüm, yazı tipi, genişlik …); yoksa varsayılan.</summary>
         [DataMember(Name = "noteEditor", Order = 6, EmitDefaultValue = false)]
         public NoteEditorSettings? NoteEditor { get; set; }
+
+        /// <summary>Durum çubuğundaki son yapılan iş ("AB-7000-0002 kaydedildi · 21:55"); yoksa boş.</summary>
+        [DataMember(Name = "lastAction", Order = 7, EmitDefaultValue = false)]
+        public string LastAction { get; set; } = string.Empty;
 
         /// <summary>Ayar dosyasının yerini değiştiren ortam değişkeni (testler gerçek ayarlara dokunmasın diye).</summary>
         public const string PathVariable = "PUSULA_AYARLAR";

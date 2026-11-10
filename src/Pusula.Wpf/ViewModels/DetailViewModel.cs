@@ -103,7 +103,7 @@ namespace Pusula.Wpf.ViewModels
     /// Sağ paneldeki özet: proje seçiliyse stok listesi ve durum dağılımı, stok seçiliyse durum ve klasör listesi.
     /// Sayım arka planda yapılır; seçim değişince önceki sayım iptal edilir.
     /// </summary>
-    public sealed class DetailViewModel : ViewModelBase
+    public sealed partial class DetailViewModel : ViewModelBase
     {
         private CancellationTokenSource? cancellation;
         private TreeNodeViewModel? node;
@@ -333,6 +333,7 @@ namespace Pusula.Wpf.ViewModels
             node = selected;
             templates = templateSet;
             types = typeSet;
+            PrepareFilters(selected?.Path ?? string.Empty);
             Tiles.Clear();
             Rows.Clear();
             Steps.Clear();
@@ -509,6 +510,8 @@ namespace Pusula.Wpf.ViewModels
                     }
                 }
             }
+
+            RefreshFilters();
         }
 
         private void ShowTests(List<TestRun> runs)

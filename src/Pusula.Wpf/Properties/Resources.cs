@@ -1769,6 +1769,42 @@ namespace Pusula.Wpf.Properties
         /// <summary>Tablo yokken durum çubuğu.</summary>
         public static string Note_NoTable { get { return Get("Note_NoTable"); } }
 
+        /// <summary>Stok tablosu özeti.</summary>
+        public static string Filter_StockCount { get { return Get("Filter_StockCount"); } }
+
+        /// <summary>Süzülmüş stok tablosu özeti.</summary>
+        public static string Filter_StockCountOf { get { return Get("Filter_StockCountOf"); } }
+
+        /// <summary>Koşu tablosu özeti.</summary>
+        public static string Filter_RunCount { get { return Get("Filter_RunCount"); } }
+
+        /// <summary>Süzülmüş koşu tablosu özeti.</summary>
+        public static string Filter_RunCountOf { get { return Get("Filter_RunCountOf"); } }
+
+        /// <summary>Koşu süzgeci etiketi.</summary>
+        public static string Filter_Result { get { return Get("Filter_Result"); } }
+
+        /// <summary>Koşu süzgeci etiketi.</summary>
+        public static string Filter_System { get { return Get("Filter_System"); } }
+
+        /// <summary>Süzgeç temizleme düğmesi.</summary>
+        public static string Filter_Clear { get { return Get("Filter_Clear"); } }
+
+        /// <summary>Koşu arama yer tutucusu.</summary>
+        public static string Filter_RunSearch { get { return Get("Filter_RunSearch"); } }
+
+        /// <summary>Stok arama yer tutucusu.</summary>
+        public static string Filter_StockSearch { get { return Get("Filter_StockSearch"); } }
+
+        /// <summary>Son yapılan iş: mesaj ve saat.</summary>
+        public static string LastAction_Format { get { return Get("LastAction_Format"); } }
+
+        /// <summary>Durum çubuğu ipucu.</summary>
+        public static string LastAction_Hint { get { return Get("LastAction_Hint"); } }
+
+        /// <summary>Not penceresinde kaydedildi.</summary>
+        public static string Note_SavedAction { get { return Get("Note_SavedAction"); } }
+
         #endregion
     }
 }

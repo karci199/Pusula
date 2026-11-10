@@ -329,7 +329,7 @@ namespace Pusula.Wpf.ViewModels
 
             IsEditOpen = false;
             RefreshShowing(editFolder);
-            Status = string.Format(Resources.Edit_Saved, EditNumber);
+            Done(string.Format(Resources.Edit_Saved, EditNumber));
             return true;
         }
 
@@ -372,7 +372,7 @@ namespace Pusula.Wpf.ViewModels
             }
 
             Refresh();
-            Status = string.Format(Resources.Untrack_Done, Path.GetFileName(editFolder));
+            Done(string.Format(Resources.Untrack_Done, Path.GetFileName(editFolder)));
             return true;
         }
 
@@ -480,7 +480,7 @@ namespace Pusula.Wpf.ViewModels
             }
 
             Refresh();
-            Status = string.Format(Resources.Delete_Done, DeleteExpected, target);
+            Done(string.Format(Resources.Delete_Done, DeleteExpected, target));
             return true;
         }
 

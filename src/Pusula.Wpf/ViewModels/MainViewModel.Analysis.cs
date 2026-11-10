@@ -104,7 +104,7 @@ namespace Pusula.Wpf.ViewModels
 
             IsAnalysisOpen = false;
             analysisRun = null;
-            Status = string.Format(Resources.Analysis_Saved, run.Title);
+            Done(string.Format(Resources.Analysis_Saved, run.Title));
             RefreshShowing(selectedNode?.Path ?? run.Folder);
             return true;
         }

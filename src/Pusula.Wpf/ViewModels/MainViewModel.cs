@@ -478,7 +478,7 @@ namespace Pusula.Wpf.ViewModels
             }
 
             Refresh();
-            Status = string.Format(Resources.Status_ProjectCreated, result.Folder);
+            Done(string.Format(Resources.Status_ProjectCreated, result.Folder));
             return true;
         }
 
@@ -647,7 +647,7 @@ namespace Pusula.Wpf.ViewModels
                 }
             }
 
-            Status = string.Format(Resources.Status_StockCreated, result.Folder);
+            Done(string.Format(Resources.Status_StockCreated, result.Folder));
             return true;
         }
 
@@ -699,7 +699,7 @@ namespace Pusula.Wpf.ViewModels
             if (HasRoot)
             {
                 templates = TemplateStore.LoadOrCreate(rootPath);
-                Status = Resources.Status_TemplatesSaved;
+                Done(Resources.Status_TemplatesSaved);
             }
         }
 
@@ -707,7 +707,7 @@ namespace Pusula.Wpf.ViewModels
         public void ReloadTypes()
         {
             Refresh();
-            Status = Resources.Status_TypesSaved;
+            Done(Resources.Status_TypesSaved);
         }
 
         /// <summary>Şablon düzenleyici açılabilir mi; değilse durum metnini doldurur.</summary>
@@ -934,7 +934,7 @@ namespace Pusula.Wpf.ViewModels
 
             if (ProjectService.SetStockStatus(path, status, note))
             {
-                Status = string.Format(Resources.Status_StatusChanged, Path.GetFileName(path), status);
+                Done(string.Format(Resources.Status_StatusChanged, Path.GetFileName(path), status));
                 Detail.Reload();
             }
             else
@@ -999,7 +999,7 @@ namespace Pusula.Wpf.ViewModels
             try
             {
                 var created = ProjectService.AddFolders(moduleStockFolder, folders);
-                Status = string.Format(Resources.Status_ModulesAdded, created, Path.GetFileName(moduleStockFolder));
+                Done(string.Format(Resources.Status_ModulesAdded, created, Path.GetFileName(moduleStockFolder)));
             }
             catch (IOException ex)
             {

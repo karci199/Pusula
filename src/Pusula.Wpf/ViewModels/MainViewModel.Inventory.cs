@@ -356,7 +356,7 @@ namespace Pusula.Wpf.ViewModels
 
             Refresh();
             ShowInventory(result.Folder);
-            Status = string.Format(Resources.Inv_Created, result.Folder);
+            Done(string.Format(Resources.Inv_Created, result.Folder));
             return true;
         }
 
@@ -543,7 +543,7 @@ namespace Pusula.Wpf.ViewModels
             var folder = shown.Folder;
             Refresh();
             ShowInventory(folder);
-            Status = string.Format(Resources.Status_StatusChanged, shown.Record.Number, eventStatus);
+            Done(string.Format(Resources.Status_StatusChanged, shown.Record.Number, eventStatus));
         }
 
         #endregion

@@ -114,7 +114,7 @@ namespace Pusula.Wpf.ViewModels
                 return false;
             }
 
-            Status = string.Format(Resources.QuickNote_Added, Path.GetFileName(folder));
+            Done(string.Format(Resources.QuickNote_Added, Path.GetFileName(folder)));
             if (target == QuickNoteTarget.Record)
             {
                 // Kayıt listesi önbellekte; yeniden okunur, gösterilen kayıt seçili kalır.

@@ -1542,4 +1542,40 @@
   <data name="Note_NoTable" xml:space="preserve">
     <value>İmleç bir tablonun içinde değil (Ctrl+Shift+T tabloyu hizalar).</value>
   </data>
+  <data name="Filter_StockCount" xml:space="preserve">
+    <value>{0} stok</value>
+  </data>
+  <data name="Filter_StockCountOf" xml:space="preserve">
+    <value>{0} stoktan {1}</value>
+  </data>
+  <data name="Filter_RunCount" xml:space="preserve">
+    <value>{0} koşu</value>
+  </data>
+  <data name="Filter_RunCountOf" xml:space="preserve">
+    <value>{0} koşudan {1}</value>
+  </data>
+  <data name="Filter_Result" xml:space="preserve">
+    <value>Sonuç</value>
+  </data>
+  <data name="Filter_System" xml:space="preserve">
+    <value>Sistem</value>
+  </data>
+  <data name="Filter_Clear" xml:space="preserve">
+    <value>Süzgeci temizle</value>
+  </data>
+  <data name="Filter_RunSearch" xml:space="preserve">
+    <value>SN, sistem, kişi, plan, not…</value>
+  </data>
+  <data name="Filter_StockSearch" xml:space="preserve">
+    <value>Numara, ad, şablon…</value>
+  </data>
+  <data name="LastAction_Format" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
+  <data name="LastAction_Hint" xml:space="preserve">
+    <value>Son yapılan iş</value>
+  </data>
+  <data name="Note_SavedAction" xml:space="preserve">
+    <value>{0} kaydedildi</value>
+  </data>
 </root>

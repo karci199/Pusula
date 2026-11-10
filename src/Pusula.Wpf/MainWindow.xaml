@@ -1124,48 +1124,60 @@
                             <ContentControl Content="{Binding}" ContentTemplate="{StaticResource MentionsCardTemplate}" Focusable="False" />
                         </StackPanel>
                     </Border>
-                <ListView x:Name="ProjectStockList" Grid.Row="1"
-                          ItemsSource="{Binding Detail.Rows}"
-                          ItemContainerStyle="{StaticResource DetailRowStyle}"
-                          MouseDoubleClick="DetailList_MouseDoubleClick">
-                    <ListView.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="{x:Static res:Resources.Row_Open}" Click="DetailRowOpen_Click" />
-                            <MenuItem Header="{x:Static res:Resources.Menu_OpenFolder}" Click="DetailRowFolder_Click" />
-                            <MenuItem Header="{x:Static res:Resources.QuickNote_AddMenu}" Click="DetailRowNote_Click" />
-                            <Separator />
-                            <MenuItem Header="{x:Static res:Resources.Menu_Edit}" Click="DetailRowEdit_Click" />
-                            <MenuItem Header="{x:Static res:Resources.Menu_Untrack}" Click="DetailRowUntrack_Click" />
-<MenuItem Header="{x:Static res:Resources.Menu_Delete}" Click="DetailRowDelete_Click" />
-                        </ContextMenu>
-                    </ListView.ContextMenu>
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Width="44">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button Style="{DynamicResource IconButtonStyle}" Tag="{Binding Path}" Click="RowFolder_Click"
-                                                ToolTip="{x:Static res:Resources.Menu_OpenFolder}">
-                                            <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="13" />
-                                        </Button>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Header="{x:Static res:Resources.Col_Stock}" Width="140" DisplayMemberBinding="{Binding Name}" />
-                            <GridViewColumn Header="{x:Static res:Resources.Col_Status}" Width="160">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <ContentPresenter Content="{Binding Status}" ContentTemplate="{DynamicResource StatusChipTemplate}" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Header="{x:Static res:Resources.Col_Template}" Width="130" DisplayMemberBinding="{Binding Template}" />
-                            <GridViewColumn Header="{x:Static res:Resources.Col_Files}" Width="80" DisplayMemberBinding="{Binding FileCount}" />
-                            <GridViewColumn Header="{x:Static res:Resources.Col_Size}" Width="100" DisplayMemberBinding="{Binding Size}" />
-                            <GridViewColumn Header="{x:Static res:Resources.Col_LastChange}" Width="150" DisplayMemberBinding="{Binding LastChange}" />
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                <DockPanel Grid.Row="1">
+                    <!-- Stok tablosu sÃ¼zgeci: metin, durum -->
+                    <WrapPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8" TextElement.FontWeight="Normal">
+                        <controls:SearchBox x:Name="StockFilterBox" Width="220" Margin="0,0,8,0" PlaceholderText="{x:Static res:Resources.Filter_StockSearch}"
+                                            Text="{Binding Detail.StockFilterText, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Col_Status}" />
+                        <ComboBox MinWidth="150" Margin="0,0,8,0" ItemsSource="{Binding Detail.StockStatusOptions}" SelectedItem="{Binding Detail.StockFilterStatus, Mode=TwoWay}" />
+                        <Button Margin="0,0,8,0" Style="{DynamicResource SubtleButtonStyle}" Click="StockFilterClear_Click"
+                                Visibility="{Binding Detail.IsStockFiltered, Converter={StaticResource BoolToVis}}" Content="{x:Static res:Resources.Filter_Clear}" />
+                        <TextBlock VerticalAlignment="Center" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Detail.StockFilterSummary}" />
+                    </WrapPanel>
+                    <ListView x:Name="ProjectStockList"
+                              ItemsSource="{Binding Detail.Rows}"
+                              ItemContainerStyle="{StaticResource DetailRowStyle}"
+                              MouseDoubleClick="DetailList_MouseDoubleClick">
+                        <ListView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="{x:Static res:Resources.Row_Open}" Click="DetailRowOpen_Click" />
+                                <MenuItem Header="{x:Static res:Resources.Menu_OpenFolder}" Click="DetailRowFolder_Click" />
+                                <MenuItem Header="{x:Static res:Resources.QuickNote_AddMenu}" Click="DetailRowNote_Click" />
+                                <Separator />
+                                <MenuItem Header="{x:Static res:Resources.Menu_Edit}" Click="DetailRowEdit_Click" />
+                                <MenuItem Header="{x:Static res:Resources.Menu_Untrack}" Click="DetailRowUntrack_Click" />
+    <MenuItem Header="{x:Static res:Resources.Menu_Delete}" Click="DetailRowDelete_Click" />
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Width="44">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Style="{DynamicResource IconButtonStyle}" Tag="{Binding Path}" Click="RowFolder_Click"
+                                                    ToolTip="{x:Static res:Resources.Menu_OpenFolder}">
+                                                <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="13" />
+                                            </Button>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="{x:Static res:Resources.Col_Stock}" Width="140" DisplayMemberBinding="{Binding Name}" />
+                                <GridViewColumn Header="{x:Static res:Resources.Col_Status}" Width="160">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ContentPresenter Content="{Binding Status}" ContentTemplate="{DynamicResource StatusChipTemplate}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="{x:Static res:Resources.Col_Template}" Width="130" DisplayMemberBinding="{Binding Template}" />
+                                <GridViewColumn Header="{x:Static res:Resources.Col_Files}" Width="80" DisplayMemberBinding="{Binding FileCount}" />
+                                <GridViewColumn Header="{x:Static res:Resources.Col_Size}" Width="100" DisplayMemberBinding="{Binding Size}" />
+                                <GridViewColumn Header="{x:Static res:Resources.Col_LastChange}" Width="150" DisplayMemberBinding="{Binding LastChange}" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </DockPanel>
                 </Grid>
 
                 <!-- Envanter kaydı: dosyalar, bilgiler, not ve geçmiş -->
@@ -1700,6 +1712,18 @@
                         </TabItem.Header>
                         <DockPanel Margin="0,8,0,0" TextElement.FontWeight="Normal">
                             <ItemsControl x:Name="TestPlanList" DockPanel.Dock="Top" ItemsSource="{Binding Detail.TestPlans}" ItemTemplate="{StaticResource PlanTemplate}" />
+                            <!-- KoÅŸu sÃ¼zgeci (Testler ve Kalifikasyon ortak): metin, sonuÃ§, sistem -->
+                            <WrapPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,8">
+                                <controls:SearchBox Width="220" Margin="0,0,8,0" PlaceholderText="{x:Static res:Resources.Filter_RunSearch}"
+                                                    Text="{Binding Detail.RunFilterText, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Filter_Result}" />
+                                <ComboBox MinWidth="110" Margin="0,0,8,0" ItemsSource="{Binding Detail.RunResultOptions}" SelectedItem="{Binding Detail.RunFilterResult, Mode=TwoWay}" />
+                                <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Filter_System}" />
+                                <ComboBox MinWidth="110" Margin="0,0,8,0" ItemsSource="{Binding Detail.RunSystemOptions}" SelectedItem="{Binding Detail.RunFilterSystem, Mode=TwoWay}" />
+                                <Button Margin="0,0,8,0" Style="{DynamicResource SubtleButtonStyle}" Click="RunFilterClear_Click"
+                                        Visibility="{Binding Detail.IsRunFiltered, Converter={StaticResource BoolToVis}}" Content="{x:Static res:Resources.Filter_Clear}" />
+                                <TextBlock VerticalAlignment="Center" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Detail.DevRunsSummary}" />
+                            </WrapPanel>
                             <ListView x:Name="DevRunsList" ItemsSource="{Binding Detail.DevelopmentRuns}"
                                       View="{StaticResource RunsGridView}"
                                       GridViewColumnHeader.Click="RunsHeader_Click"
@@ -1718,6 +1742,18 @@
                         </TabItem.Header>
                         <DockPanel Margin="0,8,0,0" TextElement.FontWeight="Normal">
                             <ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding Detail.QualificationPlans}" ItemTemplate="{StaticResource PlanTemplate}" />
+                            <!-- KoÅŸu sÃ¼zgeci (Testler ve Kalifikasyon ortak): metin, sonuÃ§, sistem -->
+                            <WrapPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,8">
+                                <controls:SearchBox Width="220" Margin="0,0,8,0" PlaceholderText="{x:Static res:Resources.Filter_RunSearch}"
+                                                    Text="{Binding Detail.RunFilterText, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Filter_Result}" />
+                                <ComboBox MinWidth="110" Margin="0,0,8,0" ItemsSource="{Binding Detail.RunResultOptions}" SelectedItem="{Binding Detail.RunFilterResult, Mode=TwoWay}" />
+                                <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Filter_System}" />
+                                <ComboBox MinWidth="110" Margin="0,0,8,0" ItemsSource="{Binding Detail.RunSystemOptions}" SelectedItem="{Binding Detail.RunFilterSystem, Mode=TwoWay}" />
+                                <Button Margin="0,0,8,0" Style="{DynamicResource SubtleButtonStyle}" Click="RunFilterClear_Click"
+                                        Visibility="{Binding Detail.IsRunFiltered, Converter={StaticResource BoolToVis}}" Content="{x:Static res:Resources.Filter_Clear}" />
+                                <TextBlock VerticalAlignment="Center" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Detail.QualRunsSummary}" />
+                            </WrapPanel>
                             <ListView x:Name="QualRunsList" ItemsSource="{Binding Detail.QualificationRuns}"
                                       View="{StaticResource RunsGridView}"
                                       GridViewColumnHeader.Click="RunsHeader_Click"
@@ -1785,6 +1821,14 @@
 
         <!-- Durum çubuğu -->
         <StatusBar Grid.Row="2">
+            <!-- Sağda: son yapılan iş (kalıcı); solda geçici durum mesajı -->
+            <StatusBarItem DockPanel.Dock="Right" Visibility="{Binding HasLastAction, Converter={StaticResource BoolToVis}}"
+                           ToolTip="{x:Static res:Resources.LastAction_Hint}">
+                <StackPanel Orientation="Horizontal">
+                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="12" Foreground="{DynamicResource SystemFillColorSuccessBrush}" VerticalAlignment="Center" />
+                    <TextBlock x:Name="LastActionText" Margin="6,0,4,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding LastAction}" />
+                </StackPanel>
+            </StatusBarItem>
             <StatusBarItem>
                 <TextBlock Text="{Binding Status}" />
             </StatusBarItem>

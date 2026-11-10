@@ -351,6 +351,13 @@ namespace Pusula.Wpf
 
             var editor = viewModel.CreateNoteEditor(path);
             var window = new NoteWindow(editor, viewModel.NavigateToKey, viewModel.OpenNoteExternally, viewModel.OpenPath);
+            editor.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(NoteEditorViewModel.SaveCount) && editor.SaveCount > 0)
+                {
+                    viewModel.NoteSaved(path);
+                }
+            };
             window.Closed += (s, e) =>
             {
                 noteWindows.Remove(path);
@@ -925,6 +932,16 @@ namespace Pusula.Wpf
                 SubmitQuickNote(box);
                 e.Handled = true;
             }
+        }
+
+        private void StockFilterClear_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.Detail.ClearStockFilter();
+        }
+
+        private void RunFilterClear_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.Detail.ClearRunFilter();
         }
 
         private void QuickNoteAdd_Click(object sender, RoutedEventArgs e)
