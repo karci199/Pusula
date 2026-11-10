@@ -214,6 +214,10 @@ namespace Pusula.Wpf
                 case "divider":
                     result = InsertBlock(text, start, "---" + Newline, 0);
                     break;
+                case "comment":
+                    // HTML yorumu: Obsidian, VS Code ve Pusula görünümünde gizlenir.
+                    result = MarkdownEditing.Wrap(text, start, length, "<!-- ", " -->");
+                    break;
                 case "image":
                     PickImage();
                     return;
@@ -761,6 +765,9 @@ namespace Pusula.Wpf
                 {
                     case Key.X:
                         ApplyFormat("strike");
+                        return true;
+                    case Key.C:
+                        ApplyFormat("comment");
                         return true;
                     case Key.H:
                         ApplyFormat("highlight");

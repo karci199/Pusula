@@ -1596,6 +1596,9 @@ namespace Pusula.Wpf.Properties
         public static string Note_Divider { get { return Get("Note_Divider"); } }
 
         /// <summary>Araç çubuğu.</summary>
+        public static string Note_Comment { get { return Get("Note_Comment"); } }
+
+        /// <summary>Araç çubuğu.</summary>
         public static string Note_FullScreen { get { return Get("Note_FullScreen"); } }
 
         /// <summary>Eklenen tablo şablonunun başlık hücresi.</summary>

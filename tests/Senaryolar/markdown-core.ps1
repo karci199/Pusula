@@ -84,4 +84,16 @@ Check 'kapanmış bağlantı sorgu değil' ($E::FindQuery('[[X]] y', 7) -eq $nul
 $r = $E::ApplySuggestion('Ölçüm @JIG-10 tamam', 13, $q, '[[JIG-1000-0009]]'); Check 'öneri yerleşir' ($r.Text -eq 'Ölçüm [[JIG-1000-0009]] tamam' -and $r.SelectionStart -eq 23)
 $r = $E::ApplySuggestion('bak [[AB-70]]', 11, $q2, '[[AB-7000-0003]]'); Check 'otomatik kapanış iki kez yazılmaz' ($r.Text -eq 'bak [[AB-7000-0003]]')
 $lc = $E::LineColumn("ab`r`ncd", 5); Check 'satır / sütun' ($lc.Item1 -eq 2 -and $lc.Item2 -eq 2)
+"--- 7. Yorumlar"
+$r = $E::Wrap('a not b', 2, 3, '<!-- ', ' -->'); Check 'yorum sar' ($r.Text -eq 'a <!-- not --> b' -and $r.SelectionStart -eq 7 -and $r.SelectionLength -eq 3)
+$r2 = $E::Wrap($r.Text, $r.SelectionStart, $r.SelectionLength, '<!-- ', ' -->'); Check 'yorum tekrar basınca kalkar' ($r2.Text -eq 'a not b')
+$src = "a %%gizli%% b`r`n%%`r`nçok`r`nsatır`r`n%%`r`nson ``%%kod%%```r`n" + '```' + "`r`n%%blok%%`r`n" + '```'
+$m = $MN::MaskComments($src)
+Check 'örtme uzunluğu korur' ($m.Length -eq $src.Length)
+Check 'satır içi yorum örtülür' ($m.StartsWith('a ') -and -not $m.Contains('gizli') -and $m.Contains(' b'))
+Check 'çok satırlı yorum örtülür, satırlar korunur' (-not $m.Contains('çok') -and -not $m.Contains('satır') -and ($m.Split("`n").Count -eq $src.Split("`n").Count))
+Check 'satır içi koddaki %% korunur' ($m.Contains('`%%kod%%`'))
+Check 'kod bloğundaki %% korunur' ($m.Contains('%%blok%%'))
+Check 'kapanmamış %% sona kadar' (($MN::MaskComments("a`n%% b`nc")).Trim() -eq 'a')
+Check '%% yoksa aynı metin' ([object]::ReferenceEquals($MN::MaskComments('düz'), 'düz') -or $MN::MaskComments('düz') -eq 'düz')
 "SONUÇ OK=$ok HATA=$fail"

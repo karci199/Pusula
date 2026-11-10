@@ -52,25 +52,35 @@ namespace Pusula.Core.Markdown
         /// </summary>
         public static EditResult Wrap(string text, int start, int length, string mark)
         {
+            return Wrap(text, start, length, mark, mark);
+        }
+
+        /// <summary>
+        /// Seçimi açılış ve kapanış işaretiyle sarar (ör. yorum: <c>&lt;!-- </c> … <c> --&gt;</c>); seçim zaten sarılıysa işaretler
+        /// kaldırılır. Seçim boşsa işaretler eklenir ve imleç arasına konur.
+        /// </summary>
+        public static EditResult Wrap(string text, int start, int length, string open, string close)
+        {
             text = text ?? string.Empty;
             start = Clamp(start, 0, text.Length);
             length = Clamp(length, 0, text.Length - start);
-            var m = mark.Length;
-            if (start >= m && start + length + m <= text.Length && text.Substring(start - m, m) == mark && text.Substring(start + length, m) == mark)
+            var o = open.Length;
+            var c = close.Length;
+            if (start >= o && start + length + c <= text.Length && text.Substring(start - o, o) == open && text.Substring(start + length, c) == close)
             {
-                var removed = text.Remove(start + length, m).Remove(start - m, m);
-                return new EditResult(removed, start - m, length);
+                var removed = text.Remove(start + length, c).Remove(start - o, o);
+                return new EditResult(removed, start - o, length);
             }
 
             var selected = text.Substring(start, length);
-            if (selected.Length >= 2 * m && selected.StartsWith(mark, StringComparison.Ordinal) && selected.EndsWith(mark, StringComparison.Ordinal))
+            if (selected.Length >= o + c && selected.StartsWith(open, StringComparison.Ordinal) && selected.EndsWith(close, StringComparison.Ordinal))
             {
-                var inner = selected.Substring(m, selected.Length - 2 * m);
+                var inner = selected.Substring(o, selected.Length - o - c);
                 return new EditResult(text.Substring(0, start) + inner + text.Substring(start + length), start, inner.Length);
             }
 
-            var result = text.Substring(0, start) + mark + selected + mark + text.Substring(start + length);
-            return new EditResult(result, start + m, length);
+            var result = text.Substring(0, start) + open + selected + close + text.Substring(start + length);
+            return new EditResult(result, start + o, length);
         }
 
         /// <summary>

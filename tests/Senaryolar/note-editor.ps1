@@ -118,6 +118,16 @@ $nw.HandleKey($K::Enter, $false, $false) | Out-Null
 Check 'Enter: görev listesi sürer' ($ed.Text.Contains("- [ ] SN02 tekrar ölç`r`n- [ ] `r`n- [x]"))
 $ed.Text = $ed.Text.Replace("- [ ] SN02 tekrar ölç`r`n- [ ] `r`n", "- [ ] SN02 tekrar ölç`r`n")
 $hpos = $ed.Text.IndexOf('# DA400'); $ed.Select($hpos + 3, 0)
+$cpos = $ed.Text.IndexOf('Ölçüm düzeni'); $ed.Select($cpos, 5)
+$nw.HandleKey($K::C, $true, $true) | Out-Null
+Check 'Ctrl+Shift+C yorum' ($ed.Text.Contains('<!-- Ölçüm --> düzeni'))
+$nw.HandleKey($K::C, $true, $true) | Out-Null
+Check 'Ctrl+Shift+C tekrar: yorum kalkar' ($ed.Text.Contains('Ölçüm düzeni [[') -and -not $ed.Text.Contains('<!--'))
+$ctx = New-Object Pusula.Wpf.Markdown.MarkdownRenderContext
+$cdoc = [Pusula.Wpf.Markdown.MarkdownRenderer]::Render("Önce <!-- satır içi gizli --> sonra`r`n`r`n<!-- blok gizli -->`r`n`r`nOrta %%obsidian gizli%% son`r`n`r`n%%`r`nçok satır gizli`r`n%%`r`n`r`n- [ ] görev", $ctx)
+$ctext = (New-Object System.Windows.Documents.TextRange($cdoc.ContentStart, $cdoc.ContentEnd)).Text
+Check 'görünümde yorumlar gizli' (-not ($ctext -match 'gizli') -and $ctext -match 'Önce' -and $ctext -match 'sonra' -and $ctext -match 'Orta' -and $ctext -match 'son') $ctext
+$ed.Select($hpos + 3, 0)
 $nw.HandleKey($K::H, $true, $false) | Out-Null
 Check 'Ctrl+H: başlık düzeyi döner (# → ##)' ($ed.Text.Contains('## DA400 Döner Anten'))
 $nw.HandleKey($K::H, $true, $false) | Out-Null; $nw.HandleKey($K::H, $true, $false) | Out-Null

@@ -104,6 +104,9 @@
                     <Button Style="{StaticResource ToolButton}" Tag="divider" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Divider}">
                         <controls:FontIcon Glyph="&#xE76F;" FontSize="14" />
                     </Button>
+                    <Button Style="{StaticResource ToolButton}" Tag="comment" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Comment}">
+                        <controls:FontIcon Glyph="&#xE90A;" FontSize="14" />
+                    </Button>
                 </StackPanel>
 
                 <!-- Sağ: kaydet, aç, ayarlar, tam ekran, görünüm -->

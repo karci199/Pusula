@@ -104,7 +104,8 @@ namespace Pusula.Wpf.Markdown
         /// <summary>Metni ayrıştırıp çizer.</summary>
         public static FlowDocument Render(string text, MarkdownRenderContext context)
         {
-            context.Source = text ?? string.Empty;
+            // %% yorumlar %% görünümde gizlenir; örtme uzunluğu korur, konumlar düz metinle aynı kalır.
+            context.Source = MarkdownNotes.MaskComments(text ?? string.Empty);
             return new MarkdownRenderer(context).RenderDocument(MarkdownNotes.Parse(context.Source));
         }
 
@@ -153,7 +154,8 @@ namespace Pusula.Wpf.Markdown
                 case Markdig.Extensions.Tables.Table table:
                     return RenderTable(table);
                 case HtmlBlock html:
-                    return RenderRaw(html.Lines.ToString());
+                    // <!-- yorum --> görünümde gizlenir (Obsidian gibi).
+                    return html.Type == HtmlBlockType.Comment ? null : RenderRaw(html.Lines.ToString());
                 case FootnoteGroup footnotes:
                     return RenderFootnotes(footnotes);
                 case LinkReferenceDefinitionGroup _:
@@ -529,6 +531,8 @@ namespace Pusula.Wpf.Markdown
                     return Hyperlink(new Run(autolink.Url), () => context.UrlClicked?.Invoke(autolink.IsEmail ? "mailto:" + autolink.Url : autolink.Url), autolink.Url);
                 case HtmlEntityInline entity:
                     return new Run(entity.Transcoded.ToString());
+                case HtmlInline html when html.Tag.StartsWith("<!--", StringComparison.Ordinal):
+                    return null;
                 case HtmlInline html:
                     var raw = new Run(html.Tag);
                     raw.SetResourceReference(TextElement.ForegroundProperty, "TextTertiaryBrush");

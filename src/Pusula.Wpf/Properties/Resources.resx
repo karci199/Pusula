@@ -1368,6 +1368,9 @@
   <data name="Note_Divider" xml:space="preserve">
     <value>Ayraç çizgisi</value>
   </data>
+  <data name="Note_Comment" xml:space="preserve">
+    <value>Yorum (görünümde gizlenir) (Ctrl+Shift+C)</value>
+  </data>
   <data name="Note_FullScreen" xml:space="preserve">
     <value>Tam ekran (F11)</value>
   </data>

@@ -68,6 +68,79 @@ namespace Pusula.Core.Markdown
         }
 
         /// <summary>
+        /// Obsidian yorumlarını (<c>%% … %%</c>, birden çok satıra yayılabilir) boşlukla örter; satır sonları ve uzunluk
+        /// korunur (konumlar ve satır numaraları değişmez). Kod bloklarındaki ve <c>`satır içi kod`</c>daki <c>%%</c> yorum
+        /// sayılmaz. Kapanmamış <c>%%</c> notun sonuna kadar yorumdur (Obsidian gibi).
+        /// </summary>
+        public static string MaskComments(string text)
+        {
+            text = text ?? string.Empty;
+            if (text.IndexOf("%%", StringComparison.Ordinal) < 0)
+            {
+                return text;
+            }
+
+            var chars = text.ToCharArray();
+            var inComment = false;
+            var inFence = false;
+            var fence = string.Empty;
+            var lineStart = 0;
+            while (lineStart < chars.Length)
+            {
+                var lineEnd = text.IndexOf('\n', lineStart);
+                if (lineEnd < 0)
+                {
+                    lineEnd = chars.Length;
+                }
+
+                var trimmed = text.Substring(lineStart, lineEnd - lineStart).TrimStart();
+                if (!inComment && (trimmed.StartsWith("```", StringComparison.Ordinal) || trimmed.StartsWith("~~~", StringComparison.Ordinal)))
+                {
+                    var mark = trimmed.Substring(0, 3);
+                    if (!inFence)
+                    {
+                        inFence = true;
+                        fence = mark;
+                    }
+                    else if (mark == fence)
+                    {
+                        inFence = false;
+                    }
+                }
+                else if (!inFence)
+                {
+                    var inCode = false;
+                    for (var i = lineStart; i < lineEnd; i++)
+                    {
+                        if (!inComment && chars[i] == '`')
+                        {
+                            inCode = !inCode;
+                            continue;
+                        }
+
+                        if (!inCode && i + 1 < lineEnd && chars[i] == '%' && chars[i + 1] == '%')
+                        {
+                            chars[i] = ' ';
+                            chars[i + 1] = ' ';
+                            inComment = !inComment;
+                            i++;
+                            continue;
+                        }
+
+                        if (inComment && chars[i] != '\r')
+                        {
+                            chars[i] = ' ';
+                        }
+                    }
+                }
+
+                lineStart = lineEnd + 1;
+            }
+
+            return new string(chars);
+        }
+
+        /// <summary>
         /// Alıntı bir Obsidian kutusu ise türünü ve başlığını verir (ilk satır <c>[!tür] Başlık</c>). <paramref name="source"/>
         /// ayrıştırılan metnin kendisidir; ilk satır oradan okunur ("[" bağlantı ayrıştırıcısında parçalandığı için).
         /// </summary>
