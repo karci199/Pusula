@@ -138,6 +138,48 @@ namespace Pusula.Wpf
         /// <summary>Yan yana görünümde düz bölümün oranı (0.2–0.8).</summary>
         [DataMember(Name = "splitRatio", Order = 10)]
         public double SplitRatio { get; set; } = 0.5;
+
+        /// <summary>Aramada büyük / küçük harf ayrılsın mı.</summary>
+        [DataMember(Name = "findMatchCase", Order = 11)]
+        public bool FindMatchCase { get; set; }
+
+        /// <summary>Aramada yalnız tam kelime.</summary>
+        [DataMember(Name = "findWholeWord", Order = 12)]
+        public bool FindWholeWord { get; set; }
+
+        /// <summary>Aramada düzenli ifade.</summary>
+        [DataMember(Name = "findRegex", Order = 13)]
+        public bool FindRegex { get; set; }
+
+        /// <summary>Yan yana görünümde iki taraf birlikte kaysın mı.</summary>
+        [DataMember(Name = "syncScroll", Order = 14)]
+        public bool SyncScroll { get; set; } = true;
+
+        /// <summary>Başlık paneli (içindekiler) açık mı.</summary>
+        [DataMember(Name = "showOutline", Order = 15)]
+        public bool ShowOutline { get; set; }
+
+        /// <summary>Parantez, tırnak ve işaret çiftleri kendiliğinden kapansın mı.</summary>
+        [DataMember(Name = "autoPair", Order = 16)]
+        public bool AutoPair { get; set; } = true;
+
+        // Eski ayar dosyasında olmayan alanlar varsayılanla gelsin (serileştirici yapıcıyı çalıştırmaz).
+        [OnDeserializing]
+        private void OnDeserializing(StreamingContext context)
+        {
+            View = "split";
+            EditorFont = "Cascadia Mono";
+            EditorSize = 14;
+            PreviewSize = 15;
+            ReadingWidth = 860;
+            Wrap = true;
+            LineBreaks = true;
+            FrontMatter = true;
+            Maximized = true;
+            SplitRatio = 0.5;
+            SyncScroll = true;
+            AutoPair = true;
+        }
     }
 
     /// <summary>Bir tablo sütununun kayıtlı yeri ve genişliği.</summary>

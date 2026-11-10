@@ -308,11 +308,45 @@ namespace Pusula.Wpf
             get { return Editor.Text.Contains("\n") && !Editor.Text.Contains("\r\n") ? "\n" : "\r\n"; }
         }
 
-        private void Apply(EditResult result)
+        // Düzenlemeyi uygular: metnin tamamı yeniden yazılmaz, yalnız değişen parça yerinde değiştirilir; böylece Ctrl+Z
+        // geçmişi korunur ve işlem tek adımda geri alınır.
+        private void Apply(EditResult result, bool focus = true)
         {
-            Editor.Text = result.Text;
-            Editor.Select(Math.Min(result.SelectionStart, Editor.Text.Length), Math.Min(result.SelectionLength, Editor.Text.Length - Math.Min(result.SelectionStart, Editor.Text.Length)));
-            Editor.Focus();
+            var before = Editor.Text;
+            var after = result.Text ?? string.Empty;
+            if (!string.Equals(before, after, StringComparison.Ordinal))
+            {
+                var prefix = 0;
+                var max = Math.Min(before.Length, after.Length);
+                while (prefix < max && before[prefix] == after[prefix])
+                {
+                    prefix++;
+                }
+
+                var suffix = 0;
+                while (suffix < max - prefix && before[before.Length - 1 - suffix] == after[after.Length - 1 - suffix])
+                {
+                    suffix++;
+                }
+
+                Editor.BeginChange();
+                try
+                {
+                    Editor.Select(prefix, before.Length - prefix - suffix);
+                    Editor.SelectedText = after.Substring(prefix, after.Length - prefix - suffix);
+                }
+                finally
+                {
+                    Editor.EndChange();
+                }
+            }
+
+            var start = Math.Min(result.SelectionStart, Editor.Text.Length);
+            Editor.Select(start, Math.Min(result.SelectionLength, Editor.Text.Length - start));
+            if (focus)
+            {
+                Editor.Focus();
+            }
         }
 
         private EditResult InsertBlock(string text, int caret, string block, int caretInBlock)
@@ -608,6 +642,8 @@ namespace Pusula.Wpf
                 autoSaveTimer.Start();
             }
 
+            RefreshFindCount();
+
             // İmleç yerine oturduktan sonra bakılır (yapıştırma / programla yazmada seçim önce metni kapsar).
             Dispatcher.BeginInvoke(new Action(UpdateSuggestions), DispatcherPriority.Input);
         }
@@ -706,8 +742,24 @@ namespace Pusula.Wpf
             e.Handled = HandleKey(e.Key == Key.System ? e.SystemKey : e.Key, ctrl, shift);
         }
 
-        /// <summary>Kısayolu işler (testler için açık); işlediyse <c>true</c>.</summary>
-        public bool HandleKey(Key key, bool ctrl, bool shift)
+        // Pencere kısayolları: odak nerede olursa olsun (yalnız görünüm açıkken, bul kutusundayken de) çalışır.
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            var modifiers = Keyboard.Modifiers;
+            if ((modifiers & ModifierKeys.Alt) != 0 && (modifiers & ModifierKeys.Control) != 0)
+            {
+                return;
+            }
+
+            var key = e.Key == Key.System ? e.SystemKey : e.Key;
+            if (HandleGlobalKey(key, (modifiers & ModifierKeys.Control) != 0 && (modifiers & ModifierKeys.Alt) == 0, (modifiers & ModifierKeys.Shift) != 0))
+            {
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>Pencere kısayolunu işler (testler için açık); işlediyse <c>true</c>.</summary>
+        public bool HandleGlobalKey(Key key, bool ctrl, bool shift)
         {
             if (ctrl && !shift)
             {
@@ -716,23 +768,11 @@ namespace Pusula.Wpf
                     case Key.S:
                         viewModel.Save();
                         return true;
-                    case Key.B:
-                        ApplyFormat("bold");
+                    case Key.F:
+                        OpenFind(false);
                         return true;
-                    case Key.I:
-                        ApplyFormat("italic");
-                        return true;
-                    case Key.E:
-                        ApplyFormat("code");
-                        return true;
-                    case Key.L:
-                        ApplyFormat("task");
-                        return true;
-                    case Key.K:
-                        ApplyFormat("link");
-                        return true;
-                    case Key.H:
-                        ApplyFormat("heading");
+                    case Key.R:
+                        OpenFind(true);
                         return true;
                     case Key.D1:
                     case Key.NumPad1:
@@ -759,6 +799,81 @@ namespace Pusula.Wpf
                 }
             }
 
+            if (key == Key.F3 && !ctrl)
+            {
+                if (!IsFindOpen)
+                {
+                    OpenFind(false);
+                }
+                else if (shift)
+                {
+                    FindPrevious();
+                }
+                else
+                {
+                    FindNext();
+                }
+
+                return true;
+            }
+
+            if (key == Key.F11)
+            {
+                ToggleFullScreen();
+                return true;
+            }
+
+            if (key == Key.Escape && !SuggestPopup.IsOpen)
+            {
+                if (IsFindOpen)
+                {
+                    CloseFind();
+                    return true;
+                }
+
+                if (fullScreen)
+                {
+                    ToggleFullScreen();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>Kısayolu işler (testler için açık): önce pencere kısayolları, sonra düz metin kısayolları; işlediyse <c>true</c>.</summary>
+        public bool HandleKey(Key key, bool ctrl, bool shift)
+        {
+            if (HandleGlobalKey(key, ctrl, shift))
+            {
+                return true;
+            }
+
+            if (ctrl && !shift)
+            {
+                switch (key)
+                {
+                    case Key.B:
+                        ApplyFormat("bold");
+                        return true;
+                    case Key.I:
+                        ApplyFormat("italic");
+                        return true;
+                    case Key.E:
+                        ApplyFormat("code");
+                        return true;
+                    case Key.L:
+                        ApplyFormat("task");
+                        return true;
+                    case Key.K:
+                        ApplyFormat("link");
+                        return true;
+                    case Key.H:
+                        ApplyFormat("heading");
+                        return true;
+                }
+            }
+
             if (ctrl && shift)
             {
                 switch (key)
@@ -773,18 +888,6 @@ namespace Pusula.Wpf
                         ApplyFormat("highlight");
                         return true;
                 }
-            }
-
-            if (key == Key.F11)
-            {
-                ToggleFullScreen();
-                return true;
-            }
-
-            if (key == Key.Escape && fullScreen)
-            {
-                ToggleFullScreen();
-                return true;
             }
 
             if (key == Key.Enter && !ctrl && !shift && Editor.SelectionLength == 0)

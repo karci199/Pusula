@@ -1458,4 +1458,67 @@
   <data name="Note_WindowTitle" xml:space="preserve">
     <value>{0}{1} — Pusula</value>
   </data>
+  <data name="Note_FindPlaceholder" xml:space="preserve">
+    <value>Bul</value>
+  </data>
+  <data name="Note_ReplacePlaceholder" xml:space="preserve">
+    <value>Değiştir</value>
+  </data>
+  <data name="Note_FindToggleReplace" xml:space="preserve">
+    <value>Değiştir satırını aç / kapat (Ctrl+R)</value>
+  </data>
+  <data name="Note_FindMatchCase" xml:space="preserve">
+    <value>Büyük / küçük harf ayır</value>
+  </data>
+  <data name="Note_FindWholeWord" xml:space="preserve">
+    <value>Yalnız tam kelime</value>
+  </data>
+  <data name="Note_FindRegex" xml:space="preserve">
+    <value>Düzenli ifade (regex)</value>
+  </data>
+  <data name="Note_FindGlyphCase" xml:space="preserve">
+    <value>Aa</value>
+  </data>
+  <data name="Note_FindGlyphWord" xml:space="preserve">
+    <value>ab</value>
+  </data>
+  <data name="Note_FindGlyphRegex" xml:space="preserve">
+    <value>.*</value>
+  </data>
+  <data name="Note_FindPrevious" xml:space="preserve">
+    <value>Önceki (Shift+Enter, Shift+F3)</value>
+  </data>
+  <data name="Note_FindNext" xml:space="preserve">
+    <value>Sonraki (Enter, F3)</value>
+  </data>
+  <data name="Note_FindClose" xml:space="preserve">
+    <value>Kapat (Esc)</value>
+  </data>
+  <data name="Note_Replace" xml:space="preserve">
+    <value>Değiştir</value>
+  </data>
+  <data name="Note_ReplaceHint" xml:space="preserve">
+    <value>Seçili eşleşmeyi değiştir, sonrakine geç (Enter)</value>
+  </data>
+  <data name="Note_ReplaceAll" xml:space="preserve">
+    <value>Tümünü değiştir</value>
+  </data>
+  <data name="Note_ReplaceAllHint" xml:space="preserve">
+    <value>Bütün eşleşmeleri değiştir (Ctrl+Enter); Ctrl+Z ile tek seferde geri alınır</value>
+  </data>
+  <data name="Note_ReplacedCount" xml:space="preserve">
+    <value>{0} değiştirildi</value>
+  </data>
+  <data name="Note_FindInvalid" xml:space="preserve">
+    <value>Geçersiz ifade</value>
+  </data>
+  <data name="Note_FindNone" xml:space="preserve">
+    <value>Sonuç yok</value>
+  </data>
+  <data name="Note_FindCount" xml:space="preserve">
+    <value>{0} / {1}</value>
+  </data>
+  <data name="Note_FindTotal" xml:space="preserve">
+    <value>{0} sonuç</value>
+  </data>
 </root>

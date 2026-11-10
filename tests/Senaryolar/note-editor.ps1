@@ -207,6 +207,54 @@ $e.ReadingWidth = 680; Pump
 Check 'okuma genişliği: içerik ortada' ($nw.FindName('Preview').Document.PagePadding.Left -gt 32) ([string]$nw.FindName('Preview').Document.PagePadding.Left)
 $e.PreviewSize = 15; $e.Wrap = $true; $e.EditorFont = 'Cascadia Mono'; $e.ReadingWidth = 860
 
+"--- 9b. Bul / değiştir, geri alma"
+$fb = $nw.FindName('FindBox'); $rb = $nw.FindName('ReplaceBox'); $fc = $nw.FindName('FindCount')
+$orig = $ed.Text
+$si = $ed.Text.IndexOf('SN02'); $ed.Select($si, 4)
+$nw.HandleKey($K::F, $true, $false) | Out-Null; Pump
+Check 'Ctrl+F: çubuk açılır, seçili metin aranır' ($nw.IsFindOpen -and $fb.Text -eq 'SN02' -and $nw.FindName('ReplaceRow').Visibility -ne 'Visible' -and $fb.IsKeyboardFocusWithin)
+$expect = [regex]::Matches($ed.Text, 'ölç', 'IgnoreCase').Count
+$fb.Text = 'ölç'; Pump
+Check 'yazdıkça arar, eşleşme seçilir' ($nw.FindResult.Matches.Count -eq $expect -and $expect -ge 2 -and $ed.SelectedText -ieq 'ölç') ("$($nw.FindResult.Matches.Count) / $expect")
+$first = $ed.SelectionStart
+$nw.HandleGlobalKey($K::F3, $false, $false) | Out-Null
+Check 'F3: sonraki' ($ed.SelectionStart -ne $first -and $ed.SelectedText -ieq 'ölç' -and $fc.Text -match "^\d+ / $expect$") $fc.Text
+$nw.HandleGlobalKey($K::F3, $false, $true) | Out-Null
+Check 'Shift+F3: önceki' ($ed.SelectionStart -eq $first)
+for ($x = 0; $x -lt $expect; $x++) { $nw.FindNext() }
+Check 'sona gelince başa döner' ($ed.SelectionStart -eq $first)
+$e.FindMatchCase = $true; $nw.FindNext()
+$cs = [regex]::Matches($ed.Text, 'ölç').Count
+Check 'büyük / küçük harf: daha az sonuç, ayar kaydedildi' ($nw.FindResult.Matches.Count -eq $cs -and $cs -lt $expect -and $vm.Settings.NoteEditor.FindMatchCase) ("$cs < $expect")
+$e.FindMatchCase = $false
+$e.FindRegex = $true; $fb.Text = 'SN0('; Pump
+Check 'geçersiz ifade gösterilir' ($fc.Text -eq 'Geçersiz ifade') $fc.Text
+$fb.Text = 'SN0(\d)'; Pump
+Check 'düzenli ifade arar' ($nw.FindResult.Matches.Count -ge 1 -and $ed.SelectedText -like 'SN0*')
+$nw.HandleGlobalKey($K::R, $true, $false) | Out-Null; Pump
+Check 'Ctrl+R: değiştir satırı açılır' ($nw.FindName('ReplaceRow').Visibility -eq 'Visible')
+$rb.Text = 'Seri-$1'; $before = $ed.Text
+$nw.ReplaceCurrent()
+Check 'değiştir: $1 grubu ile' ($ed.Text -ne $before -and $ed.Text -match 'Seri-\d' -and $e.IsDirty)
+$ed.Undo()
+Check 'Ctrl+Z: değiştirme geri alınır' ($ed.Text -eq $before)
+$e.FindRegex = $false; $fb.Text = 'ölç'; $rb.Text = 'ÖLÇ'; Pump
+$n = $nw.ReplaceEverything()
+Check 'tümünü değiştir' ($n -eq $expect -and -not $ed.Text.Contains('ölç') -and $fc.Text -eq "$expect değiştirildi") $fc.Text
+Snap $nw "$Out\note-find.png"
+$ed.Undo()
+Check 'Ctrl+Z: tümü tek adımda geri alınır' ($ed.Text -eq $orig)
+$nw.HandleGlobalKey($K::Escape, $false, $false) | Out-Null
+Check 'Esc: çubuk kapanır' (-not $nw.IsFindOpen)
+$bi = $ed.Text.IndexOf('Ölçüm düzeni'); $ed.Select($bi, 5); $nw.HandleKey($K::B, $true, $false) | Out-Null
+Check 'Ctrl+B uygulandı' ($ed.Text.Contains('**Ölçüm** düzeni'))
+$ed.Undo()
+Check 'Ctrl+Z: biçim geri alınır (geçmiş korunur)' ($ed.Text -eq $orig)
+$nw.HandleKey($K::D3, $true, $false) | Out-Null; Wait
+$nw.HandleGlobalKey($K::F, $true, $false) | Out-Null; Pump
+Check 'yalnız görünümde Ctrl+F: yan yanaya geçer' ($e.IsSplitMode -and $nw.IsFindOpen)
+$nw.CloseFind()
+
 "--- 10. Kapatırken"
 $nw.Close(); Pump
 Check 'kaydedilmemişse kapanmaz, soru açılır' ($nw.IsVisible -and $nw.FindName('CloseDialog').IsOpen)

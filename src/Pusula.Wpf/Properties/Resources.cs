@@ -1685,6 +1685,69 @@ namespace Pusula.Wpf.Properties
         /// <summary>Not penceresi başlığı: dosya adı ve kaydedilmemiş işareti.</summary>
         public static string Note_WindowTitle { get { return Get("Note_WindowTitle"); } }
 
+        /// <summary>Bul kutusu yer tutucu.</summary>
+        public static string Note_FindPlaceholder { get { return Get("Note_FindPlaceholder"); } }
+
+        /// <summary>Değiştir kutusu yer tutucu.</summary>
+        public static string Note_ReplacePlaceholder { get { return Get("Note_ReplacePlaceholder"); } }
+
+        /// <summary>Bul çubuğu.</summary>
+        public static string Note_FindToggleReplace { get { return Get("Note_FindToggleReplace"); } }
+
+        /// <summary>Bul seçeneği.</summary>
+        public static string Note_FindMatchCase { get { return Get("Note_FindMatchCase"); } }
+
+        /// <summary>Bul seçeneği.</summary>
+        public static string Note_FindWholeWord { get { return Get("Note_FindWholeWord"); } }
+
+        /// <summary>Bul seçeneği.</summary>
+        public static string Note_FindRegex { get { return Get("Note_FindRegex"); } }
+
+        /// <summary>Büyük / küçük harf düğmesindeki yazı.</summary>
+        public static string Note_FindGlyphCase { get { return Get("Note_FindGlyphCase"); } }
+
+        /// <summary>Tam kelime düğmesindeki yazı.</summary>
+        public static string Note_FindGlyphWord { get { return Get("Note_FindGlyphWord"); } }
+
+        /// <summary>Düzenli ifade düğmesindeki yazı.</summary>
+        public static string Note_FindGlyphRegex { get { return Get("Note_FindGlyphRegex"); } }
+
+        /// <summary>Bul çubuğu.</summary>
+        public static string Note_FindPrevious { get { return Get("Note_FindPrevious"); } }
+
+        /// <summary>Bul çubuğu.</summary>
+        public static string Note_FindNext { get { return Get("Note_FindNext"); } }
+
+        /// <summary>Bul çubuğu.</summary>
+        public static string Note_FindClose { get { return Get("Note_FindClose"); } }
+
+        /// <summary>Değiştir düğmesi.</summary>
+        public static string Note_Replace { get { return Get("Note_Replace"); } }
+
+        /// <summary>Değiştir ipucu.</summary>
+        public static string Note_ReplaceHint { get { return Get("Note_ReplaceHint"); } }
+
+        /// <summary>Tümünü değiştir düğmesi.</summary>
+        public static string Note_ReplaceAll { get { return Get("Note_ReplaceAll"); } }
+
+        /// <summary>Tümünü değiştir ipucu.</summary>
+        public static string Note_ReplaceAllHint { get { return Get("Note_ReplaceAllHint"); } }
+
+        /// <summary>Tümünü değiştir sonucu.</summary>
+        public static string Note_ReplacedCount { get { return Get("Note_ReplacedCount"); } }
+
+        /// <summary>Düzenli ifade hatası.</summary>
+        public static string Note_FindInvalid { get { return Get("Note_FindInvalid"); } }
+
+        /// <summary>Eşleşme yok.</summary>
+        public static string Note_FindNone { get { return Get("Note_FindNone"); } }
+
+        /// <summary>Eşleşme sırası / toplam.</summary>
+        public static string Note_FindCount { get { return Get("Note_FindCount"); } }
+
+        /// <summary>Toplam eşleşme.</summary>
+        public static string Note_FindTotal { get { return Get("Note_FindTotal"); } }
+
         #endregion
     }
 }

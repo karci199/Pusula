@@ -304,6 +304,54 @@ namespace Pusula.Wpf.ViewModels
             set { Set(() => settings.SplitRatio = Math.Max(0.2, Math.Min(0.8, value))); }
         }
 
+        /// <summary>Aramada büyük / küçük harf.</summary>
+        public bool FindMatchCase
+        {
+            get { return settings.FindMatchCase; }
+            set { SetQuiet(() => settings.FindMatchCase = value); }
+        }
+
+        /// <summary>Aramada tam kelime.</summary>
+        public bool FindWholeWord
+        {
+            get { return settings.FindWholeWord; }
+            set { SetQuiet(() => settings.FindWholeWord = value); }
+        }
+
+        /// <summary>Aramada düzenli ifade.</summary>
+        public bool FindRegex
+        {
+            get { return settings.FindRegex; }
+            set { SetQuiet(() => settings.FindRegex = value); }
+        }
+
+        /// <summary>Arama seçenekleri (şu anki ayarlarla).</summary>
+        public SearchOptions FindOptions
+        {
+            get { return new SearchOptions { MatchCase = FindMatchCase, WholeWord = FindWholeWord, UseRegex = FindRegex }; }
+        }
+
+        /// <summary>Yan yana görünümde birlikte kaydır.</summary>
+        public bool SyncScroll
+        {
+            get { return settings.SyncScroll; }
+            set { SetQuiet(() => settings.SyncScroll = value); }
+        }
+
+        /// <summary>Başlık paneli açık mı.</summary>
+        public bool ShowOutline
+        {
+            get { return settings.ShowOutline; }
+            set { SetQuiet(() => settings.ShowOutline = value); }
+        }
+
+        /// <summary>Parantez ve işaret çiftlerini kendiliğinden kapat.</summary>
+        public bool AutoPair
+        {
+            get { return settings.AutoPair; }
+            set { SetQuiet(() => settings.AutoPair = value); }
+        }
+
         /// <summary>Ayar değişince görünüm yeniden çizilsin (pencere dinler).</summary>
         public event EventHandler? SettingsChanged;
 
@@ -432,6 +480,14 @@ namespace Pusula.Wpf.ViewModels
             SaveSettings();
             OnPropertyChanged(string.Empty);
             SettingsChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        // Görünümü yeniden çizdirmeyen ayar (arama seçenekleri, panel): yalnız kaydedilir.
+        private void SetQuiet(Action change)
+        {
+            change();
+            SaveSettings();
+            OnPropertyChanged(string.Empty);
         }
 
         private void SaveSettings()

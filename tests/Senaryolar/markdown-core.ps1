@@ -96,4 +96,25 @@ Check 'satır içi koddaki %% korunur' ($m.Contains('`%%kod%%`'))
 Check 'kod bloğundaki %% korunur' ($m.Contains('%%blok%%'))
 Check 'kapanmamış %% sona kadar' (($MN::MaskComments("a`n%% b`nc")).Trim() -eq 'a')
 Check '%% yoksa aynı metin' ([object]::ReferenceEquals($MN::MaskComments('düz'), 'düz') -or $MN::MaskComments('düz') -eq 'düz')
+"--- 8. Bul / değiştir"
+$TS = [Pusula.Core.Markdown.TextSearch]
+function Opt($c, $w, $r) { $o = New-Object Pusula.Core.Markdown.SearchOptions; $o.MatchCase = $c; $o.WholeWord = $w; $o.UseRegex = $r; $o }
+$txt = "SN01 ölçüldü. sn02 ölçülmedi.`r`nİzmir ve izmir, IŞIK ışık. snx"
+$res = $TS::FindAll($txt, 'sn', (Opt $false $false $false)); Check 'düz arama, harf ayrımı yok' ($res.Matches.Count -eq 3)
+$res = $TS::FindAll($txt, 'sn', (Opt $true $false $false)); Check 'büyük / küçük harf ayrımı' ($res.Matches.Count -eq 2)
+$res = $TS::FindAll($txt, 'izmir', (Opt $false $false $false)); Check 'Türkçe: İzmir = izmir' ($res.Matches.Count -eq 2)
+$res = $TS::FindAll($txt, 'ışık', (Opt $false $false $false)); Check 'Türkçe: IŞIK = ışık' ($res.Matches.Count -eq 2)
+$res = $TS::FindAll($txt, 'ölçüldü', (Opt $false $true $false)); Check 'tam kelime (ölçülmedi sayılmaz)' ($res.Matches.Count -eq 1)
+$res = $TS::FindAll($txt, 'SN\d+', (Opt $false $false $true)); Check 'düzenli ifade' ($res.Matches.Count -eq 2 -and $res.Matches[1].Start -eq $txt.IndexOf('sn02'))
+$res = $TS::FindAll($txt, 'SN(', (Opt $false $false $true)); Check 'geçersiz ifade hata verir' ($res.Matches.Count -eq 0 -and $res.Error.Length -gt 0)
+$res = $TS::FindAll($txt, 'a.b', (Opt $false $false $false)); Check 'düz aramada nokta harfiyen' ($res.Matches.Count -eq 0)
+$res = $TS::FindAll($txt, '', (Opt $false $false $false)); Check 'boş arama: sonuç yok, hata yok' ($res.Matches.Count -eq 0 -and $res.Error -eq '')
+$res = $TS::FindAll($txt, 'sn', (Opt $false $false $false))
+Check 'imleçten sonraki ilk' ($res.IndexFrom(5) -eq 1 -and $res.IndexFrom(10000) -eq 0)
+Check 'imleçten önceki' ($res.IndexBefore(5) -eq 0 -and $res.IndexBefore(0) -eq 2)
+$res = $TS::FindAll($txt, 'SN(\d+)', (Opt $false $false $true))
+$e1 = $TS::Replace($txt, $res.Matches[0], 'SN(\d+)', 'Seri-$1', (Opt $false $false $true)); Check 'tek değiştir ($1 grubu)' ($e1.Text.StartsWith('Seri-01 ölçüldü') -and $e1.SelectionLength -eq 7)
+$cnt = 0; $all = $TS::ReplaceAll($txt, 'ölçül', 'test edil', (Opt $false $false $false), [ref]$cnt); Check 'tümünü değiştir' ($cnt -eq 2 -and $all.Contains('test edildü') -and $all.Contains('test edilmedi'))
+$cnt = 0; $same = $TS::ReplaceAll($txt, 'yok', 'x', (Opt $false $false $false), [ref]$cnt); Check 'eşleşme yoksa metin aynı' ($cnt -eq 0 -and $same -eq $txt)
+$stale = New-Object Pusula.Core.Markdown.TextMatch(0, 3); Check 'eskimiş eşleşme değiştirilmez' ($TS::Replace('abc', $stale, 'xyz', 'q', (Opt $false $false $false)) -eq $null)
 "SONUÇ OK=$ok HATA=$fail"

@@ -11,7 +11,8 @@
         WindowStartupLocation="CenterScreen"
         FontFamily="{DynamicResource AppFont}"
         Foreground="{DynamicResource TextPrimaryBrush}"
-        Background="{DynamicResource SurfaceBaseBrush}">
+        Background="{DynamicResource SurfaceBaseBrush}"
+        PreviewKeyDown="Window_PreviewKeyDown">
 
     <controls:ChromeWindow.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
@@ -165,6 +166,7 @@
                      BorderThickness="0" Background="Transparent"
                      Padding="28,20,28,40"
                      SpellCheck.IsEnabled="False"
+                     IsInactiveSelectionHighlightEnabled="True"
                      AllowDrop="True"
                      Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
                      PreviewKeyDown="Editor_PreviewKeyDown"
@@ -183,6 +185,58 @@
                                       IsToolBarVisible="False" Focusable="False"
                                       SizeChanged="Preview_SizeChanged"
                                       PreviewMouseWheel="Preview_PreviewMouseWheel" />
+
+            <!-- Bul / değiştir (Ctrl+F, Ctrl+R): düz metnin sağ üstünde -->
+            <Border x:Name="FindBar" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,22,0"
+                    Visibility="Collapsed" Padding="6" CornerRadius="8" BorderThickness="1"
+                    Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="ReplaceToggle" Style="{StaticResource ToolButton}" VerticalAlignment="Top" Margin="0,4,4,0"
+                            Click="ReplaceToggle_Click" ToolTip="{x:Static res:Resources.Note_FindToggleReplace}">
+                        <controls:FontIcon x:Name="ReplaceToggleIcon" Glyph="&#xE76C;" FontSize="12" />
+                    </Button>
+                    <StackPanel Grid.Column="1">
+                        <StackPanel Orientation="Horizontal">
+                            <controls:SearchBox x:Name="FindBox" Width="250" PlaceholderText="{x:Static res:Resources.Note_FindPlaceholder}"
+                                                TextChanged="FindBox_TextChanged" PreviewKeyDown="FindBox_PreviewKeyDown" />
+                            <ToggleButton x:Name="CaseToggle" Style="{StaticResource ViewToggle}" Margin="6,0,0,0" Padding="7,4"
+                                          IsChecked="{Binding FindMatchCase, Mode=TwoWay}" Click="FindOption_Click"
+                                          ToolTip="{x:Static res:Resources.Note_FindMatchCase}" Content="{x:Static res:Resources.Note_FindGlyphCase}" />
+                            <ToggleButton x:Name="WordToggle" Style="{StaticResource ViewToggle}" Margin="2,0,0,0" Padding="7,4"
+                                          IsChecked="{Binding FindWholeWord, Mode=TwoWay}" Click="FindOption_Click"
+                                          ToolTip="{x:Static res:Resources.Note_FindWholeWord}">
+                                <TextBlock Text="{x:Static res:Resources.Note_FindGlyphWord}" TextDecorations="Underline" />
+                            </ToggleButton>
+                            <ToggleButton x:Name="RegexToggle" Style="{StaticResource ViewToggle}" Margin="2,0,0,0" Padding="7,4"
+                                          IsChecked="{Binding FindRegex, Mode=TwoWay}" Click="FindOption_Click"
+                                          ToolTip="{x:Static res:Resources.Note_FindRegex}" Content="{x:Static res:Resources.Note_FindGlyphRegex}" />
+                            <TextBlock x:Name="FindCount" MinWidth="86" Margin="10,0,6,0" VerticalAlignment="Center" TextAlignment="Center"
+                                       Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" />
+                            <Button Style="{StaticResource ToolButton}" Click="FindPrevious_Click" ToolTip="{x:Static res:Resources.Note_FindPrevious}">
+                                <controls:FontIcon Glyph="&#xE70E;" FontSize="12" />
+                            </Button>
+                            <Button Style="{StaticResource ToolButton}" Click="FindNext_Click" ToolTip="{x:Static res:Resources.Note_FindNext}">
+                                <controls:FontIcon Glyph="&#xE70D;" FontSize="12" />
+                            </Button>
+                            <Button Style="{StaticResource ToolButton}" Click="FindClose_Click" ToolTip="{x:Static res:Resources.Note_FindClose}">
+                                <controls:FontIcon Glyph="&#xE711;" FontSize="12" />
+                            </Button>
+                        </StackPanel>
+                        <StackPanel x:Name="ReplaceRow" Orientation="Horizontal" Margin="0,6,0,0" Visibility="Collapsed">
+                            <controls:SearchBox x:Name="ReplaceBox" Width="250" PlaceholderText="{x:Static res:Resources.Note_ReplacePlaceholder}"
+                                                PreviewKeyDown="ReplaceBox_PreviewKeyDown" />
+                            <Button Margin="6,0,0,0" Click="ReplaceOne_Click" Content="{x:Static res:Resources.Note_Replace}"
+                                    ToolTip="{x:Static res:Resources.Note_ReplaceHint}" />
+                            <Button Margin="6,0,0,0" Click="ReplaceAll_Click" Content="{x:Static res:Resources.Note_ReplaceAll}"
+                                    ToolTip="{x:Static res:Resources.Note_ReplaceAllHint}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
         </Grid>
 
         <!-- Öneri listesi (@ / [[) -->
