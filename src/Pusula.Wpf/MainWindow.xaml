@@ -244,21 +244,22 @@
                         MouseLeftButtonUp="TimelineCard_MouseLeftButtonUp">
                     <StackPanel>
                         <Grid>
+                            <!-- Başlık ve durum etiketi yer kalmazsa alt satıra iner; not / klasör düğmeleri kartın içinde kalır -->
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="{Binding Title}" FontWeight="SemiBold" VerticalAlignment="Center" />
-                            <ContentPresenter x:Name="ResultChip" Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center"
-                                              Content="{Binding Result}" ContentTemplate="{DynamicResource StatusChipTemplate}" />
-                            <Button x:Name="NoteButton" Grid.Column="3" Style="{DynamicResource IconButtonStyle}" Width="28" Height="28"
+                            <WrapPanel VerticalAlignment="Center">
+                                <TextBlock Margin="0,0,8,0" Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                <ContentPresenter x:Name="ResultChip" VerticalAlignment="Center"
+                                                  Content="{Binding Result}" ContentTemplate="{DynamicResource StatusChipTemplate}" />
+                            </WrapPanel>
+                            <Button x:Name="NoteButton" Grid.Column="1" Style="{DynamicResource IconButtonStyle}" Width="28" Height="28" VerticalAlignment="Top"
                                     ToolTip="{x:Static res:Resources.Run_OpenNote}" Click="TimelineNote_Click">
                                 <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="13" />
                             </Button>
-                            <Button x:Name="FolderButton" Grid.Column="4" Style="{DynamicResource IconButtonStyle}" Width="28" Height="28"
+                            <Button x:Name="FolderButton" Grid.Column="2" Style="{DynamicResource IconButtonStyle}" Width="28" Height="28" VerticalAlignment="Top"
                                     ToolTip="{x:Static res:Resources.Run_OpenFolder}" Click="TimelineFolder_Click">
                                 <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="13" />
                             </Button>
@@ -1120,7 +1121,14 @@
                         <RowDefinition Height="Auto" MaxHeight="340" />
                         <RowDefinition Height="*" MinHeight="180" />
                     </Grid.RowDefinitions>
-                    <Border Grid.Row="0" Margin="0,0,0,14" Padding="14,10" TextElement.FontWeight="Normal"
+                    <!-- Solda kısa notlar, sağda yapılacaklar: ikisi de görünür, her kart kendi içinde kayar -->
+                    <Grid Grid.Row="0" Margin="0,0,0,14" TextElement.FontWeight="Normal">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="14" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" Padding="14,10"
                             Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
                             CornerRadius="{DynamicResource OverlayCornerRadius}">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -1147,11 +1155,17 @@
                                     </Button>
                                 </StackPanel>
                             </Grid>
-                            <ScrollViewer MaxHeight="150" VerticalScrollBarVisibility="Auto">
-                                <ItemsControl ItemsSource="{Binding Detail.ProjectNotes}" ItemTemplate="{StaticResource HistoryTemplate}" />
-                            </ScrollViewer>
+                            <ItemsControl ItemsSource="{Binding Detail.ProjectNotes}" ItemTemplate="{StaticResource HistoryTemplate}" />
+                            <ContentControl Content="{Binding}" ContentTemplate="{StaticResource MentionsCardTemplate}" Focusable="False" />
+                        </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                    <Border Grid.Column="2" Padding="14,10"
+                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                            CornerRadius="{DynamicResource OverlayCornerRadius}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <!-- Projenin bütün stoklarındaki açık işler (aç / kapa) -->
-                            <Expander Margin="0,10,0,0" IsExpanded="{Binding Detail.OpenTasksExpanded, Mode=TwoWay}">
+                            <Expander IsExpanded="{Binding Detail.OpenTasksExpanded, Mode=TwoWay}">
                                 <Expander.Header>
                                     <StackPanel Orientation="Horizontal"><controls:FontIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" /><TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding Detail.OpenTasksHeader}" /></StackPanel>
                                 </Expander.Header>
@@ -1163,7 +1177,7 @@
                                                         <ColumnDefinition Width="Auto" />
                                                     </Grid.ColumnDefinitions>
                                                     <TextBox Text="{Binding NewTaskText, UpdateSourceTrigger=PropertyChanged}" KeyDown="TaskBox_KeyDown" local:MentionAssist.Mode="link"
-                                                             controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Task_Placeholder}" />
+                                                             controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Task_Placeholder}" ToolTip="{x:Static res:Resources.Task_InputHint}" />
                                                     <TextBox Grid.Column="1" Width="110" Margin="6,0,0,0" Text="{Binding NewTaskDueText, UpdateSourceTrigger=PropertyChanged}" KeyDown="TaskBox_KeyDown"
                                                              controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Task_DuePlaceholder}" ToolTip="{x:Static res:Resources.Date_Placeholder}" />
                                                     <Button Grid.Column="2" Margin="6,0,0,0" Style="{DynamicResource AccentButtonStyle}" Click="TaskAdd_Click">
@@ -1185,15 +1199,12 @@
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
                                                 </ItemsControl>
-                                <ScrollViewer MaxHeight="190" VerticalScrollBarVisibility="Auto">
-                                    <ItemsControl ItemsSource="{Binding Detail.OpenTasks}" ItemTemplate="{Binding ItemTemplate, ElementName=OpenTaskList}" />
-                                </ScrollViewer>
+                                <ItemsControl ItemsSource="{Binding Detail.OpenTasks}" ItemTemplate="{Binding ItemTemplate, ElementName=OpenTaskList}" />
                                 </StackPanel>
                             </Expander>
-                            <ContentControl Content="{Binding}" ContentTemplate="{StaticResource MentionsCardTemplate}" Focusable="False" />
-                        </StackPanel>
                         </ScrollViewer>
                     </Border>
+                    </Grid>
                 <DockPanel Grid.Row="1">
                     <!-- Stok tablosu sÃ¼zgeci: metin, durum -->
                     <WrapPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8" TextElement.FontWeight="Normal">
@@ -1297,13 +1308,26 @@
                             CornerRadius="{DynamicResource OverlayCornerRadius}">
                         <StackPanel>
                             <TextBlock Style="{StaticResource PaneLabel}" Text="{Binding Inventory.PropertiesHeader}" />
+                            <!-- Yalnız dolu alanlar görünür (başlıkta "2 / 6 dolu"); hiçbiri dolu değilse tek satır ipucu -->
                             <ItemsControl x:Name="PropertyList" ItemsSource="{Binding Inventory.Properties}" ItemTemplate="{StaticResource FactCellTemplate}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Columns="2" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemContainerStyle>
+                                    <Style TargetType="ContentPresenter">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsEmpty}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ItemsControl.ItemContainerStyle>
                             </ItemsControl>
+                            <TextBlock Margin="0,2,0,0" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}"
+                                       Visibility="{Binding Inventory.HasNoFilledProperties, Converter={StaticResource BoolToVis}}"
+                                       Text="{x:Static res:Resources.Inv_PropertiesEmpty}" />
                         </StackPanel>
                     </Border>
 
@@ -1338,14 +1362,14 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
-                                <Button Margin="0,0,6,6" Padding="10,5" Click="RecordNote_Click"
+                                <Button Margin="0,0,6,6" Padding="10,5" VerticalAlignment="Top" Click="RecordNote_Click"
                                         Visibility="{Binding Inventory.HasNote, Converter={StaticResource BoolToVis}}">
                                     <StackPanel Orientation="Horizontal">
                                         <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="13" VerticalAlignment="Center" />
                                         <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Inv_OpenNote}" VerticalAlignment="Center" />
                                     </StackPanel>
                                 </Button>
-                                <Button Margin="0,0,6,6" Padding="10,5" Click="RecordCreateNote_Click"
+                                <Button Margin="0,0,6,6" Padding="10,5" VerticalAlignment="Top" Click="RecordCreateNote_Click"
                                         Visibility="{Binding Inventory.HasNote, Converter={StaticResource InverseBoolToVis}}">
                                     <StackPanel Orientation="Horizontal">
                                         <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" VerticalAlignment="Center" />
@@ -1502,10 +1526,23 @@
                         </TabItem.Header>
                         <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,14,0,0" TextElement.FontWeight="Normal">
                             <StackPanel>
-                                <!-- Kapak: fotoğraf + not -->
-                                <Border Margin="0,0,0,16" Padding="12" DataContext="{Binding Detail.Cover}"
-                                        Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
-                                        CornerRadius="{DynamicResource OverlayCornerRadius}">
+                                <!-- Kapak: fotoğraf + not. Kapak fotoğrafı yoksa çerçeve çizilmez, yalnız düğme satırı kalır. -->
+                                <Border Margin="0,0,0,16" DataContext="{Binding Detail.Cover}" CornerRadius="{DynamicResource OverlayCornerRadius}">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Padding" Value="12" />
+                                            <Setter Property="Background" Value="{DynamicResource LayerBrush}" />
+                                            <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+                                            <Setter Property="BorderThickness" Value="1" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding HasCover}" Value="False">
+                                                    <Setter Property="Padding" Value="0" />
+                                                    <Setter Property="Background" Value="Transparent" />
+                                                    <Setter Property="BorderThickness" Value="0" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
@@ -1615,7 +1652,7 @@
                                                         <ColumnDefinition Width="Auto" />
                                                     </Grid.ColumnDefinitions>
                                                     <TextBox Text="{Binding NewTaskText, UpdateSourceTrigger=PropertyChanged}" KeyDown="TaskBox_KeyDown" local:MentionAssist.Mode="link"
-                                                             controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Task_Placeholder}" />
+                                                             controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Task_Placeholder}" ToolTip="{x:Static res:Resources.Task_InputHint}" />
                                                     <TextBox Grid.Column="1" Width="110" Margin="6,0,0,0" Text="{Binding NewTaskDueText, UpdateSourceTrigger=PropertyChanged}" KeyDown="TaskBox_KeyDown"
                                                              controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Task_DuePlaceholder}" ToolTip="{x:Static res:Resources.Date_Placeholder}" />
                                                     <Button Grid.Column="2" Margin="6,0,0,0" Style="{DynamicResource AccentButtonStyle}" Click="TaskAdd_Click">

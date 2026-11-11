@@ -364,6 +364,12 @@ namespace Pusula.Wpf.ViewModels
             }
         }
 
+        /// <summary>Alanlar var ama hiçbiri doldurulmamış: kartta boş satırlar yerine tek bir ipucu görünür.</summary>
+        public bool HasNoFilledProperties
+        {
+            get { return Properties.Count > 0 && Properties.All(p => p.IsEmpty); }
+        }
+
         private string propertiesSubType = string.Empty;
 
         /// <summary>Geçmiş (yeniden eskiye).</summary>
@@ -774,6 +780,7 @@ namespace Pusula.Wpf.ViewModels
 
             propertiesSubType = record.SubType;
             OnPropertyChanged(nameof(HasProperties));
+            OnPropertyChanged(nameof(HasNoFilledProperties));
             OnPropertyChanged(nameof(PropertiesHeader));
 
             // Geçmiş: durum olayları ve kısa notlar, yeniden eskiye (aynı gün: not olaydan sonra yazılmış sayılır).

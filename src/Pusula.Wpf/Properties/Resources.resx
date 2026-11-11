@@ -685,13 +685,13 @@
     <value>Türler</value>
   </data>
   <data name="Types_List" xml:space="preserve">
-    <value>Envanter türleri</value>
+    <value>Türler</value>
   </data>
   <data name="Types_Add" xml:space="preserve">
     <value>Tür ekle</value>
   </data>
   <data name="Types_ListHint" xml:space="preserve">
-    <value>Her tür stok sayfasında kendi sekmesinde görünür. Stok ve proje türleri burada düzenlenmez.</value>
+    <value>Envanter türleri (kablo, jig …) stok sayfasında kendi sekmesinde görünür; Kişi türü kişi listesini tutar. Stok ve proje türleri burada düzenlenmez.</value>
   </data>
   <data name="Types_NewName" xml:space="preserve">
     <value>Yeni tür</value>
@@ -1723,7 +1723,7 @@
     <value>Ayrıldı</value>
   </data>
   <data name="Task_Placeholder" xml:space="preserve">
-    <value>Yapılacak iş yaz… @kişi, @numara, #etiket</value>
+    <value>Yapılacak iş yaz…</value>
   </data>
   <data name="Task_DuePlaceholder" xml:space="preserve">
     <value>Son tarih</value>
@@ -1763,5 +1763,11 @@
   </data>
   <data name="Task_Hint" xml:space="preserve">
     <value>Kutuyu işaretleyince iş biter (notta - [x] ve ✅ tarih); Bitenler&apos;de kutuyu kaldırınca yeniden açılır. Satıra tıklayınca not açılır.</value>
+  </data>
+  <data name="Task_InputHint" xml:space="preserve">
+    <value>@ ile kişi ya da numara bağlanır, # ile etiket eklenir. Son tarih: gg.aa.yyyy</value>
+  </data>
+  <data name="Inv_PropertiesEmpty" xml:space="preserve">
+    <value>Henüz doldurulmadı. Sağ üstteki ⋯ menüsünden Düzenle ile doldurulur.</value>
   </data>
 </root>

@@ -1994,6 +1994,12 @@ namespace Pusula.Wpf.Properties
         /// <summary>Yapılacaklar: açıklama.</summary>
         public static string Task_Hint { get { return Get("Task_Hint"); } }
 
+        /// <summary>Yapılacak iş kutusunun ipucu</summary>
+        public static string Task_InputHint { get { return Get("Task_InputHint"); } }
+
+        /// <summary>Özellikler kartı: hiçbir alan dolu değil</summary>
+        public static string Inv_PropertiesEmpty { get { return Get("Inv_PropertiesEmpty"); } }
+
         #endregion
     }
 }
