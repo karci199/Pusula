@@ -136,7 +136,7 @@ namespace Pusula.Wpf
             foreach (var group in viewModel.Detail.InventoryGroups)
             {
                 var header = new StackPanel { Orientation = Orientation.Horizontal };
-                header.Children.Add(new FontIcon { Glyph = TreeNodeViewModel.GlyphOf(group.Type.Icon), FontSize = 13, Foreground = BrushOf(group.Type.Color), VerticalAlignment = VerticalAlignment.Center });
+                header.Children.Add(new AppIcon { Glyph = TreeNodeViewModel.GlyphOf(group.Type.Icon), FontSize = 13, Foreground = BrushOf(group.Type.Color), VerticalAlignment = VerticalAlignment.Center });
                 header.Children.Add(new TextBlock { Text = group.Header, Margin = new Thickness(7, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center });
                 var tab = new TabItem
                 {
@@ -233,7 +233,7 @@ namespace Pusula.Wpf
             };
             if (string.Equals(status.Name, current, StringComparison.OrdinalIgnoreCase))
             {
-                item.Icon = new FontIcon { Glyph = AppIcons.Check };
+                item.Icon = new AppIcon { Glyph = AppIcons.Check };
             }
 
             item.Click += (s, args) =>
@@ -689,7 +689,7 @@ namespace Pusula.Wpf
                 {
                     Header = type.Name.Replace("_", "__"),
                     Tag = "inventory",
-                    Icon = new FontIcon { Glyph = TreeNodeViewModel.GlyphOf(type.Icon), Foreground = BrushOf(type.Color) },
+                    Icon = new AppIcon { Glyph = TreeNodeViewModel.GlyphOf(type.Icon), Foreground = BrushOf(type.Color) },
                 };
                 var chosen = type;
                 item.Click += (s, args) => viewModel.OpenNewInventory(chosen);
@@ -716,7 +716,7 @@ namespace Pusula.Wpf
             }
 
             var menu = new ContextMenu { PlacementTarget = (UIElement)sender, Placement = PlacementMode.Bottom };
-            var copy = new MenuItem { Header = Properties.Resources.Header_CopyPath, Icon = new FontIcon { Glyph = AppIcons.Copy } };
+            var copy = new MenuItem { Header = Properties.Resources.Header_CopyPath, Icon = new AppIcon { Glyph = AppIcons.Copy } };
             copy.Click += (s, args) =>
             {
                 try
@@ -732,11 +732,11 @@ namespace Pusula.Wpf
             if (viewModel.CanEditSelected)
             {
                 menu.Items.Add(new Separator());
-                var edit = new MenuItem { Header = Properties.Resources.Menu_Edit, Icon = new FontIcon { Glyph = AppIcons.Edit } };
+                var edit = new MenuItem { Header = Properties.Resources.Menu_Edit, Icon = new AppIcon { Glyph = AppIcons.Edit } };
                 edit.Click += NodeEdit_Click;
-                var untrack = new MenuItem { Header = Properties.Resources.Menu_Untrack, Icon = new FontIcon { Glyph = AppIcons.Remove } };
+                var untrack = new MenuItem { Header = Properties.Resources.Menu_Untrack, Icon = new AppIcon { Glyph = AppIcons.Remove } };
                 untrack.Click += NodeUntrack_Click;
-                var delete = new MenuItem { Header = Properties.Resources.Menu_Delete, Icon = new FontIcon { Glyph = AppIcons.Delete } };
+                var delete = new MenuItem { Header = Properties.Resources.Menu_Delete, Icon = new AppIcon { Glyph = AppIcons.Delete } };
                 delete.Click += NodeDelete_Click;
                 menu.Items.Add(edit);
                 menu.Items.Add(untrack);
@@ -819,7 +819,7 @@ namespace Pusula.Wpf
             var item = new MenuItem { Header = status + "…" };
             if (string.Equals(status, current, StringComparison.OrdinalIgnoreCase))
             {
-                item.Icon = new FontIcon { Glyph = AppIcons.Check };
+                item.Icon = new AppIcon { Glyph = AppIcons.Check };
             }
 
             item.Click += (s, args) =>

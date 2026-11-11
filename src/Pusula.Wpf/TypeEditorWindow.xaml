@@ -77,7 +77,7 @@
                         <TextBlock Style="{StaticResource SectionLabel}" Margin="0" Text="{x:Static res:Resources.Types_List}" />
                         <Button HorizontalAlignment="Right" Command="{Binding AddTypeCommand}">
                             <StackPanel Orientation="Horizontal">
-                                <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
+                                <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
                                 <TextBlock Text="{x:Static res:Resources.Types_Add}" Margin="6,0,0,0" />
                             </StackPanel>
                         </Button>
@@ -90,7 +90,7 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <controls:FontIcon Glyph="{Binding Glyph}" Foreground="{Binding Color}" FontSize="16" VerticalAlignment="Center" />
+                                    <local:AppIcon Glyph="{Binding Glyph}" Foreground="{Binding Color}" FontSize="16" VerticalAlignment="Center" />
                                     <TextBlock Margin="10,0,0,0" Text="{Binding Name}" VerticalAlignment="Center" />
                                 </StackPanel>
                             </DataTemplate>
@@ -131,7 +131,7 @@
                                           SelectedValuePath="Hex" SelectedValue="{Binding Icon, Mode=TwoWay}">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
-                                            <controls:FontIcon Glyph="{Binding Glyph}" FontSize="16" />
+                                            <local:AppIcon Glyph="{Binding Glyph}" FontSize="16" />
                                         </DataTemplate>
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>

@@ -61,7 +61,7 @@
                            Text="{x:Static res:Resources.Editor_SubFoldersOptional}" />
                 <Button HorizontalAlignment="Right" Command="{Binding Working.AddSubFolderCommand}">
                     <StackPanel Orientation="Horizontal">
-                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
+                        <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
                         <TextBlock Text="{x:Static res:Resources.Editor_AddSubFolder}" Margin="6,0,0,0" />
                     </StackPanel>
                 </Button>
@@ -81,19 +81,19 @@
                     <TreeView.ItemTemplate>
                         <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                             <StackPanel Orientation="Horizontal">
-                                <controls:FontIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="13"
+                                <local:AppIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="13"
                                                    Foreground="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" />
                                 <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="190" Margin="8,0,0,0" />
                                 <Button Style="{DynamicResource IconButtonStyle}"
                                         Command="{Binding AddChildCommand}"
                                         ToolTip="{x:Static res:Resources.Editor_AddChild}"
                                         Margin="4,0,0,0">
-                                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" />
+                                    <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" />
                                 </Button>
                                 <Button Style="{DynamicResource IconButtonStyle}"
                                         Command="{Binding DeleteCommand}"
                                         ToolTip="{x:Static res:Resources.Editor_Delete}">
-                                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Delete}" FontSize="12" />
+                                    <local:AppIcon Glyph="{x:Static local:AppIcons.Delete}" FontSize="12" />
                                 </Button>
                             </StackPanel>
                         </HierarchicalDataTemplate>

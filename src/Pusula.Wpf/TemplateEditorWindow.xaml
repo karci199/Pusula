@@ -51,7 +51,7 @@
                         <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Editor_Templates}" />
                         <Button HorizontalAlignment="Right" Command="{Binding AddTemplateCommand}">
                             <StackPanel Orientation="Horizontal">
-                                <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
+                                <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
                                 <TextBlock Text="{x:Static res:Resources.Editor_AddTemplate}" Margin="6,0,0,0" />
                             </StackPanel>
                         </Button>
@@ -69,7 +69,7 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <controls:FontIcon Grid.Column="0" Glyph="{x:Static local:AppIcons.Template}" FontSize="14"
+                                    <local:AppIcon Grid.Column="0" Glyph="{x:Static local:AppIcons.Template}" FontSize="14"
                                                        Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
                                     <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
                                     <TextBlock Grid.Column="2" Margin="8,0,0,0"
@@ -124,7 +124,7 @@
                     <Button Grid.Column="1" Margin="12,0,0,0"
                             Command="{Binding DataContext.DeleteTemplateCommand, RelativeSource={RelativeSource AncestorType=Window}}">
                         <StackPanel Orientation="Horizontal">
-                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Delete}" FontSize="12" VerticalAlignment="Center" />
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.Delete}" FontSize="12" VerticalAlignment="Center" />
                             <TextBlock Text="{x:Static res:Resources.Editor_DeleteTemplate}" Margin="6,0,0,0" />
                         </StackPanel>
                     </Button>
@@ -136,7 +136,7 @@
                     <controls:DropDownButton HorizontalAlignment="Right"
                                              Menu="{StaticResource AddModuleMenu}">
                         <StackPanel Orientation="Horizontal">
-                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
                             <TextBlock Text="{x:Static res:Resources.Editor_AddModule}" Margin="6,0,0,0" />
                         </StackPanel>
                     </controls:DropDownButton>
@@ -182,14 +182,14 @@
                                             Style="{DynamicResource IconButtonStyle}"
                                             Click="EditModule_Click" Width="28" Height="28"
                                             ToolTip="{x:Static res:Resources.Editor_EditModule}">
-                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Edit}" FontSize="12" />
+                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Edit}" FontSize="12" />
                                     </Button>
                                     <Button Grid.Column="4"
                                             Style="{DynamicResource IconButtonStyle}"
                                             Command="{Binding DataContext.RemoveModuleCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                             CommandParameter="{Binding}" Width="28" Height="28"
                                             ToolTip="{x:Static res:Resources.Editor_RemoveFromTemplate}">
-                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Remove}" FontSize="12" />
+                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Remove}" FontSize="12" />
                                     </Button>
                                 </Grid>
                             </DataTemplate>
@@ -231,7 +231,7 @@
                                 <TreeView.ItemTemplate>
                                     <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                                         <StackPanel Orientation="Horizontal">
-                                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="13"
+                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="13"
                                                                Foreground="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" />
                                             <TextBlock Text="{Binding Name}" Margin="8,0,0,0" FontFamily="Consolas" VerticalAlignment="Center" />
                                         </StackPanel>

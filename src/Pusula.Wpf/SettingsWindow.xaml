@@ -79,31 +79,31 @@
             <WrapPanel IsEnabled="{Binding HasRoot}">
                 <Button Margin="0,0,8,8" Click="Templates_Click">
                     <StackPanel Orientation="Horizontal">
-                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Template}" FontSize="14" />
+                        <local:AppIcon Glyph="{x:Static local:AppIcons.Template}" FontSize="14" />
                         <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Button_EditTemplates}" />
                     </StackPanel>
                 </Button>
                 <Button Margin="0,0,8,8" Click="Types_Click">
                     <StackPanel Orientation="Horizontal">
-                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Inventory}" FontSize="14" />
+                        <local:AppIcon Glyph="{x:Static local:AppIcons.Inventory}" FontSize="14" />
                         <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Button_EditTypes}" />
                     </StackPanel>
                 </Button>
                 <Button Margin="0,0,8,8" Click="Trash_Click">
                     <StackPanel Orientation="Horizontal">
-                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Delete}" FontSize="14" />
+                        <local:AppIcon Glyph="{x:Static local:AppIcons.Delete}" FontSize="14" />
                         <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Settings_Trash}" />
                     </StackPanel>
                 </Button>
                 <Button Margin="0,0,8,8" Click="ResetLayout_Click" ToolTip="{x:Static res:Resources.Settings_ResetLayoutHint}">
                     <StackPanel Orientation="Horizontal">
-                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Refresh}" FontSize="14" />
+                        <local:AppIcon Glyph="{x:Static local:AppIcons.Refresh}" FontSize="14" />
                         <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Settings_ResetLayout}" />
                     </StackPanel>
                 </Button>
                 <Button Margin="0,0,8,8" Click="FileTypes_Click">
                     <StackPanel Orientation="Horizontal">
-                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
+                        <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
                         <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Button_EditFileTypes}" />
                     </StackPanel>
                 </Button>

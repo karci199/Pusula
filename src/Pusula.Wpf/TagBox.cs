@@ -189,7 +189,7 @@ namespace Pusula.Wpf
         {
             var text = new TextBlock { Text = "#" + tag, VerticalAlignment = VerticalAlignment.Center };
             text.SetResourceReference(TextBlock.ForegroundProperty, "AccentTextFillColorPrimaryBrush");
-            var remove = new Button { Content = new FontIcon { Glyph = "", FontSize = 9 }, Padding = new Thickness(3), Margin = new Thickness(4, 0, 0, 0), MinWidth = 0, MinHeight = 0, Focusable = false, Cursor = Cursors.Hand };
+            var remove = new Button { Content = new AppIcon { Glyph = "", FontSize = 9 }, Padding = new Thickness(3), Margin = new Thickness(4, 0, 0, 0), MinWidth = 0, MinHeight = 0, Focusable = false, Cursor = Cursors.Hand };
             remove.SetResourceReference(StyleProperty, "SubtleButtonStyle");
             remove.Click += (s, e) =>
             {

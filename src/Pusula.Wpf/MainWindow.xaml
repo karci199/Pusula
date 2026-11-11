@@ -75,20 +75,20 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <controls:FontIcon Glyph="{Binding Glyph}" Foreground="{Binding Color}" FontSize="16" VerticalAlignment="Center" />
+                    <local:AppIcon Glyph="{Binding Glyph}" Foreground="{Binding Color}" FontSize="16" VerticalAlignment="Center" />
                     <TextBlock Margin="10,0,0,0" Text="{Binding Summary}" VerticalAlignment="Center"
                                Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button Tag="{Binding Type}" Click="StockInvAdd_Click" ToolTip="{x:Static res:Resources.StockInv_AddHint}">
                         <StackPanel Orientation="Horizontal">
-                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Inventory}" FontSize="14" />
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.Inventory}" FontSize="14" />
                             <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.StockInv_AddExisting}" />
                         </StackPanel>
                     </Button>
                     <Button Margin="6,0,0,0" Tag="{Binding Type}" Click="StockInvNew_Click" ToolTip="{x:Static res:Resources.StockInv_NewHint}">
                         <StackPanel Orientation="Horizontal">
-                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="14" />
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="14" />
                             <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.StockInv_New}" />
                         </StackPanel>
                     </Button>
@@ -174,7 +174,7 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <controls:FontIcon x:Name="Icon" Glyph="{Binding Glyph}" FontSize="16" Margin="0,1,10,0" VerticalAlignment="Top"
+                    <local:AppIcon x:Name="Icon" Glyph="{Binding Glyph}" FontSize="16" Margin="0,1,10,0" VerticalAlignment="Top"
                                        Foreground="{DynamicResource TextSecondaryBrush}" />
                     <StackPanel Grid.Column="1">
                         <TextBlock x:Name="Title" Text="{Binding Title}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
@@ -257,11 +257,11 @@
                             </WrapPanel>
                             <Button x:Name="NoteButton" Grid.Column="1" Style="{DynamicResource IconButtonStyle}" Width="28" Height="28" VerticalAlignment="Top"
                                     ToolTip="{x:Static res:Resources.Run_OpenNote}" Click="TimelineNote_Click">
-                                <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="13" />
+                                <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="13" />
                             </Button>
                             <Button x:Name="FolderButton" Grid.Column="2" Style="{DynamicResource IconButtonStyle}" Width="28" Height="28" VerticalAlignment="Top"
                                     ToolTip="{x:Static res:Resources.Run_OpenFolder}" Click="TimelineFolder_Click">
-                                <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="13" />
+                                <local:AppIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="13" />
                             </Button>
                         </Grid>
                         <TextBlock Text="{Binding Summary}" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextSecondaryBrush}" />
@@ -430,17 +430,17 @@
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
                         <Button Style="{DynamicResource IconButtonStyle}" Tag="{Binding Path}" Click="PlanOpen_Click" ToolTip="{x:Static res:Resources.Plan_Open}">
-                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
                         </Button>
                         <Button Style="{DynamicResource IconButtonStyle}" Tag="{Binding Folder}" Click="PlanFolder_Click" ToolTip="{x:Static res:Resources.Menu_OpenFolder}">
-                            <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" />
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" />
                         </Button>
                     </StackPanel>
                 </Grid>
             </Border>
         </DataTemplate>
 
-        <Style x:Key="KindIconStyle" TargetType="controls:FontIcon">
+        <Style x:Key="KindIconStyle" TargetType="local:AppIcon">
             <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Kind}" Value="{x:Static core:FolderKind.Project}">
@@ -570,7 +570,7 @@
                       Visibility="{Binding HasMentions, Converter={StaticResource BoolToVis}}">
                 <Expander.Header>
                     <StackPanel Orientation="Horizontal">
-                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Link}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                        <local:AppIcon Glyph="{x:Static local:AppIcons.Link}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
                         <TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding MentionsHeader}" />
                     </StackPanel>
                 </Expander.Header>
@@ -585,7 +585,7 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <controls:FontIcon x:Name="Kind" Glyph="{x:Static local:AppIcons.Link}" FontSize="12" Margin="0,3,10,0" VerticalAlignment="Top"
+                                    <local:AppIcon x:Name="Kind" Glyph="{x:Static local:AppIcons.Link}" FontSize="12" Margin="0,3,10,0" VerticalAlignment="Top"
                                                        Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" ToolTip="{x:Static res:Resources.Mentions_Link}" />
                                     <StackPanel Grid.Column="1">
                                         <TextBlock FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Text="{Binding Source}" />
@@ -612,12 +612,12 @@
         <ContextMenu x:Key="RunMenu">
             <MenuItem Header="{x:Static res:Resources.Run_OpenNote}" Click="RunMenuNote_Click">
                 <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Run_OpenFolder}" Click="RunMenuFolder_Click">
                 <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.OpenFolder}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Run_OpenRaw}" Click="RunMenuRaw_Click" />
@@ -625,7 +625,7 @@
             <Separator />
             <MenuItem Header="{x:Static res:Resources.Run_Analysis}" Click="RunMenuAnalysis_Click">
                 <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Edit}" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Edit}" />
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
@@ -654,7 +654,7 @@
                         <Button Margin="6,0,0,0" Style="{DynamicResource IconButtonStyle}" Width="24" Height="24" Tag="{Binding NotePath}"
                                 Click="HistoryNote_Click" ToolTip="{x:Static res:Resources.Run_OpenNote}"
                                 Visibility="{Binding HasNote, Converter={StaticResource BoolToVis}}">
-                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="12" />
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="12" />
                         </Button>
                     </StackPanel>
                     <TextBlock Text="{Binding Detail}" TextWrapping="Wrap" Margin="0,3,0,0" Foreground="{DynamicResource TextSecondaryBrush}"
@@ -690,14 +690,14 @@
                       Command="{Binding NewProjectCommand}"
                       InputGestureText="{x:Static res:Resources.Gesture_NewProject}">
                 <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Project}" Foreground="{DynamicResource Pusula.ProjectIconBrush}" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Project}" Foreground="{DynamicResource Pusula.ProjectIconBrush}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="{Binding AddStockMenuText}"
                       Command="{Binding NewStockCommand}"
                       InputGestureText="{x:Static res:Resources.Gesture_NewStock}">
                 <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Stock}" Foreground="{DynamicResource AccentBrush}" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Stock}" Foreground="{DynamicResource AccentBrush}" />
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
@@ -716,62 +716,62 @@
         <ContextMenu x:Key="NodeMenu">
             <MenuItem Header="{Binding NewStockMenuText}" Command="{Binding NewStockCommand}">
                 <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Stock}" Foreground="{DynamicResource AccentBrush}" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Stock}" Foreground="{DynamicResource AccentBrush}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Menu_MarkAsProject}"
                       Command="{Binding MarkAsProjectCommand}"
                       Visibility="{Binding CanMarkAsProject, Converter={StaticResource BoolToVis}}">
                 <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Project}" Foreground="{DynamicResource Pusula.ProjectIconBrush}" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Project}" Foreground="{DynamicResource Pusula.ProjectIconBrush}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="{Binding MarkInventoryMenuText}"
                       Command="{Binding MarkAsInventoryCommand}"
                       Visibility="{Binding CanMarkAsInventory, Converter={StaticResource BoolToVis}}">
                 <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Check}" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Check}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Menu_MarkAsStock}"
                       Command="{Binding MarkAsStockCommand}"
                       Visibility="{Binding CanMarkAsStock, Converter={StaticResource BoolToVis}}">
                 <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Stock}" Foreground="{DynamicResource AccentBrush}" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Stock}" Foreground="{DynamicResource AccentBrush}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Menu_Edit}" Click="NodeEdit_Click"
                       Visibility="{Binding CanEditSelected, Converter={StaticResource BoolToVis}}">
                 <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Edit}" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Edit}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Menu_Untrack}" Click="NodeUntrack_Click"
                       Visibility="{Binding CanEditSelected, Converter={StaticResource BoolToVis}}">
                 <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Remove}" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Remove}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Menu_Delete}" Click="NodeDelete_Click"
                       Visibility="{Binding CanEditSelected, Converter={StaticResource BoolToVis}}">
                 <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Delete}" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Delete}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Menu_AddModules}" Command="{Binding AddModulesCommand}">
                 <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Menu_OpenFolder}" Command="{Binding OpenFolderCommand}">
                 <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.OpenFolder}" />
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
             <MenuItem Header="{x:Static res:Resources.Menu_Refresh}" Command="{Binding RefreshCommand}" InputGestureText="{x:Static res:Resources.Gesture_Refresh}">
                 <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Refresh}" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Refresh}" />
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
@@ -781,12 +781,12 @@
                       Command="{Binding NewProjectCommand}"
                       InputGestureText="{x:Static res:Resources.Gesture_NewProject}">
                 <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Project}" Foreground="{DynamicResource Pusula.ProjectIconBrush}" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Project}" Foreground="{DynamicResource Pusula.ProjectIconBrush}" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Menu_Refresh}" Command="{Binding RefreshCommand}" InputGestureText="{x:Static res:Resources.Gesture_Refresh}">
                 <MenuItem.Icon>
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Refresh}" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Refresh}" />
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
@@ -850,7 +850,7 @@
                                 Style="{DynamicResource IconButtonStyle}"
                                 Click="AddButton_Click"
                                 ToolTip="{x:Static res:Resources.Button_Add}">
-                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="15" Foreground="{DynamicResource AccentBrush}" />
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="15" Foreground="{DynamicResource AccentBrush}" />
                         </Button>
                         <Button Grid.Column="2"
                                 Command="{Binding RefreshCommand}"
@@ -865,23 +865,23 @@
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
-                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Refresh}" FontSize="14">
-                                <controls:FontIcon.Style>
-                                    <Style TargetType="controls:FontIcon">
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.Refresh}" FontSize="14">
+                                <local:AppIcon.Style>
+                                    <Style TargetType="local:AppIcon">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsDiskChanged}" Value="True">
                                                 <Setter Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </controls:FontIcon.Style>
-                            </controls:FontIcon>
+                                </local:AppIcon.Style>
+                            </local:AppIcon>
                         </Button>
                         <Button Grid.Column="3"
                                 Style="{DynamicResource IconButtonStyle}"
                                 Click="Settings_Click"
                                 ToolTip="{x:Static res:Resources.Button_Settings}">
-                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Settings}" FontSize="14" />
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.Settings}" FontSize="14" />
                         </Button>
                     </Grid>
 
@@ -924,7 +924,7 @@
                             <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                                 <StackPanel>
                                     <StackPanel x:Name="Row" Orientation="Horizontal" Margin="0,1" ToolTip="{Binding ToolTipText}">
-                                        <controls:FontIcon x:Name="Icon" Glyph="{Binding Glyph}" FontSize="15"
+                                        <local:AppIcon x:Name="Icon" Glyph="{Binding Glyph}" FontSize="15"
                                                            Style="{StaticResource KindIconStyle}"
                                                            VerticalAlignment="Center" />
                                         <TextBlock x:Name="Title" Text="{Binding Title}" Margin="9,0,0,0" VerticalAlignment="Center" />
@@ -1020,7 +1020,7 @@
                 </ScrollViewer.Resources>
                 <StackPanel MaxWidth="760" Margin="32,40,32,24" TextElement.FontWeight="Normal">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Project}" FontSize="28" Foreground="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" />
+                        <local:AppIcon Glyph="{x:Static local:AppIcons.Project}" FontSize="28" Foreground="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" />
                         <TextBlock Margin="12,0,0,0" Style="{DynamicResource SubtitleTextBlockStyle}" VerticalAlignment="Center" Text="{x:Static res:Resources.Content_EmptyTitle}" />
                     </StackPanel>
                     <TextBlock Margin="0,6,0,24" HorizontalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Content_EmptyHint}" />
@@ -1038,7 +1038,7 @@
                                 <DataTemplate>
                                     <Button Margin="0,0,8,8" Padding="12,7" Click="HomeRecent_Click" ToolTip="{Binding Path}">
                                         <StackPanel Orientation="Horizontal">
-                                            <controls:FontIcon Glyph="{Binding Glyph}" FontSize="14" Style="{StaticResource KindIconStyle}" VerticalAlignment="Center" />
+                                            <local:AppIcon Glyph="{Binding Glyph}" FontSize="14" Style="{StaticResource KindIconStyle}" VerticalAlignment="Center" />
                                             <TextBlock Margin="8,0,0,0" Text="{Binding Title}" VerticalAlignment="Center" />
                                             <TextBlock Margin="8,0,0,0" MaxWidth="160" Text="{Binding Subtitle}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
                                                        Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" />
@@ -1058,14 +1058,14 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" Visibility="{Binding HasHomeLateTasks, Converter={StaticResource BoolToVis}}">
                             <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                                <controls:FontIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="15" Foreground="{DynamicResource SystemFillColorCriticalBrush}" VerticalAlignment="Center" />
+                                <local:AppIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="15" Foreground="{DynamicResource SystemFillColorCriticalBrush}" VerticalAlignment="Center" />
                                 <TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.Home_Late}" />
                             </StackPanel>
                             <ItemsControl ItemsSource="{Binding HomeLateTasks}" ItemTemplate="{StaticResource HomeTaskTemplate}" />
                         </StackPanel>
                         <StackPanel Grid.Column="2" Visibility="{Binding HasHomeMyTasks, Converter={StaticResource BoolToVis}}">
                             <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                                <controls:FontIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="15" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                                <local:AppIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="15" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
                                 <TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.Home_Mine}" />
                             </StackPanel>
                             <ItemsControl ItemsSource="{Binding HomeMyTasks}" ItemTemplate="{StaticResource HomeTaskTemplate}" />
@@ -1093,7 +1093,7 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <controls:FontIcon Grid.Column="0" Glyph="{Binding Glyph}" FontSize="38"
+                    <local:AppIcon Grid.Column="0" Glyph="{Binding Glyph}" FontSize="38"
                                        Style="{StaticResource KindIconStyle}"
                                        VerticalAlignment="Top" Margin="0,4,20,0" />
                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
@@ -1147,13 +1147,13 @@
                     <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Top">
                         <Button Command="{Binding DataContext.OpenFolderCommand, RelativeSource={RelativeSource AncestorType=Window}}">
                             <StackPanel Orientation="Horizontal">
-                                <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" VerticalAlignment="Center" />
+                                <local:AppIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" VerticalAlignment="Center" />
                                 <TextBlock Text="{x:Static res:Resources.Menu_OpenFolder}" Margin="8,0,0,0" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
                         <Button x:Name="HeaderMoreButton" Margin="6,0,0,0" Style="{DynamicResource IconButtonStyle}" Click="HeaderMore_Click"
                                 ToolTip="{x:Static res:Resources.Header_More}">
-                            <controls:FontIcon Glyph="{x:Static local:AppIcons.More}" FontSize="16" />
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.More}" FontSize="16" />
                         </Button>
                     </StackPanel>
                 </Grid>
@@ -1217,13 +1217,13 @@
                                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                                     <Button Margin="6,0,0,0" Tag="Project" Click="QuickNoteAdd_Click">
                                         <StackPanel Orientation="Horizontal">
-                                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
+                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
                                             <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.QuickNote_Add}" />
                                         </StackPanel>
                                     </Button>
                                     <Button Margin="6,0,0,0" Click="JournalAdd_Click" ToolTip="{x:Static res:Resources.Journal_ButtonHint}">
                                         <StackPanel Orientation="Horizontal">
-                                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" Foreground="{DynamicResource AccentBrush}" />
+                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" Foreground="{DynamicResource AccentBrush}" />
                                             <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Journal_Button}" />
                                         </StackPanel>
                                     </Button>
@@ -1241,7 +1241,7 @@
                             <!-- Projenin bütün stoklarındaki açık işler (aç / kapa) -->
                             <Expander IsExpanded="{Binding Detail.OpenTasksExpanded, Mode=TwoWay}">
                                 <Expander.Header>
-                                    <StackPanel Orientation="Horizontal"><controls:FontIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" /><TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding Detail.OpenTasksHeader}" /></StackPanel>
+                                    <StackPanel Orientation="Horizontal"><local:AppIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" /><TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding Detail.OpenTasksHeader}" /></StackPanel>
                                 </Expander.Header>
                                 <StackPanel>
                                                 <Grid Margin="0,6,0,8">
@@ -1256,7 +1256,7 @@
                                                              controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Task_DuePlaceholder}" ToolTip="{x:Static res:Resources.Date_Placeholder}" />
                                                     <Button Grid.Column="2" Margin="6,0,0,0" Style="{DynamicResource AccentButtonStyle}" Click="TaskAdd_Click">
                                                         <StackPanel Orientation="Horizontal">
-                                                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" />
+                                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" />
                                                             <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Task_Add}" />
                                                         </StackPanel>
                                                     </Button>
@@ -1312,7 +1312,7 @@
                                         <DataTemplate>
                                             <Button Style="{DynamicResource IconButtonStyle}" Tag="{Binding Path}" Click="RowFolder_Click"
                                                     ToolTip="{x:Static res:Resources.Menu_OpenFolder}">
-                                                <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="13" />
+                                                <local:AppIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="13" />
                                             </Button>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
@@ -1422,7 +1422,7 @@
                                         <DataTemplate>
                                             <Button Margin="0,0,6,6" Padding="10,5" Tag="{Binding Path}" Click="RecordFolder_Click" ToolTip="{Binding Path}">
                                                 <StackPanel Orientation="Horizontal">
-                                                    <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                                    <local:AppIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
                                                     <TextBlock Margin="8,0,0,0" Text="{Binding Label}" VerticalAlignment="Center" />
                                                     <TextBlock x:Name="TileValue" Margin="6,0,0,0" Text="{Binding Value}" FontWeight="SemiBold" VerticalAlignment="Center" />
                                                 </StackPanel>
@@ -1439,14 +1439,14 @@
                                 <Button Margin="0,0,6,6" Padding="10,5" VerticalAlignment="Top" Click="RecordNote_Click"
                                         Visibility="{Binding Inventory.HasNote, Converter={StaticResource BoolToVis}}">
                                     <StackPanel Orientation="Horizontal">
-                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="13" VerticalAlignment="Center" />
+                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="13" VerticalAlignment="Center" />
                                         <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Inv_OpenNote}" VerticalAlignment="Center" />
                                     </StackPanel>
                                 </Button>
                                 <Button Margin="0,0,6,6" Padding="10,5" VerticalAlignment="Top" Click="RecordCreateNote_Click"
                                         Visibility="{Binding Inventory.HasNote, Converter={StaticResource InverseBoolToVis}}">
                                     <StackPanel Orientation="Horizontal">
-                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" VerticalAlignment="Center" />
+                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" VerticalAlignment="Center" />
                                         <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Inv_CreateNote}" VerticalAlignment="Center" />
                                     </StackPanel>
                                 </Button>
@@ -1489,7 +1489,7 @@
                                 <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.Inv_History}" VerticalAlignment="Center" />
                                 <Button HorizontalAlignment="Right" Margin="0,-6,0,0" Padding="8,3" Click="JournalAdd_Click" ToolTip="{x:Static res:Resources.Journal_ButtonHint}">
                                     <StackPanel Orientation="Horizontal">
-                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" Foreground="{DynamicResource AccentBrush}" />
+                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" Foreground="{DynamicResource AccentBrush}" />
                                         <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Journal_Button}" />
                                     </StackPanel>
                                 </Button>
@@ -1501,7 +1501,7 @@
                                 <TextBox Tag="Record" KeyDown="QuickNoteBox_KeyDown" local:MentionAssist.Mode="plain" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.QuickNote_Placeholder}" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
                                 <Button Grid.Column="1" Margin="6,0,0,0" Tag="Record" Click="QuickNoteAdd_Click">
                                     <StackPanel Orientation="Horizontal">
-                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
+                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
                                         <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.QuickNote_Add}" />
                                     </StackPanel>
                                 </Button>
@@ -1564,7 +1564,7 @@
                                         <DataTemplate>
                                             <Button Style="{DynamicResource IconButtonStyle}" Tag="{Binding Folder}" Click="RowFolder_Click"
                                                     ToolTip="{x:Static res:Resources.Menu_OpenFolder}">
-                                                <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="13" />
+                                                <local:AppIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="13" />
                                             </Button>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
@@ -1594,7 +1594,7 @@
                     <TabItem Tag="general">
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
-                                <controls:FontIcon Glyph="&#xE80F;" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                <local:AppIcon Glyph="&#xE80F;" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
                                 <TextBlock Margin="7,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Tab_General}" />
                             </StackPanel>
                         </TabItem.Header>
@@ -1638,7 +1638,7 @@
                                             </Border>
                                             <Button x:Name="CoverButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,8,8" Padding="6"
                                                     Click="CoverPhoto_Click" ToolTip="{x:Static res:Resources.Cover_Open}">
-                                                <controls:FontIcon Glyph="{x:Static local:AppIcons.FullScreen}" FontSize="12" />
+                                                <local:AppIcon Glyph="{x:Static local:AppIcons.FullScreen}" FontSize="12" />
                                             </Button>
                                         </Grid>
                                         <!-- Not önizlemesi kaldırıldı (ham md kötü görünüyordu, 10.11.2026); yalnız düğmeler kalır. -->
@@ -1646,26 +1646,26 @@
                                             <StackPanel Orientation="Horizontal">
                                                 <Button Click="StockNote_Click" Visibility="{Binding HasNote, Converter={StaticResource BoolToVis}}">
                                                     <StackPanel Orientation="Horizontal">
-                                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
+                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
                                                         <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Inv_OpenNote}" />
                                                     </StackPanel>
                                                 </Button>
                                                 <Button Click="StockCreateNote_Click" Visibility="{Binding HasNote, Converter={StaticResource InverseBoolToVis}}">
                                                     <StackPanel Orientation="Horizontal">
-                                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="14" />
+                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="14" />
                                                         <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Inv_CreateNote}" />
                                                     </StackPanel>
                                                 </Button>
                                                 <Button Margin="6,0,0,0" Click="StockPhotos_Click" Visibility="{Binding HasPhotosFolder, Converter={StaticResource BoolToVis}}">
                                                     <StackPanel Orientation="Horizontal">
-                                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" />
+                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" />
                                                         <TextBlock Margin="8,0,0,0" Text="{Binding PhotosText}" />
                                                     </StackPanel>
                                                 </Button>
                                                 <Button Margin="6,0,0,0" Click="StockDocuments_Click" ToolTip="{Binding DocumentsFolder}"
                                                         Visibility="{Binding HasDocumentsFolder, Converter={StaticResource BoolToVis}}">
                                                     <StackPanel Orientation="Horizontal">
-                                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" />
+                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" />
                                                         <TextBlock Margin="8,0,0,0" Text="{Binding DocumentsText}" />
                                                     </StackPanel>
                                                 </Button>
@@ -1705,7 +1705,7 @@
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Error}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Error}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
                                             <TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.General_Attention}" />
                                         </StackPanel>
                                         <ItemsControl ItemsSource="{Binding Detail.Alerts}" ItemTemplate="{StaticResource AlertTemplate}" />
@@ -1716,7 +1716,7 @@
                                              kutuyla kapatılır, satıra tıklayınca not açılır -->
                                         <Expander Margin="0,12,0,0" IsExpanded="{Binding Detail.OpenTasksExpanded, Mode=TwoWay}">
                                             <Expander.Header>
-                                                <StackPanel Orientation="Horizontal"><controls:FontIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" /><TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding Detail.OpenTasksHeader}" /></StackPanel>
+                                                <StackPanel Orientation="Horizontal"><local:AppIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" /><TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding Detail.OpenTasksHeader}" /></StackPanel>
                                             </Expander.Header>
                                             <StackPanel>
                                                 <Grid Margin="0,6,0,8">
@@ -1731,7 +1731,7 @@
                                                              controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Task_DuePlaceholder}" ToolTip="{x:Static res:Resources.Date_Placeholder}" />
                                                     <Button Grid.Column="2" Margin="6,0,0,0" Style="{DynamicResource AccentButtonStyle}" Click="TaskAdd_Click">
                                                         <StackPanel Orientation="Horizontal">
-                                                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" />
+                                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" />
                                                             <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Task_Add}" />
                                                         </StackPanel>
                                                     </Button>
@@ -1793,7 +1793,7 @@
                                         <ContentControl Content="{Binding}" ContentTemplate="{StaticResource MentionsCardTemplate}" Focusable="False" />
 
                                         <StackPanel Orientation="Horizontal" Margin="0,22,0,10">
-                                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Inventory}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Inventory}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
                                             <TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.StockInv_Section}" />
                                         </StackPanel>
                                         <ItemsControl ItemsSource="{Binding Detail.InventoryGroups}">
@@ -1810,7 +1810,7 @@
                                                             Tag="{Binding Type.Key}" MouseLeftButtonUp="InventoryTile_MouseLeftButtonUp"
                                                             ToolTip="{x:Static res:Resources.StockInv_TileHint}">
                                                         <StackPanel Orientation="Horizontal">
-                                                            <controls:FontIcon Glyph="{Binding Glyph}" Foreground="{Binding Color}" FontSize="16" VerticalAlignment="Center" />
+                                                            <local:AppIcon Glyph="{Binding Glyph}" Foreground="{Binding Color}" FontSize="16" VerticalAlignment="Center" />
                                                             <TextBlock Margin="10,0,0,0" Text="{Binding Summary}" VerticalAlignment="Center" />
                                                         </StackPanel>
                                                     </Border>
@@ -1824,7 +1824,7 @@
                                         </ItemsControl>
 
                                         <StackPanel Orientation="Horizontal" Margin="0,22,0,10">
-                                            <controls:FontIcon Glyph="&#xE9D9;" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                            <local:AppIcon Glyph="&#xE9D9;" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
                                             <TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.General_Latest}" />
                                         </StackPanel>
                                         <StackPanel Visibility="{Binding Detail.HasRuns, Converter={StaticResource BoolToVis}}">
@@ -1892,7 +1892,7 @@
                                     <Border Grid.Column="2" VerticalAlignment="Top">
                                         <StackPanel>
                                             <StackPanel Orientation="Horizontal">
-                                                <controls:FontIcon Glyph="{x:Static local:AppIcons.Clock}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                                <local:AppIcon Glyph="{x:Static local:AppIcons.Clock}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
                                                 <TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.General_Timeline}" />
                                             </StackPanel>
                                             <Grid Margin="0,12,0,14">
@@ -1904,13 +1904,13 @@
                                                 <TextBox Tag="Stock" KeyDown="QuickNoteBox_KeyDown" local:MentionAssist.Mode="plain" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.QuickNote_Placeholder}" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
                                                 <Button Grid.Column="1" Margin="6,0,0,0" Tag="Stock" Click="QuickNoteAdd_Click" ToolTip="{x:Static res:Resources.QuickNote_Hint}">
                                                     <StackPanel Orientation="Horizontal">
-                                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
+                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
                                                         <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.QuickNote_Add}" />
                                                     </StackPanel>
                                                 </Button>
                                                 <Button x:Name="StockJournalButton" Grid.Column="2" Margin="6,0,0,0" Click="JournalAdd_Click" ToolTip="{x:Static res:Resources.Journal_ButtonHint}">
                                                     <StackPanel Orientation="Horizontal">
-                                                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" Foreground="{DynamicResource AccentBrush}" />
+                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" Foreground="{DynamicResource AccentBrush}" />
                                                         <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Journal_Button}" />
                                                     </StackPanel>
                                                 </Button>
@@ -1939,7 +1939,7 @@
                     <TabItem Tag="tests">
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
-                                <controls:FontIcon Glyph="&#xE9D9;" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                <local:AppIcon Glyph="&#xE9D9;" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
                                 <TextBlock Margin="7,0,0,0" VerticalAlignment="Center" Text="{Binding Detail.TestsHeader}" />
                             </StackPanel>
                         </TabItem.Header>
@@ -1969,7 +1969,7 @@
                     <TabItem Tag="qualification">
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
-                                <controls:FontIcon Glyph="&#xEB95;" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                <local:AppIcon Glyph="&#xEB95;" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
                                 <TextBlock Margin="7,0,0,0" VerticalAlignment="Center" Text="{Binding Detail.QualificationHeader}" />
                             </StackPanel>
                         </TabItem.Header>
@@ -1999,7 +1999,7 @@
                     <TabItem Tag="folders">
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
-                                <controls:FontIcon Glyph="&#xE8B7;" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                <local:AppIcon Glyph="&#xE8B7;" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
                                 <TextBlock Margin="7,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Tab_Folders}" />
                             </StackPanel>
                         </TabItem.Header>
@@ -2025,7 +2025,7 @@
                                 <TreeView.ItemTemplate>
                                     <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                                         <StackPanel Orientation="Horizontal" Margin="0,1">
-                                            <controls:FontIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="14"
+                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="14"
                                                                Foreground="{DynamicResource Pusula.ProjectIconBrush}" VerticalAlignment="Center" />
                                             <TextBlock x:Name="FolderName" Text="{Binding Name}" Margin="8,0,0,0" FontFamily="Consolas" VerticalAlignment="Center" />
                                             <TextBlock Text="{Binding CountText}" Margin="10,0,0,0" VerticalAlignment="Center"
@@ -2058,7 +2058,7 @@
             <StatusBarItem DockPanel.Dock="Right" Visibility="{Binding HasLastAction, Converter={StaticResource BoolToVis}}"
                            ToolTip="{x:Static res:Resources.LastAction_Hint}">
                 <StackPanel Orientation="Horizontal">
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="12" Foreground="{DynamicResource SystemFillColorSuccessBrush}" VerticalAlignment="Center" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="12" Foreground="{DynamicResource SystemFillColorSuccessBrush}" VerticalAlignment="Center" />
                     <TextBlock x:Name="LastActionText" Margin="6,0,4,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding LastAction}" />
                 </StackPanel>
             </StatusBarItem>
@@ -2095,7 +2095,7 @@
                                 PrimaryButtonClick="ProjectDialog_PrimaryButtonClick">
             <StackPanel Width="300">
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Project}" FontSize="22" Foreground="{DynamicResource Pusula.ProjectIconBrush}" VerticalAlignment="Center" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Project}" FontSize="22" Foreground="{DynamicResource Pusula.ProjectIconBrush}" VerticalAlignment="Center" />
                     <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="270"
                                Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding RootPath}" ToolTip="{Binding RootPath}" />
                 </StackPanel>
@@ -2372,7 +2372,7 @@
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <controls:FontIcon x:Name="KindIcon" Glyph="{Binding Glyph}" FontSize="14" Width="20" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                <local:AppIcon x:Name="KindIcon" Glyph="{Binding Glyph}" FontSize="14" Width="20" Foreground="{DynamicResource TextSecondaryBrush}" />
                                 <TextBlock Margin="8,0,0,0" Text="{Binding Label}" VerticalAlignment="Center" />
                             </StackPanel>
                             <DataTemplate.Triggers>

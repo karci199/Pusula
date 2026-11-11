@@ -51,10 +51,10 @@
             <DockPanel LastChildFill="False">
                 <ToggleButton x:Name="OutlineToggle" DockPanel.Dock="Left" Style="{StaticResource ViewToggle}" Padding="8,4" Margin="0,0,12,0"
                               VerticalAlignment="Center" Click="OutlineToggle_Click" ToolTip="{x:Static res:Resources.Note_OutlineToggle}">
-                    <controls:FontIcon Glyph="&#xE8A4;" FontSize="14" />
+                    <local:AppIcon Glyph="&#xE8A4;" FontSize="14" />
                 </ToggleButton>
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,0">
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="18" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" VerticalAlignment="Center" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="18" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" VerticalAlignment="Center" />
                     <StackPanel Margin="10,0,0,0" VerticalAlignment="Center" MaxWidth="320">
                         <TextBlock FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Text="{Binding FileName}" ToolTip="{Binding Path}" />
                         <TextBlock Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" TextTrimming="CharacterEllipsis" Text="{Binding RelativeFolder}" ToolTip="{Binding Folder}" />
@@ -64,54 +64,54 @@
                 <!-- Biçim düğmeleri -->
                 <StackPanel x:Name="FormatBar" DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
                     <Button Style="{StaticResource ToolButton}" Tag="bold" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Bold}">
-                        <controls:FontIcon Glyph="&#xE8DD;" FontSize="14" />
+                        <local:AppIcon Glyph="&#xE8DD;" FontSize="14" />
                     </Button>
                     <Button Style="{StaticResource ToolButton}" Tag="italic" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Italic}">
-                        <controls:FontIcon Glyph="&#xE8DB;" FontSize="14" />
+                        <local:AppIcon Glyph="&#xE8DB;" FontSize="14" />
                     </Button>
                     <Button Style="{StaticResource ToolButton}" Tag="strike" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Strike}">
                         <TextBlock Text="{x:Static res:Resources.Note_GlyphStrike}" TextDecorations="Strikethrough" FontSize="14" />
                     </Button>
                     <Button Style="{StaticResource ToolButton}" Tag="highlight" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Highlight}">
-                        <controls:FontIcon Glyph="&#xE7E6;" FontSize="14" />
+                        <local:AppIcon Glyph="&#xE7E6;" FontSize="14" />
                     </Button>
                     <Button Style="{StaticResource ToolButton}" Tag="heading" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Heading}">
                         <TextBlock Text="{x:Static res:Resources.Note_GlyphHeading}" FontWeight="SemiBold" FontSize="14" />
                     </Button>
                     <Rectangle Width="1" Height="18" Margin="6,0" Fill="{DynamicResource DividerStrokeColorDefaultBrush}" />
                     <Button Style="{StaticResource ToolButton}" Tag="list" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_List}">
-                        <controls:FontIcon Glyph="&#xE8FD;" FontSize="14" />
+                        <local:AppIcon Glyph="&#xE8FD;" FontSize="14" />
                     </Button>
                     <Button Style="{StaticResource ToolButton}" Tag="numbers" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_NumberList}">
-                        <controls:FontIcon Glyph="&#xE9D5;" FontSize="14" />
+                        <local:AppIcon Glyph="&#xE9D5;" FontSize="14" />
                     </Button>
                     <Button Style="{StaticResource ToolButton}" Tag="task" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Task}">
-                        <controls:FontIcon Glyph="&#xE73A;" FontSize="14" />
+                        <local:AppIcon Glyph="&#xE73A;" FontSize="14" />
                     </Button>
                     <Button Style="{StaticResource ToolButton}" Tag="quote" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Quote}">
-                        <controls:FontIcon Glyph="&#xE9B2;" FontSize="14" />
+                        <local:AppIcon Glyph="&#xE9B2;" FontSize="14" />
                     </Button>
                     <Button Style="{StaticResource ToolButton}" Tag="code" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Code}">
-                        <controls:FontIcon Glyph="&#xE943;" FontSize="14" />
+                        <local:AppIcon Glyph="&#xE943;" FontSize="14" />
                     </Button>
                     <Rectangle Width="1" Height="18" Margin="6,0" Fill="{DynamicResource DividerStrokeColorDefaultBrush}" />
                     <Button Style="{StaticResource ToolButton}" Tag="link" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Link}">
-                        <controls:FontIcon Glyph="{x:Static local:AppIcons.Link}" FontSize="14" />
+                        <local:AppIcon Glyph="{x:Static local:AppIcons.Link}" FontSize="14" />
                     </Button>
                     <Button Style="{StaticResource ToolButton}" Tag="image" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Image}">
-                        <controls:FontIcon Glyph="&#xEB9F;" FontSize="14" />
+                        <local:AppIcon Glyph="&#xEB9F;" FontSize="14" />
                     </Button>
                     <Button Style="{StaticResource ToolButton}" Tag="table" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Table}">
-                        <controls:FontIcon Glyph="&#xF0E2;" FontSize="14" />
+                        <local:AppIcon Glyph="&#xF0E2;" FontSize="14" />
                     </Button>
                     <Button Style="{StaticResource ToolButton}" Tag="callout" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Callout}">
-                        <controls:FontIcon Glyph="&#xE7BA;" FontSize="14" />
+                        <local:AppIcon Glyph="&#xE7BA;" FontSize="14" />
                     </Button>
                     <Button Style="{StaticResource ToolButton}" Tag="divider" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Divider}">
-                        <controls:FontIcon Glyph="&#xE76F;" FontSize="14" />
+                        <local:AppIcon Glyph="&#xE76F;" FontSize="14" />
                     </Button>
                     <Button Style="{StaticResource ToolButton}" Tag="comment" Click="Format_Click" ToolTip="{x:Static res:Resources.Note_Comment}">
-                        <controls:FontIcon Glyph="&#xE90A;" FontSize="14" />
+                        <local:AppIcon Glyph="&#xE90A;" FontSize="14" />
                     </Button>
                 </StackPanel>
 
@@ -119,21 +119,21 @@
                 <Button DockPanel.Dock="Right" Margin="8,0,0,0" Click="Save_Click" ToolTip="{x:Static res:Resources.Note_Save}"
                         IsEnabled="{Binding IsDirty}" Style="{StaticResource AccentButtonStyle}">
                     <StackPanel Orientation="Horizontal">
-                        <controls:FontIcon Glyph="&#xE74E;" FontSize="14" />
+                        <local:AppIcon Glyph="&#xE74E;" FontSize="14" />
                         <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Edit_Save}" />
                     </StackPanel>
                 </Button>
                 <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Click="FullScreen_Click" ToolTip="{x:Static res:Resources.Note_FullScreen}">
-                    <controls:FontIcon Glyph="&#xE740;" FontSize="14" />
+                    <local:AppIcon Glyph="&#xE740;" FontSize="14" />
                 </Button>
                 <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Click="OpenExternal_Click" ToolTip="{x:Static res:Resources.Note_OpenExternal}">
-                    <controls:FontIcon Glyph="&#xE8A7;" FontSize="14" />
+                    <local:AppIcon Glyph="&#xE8A7;" FontSize="14" />
                 </Button>
                 <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Click="OpenFolder_Click" ToolTip="{x:Static res:Resources.Note_OpenFolder}">
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" />
                 </Button>
                 <Button x:Name="SettingsButton" DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Click="Settings_Click" ToolTip="{x:Static res:Resources.Note_Settings}">
-                    <controls:FontIcon Glyph="{x:Static local:AppIcons.Settings}" FontSize="14" />
+                    <local:AppIcon Glyph="{x:Static local:AppIcons.Settings}" FontSize="14" />
                 </Button>
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="0,0,10,0" VerticalAlignment="Center">
                     <ToggleButton Style="{StaticResource ViewToggle}" Tag="edit" IsChecked="{Binding IsEditMode, Mode=OneWay}" Click="View_Click" Content="{x:Static res:Resources.Note_ViewEdit}" />
@@ -150,7 +150,7 @@
                 <Button DockPanel.Dock="Right" Margin="8,0,0,0" Click="KeepMine_Click" Content="{x:Static res:Resources.Note_KeepMine}" />
                 <Button DockPanel.Dock="Right" Click="Reload_Click" Content="{x:Static res:Resources.Note_Reload}" />
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <controls:FontIcon Glyph="&#xE7BA;" FontSize="14" Foreground="{DynamicResource SystemFillColorCautionBrush}" />
+                    <local:AppIcon Glyph="&#xE7BA;" FontSize="14" Foreground="{DynamicResource SystemFillColorCautionBrush}" />
                     <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Note_ExternalChanged}" />
                 </StackPanel>
             </DockPanel>
@@ -171,7 +171,7 @@
                 <DockPanel>
                     <DockPanel DockPanel.Dock="Top" Margin="14,10,6,6">
                         <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Click="OutlineClose_Click" ToolTip="{x:Static res:Resources.Note_FindClose}">
-                            <controls:FontIcon Glyph="&#xE711;" FontSize="11" />
+                            <local:AppIcon Glyph="&#xE711;" FontSize="11" />
                         </Button>
                         <TextBlock x:Name="OutlineHeader" VerticalAlignment="Center" FontWeight="SemiBold" Text="{x:Static res:Resources.Note_Outline}" />
                     </DockPanel>
@@ -235,7 +235,7 @@
                     </Grid.ColumnDefinitions>
                     <Button x:Name="ReplaceToggle" Style="{StaticResource ToolButton}" VerticalAlignment="Top" Margin="0,4,4,0"
                             Click="ReplaceToggle_Click" ToolTip="{x:Static res:Resources.Note_FindToggleReplace}">
-                        <controls:FontIcon x:Name="ReplaceToggleIcon" Glyph="&#xE76C;" FontSize="12" />
+                        <local:AppIcon x:Name="ReplaceToggleIcon" Glyph="&#xE76C;" FontSize="12" />
                     </Button>
                     <StackPanel Grid.Column="1">
                         <StackPanel Orientation="Horizontal">
@@ -255,13 +255,13 @@
                             <TextBlock x:Name="FindCount" MinWidth="86" Margin="10,0,6,0" VerticalAlignment="Center" TextAlignment="Center"
                                        Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" />
                             <Button Style="{StaticResource ToolButton}" Click="FindPrevious_Click" ToolTip="{x:Static res:Resources.Note_FindPrevious}">
-                                <controls:FontIcon Glyph="&#xE70E;" FontSize="12" />
+                                <local:AppIcon Glyph="&#xE70E;" FontSize="12" />
                             </Button>
                             <Button Style="{StaticResource ToolButton}" Click="FindNext_Click" ToolTip="{x:Static res:Resources.Note_FindNext}">
-                                <controls:FontIcon Glyph="&#xE70D;" FontSize="12" />
+                                <local:AppIcon Glyph="&#xE70D;" FontSize="12" />
                             </Button>
                             <Button Style="{StaticResource ToolButton}" Click="FindClose_Click" ToolTip="{x:Static res:Resources.Note_FindClose}">
-                                <controls:FontIcon Glyph="&#xE711;" FontSize="12" />
+                                <local:AppIcon Glyph="&#xE711;" FontSize="12" />
                             </Button>
                         </StackPanel>
                         <StackPanel x:Name="ReplaceRow" Orientation="Horizontal" Margin="0,6,0,0" Visibility="Collapsed">
@@ -294,7 +294,7 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <controls:FontIcon Glyph="{Binding Glyph}" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                <local:AppIcon Glyph="{Binding Glyph}" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
                                 <TextBlock Grid.Column="1" FontWeight="SemiBold" Text="{Binding Key}" VerticalAlignment="Center" />
                                 <TextBlock Grid.Column="2" Margin="10,0,0,0" Foreground="{DynamicResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis" Text="{Binding Title}" VerticalAlignment="Center" />
                                 <TextBlock Grid.Column="3" Margin="10,0,4,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Kind}" VerticalAlignment="Center" />

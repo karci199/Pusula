@@ -94,9 +94,9 @@ namespace Pusula.Wpf
         private sealed class AssistState
         {
             private const string ItemTemplateXaml =
-                "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:c='clr-namespace:DesignKit.Controls;assembly=DesignKit.Wpf'>" +
+                "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:c='clr-namespace:DesignKit.Controls;assembly=DesignKit.Wpf' xmlns:p='clr-namespace:Pusula.Wpf;assembly=Pusula'>" +
                 "<Grid Margin='2,3'><Grid.ColumnDefinitions><ColumnDefinition Width='24'/><ColumnDefinition Width='Auto'/><ColumnDefinition Width='*'/><ColumnDefinition Width='Auto'/></Grid.ColumnDefinitions>" +
-                "<c:FontIcon Glyph='{Binding Glyph}' FontSize='14' Foreground='{DynamicResource TextSecondaryBrush}' VerticalAlignment='Center'/>" +
+                "<p:AppIcon Glyph='{Binding Glyph}' FontSize='14' Foreground='{DynamicResource TextSecondaryBrush}' VerticalAlignment='Center'/>" +
                 "<TextBlock Grid.Column='1' FontWeight='SemiBold' Text='{Binding Key}' VerticalAlignment='Center'/>" +
                 "<TextBlock Grid.Column='2' Margin='10,0,0,0' Foreground='{DynamicResource TextSecondaryBrush}' TextTrimming='CharacterEllipsis' Text='{Binding Title}' VerticalAlignment='Center'/>" +
                 "<TextBlock Grid.Column='3' Margin='10,0,4,0' Style='{DynamicResource CaptionTextBlockStyle}' Foreground='{DynamicResource TextTertiaryBrush}' Text='{Binding Kind}' VerticalAlignment='Center'/>" +

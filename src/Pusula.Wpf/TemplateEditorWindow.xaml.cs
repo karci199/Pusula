@@ -49,7 +49,7 @@ namespace Pusula.Wpf
             var create = new MenuItem
             {
                 Header = Properties.Resources.Editor_CreateModule,
-                Icon = new FontIcon { Glyph = AppIcons.Add },
+                Icon = new AppIcon { Glyph = AppIcons.Add },
             };
             create.Click += (s, args) => OpenModuleDialog(null);
             menu.Items.Add(create);
