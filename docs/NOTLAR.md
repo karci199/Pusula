@@ -156,6 +156,9 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 - **Jenerik test dokümanı üretme:** yeni stok açınca (ya da istenince) stok no/ad dolu test planı vb. doküman.
   Şablon modüllerine "başlangıç dosyaları" eklenebilir. DOCX üretimi için kullanıcının
   `C:\Projeler\Aktif\Divit` projesine bakılacak (orada docx üretimi var).
+- **Birim türüne göre otomatik md (11.11.2026, ileride):** stok açılınca birim türüne göre ana md hazır gelsin.
+  Kullanıcı önce gerekleri belirleyecek, sonra konuşulacak. Yazılım numarası (YZ) ile geliştirme stoku (JY) arasında
+  çakışma yok (kullanıcı, 11.11.2026).
 - **Test süreci / kalifikasyon (11.11.2026, konuşuldu, kod yok; kullanıcı gerçek tabloları inceleyecek):**
   - Zincir: TG (test gereksinimi; temel / türetilmiş gerek; yoksa tasarımcının docx'i, ikisi birden de olabilir) →
     TP (test planı maddesi; doğrulama yöntemi: muayene, denetim, analiz, gösterim, test) → TR (sonuç ve kanıt yeri).
