@@ -2442,6 +2442,16 @@
             <TextBlock Width="300" TextWrapping="Wrap" Text="{Binding JournalDeleteText}" />
         </controls:ContentDialog>
 
+        <!-- Yapılacak işi kapat / yeniden aç: kutuya basınca önce sorulur -->
+        <controls:ContentDialog Grid.RowSpan="3"
+                                IsOpen="{Binding IsTaskConfirmOpen, Mode=TwoWay}"
+                                Title="{Binding TaskConfirmTitle}"
+                                PrimaryButtonText="{Binding TaskConfirmButton}"
+                                CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                PrimaryButtonClick="TaskConfirm_PrimaryButtonClick">
+            <TextBlock Width="340" TextWrapping="Wrap" Text="{Binding TaskConfirmText}" />
+        </controls:ContentDialog>
+
         <!-- Takipten çıkar: dosyalar silinmez -->
         <controls:ContentDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsUntrackOpen, Mode=TwoWay}"

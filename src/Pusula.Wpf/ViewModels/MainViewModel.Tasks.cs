@@ -98,6 +98,60 @@ namespace Pusula.Wpf.ViewModels
             return true;
         }
 
+        private OpenTaskRow? pendingTask;
+        private bool pendingDone;
+        private bool isTaskConfirmOpen;
+
+        /// <summary>İş kapatma / yeniden açma onayı açık mı.</summary>
+        public bool IsTaskConfirmOpen
+        {
+            get { return isTaskConfirmOpen; }
+            set { SetDialogOpen(ref isTaskConfirmOpen, value); }
+        }
+
+        /// <summary>Onay başlığı ("İş bitti mi?" ya da "İş yeniden açılsın mı?").</summary>
+        public string TaskConfirmTitle
+        {
+            get { return pendingDone ? Resources.Task_ConfirmCloseTitle : Resources.Task_ConfirmReopenTitle; }
+        }
+
+        /// <summary>Onay düğmesi ("Bitti" / "Yeniden aç").</summary>
+        public string TaskConfirmButton
+        {
+            get { return pendingDone ? Resources.Task_ConfirmClose : Resources.Task_ConfirmReopen; }
+        }
+
+        /// <summary>Onayda gösterilen iş (metin ve kaynak).</summary>
+        public string TaskConfirmText
+        {
+            get { return pendingTask == null ? string.Empty : pendingTask.Text + Environment.NewLine + pendingTask.Meta; }
+        }
+
+        /// <summary>Kutuya basılınca hemen değiştirmez, önce sorar.</summary>
+        public void RequestTaskDone(OpenTaskRow row, bool done)
+        {
+            if (row == null || row.IsDone == done)
+            {
+                return;
+            }
+
+            pendingTask = row;
+            pendingDone = done;
+            OnPropertyChanged(nameof(TaskConfirmTitle));
+            OnPropertyChanged(nameof(TaskConfirmButton));
+            OnPropertyChanged(nameof(TaskConfirmText));
+            IsTaskConfirmOpen = true;
+        }
+
+        /// <summary>Onaylanan değişikliği yazar.</summary>
+        public bool ConfirmTaskDone()
+        {
+            IsTaskConfirmOpen = false;
+            var row = pendingTask;
+            pendingTask = null;
+            return row != null && SetTaskDone(row, pendingDone);
+        }
+
         /// <summary>İşi bitti / açık yapar (yalnız o satırın kutusu değişir). Değiştiyse <c>true</c>.</summary>
         public bool SetTaskDone(OpenTaskRow row, bool done)
         {

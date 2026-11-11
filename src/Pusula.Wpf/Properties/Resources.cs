@@ -2012,6 +2012,18 @@ namespace Pusula.Wpf.Properties
         /// <summary>Başlangıç sayfası: iş satırının ipucu</summary>
         public static string Home_TaskHint { get { return Get("Home_TaskHint"); } }
 
+        /// <summary>İş kapatma onayının başlığı</summary>
+        public static string Task_ConfirmCloseTitle { get { return Get("Task_ConfirmCloseTitle"); } }
+
+        /// <summary>İş yeniden açma onayının başlığı</summary>
+        public static string Task_ConfirmReopenTitle { get { return Get("Task_ConfirmReopenTitle"); } }
+
+        /// <summary>İş kapatma onay düğmesi</summary>
+        public static string Task_ConfirmClose { get { return Get("Task_ConfirmClose"); } }
+
+        /// <summary>İş yeniden açma onay düğmesi</summary>
+        public static string Task_ConfirmReopen { get { return Get("Task_ConfirmReopen"); } }
+
         #endregion
     }
 }

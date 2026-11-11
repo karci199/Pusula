@@ -59,7 +59,12 @@ try {
     Check 'Bana ait: kullanıcının işi' (@($view | ? { $_.Text -eq 'Jig Rev AC montajı' }).Count -eq 1 -and @($view | ? { $_.PersonName -ne [Environment]::UserName }).Count -eq 0)
     $f.Select('open'); Pump
     Snap $win "$Out\tasks-stock.png"
-    Check 'kapatıldı' ($vm.SetTaskDone($row, $true)); Wait
+    $vm.RequestTaskDone($row, $true); Pump
+    Check 'kutuya basınca önce sorulur, iş henüz açık' ($vm.IsTaskConfirmOpen -and -not $row.IsDone -and $vm.TaskConfirmText.StartsWith('Jig Rev AC montajı')) $vm.TaskConfirmTitle
+    $vm.IsTaskConfirmOpen = $false; Pump
+    Check 'vazgeçince değişmez' (@($vm.Detail.OpenTasks | ? { -not $_.IsDone -and $_.Text -eq 'Jig Rev AC montajı' }).Count -eq 1)
+    $vm.RequestTaskDone($row, $true); Pump
+    Check 'kapatıldı' ($vm.ConfirmTaskDone()); Wait
     Check 'açıklardan düştü, bitenlerde' (@($view | ? { $_.Text -eq 'Jig Rev AC montajı' }).Count -eq 0 -and @($vm.Detail.OpenTasks | ? { $_.IsDone -and $_.Text -eq 'Jig Rev AC montajı' }).Count -eq 1)
     $f.Select('done'); Pump
     $doneRow = @($view | ? { $_.Text -eq 'Jig Rev AC montajı' })[0]

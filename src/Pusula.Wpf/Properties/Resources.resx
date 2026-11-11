@@ -1782,4 +1782,16 @@
   <data name="Home_TaskHint" xml:space="preserve">
     <value>Tıklayınca işin geldiği stok ya da kayıt açılır</value>
   </data>
+  <data name="Task_ConfirmCloseTitle" xml:space="preserve">
+    <value>İş bitti olarak işaretlensin mi?</value>
+  </data>
+  <data name="Task_ConfirmReopenTitle" xml:space="preserve">
+    <value>İş yeniden açılsın mı?</value>
+  </data>
+  <data name="Task_ConfirmClose" xml:space="preserve">
+    <value>Bitti</value>
+  </data>
+  <data name="Task_ConfirmReopen" xml:space="preserve">
+    <value>Yeniden aç</value>
+  </data>
 </root>

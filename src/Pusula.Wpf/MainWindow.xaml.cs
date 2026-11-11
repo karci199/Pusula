@@ -1084,9 +1084,16 @@ namespace Pusula.Wpf
         {
             if (sender is CheckBox box && box.DataContext is OpenTaskRow row)
             {
-                viewModel.SetTaskDone(row, box.IsChecked == true);
+                // Hemen değiştirilmez: kutu eski haline döner, önce sorulur.
+                var done = box.IsChecked == true;
                 box.IsChecked = row.IsDone;
+                viewModel.RequestTaskDone(row, done);
             }
+        }
+
+        private void TaskConfirm_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            viewModel.ConfirmTaskDone();
         }
 
         // Başlangıç sayfası: son açılan düğüme gider.
