@@ -1089,6 +1089,24 @@ namespace Pusula.Wpf
             }
         }
 
+        // Başlangıç sayfası: son açılan düğüme gider.
+        private void HomeRecent_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is TreeNodeViewModel node)
+            {
+                viewModel.SelectNodeByPath(node.Path);
+            }
+        }
+
+        // Başlangıç sayfası: işin geldiği stoka / kayda gider.
+        private void HomeTask_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is OpenTaskRow row)
+            {
+                viewModel.OpenHomeTask(row);
+            }
+        }
+
         private void OpenTaskNote_Click(object sender, RoutedEventArgs e)
         {
             if ((sender as FrameworkElement)?.Tag is string path && path.Length > 0)

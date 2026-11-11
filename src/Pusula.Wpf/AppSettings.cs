@@ -23,6 +23,7 @@ namespace Pusula.Wpf
             Columns = new Dictionary<string, List<ColumnLayout>>();
             LastAction = string.Empty;
             UserName = string.Empty;
+            Recent = new List<string>();
         }
 
         /// <summary>Son seçilen projeler klasörü.</summary>
@@ -60,6 +61,10 @@ namespace Pusula.Wpf
         /// <summary>Kullanıcı (ben): ad soyad; talep eden, olay kişisi gibi kutularda varsayılan. Boşsa Windows kullanıcı adı.</summary>
         [DataMember(Name = "user", Order = 8, EmitDefaultValue = false)]
         public string UserName { get; set; } = string.Empty;
+
+        /// <summary>Son açılan proje, stok ve kayıtların yolları (en yeni başta); boş sayfada gösterilir.</summary>
+        [DataMember(Name = "recent", Order = 9, EmitDefaultValue = false)]
+        public List<string> Recent { get; set; } = new List<string>();
 
         /// <summary>Ayar dosyasının yerini değiştiren ortam değişkeni (testler gerçek ayarlara dokunmasın diye).</summary>
         public const string PathVariable = "PUSULA_AYARLAR";

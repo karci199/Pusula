@@ -1770,4 +1770,16 @@
   <data name="Inv_PropertiesEmpty" xml:space="preserve">
     <value>Henüz doldurulmadı. Sağ üstteki ⋯ menüsünden Düzenle ile doldurulur.</value>
   </data>
+  <data name="Home_Recent" xml:space="preserve">
+    <value>Son açılanlar</value>
+  </data>
+  <data name="Home_Late" xml:space="preserve">
+    <value>Geciken işler</value>
+  </data>
+  <data name="Home_Mine" xml:space="preserve">
+    <value>Bana ait işler</value>
+  </data>
+  <data name="Home_TaskHint" xml:space="preserve">
+    <value>Tıklayınca işin geldiği stok ya da kayıt açılır</value>
+  </data>
 </root>

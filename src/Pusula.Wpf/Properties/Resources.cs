@@ -2000,6 +2000,18 @@ namespace Pusula.Wpf.Properties
         /// <summary>Özellikler kartı: hiçbir alan dolu değil</summary>
         public static string Inv_PropertiesEmpty { get { return Get("Inv_PropertiesEmpty"); } }
 
+        /// <summary>Başlangıç sayfası: son açılan proje, stok ve kayıtlar</summary>
+        public static string Home_Recent { get { return Get("Home_Recent"); } }
+
+        /// <summary>Başlangıç sayfası: son tarihi geçmiş açık işler</summary>
+        public static string Home_Late { get { return Get("Home_Late"); } }
+
+        /// <summary>Başlangıç sayfası: kullanıcının açık işleri</summary>
+        public static string Home_Mine { get { return Get("Home_Mine"); } }
+
+        /// <summary>Başlangıç sayfası: iş satırının ipucu</summary>
+        public static string Home_TaskHint { get { return Get("Home_TaskHint"); } }
+
         #endregion
     }
 }
