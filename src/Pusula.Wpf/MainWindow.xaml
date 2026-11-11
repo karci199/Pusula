@@ -2233,7 +2233,7 @@
                                 PrimaryButtonText="{Binding JournalPrimaryText}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="Journal_PrimaryButtonClick">
-            <StackPanel Width="300">
+            <StackPanel Width="460">
                 <TextBlock Margin="0,0,0,14" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" Text="{Binding JournalTarget}" />
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -2290,7 +2290,7 @@
                 <TextBox Grid.Row="2" Grid.Column="1" Margin="0,10,0,0" Text="{Binding JournalHeading, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" local:MentionAssist.Mode="link" />
 
                 <TextBlock Grid.Row="3" Margin="0,10,0,0" VerticalAlignment="Top" Padding="0,6,0,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Journal_Body}" />
-                <TextBox Grid.Row="3" Grid.Column="1" Margin="0,10,0,0" MinHeight="130" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"
+                <TextBox Grid.Row="3" Grid.Column="1" Margin="0,10,0,0" MinHeight="180" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"
                          Text="{Binding JournalBody, UpdateSourceTrigger=PropertyChanged}" local:MentionAssist.Mode="link" />
 
                 <TextBlock Grid.Row="4" Margin="0,10,0,0" Style="{StaticResource JournalLabel}" Text="{x:Static res:Resources.Journal_Importance}" />
