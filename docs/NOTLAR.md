@@ -156,7 +156,18 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 - **Jenerik test dokümanı üretme:** yeni stok açınca (ya da istenince) stok no/ad dolu test planı vb. doküman.
   Şablon modüllerine "başlangıç dosyaları" eklenebilir. DOCX üretimi için kullanıcının
   `C:\Projeler\Aktif\Divit` projesine bakılacak (orada docx üretimi var).
-- İkonlar: yazı tipi ikonları yerine kendi vektör (XAML) ikonları — kullanıcı "daha iyi olabilir" dedi.
+- **Test süreci / kalifikasyon (11.11.2026, konuşuldu, kod yok; kullanıcı gerçek tabloları inceleyecek):**
+  - Zincir: TG (test gereksinimi; temel / türetilmiş gerek; yoksa tasarımcının docx'i, ikisi birden de olabilir) →
+    TP (test planı maddesi; doğrulama yöntemi: muayene, denetim, analiz, gösterim, test) → TR (sonuç ve kanıt yeri).
+    Açıklar: TP'siz TG, TR'siz TP, kalan TR (bildirim).
+  - Test türleri sınırsız (ÇK, EMI/EMC, İşlevsel …); her türün altında testler (CE102, titreşim …), onların altında
+    doğrulama maddeleri. Gerekler tek tek girilebilmeli (örn. MIL-STD maddeleri).
+  - Her tür için adım zinciri (soru → cevap → kanıt → sonraki): gerekli mi, kaynak doküman, test planı, prosedür
+    (teknisyen için), yardımcı araç (jig / kablo / yazılım; talep, üretim, teslim, deneme), lab talebi (no), birim teslimi,
+    testler (yapılıyor / geçti / kaldı / analizle), sonuç yeri, DOORS test raporu, müşteri raporu. İşlevselde sonunda
+    üretime devir (üretim test dokümanı, araçların üretime teslimi, tasarımcı spek görüşü). Gerekmeyen adım eksik sayılmaz.
+  - İlk adım mock'u: `docs/mock/kalifikasyon-gerekli.png` (Kalifikasyon sekmesinde "Test kapsamı": Gerekli / Gerekmiyor
+    + gerekçe). Genel görünüm: `docs/mock/surec-ornek.png`.
 - `00_Proje_Geneli` iç yapısı henüz kararlaştırılmadı (öneri: Sartname, Toplantilar, Yazismalar, Planlama).
 - Şablonda kullanılmayan modülü kütüphaneden tamamen silme yok (şimdilik listede kalır).
 - Test kütüphanesi seçilmedi (xUnit / NUnit / MSTest); `Pusula.Tests` projesi yok. Şimdilik denemeler

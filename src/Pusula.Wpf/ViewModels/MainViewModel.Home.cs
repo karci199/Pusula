@@ -27,6 +27,33 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Kullanıcının gecikmemiş açık işleri (bütün projeler).</summary>
         public ObservableCollection<OpenTaskRow> HomeMyTasks { get; } = new ObservableCollection<OpenTaskRow>();
 
+        /// <summary>En genel sayılar: projeler, stoklar, her kayıt türü, kişiler.</summary>
+        public ObservableCollection<RecordCount> HomeCounts { get; } = new ObservableCollection<RecordCount>();
+
+        /// <summary>Kullanıcının sayıları: açık işleri, geciken işleri, adının geçtiği kayıtlar.</summary>
+        public ObservableCollection<RecordCount> MyCounts { get; } = new ObservableCollection<RecordCount>();
+
+        // Ağaçtan ve okunmuş kayıtlardan genel sayılar (diske ayrıca gidilmez).
+        private void FillHomeCounts()
+        {
+            HomeCounts.Clear();
+            var projects = Nodes.Where(n => n.Kind == FolderKind.Project).ToList();
+            var project = types.Find(Pusula.Core.Types.TypeSet.ProjectKey);
+            var projectLabel = string.IsNullOrEmpty(project?.PluralName) ? Properties.Resources.Home_Projects : project!.PluralName;
+            HomeCounts.Add(new RecordCount(projectLabel, project?.Icon ?? "E821", project?.Color ?? string.Empty, projects.Count));
+            var stock = types.Stock;
+            var stockLabel = stock.PluralName.Length == 0 ? Properties.Resources.Home_Stocks : stock.PluralName;
+            HomeCounts.Add(new RecordCount(stockLabel, stock.Icon, stock.Color, projects.Sum(p => p.Children.Count(c => c.Kind == FolderKind.Stock))));
+            foreach (var type in types.InventoryTypes.GroupBy(t => t.Key, StringComparer.OrdinalIgnoreCase).Select(g => g.First()))
+            {
+                HomeCounts.Add(new RecordCount(type.PluralName, type.Icon, type.Color,
+                    inventoryItems.Count(i => string.Equals(i.Record.Type, type.Key, StringComparison.OrdinalIgnoreCase))));
+            }
+
+            var person = types.Person;
+            HomeCounts.Add(new RecordCount(person.PluralName, person.Icon, person.Color, types.People.Count(p => !p.HasLeft)));
+        }
+
         /// <summary>Son açılan var mı.</summary>
         public bool HasRecent
         {
@@ -49,6 +76,12 @@ namespace Pusula.Wpf.ViewModels
         public bool IsHomeEmpty
         {
             get { return !HasRecent && !HasHomeLateTasks && !HasHomeMyTasks; }
+        }
+
+        /// <summary>Kullanıcı sayıları gösterilir mi (kullanıcı adı varsa).</summary>
+        public bool HasMyCounts
+        {
+            get { return MyCounts.Count > 0; }
         }
 
         // Seçilen proje / stok / kayıt son açılanların başına yazılır.
@@ -84,6 +117,7 @@ namespace Pusula.Wpf.ViewModels
                 }
             }
 
+            FillHomeCounts();
             var version = ++homeVersion;
             var root = rootPath;
             var user = CurrentUser;
@@ -127,10 +161,22 @@ namespace Pusula.Wpf.ViewModels
                 HomeMyTasks.Add(new OpenTaskRow(task, root));
             }
 
+            // Benim sayılarım: bütün açık işlerim (liste sınırından bağımsız), gecikenler, adımın geçtiği kayıtlar.
+            MyCounts.Clear();
+            if (user.Length > 0)
+            {
+                var myTasks = tasks.Where(t => string.Equals(t.PersonName, user, StringComparison.CurrentCultureIgnoreCase)).ToList();
+                MyCounts.Add(new RecordCount(Properties.Resources.Home_MyOpen, "E73E", "#4CC2FF", myTasks.Count));
+                MyCounts.Add(new RecordCount(Properties.Resources.Home_MyLate, "E823", "#FF6B6B", myTasks.Count(t => t.Due.HasValue && t.Due.Value.Date < today)));
+                MyCounts.Add(new RecordCount(Properties.Resources.Home_MyRecords, "E8F1", string.Empty,
+                    inventoryItems.Count(i => i.Record.Events.Any(e => string.Equals(e.Person, user, StringComparison.CurrentCultureIgnoreCase)))));
+            }
+
             OnPropertyChanged(nameof(HasRecent));
             OnPropertyChanged(nameof(HasHomeLateTasks));
             OnPropertyChanged(nameof(HasHomeMyTasks));
             OnPropertyChanged(nameof(IsHomeEmpty));
+            OnPropertyChanged(nameof(HasMyCounts));
         }
 
         private TreeNodeViewModel? FindNodeByPath(string path)

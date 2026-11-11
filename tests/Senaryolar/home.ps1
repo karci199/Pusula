@@ -28,7 +28,14 @@ $vm.SelectNodeByPath((Join-Path $Data '7000_MILKON')); Wait
 $vm.Refresh(); Wait
 $vm.SelectedNode = $null; $vm.LoadHome(); Wait
 Check 'son açılanlar: en yeni başta' ($vm.RecentNodes.Count -ge 2 -and $vm.RecentNodes[0].Title -eq '7000_MILKON' -and $vm.RecentNodes[1].Title -eq 'AB-7000-0002') (@($vm.RecentNodes | % Title) -join ' | ')
+function CountOf($list, $label) { (@($list | ? { $_.Label -eq $label }) | Select -First 1).Count }
+Check 'genel sayılar: proje, stok, kablo, jig' ((CountOf $vm.HomeCounts 'Projeler') -ge 1 -and (CountOf $vm.HomeCounts 'Stoklar') -ge 4 -and (CountOf $vm.HomeCounts 'Kablolar') -ge 1 -and (CountOf $vm.HomeCounts 'Jigler') -ge 1) (@($vm.HomeCounts | % { $_.Label + ' ' + $_.Count }) -join ' | ')
+Check 'benim sayılarım: açık işim en az 1' ($vm.HasMyCounts -and (CountOf $vm.MyCounts 'Açık işim') -ge 1) (@($vm.MyCounts | % { $_.Label + ' ' + $_.Count }) -join ' | ')
 Snap $win "$Out\home.png"
+$vm.SelectNodeByPath((Join-Path $Data '7000_MILKON')); Wait
+Check 'proje sayıları: stoklarda kullanılan kablo ve jig' ($vm.Detail.HasProjectCounts -and (CountOf $vm.Detail.ProjectCounts 'Kablolar') -ge 1 -and (CountOf $vm.Detail.ProjectCounts 'Jigler') -ge 1) (@($vm.Detail.ProjectCounts | % { $_.Label + ' ' + $_.Count }) -join ' | ')
+Snap $win "$Out\home-project.png"
+$vm.SelectedNode = $null; $vm.LoadHome(); Wait
 
 $row = @($vm.HomeMyTasks | ? { $_.Text -eq 'Benim deneme işim' })[0]
 $vm.OpenHomeTask($row); Wait

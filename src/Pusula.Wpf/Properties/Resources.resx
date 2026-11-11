@@ -1794,4 +1794,25 @@
   <data name="Task_ConfirmReopen" xml:space="preserve">
     <value>Yeniden aç</value>
   </data>
+  <data name="Home_Projects" xml:space="preserve">
+    <value>Projeler</value>
+  </data>
+  <data name="Home_All" xml:space="preserve">
+    <value>Genel</value>
+  </data>
+  <data name="Home_Me" xml:space="preserve">
+    <value>Ben</value>
+  </data>
+  <data name="Home_MyOpen" xml:space="preserve">
+    <value>Açık işim</value>
+  </data>
+  <data name="Home_MyLate" xml:space="preserve">
+    <value>Geciken</value>
+  </data>
+  <data name="Home_MyRecords" xml:space="preserve">
+    <value>Kayıtlarım</value>
+  </data>
+  <data name="Home_Stocks" xml:space="preserve">
+    <value>Stoklar</value>
+  </data>
 </root>

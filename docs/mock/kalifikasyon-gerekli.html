@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Kalifikasyon · gerekli mi</title>
+<style>
+  body { margin:0; background:#1c1c1c; color:#f2f2f2; font-family:"Segoe UI"; font-size:14px; padding:24px; width:1180px; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  .sub { color:#a8a8a8; margin-bottom:18px; }
+  .shot { background:#272727; border:1px solid #3a3a3a; border-radius:8px; padding:18px 20px; margin-bottom:22px; }
+  .tag { color:#4cc2ff; font-size:12px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+  .tabs { display:flex; border-bottom:1px solid #3a3a3a; margin-bottom:14px; }
+  .tabs span { padding:8px 14px; color:#bbb; }
+  .tabs .on { color:#fff; font-weight:600; border:1px solid #3a3a3a; border-bottom:none; border-radius:6px 6px 0 0; background:#2c2c2c; }
+  .card { background:#2c2c2c; border:1px solid #3a3a3a; border-radius:8px; padding:14px 16px; }
+  .card h2 { font-size:15px; margin:0 0 2px; }
+  .card .hint { color:#999; font-size:12.5px; margin-bottom:10px; }
+  .row { display:flex; align-items:center; padding:9px 0; border-top:1px solid #383838; }
+  .row:first-of-type { border-top:none; }
+  .name { width:110px; font-weight:600; }
+  .seg { display:flex; border:1px solid #474747; border-radius:6px; overflow:hidden; margin-right:14px; }
+  .seg span { padding:5px 12px; color:#ccc; border-left:1px solid #474747; }
+  .seg span:first-child { border-left:none; }
+  .seg .yes { background:#4cc2ff; color:#002235; font-weight:600; }
+  .seg .no { background:#3d3d3d; color:#fff; font-weight:600; }
+  .why { flex:1; color:#bbb; }
+  .why.empty { color:#777; font-style:italic; }
+  .input { flex:1; border:1px solid #4cc2ff; border-radius:5px; padding:5px 9px; color:#eee; background:#1e1e1e; }
+  .meta { color:#888; font-size:12px; width:170px; text-align:right; }
+  .dim { opacity:.55; }
+  .warn { background:#4a3c12; border-radius:6px; padding:9px 12px; margin-top:12px; color:#f2c14e; }
+  .warn small { color:#d9c38a; display:block; }
+  .note { color:#a8a8a8; font-size:12.5px; margin-top:12px; }
+  .cols { display:flex; }
+  .cols > div { flex:1; margin-right:18px; } .cols > div:last-child { margin-right:0; }
+  .plans { color:#888; margin-top:14px; border-top:1px dashed #444; padding-top:10px; font-size:12.5px; }
+  .chipline span { display:inline-block; border-radius:999px; padding:2px 10px; margin-right:6px; font-size:12px; }
+  .c-yes { background:#12384d; color:#4cc2ff; } .c-no { background:#333; color:#999; } .c-q { background:#4a3c12; color:#f2c14e; }
+</style>
+</head>
+<body>
+  <h1>Kalifikasyon · 1. adım: hangi testler gerekli?</h1>
+  <div class="sub">Mock, kod yok. Bilgi stokun takip dosyasında (stok.json) tutulur; md'ye dokunulmaz.</div>
+
+  <div class="shot">
+    <div class="tag">A · Yeni stok: karar verilmemiş</div>
+    <div class="tabs"><span>Genel</span><span>Testler · 4</span><span class="on">Kalifikasyon</span><span>Kablolar · 2</span><span>Jigler · 3</span><span>Klasörler</span></div>
+    <div class="card">
+      <h2>Test kapsamı</h2>
+      <div class="hint">Bu birim için hangi testler yapılacak? Türler Ayarlar'dan eklenir.</div>
+      <div class="row"><div class="name">ÇK</div><div class="seg"><span>Gerekli</span><span>Gerekmiyor</span></div><div class="why empty">karar verilmedi</div><div class="meta"></div></div>
+      <div class="row"><div class="name">EMI/EMC</div><div class="seg"><span>Gerekli</span><span>Gerekmiyor</span></div><div class="why empty">karar verilmedi</div><div class="meta"></div></div>
+      <div class="row"><div class="name">İşlevsel</div><div class="seg"><span>Gerekli</span><span>Gerekmiyor</span></div><div class="why empty">karar verilmedi</div><div class="meta"></div></div>
+      <div class="warn">Kalifikasyon kapsamı belirlenmedi<small>Genel sekmesindeki Dikkat bölümünde de görünür</small></div>
+    </div>
+  </div>
+
+  <div class="shot">
+    <div class="tag">B · Karar verildi (Gerekmiyor seçilince kısa gerekçe istenir)</div>
+    <div class="tabs"><span>Genel</span><span>Testler · 4</span><span class="on">Kalifikasyon · 2 gerekli</span><span>Kablolar · 2</span><span>Jigler · 3</span><span>Klasörler</span></div>
+    <div class="card">
+      <h2>Test kapsamı</h2>
+      <div class="hint">Bu birim için hangi testler yapılacak?</div>
+      <div class="row"><div class="name">ÇK</div><div class="seg"><span class="yes">Gerekli</span><span>Gerekmiyor</span></div><div class="why">TG-DA400 madde 6</div><div class="meta">katan · 11.11.2026</div></div>
+      <div class="row dim"><div class="name">EMI/EMC</div><div class="seg"><span>Gerekli</span><span class="no">Gerekmiyor</span></div><div class="why">Pasif anten, elektronik yok</div><div class="meta">katan · 11.11.2026</div></div>
+      <div class="row"><div class="name">İşlevsel</div><div class="seg"><span class="yes">Gerekli</span><span>Gerekmiyor</span></div><div class="input">Dönüş hızı ve konum doğruluğu|</div><div class="meta">yazılıyor…</div></div>
+      <div class="plans">Altında (sonraki adımlar): kaynak doküman (TG / tasarımcı dokümanı), hazırlık, lab talebi, testler… · mevcut kalifikasyon planları ve koşuları da burada kalır</div>
+    </div>
+  </div>
+
+  <div class="shot">
+    <div class="tag">C · Başka yerlerde nasıl görünür</div>
+    <div class="cols">
+      <div class="card">
+        <h2>Proje tablosu · yeni sütun</h2>
+        <div class="row"><div class="name">AB-7000-0001</div><div class="chipline"><span class="c-q">Kapsam yok</span></div></div>
+        <div class="row"><div class="name">AB-7000-0003</div><div class="chipline"><span class="c-yes">ÇK</span><span class="c-yes">İşlevsel</span></div></div>
+        <div class="row"><div class="name">JY-7000-0004</div><div class="chipline"><span class="c-yes">ÇK</span><span class="c-yes">EMC</span><span class="c-yes">İşlevsel</span></div></div>
+      </div>
+      <div class="card">
+        <h2>Günlük</h2>
+        <div class="row"><div class="why">Kapsam: ÇK gerekli · TG-DA400 madde 6</div><div class="meta">11.11 · katan</div></div>
+        <div class="row"><div class="why">Kapsam: EMI/EMC gerekmiyor · pasif anten</div><div class="meta">11.11 · katan</div></div>
+        <div class="note">Karar değişince günlüğe kendiliğinden bir satır düşer; kim, ne zaman, neden.</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

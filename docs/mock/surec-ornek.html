@@ -1,0 +1,152 @@
+﻿<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Test süreci örneği</title>
+<style>
+  :root { --bg:#1f1f1f; --card:#2b2b2b; --line:#3a3a3a; --text:#f2f2f2; --muted:#a8a8a8; --dim:#777;
+          --ok:#6ccb5f; --run:#4cc2ff; --wait:#f2c14e; --fail:#ff6b6b; --na:#666; --accent:#4cc2ff; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:14px "Segoe UI", sans-serif; padding:28px; width:1500px; }
+  h1 { font-size:22px; margin:0 0 4px; }
+  .sub { color:var(--muted); margin-bottom:22px; }
+  .wrap { display:grid; grid-template-columns:330px 1fr; gap:24px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px 18px; }
+  .card h2 { font-size:15px; margin:0 0 12px; }
+  .layer { border-left:3px solid var(--accent); padding:6px 0 6px 12px; margin-bottom:12px; }
+  .layer b { display:block; }
+  .layer span { color:var(--muted); font-size:12.5px; }
+  .l2 { margin-left:14px; border-color:#b4a7f5; } .l3 { margin-left:28px; border-color:#f7a35c; } .l4 { margin-left:42px; border-color:#5fd4c4; }
+  .legend { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .chip { display:inline-flex; align-items:center; gap:6px; border-radius:999px; padding:3px 10px; font-size:12.5px; background:#333; white-space:nowrap; }
+  .dot { width:8px; height:8px; border-radius:50%; }
+  .ok .dot{background:var(--ok)} .run .dot{background:var(--run)} .wait .dot{background:var(--wait)} .fail .dot{background:var(--fail)} .na .dot{background:var(--na)} .todo .dot{background:transparent; border:1.5px solid var(--dim)}
+  .na { color:var(--dim); }
+  .docs { display:flex; gap:10px; margin-bottom:16px; }
+  .doc { flex:1; background:#262626; border:1px solid var(--line); border-radius:8px; padding:10px 12px; }
+  .doc small { color:var(--muted); display:block; margin-top:2px; }
+  .types { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; }
+  .type h3 { margin:0 0 2px; font-size:15px; }
+  .type .meta { color:var(--muted); font-size:12px; margin-bottom:10px; }
+  .phase { color:var(--dim); font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; margin:12px 0 6px; }
+  .step { display:flex; align-items:center; gap:8px; padding:5px 0; border-top:1px solid #333; font-size:13px; }
+  .step:first-of-type { border-top:none; }
+  .step .who { margin-left:auto; color:var(--muted); font-size:11.5px; }
+  .tests { margin-top:4px; }
+  .test { background:#262626; border-radius:6px; padding:6px 9px; margin-bottom:6px; font-size:13px; }
+  .test .row { display:flex; align-items:center; gap:8px; }
+  .test .items { margin:4px 0 0 16px; color:var(--muted); font-size:12px; }
+  .test .why { color:var(--fail); font-size:12px; margin:3px 0 0 16px; }
+  .summary { margin-top:16px; display:flex; gap:12px; }
+  .summary .card { flex:1; padding:12px 14px; }
+  .summary b { font-size:20px; display:block; }
+</style>
+</head>
+<body>
+  <h1>Test süreci · örnek</h1>
+  <div class="sub">Kod yok, konuşmak için. Adımlar şablondan gelir; gerekmeyen adım "Gerekmiyor" olur, eksik sayılmaz.</div>
+  <div class="wrap">
+    <div>
+      <div class="card">
+        <h2>Yapı (4 katman)</h2>
+        <div class="layer"><b>1 · Kaynak belgeler</b><span>TG ve/veya tasarımcının docx'i. İkisi de olabilir; bağlantı verilir.</span></div>
+        <div class="layer l2"><b>2 · Test türü</b><span>İşlevsel, ÇK, EMI/EMC … sınırsız. Her türün adım listesi şablonda.</span></div>
+        <div class="layer l3"><b>3 · Test</b><span>Konum doğruluğu, RE102, titreşim … Durum + sonuç. Analizle de olabilir.</span></div>
+        <div class="layer l4"><b>4 · Doğrulama maddesi</b><span>TG / docx madde numarası. Hangi testle doğrulandığı.</span></div>
+        <h2 style="margin-top:18px">Durumlar</h2>
+        <div class="legend">
+          <span class="chip ok"><i class="dot"></i>Tamam / geçti</span>
+          <span class="chip run"><i class="dot"></i>Yapılıyor</span>
+          <span class="chip wait"><i class="dot"></i>Bekliyor</span>
+          <span class="chip fail"><i class="dot"></i>Kaldı</span>
+          <span class="chip todo"><i class="dot"></i>Başlanmadı</span>
+          <span class="chip na"><i class="dot"></i>Gerekmiyor</span>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h2>Bir kez yazılır, çok yerde görünür</h2>
+        <div class="step"><span>Test sonucu</span><span class="who">→ test raporu, DOORS, müşteri raporu</span></div>
+        <div class="step"><span>Doğrulama maddesi</span><span class="who">→ test planı, kapsama</span></div>
+        <div class="step"><span>Jig / kablo / yazılım</span><span class="who">→ kendi kaydı, talep, teslim</span></div>
+        <div class="step"><span>Kaldı</span><span class="who">→ bildirim, tasarımcı, Dikkat</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>AB-7000-0003 · DA400 Döner Anten</h2>
+      <div class="docs">
+        <div class="doc">📄 TG-DA400 Rev B<small>Tasarımcı · 12 madde · müşteri odaklı</small></div>
+        <div class="doc">📄 DA400_test_notlari.docx<small>Tasarımcı · TG'de olmayan 3 madde</small></div>
+        <div class="doc">📝 Test planı<small>Ben · 15 madde · 3 test türü</small></div>
+      </div>
+      <div class="types">
+        <!-- İşlevsel -->
+        <div class="card type">
+          <h3>İşlevsel</h3><div class="meta">Birim çalışıyor mu · sonunda üretime devir</div>
+          <div class="phase">Hazırlık</div>
+          <div class="step"><span class="chip ok"><i class="dot"></i></span>Planlama<span class="who">10.10</span></div>
+          <div class="step"><span class="chip ok"><i class="dot"></i></span>Tasarımcı spek görüşü<span class="who">A. Yılmaz</span></div>
+          <div class="step"><span class="chip ok"><i class="dot"></i></span>JIG-1000-0014 aparat<span class="who">geldi</span></div>
+          <div class="step"><span class="chip run"><i class="dot"></i></span>JT-0001-0102 kablaj<span class="who">yapılıyor</span></div>
+          <div class="step"><span class="chip run"><i class="dot"></i></span>YZ-0001 test yazılımı<span class="who">yazılıyor</span></div>
+          <div class="step"><span class="chip ok"><i class="dot"></i></span>Birim teslim alındı<span class="who">SN01, SN02</span></div>
+          <div class="phase">Testler</div>
+          <div class="tests">
+            <div class="test"><div class="row"><span class="chip ok"><i class="dot"></i></span>Dönüş hızı</div><div class="items">TG-4.2 · docx-1</div></div>
+            <div class="test"><div class="row"><span class="chip fail"><i class="dot"></i></span>Konum doğruluğu</div><div class="items">TG-4.3</div><div class="why">Enkoder kayması · bildirim açıldı</div></div>
+            <div class="test"><div class="row"><span class="chip todo"><i class="dot"></i></span>Açı sınırları</div><div class="items">docx-2, docx-3</div></div>
+          </div>
+          <div class="phase">Üretime devir</div>
+          <div class="step"><span class="chip run"><i class="dot"></i></span>Üretim test dokümanı<span class="who">hazırlanıyor</span></div>
+          <div class="step"><span class="chip todo"><i class="dot"></i></span>Jig, kablo, yazılım üretime<span class="who">—</span></div>
+        </div>
+        <!-- ÇK -->
+        <div class="card type">
+          <h3>ÇK</h3><div class="meta">Çevre koşulları · dış lab</div>
+          <div class="phase">Hazırlık</div>
+          <div class="step"><span class="chip ok"><i class="dot"></i></span>Test prosedürü<span class="who">teknisyen için</span></div>
+          <div class="step"><span class="chip ok"><i class="dot"></i></span>Titreşim fikstürü JIG-1000-0009<span class="who">geldi</span></div>
+          <div class="step"><span class="chip na"><i class="dot"></i></span>Kablo<span class="who">gerekmiyor</span></div>
+          <div class="step"><span class="chip ok"><i class="dot"></i></span>Lab talebi<span class="who">LT-2026-118</span></div>
+          <div class="step"><span class="chip ok"><i class="dot"></i></span>Birim lab'a teslim<span class="who">SN01</span></div>
+          <div class="phase">Testler</div>
+          <div class="tests">
+            <div class="test"><div class="row"><span class="chip ok"><i class="dot"></i></span>Yüksek sıcaklık</div><div class="items">TG-6.1</div></div>
+            <div class="test"><div class="row"><span class="chip run"><i class="dot"></i></span>Titreşim</div><div class="items">TG-6.3 · rastgele, sinüs</div></div>
+            <div class="test"><div class="row"><span class="chip ok"><i class="dot"></i></span>Nem</div><div class="items">TG-6.4 · analizle</div></div>
+          </div>
+          <div class="phase">Sonuç</div>
+          <div class="step"><span class="chip todo"><i class="dot"></i></span>Test raporu (DOORS)<span class="who">—</span></div>
+          <div class="step"><span class="chip todo"><i class="dot"></i></span>Müşteri raporu<span class="who">—</span></div>
+        </div>
+        <!-- EMI/EMC -->
+        <div class="card type">
+          <h3>EMI/EMC</h3><div class="meta">Aynı mantık · jig yerine kablo</div>
+          <div class="phase">Hazırlık</div>
+          <div class="step"><span class="chip ok"><i class="dot"></i></span>Test prosedürü<span class="who">hazır</span></div>
+          <div class="step"><span class="chip na"><i class="dot"></i></span>Jig<span class="who">gerekmiyor</span></div>
+          <div class="step"><span class="chip wait"><i class="dot"></i></span>JT-0001-0002 RS422 kablo<span class="who">çoğaltma</span></div>
+          <div class="step"><span class="chip ok"><i class="dot"></i></span>Lab talebi<span class="who">LT-2026-121</span></div>
+          <div class="step"><span class="chip wait"><i class="dot"></i></span>Birim lab'a teslim<span class="who">kablo bekleniyor</span></div>
+          <div class="phase">Testler</div>
+          <div class="tests">
+            <div class="test"><div class="row"><span class="chip ok"><i class="dot"></i></span>CE102</div><div class="items">TG-7.1</div></div>
+            <div class="test"><div class="row"><span class="chip ok"><i class="dot"></i></span>RE102</div><div class="items">TG-7.2</div></div>
+            <div class="test"><div class="row"><span class="chip run"><i class="dot"></i></span>RS103</div><div class="items">TG-7.3</div></div>
+            <div class="test"><div class="row"><span class="chip todo"><i class="dot"></i></span>CS114</div><div class="items">TG-7.4</div></div>
+          </div>
+          <div class="phase">Sonuç</div>
+          <div class="step"><span class="chip todo"><i class="dot"></i></span>Test raporu (DOORS)<span class="who">—</span></div>
+          <div class="step"><span class="chip todo"><i class="dot"></i></span>Müşteri raporu<span class="who">—</span></div>
+        </div>
+      </div>
+      <div class="summary">
+        <div class="card"><b>15 / 15</b><span>madde bir teste bağlı</span></div>
+        <div class="card"><b style="color:var(--ok)">6</b><span>test geçti</span></div>
+        <div class="card"><b style="color:var(--fail)">1</b><span>kaldı · bildirim açık</span></div>
+        <div class="card"><b style="color:var(--wait)">2</b><span>bekleyen · kablaj, kablo</span></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

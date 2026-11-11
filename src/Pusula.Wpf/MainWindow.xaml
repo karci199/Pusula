@@ -142,6 +142,17 @@
             <Setter Property="Margin" Value="0,6,0,0" />
         </Style>
 
+        <!-- Sayı çipi: tür simgesi, ad, sayı -->
+        <DataTemplate x:Key="CountChipTemplate">
+            <Border Margin="0,0,8,8" Padding="10,5" CornerRadius="{DynamicResource ControlCornerRadius}"
+                    Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                <StackPanel Orientation="Horizontal">
+                    <local:AppIcon Glyph="{Binding Glyph}" Foreground="{Binding Color}" FontSize="14" VerticalAlignment="Center" />
+                    <TextBlock Margin="8,0,0,0" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Label}" />
+                    <TextBlock Margin="8,0,0,0" VerticalAlignment="Center" FontWeight="SemiBold" Text="{Binding Count}" />
+                </StackPanel>
+            </Border>
+        </DataTemplate>
         <ItemsPanelTemplate x:Key="TilesPanel">
             <UniformGrid Rows="1" />
         </ItemsPanelTemplate>
@@ -1025,6 +1036,36 @@
                     </StackPanel>
                     <TextBlock Margin="0,6,0,24" HorizontalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Content_EmptyHint}" />
 
+                    <!-- Sayılar: en genel ve kullanıcının -->
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Margin="0,6,0,0" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Home_All}" />
+                        <ItemsControl Grid.Column="1" ItemsSource="{Binding HomeCounts}" ItemTemplate="{StaticResource CountChipTemplate}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                        <TextBlock Grid.Row="1" Margin="0,6,0,0" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Home_Me}"
+                                   Visibility="{Binding HasMyCounts, Converter={StaticResource BoolToVis}}" />
+                        <ItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding MyCounts}" ItemTemplate="{StaticResource CountChipTemplate}"
+                                      Visibility="{Binding HasMyCounts, Converter={StaticResource BoolToVis}}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Grid>
+
                     <!-- Son açılanlar -->
                     <StackPanel Margin="0,0,0,20" Visibility="{Binding HasRecent, Converter={StaticResource BoolToVis}}">
                         <TextBlock Margin="0,0,0,8" FontSize="15" FontWeight="SemiBold" Text="{x:Static res:Resources.Home_Recent}" />
@@ -1174,11 +1215,20 @@
                 </ItemsControl>
 
                 <!-- Özet kutucukları (proje) -->
-                <ItemsControl Grid.Row="2" Margin="0,16,0,0"
-                              ItemsSource="{Binding Detail.Tiles}"
-                              ItemsPanel="{StaticResource TilesPanel}"
-                              ItemTemplate="{StaticResource TileTemplate}"
-                              Visibility="{Binding Detail.IsProject, Converter={StaticResource BoolToVis}}" />
+                <StackPanel Grid.Row="2" Margin="0,16,0,0" Visibility="{Binding Detail.IsProject, Converter={StaticResource BoolToVis}}">
+                    <ItemsControl ItemsSource="{Binding Detail.Tiles}"
+                                  ItemsPanel="{StaticResource TilesPanel}"
+                                  ItemTemplate="{StaticResource TileTemplate}" />
+                    <!-- Projede kullanılan kayıtlar: Kablolar 4 · Jigler 3 … -->
+                    <ItemsControl Margin="0,10,0,0" ItemsSource="{Binding Detail.ProjectCounts}" ItemTemplate="{StaticResource CountChipTemplate}"
+                                  Visibility="{Binding Detail.HasProjectCounts, Converter={StaticResource BoolToVis}}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </StackPanel>
 
                 <!-- Hesaplanıyor -->
                 <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,16,0,0"

@@ -2024,6 +2024,27 @@ namespace Pusula.Wpf.Properties
         /// <summary>İş yeniden açma onay düğmesi</summary>
         public static string Task_ConfirmReopen { get { return Get("Task_ConfirmReopen"); } }
 
+        /// <summary>Başlangıç sayfası: proje sayısı (tür adı yoksa)</summary>
+        public static string Home_Projects { get { return Get("Home_Projects"); } }
+
+        /// <summary>Başlangıç sayfası: en genel sayılar başlığı</summary>
+        public static string Home_All { get { return Get("Home_All"); } }
+
+        /// <summary>Başlangıç sayfası: kullanıcının sayıları başlığı</summary>
+        public static string Home_Me { get { return Get("Home_Me"); } }
+
+        /// <summary>Başlangıç sayfası: kullanıcının açık işleri</summary>
+        public static string Home_MyOpen { get { return Get("Home_MyOpen"); } }
+
+        /// <summary>Başlangıç sayfası: kullanıcının geciken işleri</summary>
+        public static string Home_MyLate { get { return Get("Home_MyLate"); } }
+
+        /// <summary>Başlangıç sayfası: kullanıcının adının geçtiği kayıtlar (talep, yapan …)</summary>
+        public static string Home_MyRecords { get { return Get("Home_MyRecords"); } }
+
+        /// <summary>Başlangıç sayfası: stok sayısı (tür adı yoksa)</summary>
+        public static string Home_Stocks { get { return Get("Home_Stocks"); } }
+
         #endregion
     }
 }

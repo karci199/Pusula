@@ -34,6 +34,31 @@ namespace Pusula.Wpf.ViewModels
         public string Value { get; }
     }
 
+    /// <summary>Sayı çipi: tür simgesi, rengi, adı ve sayısı ("Kablolar 4").</summary>
+    public sealed class RecordCount
+    {
+        /// <summary>Çipi oluşturur; <paramref name="hexIcon"/> tür simgesi ("E703"), <paramref name="color"/> "#F7A35C".</summary>
+        public RecordCount(string label, string hexIcon, string color, int count)
+        {
+            Label = label;
+            Glyph = TreeNodeViewModel.GlyphOf(hexIcon);
+            Color = color.Length == 0 ? "#8A8A8A" : color;
+            Count = count;
+        }
+
+        /// <summary>Ad (çoğul).</summary>
+        public string Label { get; }
+
+        /// <summary>Simge.</summary>
+        public string Glyph { get; }
+
+        /// <summary>Simgenin rengi.</summary>
+        public string Color { get; }
+
+        /// <summary>Sayı.</summary>
+        public int Count { get; }
+    }
+
     /// <summary>Özet tablosunun bir satırı (görünüm için biçimlenmiş).</summary>
     public sealed class DetailRowViewModel
     {
@@ -119,6 +144,15 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Özet kutucukları.</summary>
         public ObservableCollection<SummaryTile> Tiles { get; } = new ObservableCollection<SummaryTile>();
+
+        /// <summary>Projede kullanılan kayıtların türe göre sayısı (stoklarına bağlı ve projeye ait olanlar, tekrarsız).</summary>
+        public ObservableCollection<RecordCount> ProjectCounts { get; } = new ObservableCollection<RecordCount>();
+
+        /// <summary>Projede sayılacak kayıt var mı.</summary>
+        public bool HasProjectCounts
+        {
+            get { return ProjectCounts.Count > 0; }
+        }
 
         /// <summary>Tablo satırları.</summary>
         public ObservableCollection<DetailRowViewModel> Rows { get; } = new ObservableCollection<DetailRowViewModel>();
@@ -369,6 +403,8 @@ namespace Pusula.Wpf.ViewModels
             types = typeSet;
             PrepareFilters(selected?.Path ?? string.Empty);
             Tiles.Clear();
+            ProjectCounts.Clear();
+            OnPropertyChanged(nameof(HasProjectCounts));
             Rows.Clear();
             Steps.Clear();
             Distribution.Clear();
@@ -702,6 +738,44 @@ namespace Pusula.Wpf.ViewModels
             OnPropertyChanged(nameof(HasAlerts));
         }
 
+        // Projenin stoklarının kullandığı kayıtlar ve projeye ait kayıtlar, türe göre tekrarsız sayılır.
+        private void ShowProjectCounts(FolderSummary summary)
+        {
+            ProjectCounts.Clear();
+            var used = new Dictionary<string, InventoryItem>(StringComparer.OrdinalIgnoreCase);
+            foreach (var row in summary.Rows.Where(r => !r.IsMissing && !r.IsSpecial))
+            {
+                var info = JsonFile.TryRead<StockInfo>(TrackingFiles.StockFile(row.Path));
+                if (info == null)
+                {
+                    continue;
+                }
+
+                List<string> missing;
+                foreach (var item in InventoryService.UsedByStock(row.Path, info.Inventory ?? new List<string>(), InventoryItems, out missing))
+                {
+                    used[item.Folder] = item;
+                }
+            }
+
+            var projectName = Path.GetFileName((node?.Path ?? string.Empty).TrimEnd('\\'));
+            foreach (var item in InventoryItems.Where(i => i.Level == InventoryLevel.Project && string.Equals(i.Owner, projectName, StringComparison.OrdinalIgnoreCase)))
+            {
+                used[item.Folder] = item;
+            }
+
+            foreach (var type in types.InventoryTypes.GroupBy(t => t.Key, StringComparer.OrdinalIgnoreCase).Select(g => g.First()))
+            {
+                var count = used.Values.Count(i => string.Equals(i.Record.Type, type.Key, StringComparison.OrdinalIgnoreCase));
+                if (count > 0)
+                {
+                    ProjectCounts.Add(new RecordCount(type.PluralName, type.Icon, type.Color, count));
+                }
+            }
+
+            OnPropertyChanged(nameof(HasProjectCounts));
+        }
+
         private void ShowProject(FolderSummary summary)
         {
             var stockType = types.Stock;
@@ -712,6 +786,8 @@ namespace Pusula.Wpf.ViewModels
             {
                 Rows.Add(new DetailRowViewModel(row, stockType));
             }
+
+            ShowProjectCounts(summary);
 
             // Dağılım, tür kalıbındaki sırayla: sıralı durumlar, sıra dışılar, sonra durumu olmayanlar.
             var order = stockType.Statuses.Concat(stockType.SideStatuses).Select(s => s.Name).ToList();
