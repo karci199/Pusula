@@ -583,6 +583,15 @@ namespace Pusula.Wpf.ViewModels
                     OpenTasks.Add(new OpenTaskRow(task, string.Empty));
                 }
 
+                // Son tarihi geçmiş işler Dikkat'te de görünür (en eskisi başta).
+                var today = DateTime.Today;
+                foreach (var task in tasks.Where(t => t.Due.HasValue && t.Due.Value.Date < today).OrderBy(t => t.Due))
+                {
+                    var who = string.IsNullOrEmpty(task.PersonName) ? string.Empty : " · " + task.PersonName;
+                    Alerts.Add(new AlertItem(AppIcons.Clock, Resources.Alert_LateTaskTitle,
+                        task.Text + who + " · " + Formats.ShortDate(task.Due!.Value), StatusTone.Failed));
+                }
+
                 NotifyOpenTasks();
                 ShowInventory(summary.Stock, path);
                 if (tree != null)

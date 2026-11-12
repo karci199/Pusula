@@ -1815,4 +1815,7 @@
   <data name="Home_Stocks" xml:space="preserve">
     <value>Stoklar</value>
   </data>
+  <data name="Alert_LateTaskTitle" xml:space="preserve">
+    <value>Geciken iş</value>
+  </data>
 </root>

@@ -24,6 +24,7 @@ Check 'bana ait: yalnız kullanıcının işi' (@($vm.HomeMyTasks | ? { $_.Text 
 Check 'iş kaynağı: proje · stok' (@($vm.HomeMyTasks | ? { $_.Meta -like '*7000_MILKON*' }).Count -ge 1) (@($vm.HomeMyTasks | % Meta) -join ' | ')
 
 $vm.SelectNodeByPath($stock); Wait
+Check 'stok Dikkat: geciken iş' (@($vm.Detail.Alerts | ? { $_.Detail -like 'Geciken deneme işi*' }).Count -eq 1 -and @($vm.Detail.Alerts | ? { $_.Detail -like 'Benim deneme işim*' }).Count -eq 0) (@($vm.Detail.Alerts | % { $_.Title + ': ' + $_.Detail }) -join ' | ')
 $vm.SelectNodeByPath((Join-Path $Data '7000_MILKON')); Wait
 $vm.Refresh(); Wait
 $vm.SelectedNode = $null; $vm.LoadHome(); Wait

@@ -2045,6 +2045,9 @@ namespace Pusula.Wpf.Properties
         /// <summary>Başlangıç sayfası: stok sayısı (tür adı yoksa)</summary>
         public static string Home_Stocks { get { return Get("Home_Stocks"); } }
 
+        /// <summary>Dikkat kartı başlığı: son tarihi geçmiş açık iş.</summary>
+        public static string Alert_LateTaskTitle { get { return Get("Alert_LateTaskTitle"); } }
+
         #endregion
     }
 }
