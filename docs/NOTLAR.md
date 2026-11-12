@@ -143,7 +143,7 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 8. **Genel durum özetleri:** proje, stok ve kök düzeyinde "ÇK testleri ne durumda, diğer testler, jigi olanlar" gibi
    basit özet listeleri (sağ paneldeki tablolar gibi).
 9. Eski stoklara eksik alt klasörleri ekleme ("Eksikleri tamamla").
-10. Kişi türü.
+10. Kişi türü (yapıldı: Türler penceresinde roller, ekip, kişi listesi; ayrı kişi sayfası gerekmiyor, kullanıcı 12.11.2026).
 11. Otomatik öneriler (karar kullanıcıda): "3 haftadır dosya değişmedi ama Testte", "kalibrasyon geçti", "SATIMO'ya sonuç geldi".
 
 ## Bekleyen işler
@@ -151,8 +151,11 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 - **İnceleme sonrası kalanlar (08.11.2026):** stok seçilince 5 okuma artık aynı anda yapılıyor; tek taramada birleştirmek ileride. Kısa not / bağ / not oluşturma UI thread'inde eşzamanlı dosya yazıyor. JSON oku-değiştir-yaz kalıbı 4 yerde
   tekrar (`JsonFile.Update<T>` yapılmalı). Süzgeç kutularının "Tümü" düzeltmesi geçici çözüm.
 
-- **md penceresi, sonraki adımlar:** düz görünümde md renklendirme ve satır numarası (AvalonEdit, MIT; ayrı onay), kısa not /
-  + Olay kutularında da @ listesi, görev kutusu tıklamasının da Ctrl+Z ile geri alınması.
+- **md penceresi (12.11.2026 kontrol):** renklendirme ve satır numarası (AvalonEdit), kısa not / Olay kutularında @ listesi,
+  görev kutusu tıklamasının Ctrl+Z ile geri alınması yapılmış; yalnız görünüm açıkken de Ctrl+Z / Ctrl+Y çalışır.
+- **12.11.2026 yapılanlar:** geciken işler stok sayfasının Dikkat bölümünde; stok ve proje etiketleri (Düzenle penceresi,
+  json'da tags, ana notun YAML'ında tags, başlıkta çip, ağaçta #etiket araması); beklenmeyen hata uygulamayı kapatmaz
+  (`%LOCALAPPDATA%\Pusula\hatalar.log`); son açılanlar gecikmeli yazılır; proje sayıları arka planda okunur.
 - **Jenerik test dokümanı üretme:** yeni stok açınca (ya da istenince) stok no/ad dolu test planı vb. doküman.
   Şablon modüllerine "başlangıç dosyaları" eklenebilir. DOCX üretimi için kullanıcının
   `C:\Projeler\Aktif\Divit` projesine bakılacak (orada docx üretimi var).
