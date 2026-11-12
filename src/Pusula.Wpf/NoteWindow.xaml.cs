@@ -807,6 +807,21 @@ namespace Pusula.Wpf
                     case Key.S:
                         viewModel.Save();
                         return true;
+                    case Key.Z:
+                    case Key.Y:
+                        // Odak bir yazı kutusundaysa (düzenleyici, bul) kutunun kendi geri alması çalışır. Değilse (yalnız
+                        // görünüm açıkken görev kutusuna tıklandı) düzenleyicinin geçmişi kullanılır.
+                        if (Keyboard.FocusedElement is TextBoxBase)
+                        {
+                            return false;
+                        }
+
+                        if (key == Key.Z ? Editor.Undo() : Editor.Redo())
+                        {
+                            RenderPreview();
+                        }
+
+                        return true;
                     case Key.F:
                         OpenFind(false);
                         return true;

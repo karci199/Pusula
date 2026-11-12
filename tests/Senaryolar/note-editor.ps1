@@ -169,6 +169,11 @@ $nw.ToggleTaskAt($line); Pump
 Check 'pencerede tıklama işaretler' ($ed.Text.Contains('- [x] SN02 tekrar ölç'))
 $ed.Undo() | Out-Null; Pump
 Check 'Ctrl+Z tıklamayı geri alır' ($ed.Text.Contains('- [ ] SN02 tekrar ölç') -and $e.Text.Contains('- [ ] SN02 tekrar ölç'))
+$nw.ToggleTaskAt($line); Pump; [System.Windows.Input.Keyboard]::ClearFocus(); Pump
+$KZ = [System.Windows.Input.Key]
+Check 'odak düzenleyicide değilken Ctrl+Z de geri alır (yalnız görünüm)' ($nw.HandleGlobalKey($KZ::Z, $true, $false) -and $ed.Text.Contains('- [ ] SN02 tekrar ölç'))
+Check 've Ctrl+Y yineler' ($nw.HandleGlobalKey($KZ::Y, $true, $false) -and $ed.Text.Contains('- [x] SN02 tekrar ölç'))
+$nw.HandleGlobalKey($KZ::Z, $true, $false) | Out-Null; Pump
 $e.ToggleTask($line)
 Check '[[JIG-1000-0009]] ana pencerede jigi seçer' ($vm.NavigateToKey('JIG-1000-0009') -and $vm.SelectedNode.Path -like '*JIG-1000-0009*')
 Check '[[AB-7000-0003]] stoğu seçer' ($vm.NavigateToKey('AB-7000-0003') -and $vm.SelectedNode.Path -eq $stock)
