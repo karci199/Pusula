@@ -16,6 +16,7 @@ namespace Pusula.Core.Tracking
             ProjectNo = string.Empty;
             Name = string.Empty;
             Notes = new System.Collections.Generic.List<QuickNote>();
+            Tags = new System.Collections.Generic.List<string>();
         }
 
         /// <summary>Uygulamadan yazılan kısa notlar (eskiden yeniye).</summary>
@@ -33,5 +34,9 @@ namespace Pusula.Core.Tracking
         /// <summary>Proje adı, örn. MILKON.</summary>
         [DataMember(Name = "name", Order = 2)]
         public string Name { get; set; } = string.Empty;
+
+        /// <summary>Projenin etiketleri (<c>#</c> olmadan; ana notun YAML'ında da durur).</summary>
+        [DataMember(Name = "tags", Order = 4, EmitDefaultValue = false)]
+        public System.Collections.Generic.List<string> Tags { get; set; } = new System.Collections.Generic.List<string>();
     }
 }

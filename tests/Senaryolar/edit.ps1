@@ -33,6 +33,30 @@ try {
     Check 'notlar ve durum korundu' ($info.Notes.Count -eq 3 -and $info.Status -eq 'Ölçüm bekliyor')
     Check 'seçim korundu' ($vm.SelectedNode.Path -eq $stock)
 
+    "--- 2b. Etiketler: stok ve proje"
+    $vm.OpenEdit($stock) | Out-Null
+    $vm.EditTags = '#SATIMO #ÇK deneme'
+    Check 'stok etiketleri kaydedildi' ($vm.ConfirmEdit())
+    $info = $readStock.Invoke($null, @([Pusula.Core.Tracking.TrackingFiles]::StockFile($stock)))
+    Check 'stok.json etiketler' (($info.Tags -join ',') -eq 'SATIMO,ÇK,deneme') ($info.Tags -join ',')
+    Wait
+    Check 'başlıkta etiket çipleri' ($vm.Detail.HasTags -and ($vm.Detail.Tags -join ' ') -eq '#SATIMO #ÇK #deneme') ($vm.Detail.Tags -join ' ')
+    $mainNote = [Pusula.Core.Notes.NoteFile]::Find($stock, 'AB-7000-0002')
+    if ($mainNote -and (Test-Path $mainNote)) { Check 'ana notun YAML: tags listesi' ([IO.File]::ReadAllText($mainNote) -match '(?m)^tags: \[SATIMO, ÇK, deneme\]') }
+    Check 'düzenle açılınca etiketler dolu' ($vm.OpenEdit($stock) -and $vm.EditTags -like '*#SATIMO*')
+    $sug = @($vm.TagSuggestions() | % Key)
+    Check 'stokta # önerisi: her yerde geçen etiketler' ($sug -contains '#SATIMO' -and -not ($sug -contains '#faz_kararli')) ($sug -join ' ')
+    $vm.IsEditOpen = $false
+    Snap $win "$Out\edit-stock-tags.png"
+    $vm.OpenEdit($project) | Out-Null; $vm.EditTags = '#Kalifikasyon'
+    Check 'proje etiketi kaydedildi' ($vm.ConfirmEdit() -and ($readProject.Invoke($null, @([Pusula.Core.Tracking.TrackingFiles]::ProjectFile($project))).Tags -join ',') -eq 'Kalifikasyon')
+    $vm.SelectNodeByPath($project); Wait
+    Check 'proje başlığında etiket' (($vm.Detail.Tags -join ' ') -eq '#Kalifikasyon') ($vm.Detail.Tags -join ' ')
+    $vm.SelectNodeByPath($stock); Wait
+    $vm.SearchText = '#deneme'; Pump
+    Check 'ağaç araması #etiket ile stoku bulur' (@($vm.Nodes | ? Title -eq '7000_MILKON' | % { $_.Children } | ? { $_.IsVisible } | % Title) -join ',' -eq 'AB-7000-0002') (@($vm.Nodes | ? Title -eq '7000_MILKON' | % { $_.Children } | ? { $_.IsVisible } | % Title) -join ',')
+    $vm.SearchText = ''; Pump
+
     "--- 3. Düzenle: jig"
     $jig = Join-Path $Data 'ENVANTER\Jigler\JIG-1000-0009_SATIMO_adaptor_plakasi'
     Check 'jig diyaloğu: alt tür görünür' ($vm.OpenEdit($jig) -and $vm.IsEditInventory -and $vm.EditSubTypes.Count -gt 0)

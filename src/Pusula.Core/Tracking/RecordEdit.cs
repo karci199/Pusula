@@ -47,6 +47,12 @@ namespace Pusula.Core.Tracking
         /// <summary>Projenin adını değiştirir. Hata metni; başarıda boş.</summary>
         public static string EditProject(string folder, string name)
         {
+            return EditProject(folder, name, null);
+        }
+
+        /// <summary>Projenin adını ve etiketlerini (verildiyse) değiştirir. Hata metni; başarıda boş.</summary>
+        public static string EditProject(string folder, string name, IEnumerable<string>? tags)
+        {
             var path = TrackingFiles.ProjectFile(folder);
             var info = JsonFile.TryRead<ProjectInfo>(path);
             if (info == null)
@@ -55,11 +61,22 @@ namespace Pusula.Core.Tracking
             }
 
             info.Name = (name ?? string.Empty).Trim();
+            if (tags != null)
+            {
+                info.Tags = CleanTags(tags);
+            }
+
             return Write(path, info);
         }
 
         /// <summary>Stokun adını ve şablonunu değiştirir. Hata metni; başarıda boş.</summary>
         public static string EditStock(string folder, string name, string template)
+        {
+            return EditStock(folder, name, template, null);
+        }
+
+        /// <summary>Stokun adını, şablonunu ve etiketlerini (verildiyse) değiştirir. Hata metni; başarıda boş.</summary>
+        public static string EditStock(string folder, string name, string template, IEnumerable<string>? tags)
         {
             var path = TrackingFiles.StockFile(folder);
             var info = JsonFile.TryRead<StockInfo>(path);
@@ -70,7 +87,18 @@ namespace Pusula.Core.Tracking
 
             info.Name = (name ?? string.Empty).Trim();
             info.Template = (template ?? string.Empty).Trim();
+            if (tags != null)
+            {
+                info.Tags = CleanTags(tags);
+            }
+
             return Write(path, info);
+        }
+
+        /// <summary>Etiket adlarını düzeltir (<c>#</c> atılır, boşluk <c>_</c>), boşları ve tekrarları atar.</summary>
+        public static List<string> CleanTags(IEnumerable<string> tags)
+        {
+            return (tags ?? Enumerable.Empty<string>()).Select(TagDefinition.NameFrom).Where(t => t.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
         }
 
         /// <summary>Envanter kaydının adını, alt türünü, kısa açıklamasını, alan değerlerini ve etiketlerini (verildiyse) değiştirir. Hata metni; başarıda boş.</summary>
@@ -100,7 +128,7 @@ namespace Pusula.Core.Tracking
 
             if (tags != null)
             {
-                record.Tags = tags.Select(TagDefinition.NameFrom).Where(t => t.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+                record.Tags = CleanTags(tags);
             }
 
             return Write(path, record);

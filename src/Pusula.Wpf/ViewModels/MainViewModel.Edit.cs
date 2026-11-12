@@ -164,7 +164,7 @@ namespace Pusula.Wpf.ViewModels
         public System.Collections.Generic.IEnumerable<NoteSuggestion> TagSuggestions()
         {
             // Bağlam: açık düzenle / yeni kayıt penceresi, yoksa gösterilen kayıt ya da stok; hiçbiri değilse bütün etiketler.
-            var type = IsEditOpen ? editType : IsInventoryDialogOpen ? newInventoryType : null;
+            var type = IsEditOpen ? EditTagType() : IsInventoryDialogOpen ? newInventoryType : null;
             var subType = IsEditOpen ? editSubType : IsInventoryDialogOpen ? NewInventorySubType : string.Empty;
             if (type == null && Inventory.Item != null)
             {
@@ -175,9 +175,27 @@ namespace Pusula.Wpf.ViewModels
             {
                 type = types.Stock;
             }
+            else if (type == null && Detail.IsProject)
+            {
+                type = types.Find(Pusula.Core.Types.TypeSet.ProjectKey);
+            }
 
             var list = type == null ? types.TagList : types.TagsFor(type.Key, subType);
             return list.Select(t => new NoteSuggestion("#" + t.Name, TagScopeText(t), Resources.Tag_Kind, string.Empty, "#" + t.Name)).ToList();
+        }
+
+        // Düzenlenen kaydın türü: envanterde kaydın türü, stokta stok türü, projede proje türü.
+        private Pusula.Core.Types.TypeDefinition? EditTagType()
+        {
+            switch (editKind)
+            {
+                case RecordKind.Project:
+                    return types.Find(Pusula.Core.Types.TypeSet.ProjectKey);
+                case RecordKind.Stock:
+                    return types.Stock;
+                default:
+                    return editType;
+            }
         }
 
         // "Her yerde" ya da "Kablo · RF, Jig".
@@ -349,6 +367,7 @@ namespace Pusula.Wpf.ViewModels
                     var info = JsonFile.TryRead<ProjectInfo>(TrackingFiles.ProjectFile(folder));
                     EditNumber = info?.ProjectNo ?? Path.GetFileName(folder);
                     EditName = info?.Name ?? string.Empty;
+                    EditTags = MarkdownEditing.FormatTags(info?.Tags ?? new System.Collections.Generic.List<string>());
                     break;
                 }
 
@@ -357,6 +376,7 @@ namespace Pusula.Wpf.ViewModels
                     var info = JsonFile.TryRead<StockInfo>(TrackingFiles.StockFile(folder));
                     EditNumber = info?.StockNo ?? Path.GetFileName(folder);
                     EditName = info?.Name ?? string.Empty;
+                    EditTags = MarkdownEditing.FormatTags(info?.Tags ?? new System.Collections.Generic.List<string>());
                     EditTemplates.Add(string.Empty);
                     foreach (var name in templates.Templates.Select(t => t.Name))
                     {
@@ -453,6 +473,24 @@ namespace Pusula.Wpf.ViewModels
             }
         }
 
+        // Proje / stok etiketleri ana notun YAML'ındaki tags: listesine de yazılır (yalnız değiştiyse; gövdeye dokunulmaz).
+        private void WriteTagsToMainNote(string folder, string number, System.Collections.Generic.IList<string>? before, System.Collections.Generic.IList<string> tags)
+        {
+            var clean = RecordEdit.CleanTags(tags);
+            if (before != null && before.SequenceEqual(clean, StringComparer.Ordinal))
+            {
+                return;
+            }
+
+            var note = NoteFile.Find(folder, number);
+            var lists = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IList<string>> { { "tags", clean } };
+            var yamlError = Journal.SetFrontMatter(note, new System.Collections.Generic.Dictionary<string, string>(), lists);
+            if (yamlError.Length > 0)
+            {
+                Status = string.Format(Resources.Error_Io, yamlError);
+            }
+        }
+
         /// <summary>Düzenlemeyi kaydeder; başarılıysa ağaç yenilenir (seçim korunur). Kaydedildiyse <c>true</c>.</summary>
         public bool ConfirmEdit()
         {
@@ -460,11 +498,31 @@ namespace Pusula.Wpf.ViewModels
             switch (editKind)
             {
                 case RecordKind.Project:
-                    error = RecordEdit.EditProject(editFolder, EditName);
+                {
+                    var before = JsonFile.TryRead<ProjectInfo>(TrackingFiles.ProjectFile(editFolder))?.Tags;
+                    var projectTags = MarkdownEditing.ParseTags(EditTags);
+                    error = RecordEdit.EditProject(editFolder, EditName, projectTags);
+                    if (error.Length == 0)
+                    {
+                        WriteTagsToMainNote(editFolder, Path.GetFileName(editFolder), before, projectTags);
+                    }
+
                     break;
+                }
+
                 case RecordKind.Stock:
-                    error = RecordEdit.EditStock(editFolder, EditName, EditTemplate);
+                {
+                    var stockInfo = JsonFile.TryRead<StockInfo>(TrackingFiles.StockFile(editFolder));
+                    var stockTags = MarkdownEditing.ParseTags(EditTags);
+                    error = RecordEdit.EditStock(editFolder, EditName, EditTemplate, stockTags);
+                    if (error.Length == 0)
+                    {
+                        WriteTagsToMainNote(editFolder, stockInfo?.StockNo ?? Path.GetFileName(editFolder), stockInfo?.Tags, stockTags);
+                    }
+
                     break;
+                }
+
                 default:
                     foreach (var input in EditFields)
                     {

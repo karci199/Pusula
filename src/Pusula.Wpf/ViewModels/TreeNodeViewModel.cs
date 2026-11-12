@@ -156,7 +156,7 @@ namespace Pusula.Wpf.ViewModels
             set { SetProperty(ref isSelected, value); }
         }
 
-        // Proje / stok adı (proje.json, stok.json); ilk aramada bir kez okunur.
+        // Proje / stok adı ve etiketleri (proje.json, stok.json; "#SATIMO" ile aranır); ilk aramada bir kez okunur.
         private string SearchName
         {
             get
@@ -166,16 +166,30 @@ namespace Pusula.Wpf.ViewModels
                     searchName = string.Empty;
                     if (Entry.Kind == FolderKind.Stock)
                     {
-                        searchName = JsonFile.TryRead<StockInfo>(TrackingFiles.StockFile(Entry.Path))?.Name ?? string.Empty;
+                        var info = JsonFile.TryRead<StockInfo>(TrackingFiles.StockFile(Entry.Path));
+                        searchName = info == null ? string.Empty : info.Name + TagText(info.Tags);
                     }
                     else if (Entry.Kind == FolderKind.Project)
                     {
-                        searchName = JsonFile.TryRead<ProjectInfo>(TrackingFiles.ProjectFile(Entry.Path))?.Name ?? string.Empty;
+                        var info = JsonFile.TryRead<ProjectInfo>(TrackingFiles.ProjectFile(Entry.Path));
+                        searchName = info == null ? string.Empty : info.Name + TagText(info.Tags);
                     }
                 }
 
                 return searchName;
             }
+        }
+
+        // " #SATIMO #ÇK" (etiket yoksa boş).
+        private static string TagText(System.Collections.Generic.IEnumerable<string>? tags)
+        {
+            var text = string.Empty;
+            foreach (var tag in tags ?? System.Linq.Enumerable.Empty<string>())
+            {
+                text += " #" + tag;
+            }
+
+            return text;
         }
 
         /// <summary>Aramada görünür mü.</summary>

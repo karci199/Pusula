@@ -21,6 +21,7 @@ namespace Pusula.Core.Tracking
             StatusNote = string.Empty;
             Inventory = new System.Collections.Generic.List<string>();
             Notes = new System.Collections.Generic.List<QuickNote>();
+            Tags = new System.Collections.Generic.List<string>();
         }
 
         /// <summary>Dosya biçiminin sürümü.</summary>
@@ -61,6 +62,10 @@ namespace Pusula.Core.Tracking
         /// <summary>Uygulamadan yazılan kısa notlar (eskiden yeniye).</summary>
         [DataMember(Name = "notes", Order = 8, EmitDefaultValue = false)]
         public System.Collections.Generic.List<QuickNote> Notes { get; set; } = new System.Collections.Generic.List<QuickNote>();
+
+        /// <summary>Stokun etiketleri (<c>#</c> olmadan; türler dosyasındaki etiket listesinden, ana notun YAML'ında da durur).</summary>
+        [DataMember(Name = "tags", Order = 9, EmitDefaultValue = false)]
+        public System.Collections.Generic.List<string> Tags { get; set; } = new System.Collections.Generic.List<string>();
 
         /// <summary>Durumu ve tarihini ayarlar.</summary>
         public void SetStatus(string status, string note, System.DateTime when)

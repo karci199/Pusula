@@ -148,6 +148,26 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Projede kullanılan kayıtların türe göre sayısı (stoklarına bağlı ve projeye ait olanlar, tekrarsız).</summary>
         public ObservableCollection<RecordCount> ProjectCounts { get; } = new ObservableCollection<RecordCount>();
 
+        /// <summary>Proje / stok etiketleri (<c>#SATIMO</c> …), başlıkta çip olarak.</summary>
+        public ObservableCollection<string> Tags { get; } = new ObservableCollection<string>();
+
+        /// <summary>Etiket var mı.</summary>
+        public bool HasTags
+        {
+            get { return Tags.Count > 0; }
+        }
+
+        private void ShowTags(System.Collections.Generic.IEnumerable<string>? tags)
+        {
+            Tags.Clear();
+            foreach (var tag in tags ?? Enumerable.Empty<string>())
+            {
+                Tags.Add("#" + tag);
+            }
+
+            OnPropertyChanged(nameof(HasTags));
+        }
+
         /// <summary>Projede sayılacak kayıt var mı.</summary>
         public bool HasProjectCounts
         {
@@ -430,6 +450,7 @@ namespace Pusula.Wpf.ViewModels
             StatusInfo = string.Empty;
             Subtitle = selected == null ? string.Empty : selected.KindText;
             HeaderName = string.Empty;
+            ShowTags(null);
             ParentName = string.Empty;
             ParentPath = string.Empty;
             ContextText = Subtitle;
@@ -546,6 +567,7 @@ namespace Pusula.Wpf.ViewModels
             {
                 ShowProject(summary, stockInventories);
                 HeaderName = projectInfo?.Name ?? string.Empty;
+                ShowTags(projectInfo?.Tags);
                 // Kısa notlar ve projenin ana notundaki Günlük olayları birlikte, yeniden eskiye.
                 var projectRows = (projectInfo?.Notes ?? new List<QuickNote>()).Select(n => new HistoryRow(n))
                     .Concat(projectJournal.Select(e => new HistoryRow(e)))
@@ -827,6 +849,7 @@ namespace Pusula.Wpf.ViewModels
             var parts = new[] { format?.Label ?? Resources.Kind_Stock, summary.Template, project }.Where(p => !string.IsNullOrEmpty(p));
             Subtitle = string.Join(" · ", parts);
             HeaderName = info?.Name ?? string.Empty;
+            ShowTags(info?.Tags);
             ParentName = project;
             ParentPath = Path.GetDirectoryName(path) ?? string.Empty;
             ContextText = string.Join(" · ", new[] { format?.Label ?? Resources.Kind_Stock, summary.Template }.Where(p => !string.IsNullOrEmpty(p)));
