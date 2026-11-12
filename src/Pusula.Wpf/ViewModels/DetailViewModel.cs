@@ -475,6 +475,7 @@ namespace Pusula.Wpf.ViewModels
             List<OpenTask> tasks = new List<OpenTask>();
             List<TestPlan> plans = new List<TestPlan>();
             List<EventNote> projectJournal = new List<EventNote>();
+            var stockInventories = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
             try
             {
                 if (kind == FolderKind.Project)
@@ -485,7 +486,19 @@ namespace Pusula.Wpf.ViewModels
                             projectInfo = JsonFile.TryRead<ProjectInfo>(TrackingFiles.ProjectFile(path));
                             tasks = OpenTask.ReadAll(path, true);
                             projectJournal = Journal.Read(NoteFile.Find(path, Path.GetFileName(path)));
-                            return FolderSummary.ForProject(path, templates.ProjectFolders, source.Token);
+                            var projectSummary = FolderSummary.ForProject(path, templates.ProjectFolders, source.Token);
+
+                            // Proje sayıları için stokların bağlı kayıtları da burada okunur (UI thread'inde değil).
+                            foreach (var row in projectSummary.Rows.Where(r => !r.IsMissing && !r.IsSpecial))
+                            {
+                                var info = JsonFile.TryRead<StockInfo>(TrackingFiles.StockFile(row.Path));
+                                if (info != null)
+                                {
+                                    stockInventories[row.Path] = info.Inventory ?? new List<string>();
+                                }
+                            }
+
+                            return projectSummary;
                         },
                         source.Token);
                 }
@@ -531,7 +544,7 @@ namespace Pusula.Wpf.ViewModels
             IsLoading = false;
             if (kind == FolderKind.Project)
             {
-                ShowProject(summary);
+                ShowProject(summary, stockInventories);
                 HeaderName = projectInfo?.Name ?? string.Empty;
                 // Kısa notlar ve projenin ana notundaki Günlük olayları birlikte, yeniden eskiye.
                 var projectRows = (projectInfo?.Notes ?? new List<QuickNote>()).Select(n => new HistoryRow(n))
@@ -739,20 +752,14 @@ namespace Pusula.Wpf.ViewModels
         }
 
         // Projenin stoklarının kullandığı kayıtlar ve projeye ait kayıtlar, türe göre tekrarsız sayılır.
-        private void ShowProjectCounts(FolderSummary summary)
+        private void ShowProjectCounts(Dictionary<string, List<string>> stockInventories)
         {
             ProjectCounts.Clear();
             var used = new Dictionary<string, InventoryItem>(StringComparer.OrdinalIgnoreCase);
-            foreach (var row in summary.Rows.Where(r => !r.IsMissing && !r.IsSpecial))
+            foreach (var pair in stockInventories)
             {
-                var info = JsonFile.TryRead<StockInfo>(TrackingFiles.StockFile(row.Path));
-                if (info == null)
-                {
-                    continue;
-                }
-
                 List<string> missing;
-                foreach (var item in InventoryService.UsedByStock(row.Path, info.Inventory ?? new List<string>(), InventoryItems, out missing))
+                foreach (var item in InventoryService.UsedByStock(pair.Key, pair.Value, InventoryItems, out missing))
                 {
                     used[item.Folder] = item;
                 }
@@ -776,7 +783,7 @@ namespace Pusula.Wpf.ViewModels
             OnPropertyChanged(nameof(HasProjectCounts));
         }
 
-        private void ShowProject(FolderSummary summary)
+        private void ShowProject(FolderSummary summary, Dictionary<string, List<string>> stockInventories)
         {
             var stockType = types.Stock;
             Tiles.Add(new SummaryTile(Resources.Tile_Stocks, summary.StockCount.ToString()));
@@ -787,7 +794,7 @@ namespace Pusula.Wpf.ViewModels
                 Rows.Add(new DetailRowViewModel(row, stockType));
             }
 
-            ShowProjectCounts(summary);
+            ShowProjectCounts(stockInventories);
 
             // Dağılım, tür kalıbındaki sırayla: sıralı durumlar, sıra dışılar, sonra durumu olmayanlar.
             var order = stockType.Statuses.Concat(stockType.SideStatuses).Select(s => s.Name).ToList();

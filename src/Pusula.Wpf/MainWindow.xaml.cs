@@ -42,6 +42,8 @@ namespace Pusula.Wpf
                 Activate();
             };
 
+            Closed += (s, e) => viewModel.SaveRecentNow();
+
             // İlk açılışta kök klasör seçilmemişse Ayarlar açılır (kök seçimi artık orada).
             ContentRendered += (s, e) =>
             {

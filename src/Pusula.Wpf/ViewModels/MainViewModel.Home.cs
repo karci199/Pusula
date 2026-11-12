@@ -101,6 +101,32 @@ namespace Pusula.Wpf.ViewModels
             }
 
             settings.Recent = list;
+
+            // Ok tuşuyla gezerken her adımda diske yazılmasın: kısa bir sessizlikten sonra tek seferde yazılır.
+            if (recentSaveTimer == null)
+            {
+                recentSaveTimer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(1.5) };
+                recentSaveTimer.Tick += (s, e) => SaveRecentNow();
+            }
+
+            recentSaveTimer.Stop();
+            recentSaveTimer.Start();
+            recentDirty = true;
+        }
+
+        private System.Windows.Threading.DispatcherTimer? recentSaveTimer;
+        private bool recentDirty;
+
+        /// <summary>Bekleyen "son açılanlar" yazımını hemen yapar (pencere kapanırken de çağrılır).</summary>
+        public void SaveRecentNow()
+        {
+            recentSaveTimer?.Stop();
+            if (!recentDirty)
+            {
+                return;
+            }
+
+            recentDirty = false;
             settings.Save();
         }
 
