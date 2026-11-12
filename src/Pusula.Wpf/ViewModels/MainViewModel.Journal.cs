@@ -193,6 +193,8 @@ namespace Pusula.Wpf.ViewModels
             JournalTitle = Resources.Journal_EditTitle;
             JournalKind = note.KindLabel;
             JournalDateText = note.Date.ToString(note.Date.TimeOfDay == TimeSpan.Zero ? "dd.MM.yyyy" : "dd.MM.yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+            // Kutudaki metin öncekiyle aynıysa ayarlayıcı tarihi yeniden okumaz; tarih her açılışta metinden kurulur.
+            JournalDate = ParseDate(JournalDateText);
             JournalHeading = note.Title;
             JournalBody = note.Body;
             JournalImportance = note.Importance.Length > 0 ? note.Importance : Resources.Importance_Normal;
@@ -312,6 +314,8 @@ namespace Pusula.Wpf.ViewModels
             JournalTarget = string.Format(Resources.Journal_Target, name + (shownName.Length > 0 ? " · " + shownName : string.Empty));
             JournalKind = string.Empty;
             JournalDateText = DateTime.Today.ToString("dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture);
+            // Kutudaki metin öncekiyle aynıysa ayarlayıcı tarihi yeniden okumaz; tarih her açılışta metinden kurulur.
+            JournalDate = ParseDate(JournalDateText);
             JournalHeading = string.Empty;
             JournalBody = string.Empty;
             JournalImportance = Resources.Importance_Normal;
