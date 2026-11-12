@@ -107,6 +107,11 @@ namespace Pusula.Wpf.ViewModels
             {
                 return;
             }
+            catch (Exception ex) when (ex is System.IO.IOException || ex is UnauthorizedAccessException)
+            {
+                // Notlar okunamadı (ağ paylaşımı koptu …): anılma listesi boş kalır.
+                return;
+            }
 
             if (source.IsCancellationRequested || !ReferenceEquals(node, selectedNode))
             {

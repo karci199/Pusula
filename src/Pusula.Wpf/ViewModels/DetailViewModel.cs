@@ -556,6 +556,17 @@ namespace Pusula.Wpf.ViewModels
             {
                 return;
             }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                // Klasör okunurken gitti (ağ paylaşımı koptu, silindi …): sayfa boş kalır, "yükleniyor"da takılmaz.
+                if (!source.IsCancellationRequested)
+                {
+                    IsLoading = false;
+                    Note = string.Format(Resources.Error_Io, ex.Message);
+                }
+
+                return;
+            }
 
             if (source.IsCancellationRequested)
             {

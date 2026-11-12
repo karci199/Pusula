@@ -1818,4 +1818,14 @@
   <data name="Alert_LateTaskTitle" xml:space="preserve">
     <value>Geciken iş</value>
   </data>
+  <data name="Error_Unexpected" xml:space="preserve">
+    <value>Beklenmeyen bir hata oldu, uygulama çalışmaya devam ediyor.
+
+{0}
+
+Ayrıntı: {1}</value>
+  </data>
+  <data name="Error_UnexpectedTitle" xml:space="preserve">
+    <value>Pusula · hata</value>
+  </data>
 </root>

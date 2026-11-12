@@ -2048,6 +2048,12 @@ namespace Pusula.Wpf.Properties
         /// <summary>Dikkat kartı başlığı: son tarihi geçmiş açık iş.</summary>
         public static string Alert_LateTaskTitle { get { return Get("Alert_LateTaskTitle"); } }
 
+        /// <summary>Beklenmeyen hata iletisi: {0} hata metni, {1} hata dosyası.</summary>
+        public static string Error_Unexpected { get { return Get("Error_Unexpected"); } }
+
+        /// <summary>Beklenmeyen hata penceresinin başlığı.</summary>
+        public static string Error_UnexpectedTitle { get { return Get("Error_UnexpectedTitle"); } }
+
         #endregion
     }
 }
