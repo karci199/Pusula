@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "type": "jig",
+  "number": "JIG-1000-0009",
+  "name": "SATIMO adaptör plakası",
+  "subType": "Mekanik",
+  "note": "Al 6061-T6, eloksal · 300×200×12 mm",
+  "fields": [ ],
+  "events": [
+    {
+      "status": "Talep",
+      "date": "2026-09-02",
+      "person": "katan",
+      "location": "",
+      "note": "SH2000 için SATIMO bağlantısı"
+    },
+    {
+      "status": "Hazırlanıyor",
+      "date": "2026-09-05",
+      "person": "M. Yılmaz",
+      "location": "",
+      "note": "Rev AB"
+    },
+    {
+      "status": "Teslim alındı",
+      "date": "2026-09-18",
+      "person": "katan",
+      "location": "Lab-A raf 3",
+      "note": ""
+    },
+    {
+      "status": "Kullanımda",
+      "date": "2026-09-20",
+      "person": "katan",
+      "location": "SATIMO odası",
+      "note": ""
+    },
+    {
+      "status": "Onarım \/ değişim gerekiyor",
+      "date": "2026-10-22",
+      "person": "katan",
+      "location": "Mekanik atölye",
+      "note": "montaj delikleri 2 mm kayık; Rev AC yapılacak"
+    }
+  ],
+  "notes": [
+    {
+      "date": "2026-10-24 10:00",
+      "person": "M. Yılmaz",
+      "text": "Rev AC çizimi atölyeye verildi, malzeme stokta var."
+    }
+  ]
+}

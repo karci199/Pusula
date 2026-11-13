@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "type": "cable",
+  "number": "JT-0001-0102",
+  "name": "DA400 iç kablaj",
+  "subType": "Kablaj",
+  "note": "4 damar · Rev AB",
+  "fields": [ ],
+  "events": [
+    {
+      "status": "Talep",
+      "date": "2026-08-10",
+      "person": "katan",
+      "location": "",
+      "note": ""
+    },
+    {
+      "status": "Hazırlanıyor",
+      "date": "2026-08-15",
+      "person": "Kablaj birimi",
+      "location": "",
+      "note": ""
+    },
+    {
+      "status": "Teslim alındı",
+      "date": "2026-08-28",
+      "person": "katan",
+      "location": "Montaj hattı",
+      "note": ""
+    },
+    {
+      "status": "Kullanımda",
+      "date": "2026-09-01",
+      "person": "katan",
+      "location": "",
+      "note": ""
+    },
+    {
+      "status": "Üretime teslim edildi",
+      "date": "2026-10-30",
+      "person": "katan",
+      "location": "Üretim",
+      "note": "seri üretim kablajı olarak"
+    }
+  ]
+}

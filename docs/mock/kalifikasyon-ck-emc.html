@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Kalifikasyon · ÇK ve EMI/EMC</title>
+<style>
+  body { margin:0; background:#202020; color:#f2f2f2; font-family:"Segoe UI"; font-size:13px; width:1600px; }
+  .win { display:flex; }
+  .side { width:300px; background:#1a1a1a; padding:14px 12px; flex:none; }
+  .side .t { color:#bbb; margin-bottom:10px; }
+  .side .n { padding:5px 8px; color:#ddd; }
+  .side .n.sel { background:#2f3a40; border-radius:5px; }
+  .side .i1 { padding-left:24px; } .side .i2 { padding-left:44px; }
+  .main { flex:1; padding:18px 24px 30px; }
+  .hdr h1 { font-size:24px; margin:0; display:inline; } .hdr .nm { color:#bbb; font-size:17px; margin-left:10px; }
+  .crumb { color:#4cc2ff; margin:4px 0 8px; } .crumb span { color:#aaa; }
+  .status { display:inline-block; background:#3a3418; color:#f2c14e; border-radius:999px; padding:2px 10px; }
+  .tabs { display:flex; border-bottom:1px solid #3a3a3a; margin:16px 0 14px; }
+  .tabs span { padding:8px 14px; color:#bbb; }
+  .tabs .on { color:#fff; font-weight:600; border:1px solid #3a3a3a; border-bottom:1px solid #202020; border-radius:6px 6px 0 0; margin-bottom:-1px; background:#202020; }
+  .card { background:#2b2b2b; border:1px solid #3a3a3a; border-radius:8px; padding:14px 16px; margin-bottom:14px; }
+  .lbl { color:#9a9a9a; font-size:12px; margin-bottom:8px; }
+  .row { display:flex; align-items:center; }
+  .docs .d { flex:1; background:#252525; border:1px solid #3a3a3a; border-radius:6px; padding:8px 10px; margin-right:10px; }
+  .docs .d:last-child { margin-right:0; }
+  .docs b { display:block; } .docs small { color:#9a9a9a; }
+  .kind { display:inline-block; font-size:11px; border-radius:4px; padding:0 6px; margin-right:6px; background:#333; color:#bbb; }
+  .scope .s { flex:1; margin-right:10px; border-left:3px solid #4cc2ff; padding:4px 10px; background:#252525; border-radius:0 6px 6px 0; }
+  .scope .s:last-child { margin-right:0; }
+  .scope .s.off { border-color:#555; color:#888; }
+  .scope b { font-size:14px; } .scope small { color:#9a9a9a; display:block; }
+  .sect h2 { font-size:16px; margin:0; display:inline; } .sect .std { color:#9a9a9a; margin-left:8px; }
+  .sect .prog { float:right; color:#9a9a9a; }
+  .bar { height:6px; background:#3a3a3a; border-radius:3px; margin:8px 0 12px; overflow:hidden; }
+  .bar i { display:block; height:6px; float:left; }
+  .steps { display:flex; margin-bottom:12px; }
+  .st { flex:1; background:#252525; border-radius:6px; padding:7px 9px; margin-right:6px; border-top:3px solid #555; }
+  .st:last-child { margin-right:0; }
+  .st b { display:block; font-size:12px; } .st small { color:#9a9a9a; font-size:11.5px; }
+  .ok { border-color:#6ccb5f; } .run { border-color:#4cc2ff; } .wait { border-color:#f2c14e; } .fail { border-color:#ff6b6b; } .na { border-color:#444; color:#777; }
+  table { width:100%; border-collapse:collapse; }
+  th { text-align:left; color:#9a9a9a; font-weight:600; font-size:12px; padding:6px 8px; background:#303030; }
+  td { padding:7px 8px; border-top:1px solid #353535; vertical-align:top; }
+  td small { color:#8f8f8f; display:block; }
+  .chip { display:inline-block; border-radius:999px; padding:1px 9px; font-size:12px; white-space:nowrap; }
+  .c-ok { background:#1f3a1c; color:#6ccb5f; } .c-run { background:#12384d; color:#4cc2ff; } .c-wait { background:#3a3418; color:#f2c14e; }
+  .c-fail { background:#4a1f1f; color:#ff8a8a; } .c-todo { background:#333; color:#aaa; } .c-na { background:#2a2a2a; color:#777; }
+  .c-an { background:#2f2a45; color:#b4a7f5; }
+  .lnk { color:#4cc2ff; } .mono { font-family:Consolas; font-size:12px; }
+  .why { color:#ff8a8a; font-size:12px; }
+  .foot { color:#8f8f8f; font-size:12px; margin-top:8px; }
+</style>
+</head>
+<body>
+<div class="win">
+  <div class="side">
+    <div class="t">Projeler</div>
+    <div class="n">▾ 7000_MILKON</div>
+    <div class="n i1">00_Proje_Geneli</div>
+    <div class="n i1">AB-7000-0001</div>
+    <div class="n i1">AB-7000-0002</div>
+    <div class="n i1 sel">AB-7000-0003</div>
+    <div class="n i1">JY-7000-0004</div>
+    <div class="t" style="margin-top:16px">Envanter</div>
+    <div class="n i1">Kablolar 5</div><div class="n i1">Jigler 3</div><div class="n i1">Yazılımlar 1</div><div class="n i1">Test gereçleri 2</div>
+  </div>
+  <div class="main">
+    <div class="hdr"><h1>AB-7000-0003</h1><span class="nm">DA400 Döner Anten</span></div>
+    <div class="crumb">7000_MILKON <span>› Stok numarası · Döner anten · tasarım sorumlusu A. Yılmaz</span></div>
+    <span class="status">Testte</span>
+    <div class="tabs"><span>Genel</span><span>Testler · 4</span><span class="on">Kalifikasyon · 3 tür · 14 test</span><span>Kablolar · 2</span><span>Jigler · 3</span><span>Klasörler</span></div>
+
+    <!-- Kaynak belgeler ve kapsam -->
+    <div class="card">
+      <div class="lbl">Kaynak belgeler · tıklayınca açılır</div>
+      <div class="row docs">
+        <div class="d"><span class="kind">TG</span><b>TG-DA400 Test Gereksinimleri</b><small>Rev B · 14.08.2026 · A. Yılmaz · 42 madde (31 temel, 11 türetilmiş)</small></div>
+        <div class="d"><span class="kind">Tasarım</span><b>DA400_test_notlari.docx</b><small>Rev 1 · 02.09.2026 · A. Yılmaz · TG'de olmayan 6 madde</small></div>
+        <div class="d"><span class="kind">TP</span><b>TP-DA400 Kalifikasyon Test Planı</b><small>Rev A · 20.09.2026 · katan · 48 madde</small></div>
+        <div class="d"><span class="kind">TR</span><b>DOORS · DA400 Test Raporu</b><small>taslak · 21 / 48 madde sonuçlu</small></div>
+      </div>
+      <div class="lbl" style="margin-top:14px">Test kapsamı</div>
+      <div class="row scope">
+        <div class="s"><b>ÇK · Gerekli</b><small>MIL-STD-810H · TG 6.x · dış lab (ÇTL)</small></div>
+        <div class="s"><b>EMI/EMC · Gerekli</b><small>MIL-STD-461G · TG 7.x · dış lab (EMC Lab)</small></div>
+        <div class="s"><b>İşlevsel · Gerekli</b><small>TG 4.x + docx · iç lab · sonunda üretime devir</small></div>
+        <div class="s off"><b>Güvenilirlik · Gerekmiyor</b><small>TG'de yok · katan, 20.09</small></div>
+      </div>
+    </div>
+
+    <!-- ÇK -->
+    <div class="card sect">
+      <h2>ÇK · Çevre koşulları</h2><span class="std">MIL-STD-810H · Prosedür DA400-ÇK-PR-01 Rev A</span><span class="prog">4 / 7 bitti · 1 kaldı</span>
+      <div class="bar"><i style="width:43%;background:#6ccb5f"></i><i style="width:14%;background:#ff6b6b"></i><i style="width:14%;background:#4cc2ff"></i></div>
+      <div class="steps">
+        <div class="st ok"><b>Test prosedürü</b><small>DA400-ÇK-PR-01 Rev A · hazır</small></div>
+        <div class="st ok"><b>Titreşim fikstürü</b><small><span class="lnk">JIG-1000-0009</span> · teslim alındı, denendi</small></div>
+        <div class="st ok"><b>Isıl kablo</b><small><span class="lnk">JT-0001-0010</span> · teslim alındı</small></div>
+        <div class="st ok"><b>Lab talebi</b><small>LT-2026-118 · 25.09 · onaylandı</small></div>
+        <div class="st ok"><b>Birim teslimi</b><small>SN01 · 06.10 lab'a verildi</small></div>
+        <div class="st run"><b>Testler</b><small>13.10'da başladı · sürüyor</small></div>
+        <div class="st"><b>Rapor</b><small>DOORS + müşteri raporu · bekliyor</small></div>
+      </div>
+      <table>
+        <tr><th style="width:250px">Test (yöntem / prosedür)</th><th style="width:120px">Gereksinim</th><th style="width:80px">TP</th><th style="width:90px">Doğrulama</th><th style="width:60px">SN</th><th style="width:150px">Durum</th><th>Sonuç / kanıt (TR)</th></tr>
+        <tr><td>501.7 Yüksek sıcaklık<small>Proc. I depolama, Proc. II çalışma · +71 °C</small></td><td>TG-6.1</td><td>TP-31</td><td>Test</td><td>SN01</td><td><span class="chip c-ok">Geçti</span><small>14.10.2026</small></td><td><span class="lnk">04_Kalifikasyon\CK\501_YuksekSicaklik\</span><small>TR-31 · log, 12 foto · termokupl kaydı</small></td></tr>
+        <tr><td>502.7 Düşük sıcaklık<small>Proc. I, II · −40 °C</small></td><td>TG-6.2</td><td>TP-32</td><td>Test</td><td>SN01</td><td><span class="chip c-ok">Geçti</span><small>16.10.2026</small></td><td><span class="lnk">04_Kalifikasyon\CK\502_DusukSicaklik\</span><small>TR-32</small></td></tr>
+        <tr><td>507.6 Nem<small>Proc. II, 10 çevrim</small></td><td>TG-6.4</td><td>TP-34</td><td><span class="chip c-an">Analiz</span></td><td>—</td><td><span class="chip c-ok">Geçti</span><small>benzerlik analizi</small></td><td><span class="lnk">DA400_Nem_Analizi.pdf</span><small>TR-34 · DA300 sonuçlarından</small></td></tr>
+        <tr><td>514.8 Titreşim<small>Proc. I, kat. 24 · rastgele 3 eksen</small></td><td>TG-6.3</td><td>TP-33</td><td>Test</td><td>SN01</td><td><span class="chip c-fail">Kaldı</span><small>21.10.2026</small></td><td><span class="why">Y ekseninde konnektör gevşedi · bildirim BL-2026-044 açık (A. Yılmaz)</span><small>TR-33 · tekrar için yeni fikstür bekleniyor</small></td></tr>
+        <tr><td>516.8 Şok<small>Proc. I · 20 g, 11 ms</small></td><td>TG-6.5</td><td>TP-35</td><td>Test</td><td>SN01</td><td><span class="chip c-ok">Geçti</span><small>23.10.2026</small></td><td><span class="lnk">04_Kalifikasyon\CK\516_Sok\</span><small>TR-35</small></td></tr>
+        <tr><td>509.7 Tuz sisi<small>48 saat ıslak + 48 saat kuru</small></td><td>TG-6.6</td><td>TP-36</td><td>Test</td><td>SN02</td><td><span class="chip c-run">Yapılıyor</span><small>başlangıç 10.11</small></td><td><small>—</small></td></tr>
+        <tr><td>510.7 Kum / toz<small>Proc. I</small></td><td>docx-4</td><td>TP-37</td><td>Test</td><td>—</td><td><span class="chip c-todo">Başlanmadı</span></td><td><small>—</small></td></tr>
+      </table>
+      <div class="foot">Kanıt klasörleri stokun içinde; dosya yoksa satır sarı görünür. Satıra tıklayınca TG / TP / TR maddeleri yan panelde açılır.</div>
+    </div>
+
+    <!-- EMI/EMC -->
+    <div class="card sect">
+      <h2>EMI/EMC</h2><span class="std">MIL-STD-461G · Prosedür DA400-EMC-PR-01 Rev 0</span><span class="prog">2 / 6 bitti</span>
+      <div class="bar"><i style="width:33%;background:#6ccb5f"></i><i style="width:17%;background:#4cc2ff"></i></div>
+      <div class="steps">
+        <div class="st ok"><b>Test prosedürü</b><small>DA400-EMC-PR-01 Rev 0 · hazır</small></div>
+        <div class="st na"><b>Jig</b><small>gerekmiyor</small></div>
+        <div class="st wait"><b>Test kabloları</b><small><span class="lnk">JT-0001-0002</span> RS422 · çoğaltma istendi (2 adet)</small></div>
+        <div class="st ok"><b>Lab talebi</b><small>LT-2026-121 · 02.10 · onaylandı</small></div>
+        <div class="st ok"><b>Birim teslimi</b><small>SN02 · 28.10 lab'a verildi</small></div>
+        <div class="st run"><b>Testler</b><small>03.11'de başladı</small></div>
+        <div class="st"><b>Rapor</b><small>bekliyor</small></div>
+      </div>
+      <table>
+        <tr><th style="width:250px">Test</th><th style="width:120px">Gereksinim</th><th style="width:80px">TP</th><th style="width:90px">Doğrulama</th><th style="width:60px">SN</th><th style="width:150px">Durum</th><th>Sonuç / kanıt (TR)</th></tr>
+        <tr><td>CE102<small>İletilen emisyon, güç hattı 10 kHz – 10 MHz</small></td><td>TG-7.1</td><td>TP-41</td><td>Test</td><td>SN02</td><td><span class="chip c-ok">Geçti</span><small>03.11.2026</small></td><td><span class="lnk">04_Kalifikasyon\EMC\CE102\</span><small>TR-41 · 6 dB pay</small></td></tr>
+        <tr><td>RE102<small>Işınan emisyon 10 kHz – 18 GHz</small></td><td>TG-7.2</td><td>TP-42</td><td>Test</td><td>SN02</td><td><span class="chip c-ok">Geçti</span><small>05.11.2026</small></td><td><span class="lnk">04_Kalifikasyon\EMC\RE102\</span><small>TR-42 · 1,2 GHz'de 3 dB pay</small></td></tr>
+        <tr><td>RS103<small>Işınan bağışıklık 2 MHz – 18 GHz, 200 V/m</small></td><td>TG-7.3</td><td>TP-43</td><td>Test</td><td>SN02</td><td><span class="chip c-run">Yapılıyor</span></td><td><small>—</small></td></tr>
+        <tr><td>CS114<small>Kablo demeti akım enjeksiyonu</small></td><td>TG-7.4</td><td>TP-44</td><td>Test</td><td>SN02</td><td><span class="chip c-wait">Kablo bekliyor</span></td><td><small>JT-0001-0002 çoğaltması gelince</small></td></tr>
+        <tr><td>CS116<small>Sönümlü sinüs geçici</small></td><td>TG-7.5</td><td>TP-45</td><td>Test</td><td>SN02</td><td><span class="chip c-todo">Başlanmadı</span></td><td><small>—</small></td></tr>
+        <tr><td>CS101<small>Güç hattı iletilen bağışıklık</small></td><td>TG-7.6</td><td>TP-46</td><td><span class="chip c-an">Analiz</span></td><td>—</td><td><span class="chip c-todo">Başlanmadı</span></td><td><small>28 V DC giriş filtresi analizi</small></td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+</body>
+</html>

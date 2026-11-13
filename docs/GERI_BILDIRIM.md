@@ -1,0 +1,114 @@
+﻿# Geri bildirim — gerçek kullanımdan
+
+Kaynak: el yazısı notlar, 09.11.2026 (6 sayfa). Konularına göre toplandı. `?` = netleşmesi gereken.
+
+## 1. Hatalar
+
+- [x] **Not oluşturunca "the host was not found"**: stok açıldıktan sonra md oluşturup açarken; VS Code "izin ver" istiyor (ağ yolundaki sunucuya izin) → uygulama hatası değil. **Yapıldı:** Ayarlar → "Notları şununla aç" (Obsidian / VS Code / Windows varsayılanı), varsayılan Obsidian; program yoksa Windows varsayılanı.
+- [x] **NuGet restore hatası**: .NET 4.8 başvuru derlemeleri o makinede yoktu. Paket depoya kondu (`Dependencies\NuGet`, `nuget.config`); boş önbellekle ayrı klasörde derleme denendi, çalışıyor.
+- [x] **Hover:** proje ve stok aynı anda vurgulanıyordu. Ağaç satır şablonu Pusula'da düzeltildi (yalnız satırın kendisi); asıl kusur DesignKit'te (TreeView.xaml, IsMouseOver tetikleyicisi), orada da düzeltilmeli.
+- [x] **Türler → Biçim tablosu:** F2 ile düzenlenince kutu beyazdı → tüm düzenlenebilir tablolarda (Türler, Dosya türleri) temalı düzenleme kutusu.
+- [x] **Stok kapak fotoğrafı** kesiliyordu → kırpılmıyor; kutu oranına göre (en çok 320×180, en az 132×132); köşedeki küçük düğme tam boy açar; telefon fotoğraflarının EXIF yönü uygulanıyor.
+- [x] Sayımlara **önemsiz dosyalar** (Thumbs.db, desktop.ini, ~$ Office kilitleri, .tmp …) ve **arşiv klasörleri** (_ ile başlayan, Arsiv/Arşiv/Archive/Eski, .obsidian) girmiyor; arşiv klasörü ağaçta görünür ama sayılmaz (FileRules).
+
+## 2. Hız ve yenileme
+
+- [x] Stok sayfası yavaştı → klasör tek seferde taranıyor (FolderSnapshot), bütün okuyucular bu taramadan çalışıyor, md notları bir kez okunuyor. Ağ yolunda 148 → 28 ms (5,2 kat).
+- [x] **Yenile** en başa atıyordu → seçili düğüm, açık klasörler ve stok sekmesi korunuyor; içerik yeniden okunuyor.
+- [x] Otomatik izleme → yapıldı (aşağıda "Sonra yapılacaklar").
+
+## 3. Düzenleme (eksik)
+
+- [x] **Düzenle / Takipten çıkar** her kayıtta (proje, stok, jig, kablo …): ağaç sağ tık, proje stok tablosu, envanter listeleri.
+  Düzenle: ad (+ stokta şablon, envanterde alt tür ve açıklama). Takipten çıkar: takip dosyası `….json.kaldirildi-<zaman>` olur, dosyalar yerinde; klasör işaretsiz görünür.
+- [x] **Sil…**: klasör kalıcı silinmez, kökteki `_SILINENLER\<zaman>\<göreli yol>` altına taşınır, `silinenler.log` tutulur; onayda ad yazılmadan Sil düğmesi çıkmaz. Ayarlar → "Silinenler klasörünü aç".
+- [x] Envanter alan değerleri (Tork, Boy …) **Düzenle** penceresinde; türün alanları (yazı / sayı / evet-hayır / seçim, birim) Türler → Alanlar'dan. Kayıt sayfasında "Özellikler · x / y dolu" kartı (10.11.2026).
+
+## 4. Görünüm
+
+- [x] **Logo / uygulama ikonu**: soyut ibre (koyu yuvarlak kare); `tools\Ikon-Ciz.ps1` üretir.
+- [ ] **Yeni stok ve yeni proje** pencereleri daha güzel olsun.
+- [x] Sol üstteki **+ düğmesi**: oksuz vurgu renkli +; menü Proje · Stok · Envanter türleri ("Yeni" kelimesi yok), ayraçlar sakin gri.
+- [x] Sayfa **üst kısmı**: numara + ad, tıklanabilir üst kayıt (proje / stok) › tür, durum etiketi (adım çizgisi kaldırıldı: durum doğrusal ilerlemiyor), ⋯ menüsü (yolu kopyala, düzenle, takipten çıkar, sil); yol ipucunda.
+- [x] **Sekmeler sürüklenebilir** (stok sekmeleri, Genel sabit; sıra hatırlanır). Tablo sütunlarının sırası ve genişliği hatırlanır (40–600 px). Ayarlar → "Sekme ve sütun düzenini sıfırla".
+- [ ] Stok açılınca **anten hakkında ön bilgi + foto** gelsin (Genel kartı; zaten var, iyileştirilecek).
+- [ ] Jig ve kablo **tamamen ayrılsın**. "Genel sayfası açıldığı zaman ne ekliyse o gelsin" → konuşulacak.
+  - [x] Kısmen: stok Genel'inde her tür (Jig, Kablo, Yazılım) **ayrı kart**; kökte hiç kaydı olmayan tür kart açmaz.
+  - [ ] Kalan: kartlar hâlâ tek "Jig ve kablo" başlığı altında; stokta o türden kayıt **yoksa** da kart görünüyor (kökte varsa). Ayrı bölümler mi, yalnız eklenenler mi → karar.
+- [ ] ?Genel / Kablolar sekmeli yapı daha iyi olabilir mi
+
+## 5. Notlar ve md
+
+- [x] Uygulamadan eklenen not **basit** kalsın, **md olmasın** (şimdiki gibi; kısa not JSON'da).
+- [x] **Alınan notlar md olarak görünsün:** Pusula'nın md not penceresi (10.11.2026): ekranı kaplar, Düz / Yan yana / Görünüm (Ctrl+1/2/3), resim, görev kutusu, uyarı kutusu, tablo, yorum. Ayarlar → Not programı → "Pusula (yerleşik)". Yazım kuralları: [MD_KILAVUZU.md](MD_KILAVUZU.md).
+- [ ] Ana md'yi "Not oluştur" deyince yapıyor. ?Otomatik oluşturulsun mu; ayar olabilir
+- [ ] ?Zaman çizelgesine elle eklenen notlar hepsi `<StokNo>.md` içinde mi dursun
+- [ ] ?Proje geneli md olsun mu, içinde neler olur
+- [ ] **Şablon md'ler** (tür başına: SATIMO tekil ölçüm vb.); değerler uygulamadan girilsin, açıklamalar elle.
+- [x] **+ Olay**: ana notun en altındaki `## Günlük` bölümüne eklenir (en yeni üstte; tür, tarih, başlık, açıklama, önem Yüksek/Normal/Düşük, ilgili, etiket). Stok Günlük'ünde, jig/kablo Geçmiş'inde ve proje sayfasında (projenin ana notu) görünür; sağ tıkla düzenle / sil.
+
+## 6. Bağlantılar (@)
+
+- [x] Not yazarken **@** (ya da `[[`) basınca kablo, jig, stok, proje, **kişi** listesi açılır, `[[bağlantı]]` olarak eklenir; tıklanınca ana pencerede kayıt seçilir (10.11.2026). Kısa not / + Olay kutularında henüz yok.
+  (her nesnenin md dosyası olmalı).
+- [ ] **SATIMO, yankısız oda** gibi ölçüm altyapısı da bağlanabilir nesne olsun.
+- [ ] **161 / DGÖ** maddelerine bağlantı; bunun için ayrı arayüz.
+  - **DGÖ** = TG (test gereksinimleri), üst sistem düzeyi; önce o gelir.
+  - **161** = tasarımcının antene özel doğrulama maddeleri (ör. S11 < −10 dB, yükseliş hüzme genişliği 10–30°,
+    boresight''ta slant polarize tepe kazanç > X). Ayrıntı az, altyapı bazen belirtilir; kafa karıştırmamalı.
+  - Zincir: DGÖ maddesi → 161 maddesi → test koşusu (sonuç) → geçti/kaldı.
+
+## 7. Dokümanlar, revizyon, kodlar
+
+- [ ] Uygulama dokümanı **görüyor ama anlamlandırmıyor**. Tanısın:
+  doküman türü (261 …), revizyon, stok türü, durum (aktarıldı mı, hazırlanıyor mu).
+- [ ] Doküman adı yapısı: `AB-0000-445_261-AA` ?parçaları (AB = birim, 0000-445 = ?, 261 = doküman türü, AA = revizyon)
+- [ ] **2–3 harfli önekler** bir anlama eşlenir: AB = birim, AI = modül, KB = aile stoku … → tanım listesi (Ayarlar).
+- [ ] **Doküman durumu:** üzerinde çalışılan · bitmiş · revize gereken · aktarım sürecinde → ayrıntılı konuşulacak.
+- [ ] **Revizyon:** ad içinden mi, ayrı klasör mü (`_Revizyonlar`)? İsimlendirme kuralı.
+- [ ] **Doküman aktarımlarının takibi** (SAP'ye aktarım?).
+- [ ] **P1 = prototip**; **REDO** = değişiklik (doküman değişikliği, limit değişti …) ve aktarımı; verildiyse işlensin.
+
+## 8. Fotoğraf
+
+- [ ] **İsimlendirme kuralı:** `<StokNo>_F1` mi, görünüme göre mi (`_kapak`, `_on`, `_arka`, `_montaj` …)?
+- [ ] **Sıralama:** hangi sırayla görünsün.
+- [ ] Şablonda "konulması istenen fotolar" listesi olsun (eksik olan görünsün).
+- [x] Uzantılar: eksik yok (jpg, jpeg, png, bmp, gif, tif, tiff).
+
+## 9. Stok yapısı
+
+- [ ] **Alt / üst stok** nasıl eklensin.
+- [ ] Jig, kablo kaydı içinde **alt klasörler** (01_Cizimler …) açılıyor; gerek var mı? (zaten değiştirilebiliyor) → isteğe bağlı yap.
+- [ ] Proje altındaki **tüm türler** (stok, jig, kablo …) tek listede görülsün, sıralansın, filtrelensin. Stok ve genel için de.
+
+## 10. Test
+
+- [ ] Test sonuçları nasıl tanınıyor: `SNP1_T1` klasöründen ve **_kosu.md** (KIWI) dosyasından "GEÇTİ" okundu. Kural yazılsın.
+- [x] **Test planları** Testler / Kalifikasyon sekmesinin üstünde kart olarak (KIWI planının adı, açıklaması, adım/limit, revizyon; "bu planla n koşu").
+- [ ] Test sonucu md dosyası varsa doğrudan ondan okunsun.
+- [x] **Test tarihi ve analiz tarihi ayrı** (10.11.2026: `analiz_tarihi`, `analiz_notu`; koşu sağ tık → "Analiz tarihi ve notu…", tabloda Analiz sütunu, Günlük'te "analiz …"): test bir gün yapılır, analiz sonra yapılabilir (aynı gün de olabilir). `test.md`'de `tarih:` = test yapıldığı gün, isteğe bağlı `analiz:` = analiz günü; Günlük ve tabloda ikisi de görünsün.
+- [ ] Test notu uzun olabilir (sonuç, gözlem, düzeltme …); Günlük'te kısa özet, tamamı notta.
+
+## 11. Takip ve iş listesi
+
+- [ ] **Bekleyen işler** listesi (o anlık): "SAP REDO verildi" gibi, ayrıntısız, basit.
+  - [x] İlk adım: stok Genel sayfasında **Açık işler** (md notlarındaki `- [ ]` maddeleri; tıklayınca not açılır). Proje ve haftalık rapor sonra.
+- [ ] **İlerleme durumu** (jig hazır mı, yazılım var mı / hazır mı) — büyük ölçüde elle.
+- [x] Jig teslim edildi mi takibi: jig / kablo / yazılım durum değişiklikleri (Talep, Hazırlanıyor, Teslim …) stokun Günlük'üne kendiliğinden düşer (10.11.2026).
+
+## Sonra yapılacaklar
+
+- [ ] Stok Genel'inde "Jig ve kablo" altında fazladan "Jig 0" kutucuğu (10.11.2026 yine görüldü, AB-7000-0002). Neden: sekmeler kart listesi değişirken yeniden kuruluyor, kartlar aynı öğeyi iki kez alıyordu. Düzeltme: sekmeler değişiklik bittikten sonra kuruluyor. Test ortamında üretilemiyor → **elle doğrula**.
+- [x] Kısa not kutusu silikti, ne olduğu anlaşılmıyordu → ipucu metni ("Kısa not yaz, Enter ile ekle · @ ile … bağla"), DesignKit 0.3.6 `TextBoxHelper.PlaceholderText`.
+
+- [ ] Tablolara **arama kutusu ve filtre** (stok tablosu, test koşuları).
+
+- [x] **Otomatik izleme:** diskte değişiklik olunca **Yenile** düğmesi sarı olur (bildirim yok); yenileyince söner (10.11.2026).
+- [ ] **Durum çubuğunda son yapılan iş:** ör. "AB-7000-0002 kaydedildi · 21:55" kalıcı görünsün.
+- [ ] Açık işler ve kısa notlardan **haftalık / aylık rapor**.
+
+## Seri numaraları
+
+- [x] Genel'de **Seri numaraları** kartı: SN × sistem (son tur ve sonuç), Prototip (SNP) / Üretim (SN), tur sayısı; hücre tıklanınca not. Kayıt yok, klasör adlarından okunur.
+- [ ] Yetmezse: `stok.json`'da SN listesi (test edilmemiş SN'yi elle ekleme, yeniden adlandırma + eski adlar).

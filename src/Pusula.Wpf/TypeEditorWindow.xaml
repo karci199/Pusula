@@ -1,0 +1,327 @@
+﻿<controls:ChromeWindow x:Class="Pusula.Wpf.TypeEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:DesignKit.Controls;assembly=DesignKit.Wpf"
+        xmlns:local="clr-namespace:Pusula.Wpf"
+        xmlns:vm="clr-namespace:Pusula.Wpf.ViewModels.TypeEditor"
+        xmlns:res="clr-namespace:Pusula.Wpf.Properties"
+        Icon="/Pusula;component/Assets/pusula.ico"
+        Title="{x:Static res:Resources.Types_Title}"
+        Width="1040" Height="760"
+        MinWidth="820" MinHeight="560"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        FontFamily="{DynamicResource AppFont}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        Background="{DynamicResource SurfaceBaseBrush}">
+
+    <controls:ChromeWindow.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
+        <Style x:Key="SectionLabel" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,0,6" />
+        </Style>
+
+        <Style x:Key="HintText" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+            <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style x:Key="Section" TargetType="Border">
+            <Setter Property="Margin" Value="0,0,0,12" />
+            <Setter Property="Padding" Value="14,10" />
+            <Setter Property="Background" Value="{DynamicResource LayerBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource OverlayCornerRadius}" />
+        </Style>
+
+        <Style x:Key="EditGrid" TargetType="DataGrid" BasedOn="{StaticResource {x:Type DataGrid}}">
+            <Setter Property="AutoGenerateColumns" Value="False" />
+            <Setter Property="CanUserAddRows" Value="True" />
+            <Setter Property="CanUserDeleteRows" Value="True" />
+            <Setter Property="CanUserSortColumns" Value="False" />
+            <Setter Property="CanUserReorderColumns" Value="False" />
+            <Setter Property="HeadersVisibility" Value="Column" />
+            <Setter Property="SelectionUnit" Value="FullRow" />
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
+        </Style>
+    </controls:ChromeWindow.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="210" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Sol: envanter türleri -->
+            <Border Grid.Column="0"
+                    Background="{DynamicResource LayerBrush}"
+                    BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                    BorderThickness="0,1,1,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid Margin="16,10,10,6">
+                        <TextBlock Style="{StaticResource SectionLabel}" Margin="0" Text="{x:Static res:Resources.Types_List}" />
+                        <Button HorizontalAlignment="Right" Command="{Binding AddTypeCommand}">
+                            <StackPanel Orientation="Horizontal">
+                                <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
+                                <TextBlock Text="{x:Static res:Resources.Types_Add}" Margin="6,0,0,0" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                    <ListBox Grid.Row="1"
+                             ItemsSource="{Binding Types}"
+                             SelectedItem="{Binding Selected, Mode=TwoWay}"
+                             Background="Transparent"
+                             BorderThickness="0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <local:AppIcon Glyph="{Binding Glyph}" Foreground="{Binding Color}" FontSize="16" VerticalAlignment="Center" />
+                                    <TextBlock Margin="10,0,0,0" Text="{Binding Name}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <TextBlock Grid.Row="2" Margin="16,8,12,12" Style="{StaticResource HintText}" Text="{x:Static res:Resources.Types_ListHint}" />
+                </Grid>
+            </Border>
+
+            <!-- Sağ: seçili tür -->
+            <ScrollViewer x:Name="Pane" Grid.Column="1" VerticalScrollBarVisibility="Auto"
+                          Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}">
+                <StackPanel Margin="20,14,20,12" DataContext="{Binding Selected}">
+
+                    <!-- Ad, çoğul, simge, renk -->
+                    <Border Style="{StaticResource Section}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_Name}" />
+                                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_Plural}" />
+                                <TextBox Text="{Binding PluralName, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="4">
+                                <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_Icon}" />
+                                <ComboBox Width="80" ItemsSource="{x:Static vm:TypeEditorViewModel.Icons}"
+                                          SelectedValuePath="Hex" SelectedValue="{Binding Icon, Mode=TwoWay}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <local:AppIcon Glyph="{Binding Glyph}" FontSize="16" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Grid.Column="6">
+                                <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_Color}" />
+                                <ComboBox Width="80" ItemsSource="{x:Static vm:TypeEditorViewModel.Colors}"
+                                          SelectedItem="{Binding Color, Mode=TwoWay}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Width="28" Height="14" CornerRadius="3" Background="{Binding}" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Numara biçimleri -->
+                    <Border Style="{StaticResource Section}" Visibility="{Binding IsNotPerson, Converter={StaticResource BoolToVis}}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_Formats}" />
+                            <DataGrid Style="{StaticResource EditGrid}" ItemsSource="{Binding Formats}" PreviewMouseWheel="Grid_PreviewMouseWheel">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_Pattern}" Width="200" Binding="{Binding Pattern}" FontFamily="Consolas" />
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_Label}" Width="*" Binding="{Binding Label}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <TextBlock Style="{StaticResource SectionLabel}" Margin="0,0,8,0" Text="{x:Static res:Resources.Types_Try}" />
+                                <TextBox Width="170" FontFamily="Consolas" Text="{Binding TryNumber, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" Text="{Binding TryResult}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Alt türler ve şablon klasörleri -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Style="{StaticResource Section}">
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_SubTypes}" />
+                                <DataGrid Style="{StaticResource EditGrid}" ItemsSource="{Binding SubTypes}" PreviewMouseWheel="Grid_PreviewMouseWheel">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_SubType}" Width="*" Binding="{Binding Text}" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="2" Style="{StaticResource Section}" Visibility="{Binding IsNotPerson, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_RecordFolders}" />
+                                <DataGrid Style="{StaticResource EditGrid}" ItemsSource="{Binding RecordFolders}" PreviewMouseWheel="Grid_PreviewMouseWheel">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_Folder}" Width="*" Binding="{Binding Text}" FontFamily="Consolas" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Alanlar -->
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_Fields}" />
+                            <DataGrid Style="{StaticResource EditGrid}" ItemsSource="{Binding Fields}" PreviewMouseWheel="Grid_PreviewMouseWheel">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_FieldName}" Width="150" Binding="{Binding Name}" />
+                                    <DataGridComboBoxColumn Header="{x:Static res:Resources.Types_FieldKind}" Width="120"
+                                                            ItemsSource="{x:Static vm:TypeEditorViewModel.FieldKinds}"
+                                                            SelectedValuePath="Key" DisplayMemberPath="Label"
+                                                            SelectedValueBinding="{Binding Kind}" />
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_FieldUnit}" Width="60" Binding="{Binding Unit}" />
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_FieldChoices}" Width="*" Binding="{Binding Choices}" />
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_FieldSubTypes}" Width="150" Binding="{Binding SubTypes}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <TextBlock Margin="0,6,0,0" Style="{StaticResource HintText}" Text="{x:Static res:Resources.Types_FieldsHint}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Kişiler (yalnız Kişi türünde): ad soyad, rol (alt türlerden), alan sütunları (kod tarafında kurulur) -->
+                    <Border Style="{StaticResource Section}" Visibility="{Binding IsPerson, Converter={StaticResource BoolToVis}}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_People}" />
+                            <DataGrid x:Name="PeopleGrid" Style="{StaticResource EditGrid}" PreviewMouseWheel="Grid_PreviewMouseWheel" IsVisibleChanged="PeopleGrid_IsVisibleChanged"
+                                      ItemsSource="{Binding DataContext.People, RelativeSource={RelativeSource AncestorType=Window}}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_PersonName}" Width="200" Binding="{Binding Name}" />
+                                    <DataGridComboBoxColumn Header="{x:Static res:Resources.Types_PersonRole}" Width="150" SelectedItemBinding="{Binding Role}">
+                                        <DataGridComboBoxColumn.ElementStyle>
+                                            <Style TargetType="ComboBox">
+                                                <Setter Property="ItemsSource" Value="{Binding DataContext.Roles, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                            </Style>
+                                        </DataGridComboBoxColumn.ElementStyle>
+                                        <DataGridComboBoxColumn.EditingElementStyle>
+                                            <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                                                <Setter Property="ItemsSource" Value="{Binding DataContext.Roles, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                            </Style>
+                                        </DataGridComboBoxColumn.EditingElementStyle>
+                                    </DataGridComboBoxColumn>
+                                    <DataGridCheckBoxColumn Header="{x:Static res:Resources.Types_PersonLeft}" Width="80" Binding="{Binding HasLeft}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <TextBlock Margin="0,6,0,0" Style="{StaticResource HintText}" TextWrapping="Wrap" Text="{x:Static res:Resources.Types_PeopleHint}" />
+                        </StackPanel>
+                    </Border>
+                    <!-- Etiketler: bütün türler için ortak; her etiketin geçerli olduğu yer -->
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_Tags}" />
+                            <DataGrid x:Name="TagGrid" Style="{StaticResource EditGrid}" PreviewMouseWheel="Grid_PreviewMouseWheel"
+                                      ItemsSource="{Binding DataContext.Tags, RelativeSource={RelativeSource AncestorType=Window}}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_TagName}" Width="180" Binding="{Binding Name}" />
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_TagScope}" Width="*" Binding="{Binding Scope}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <TextBlock Margin="0,6,0,0" Style="{StaticResource HintText}" TextWrapping="Wrap" Text="{x:Static res:Resources.Types_TagsHint}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Durumlar -->
+                    <Border Style="{StaticResource Section}" Visibility="{Binding IsNotPerson, Converter={StaticResource BoolToVis}}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_Statuses}" />
+                            <DataGrid Style="{StaticResource EditGrid}" CanUserDeleteRows="False" ItemsSource="{Binding Statuses}" PreviewMouseWheel="Grid_PreviewMouseWheel">
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Header="{x:Static res:Resources.Types_StatusName}" Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Name}" Margin="4,0" VerticalAlignment="Center" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                        <DataGridTemplateColumn.CellEditingTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsExisting}" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellEditingTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridComboBoxColumn Header="{x:Static res:Resources.Types_StatusTone}" Width="130"
+                                                            ItemsSource="{x:Static vm:TypeEditorViewModel.Tones}"
+                                                            SelectedValuePath="Key" DisplayMemberPath="Label"
+                                                            SelectedValueBinding="{Binding Tone}" />
+                                    <DataGridCheckBoxColumn Header="{x:Static res:Resources.Types_StatusSide}" Width="90" Binding="{Binding IsSide}" />
+                                    <DataGridCheckBoxColumn Header="{x:Static res:Resources.Types_StatusNote}" Width="90" Binding="{Binding NeedsNote}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <TextBlock Margin="0,6,0,0" Style="{StaticResource HintText}" Text="{x:Static res:Resources.Types_StatusesHint}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Düzey klasörleri: yalnızca yeni türde değiştirilebilir -->
+                    <Border Style="{StaticResource Section}" Visibility="{Binding IsNotPerson, Converter={StaticResource BoolToVis}}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_LevelFolders}" />
+                            <controls:FormField Header="{x:Static res:Resources.Inv_LevelGeneral}" LabelWidth="70">
+                                <TextBox Text="{Binding GeneralFolder}" IsReadOnly="{Binding AreFoldersLocked}" FontFamily="Consolas" />
+                            </controls:FormField>
+                            <controls:FormField Header="{x:Static res:Resources.Kind_Project}" LabelWidth="70" Margin="0,6,0,0">
+                                <TextBox Text="{Binding ProjectFolder}" IsReadOnly="{Binding AreFoldersLocked}" FontFamily="Consolas" />
+                            </controls:FormField>
+                            <controls:FormField Header="{x:Static res:Resources.Kind_Stock}" LabelWidth="70" Margin="0,6,0,0">
+                                <TextBox Text="{Binding StockFolder}" IsReadOnly="{Binding AreFoldersLocked}" FontFamily="Consolas" />
+                            </controls:FormField>
+                            <TextBlock Margin="0,6,0,0" Style="{StaticResource HintText}" Text="{x:Static res:Resources.Types_LevelFoldersHint}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- Alt: hata, Vazgeç, Kaydet -->
+        <Border Grid.Row="1" Padding="20,12"
+                Background="{DynamicResource LayerBrush}"
+                BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                BorderThickness="0,1,0,0">
+            <Grid>
+                <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+                           TextWrapping="Wrap" Margin="0,0,220,0" Text="{Binding Error}" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button MinWidth="96" Content="{x:Static res:Resources.Dialog_Cancel}" Click="Cancel_Click" IsCancel="True" />
+                    <Button MinWidth="96" Margin="8,0,0,0" Style="{DynamicResource AccentButtonStyle}"
+                            Content="{x:Static res:Resources.Editor_Save}" Click="Save_Click" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</controls:ChromeWindow>

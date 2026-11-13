@@ -1,0 +1,27 @@
+﻿param([string]$Bin, [string]$Out, [string]$Data, [string]$Sample)
+. (Join-Path $PSScriptRoot '..\_Ortak.ps1')
+$settingsFile = Join-Path $env:LOCALAPPDATA 'Pusula\ayarlar.json'
+$savedSettings = if (Test-Path $settingsFile) { [IO.File]::ReadAllText($settingsFile) } else { $null }
+try {
+    [System.Threading.SynchronizationContext]::SetSynchronizationContext((New-Object System.Windows.Threading.DispatcherSynchronizationContext))
+    $app = New-Object Pusula.Wpf.App; $app.InitializeComponent(); $app.ShutdownMode = 'OnExplicitShutdown'
+    $win = New-Object Pusula.Wpf.MainWindow
+    $win.WindowStartupLocation = 'Manual'; $win.Left = -20000; $win.Top = -20000; $win.ShowActivated = $false; $win.Width = 1240; $win.Height = 760
+    $win.Show(); Pump
+    $vm = $win.DataContext; $vm.RootPath = $Data; Pump
+    "--- + Yeni menüsü"
+    $vm.SelectNodeByPath((Join-Path $Data '7000_MILKON')); Wait
+    $menu = $win.FindResource('AddMenu'); $menu.PlacementTarget = $win.FindName('AddButton'); $menu.IsOpen = $true; Wait
+    $heads = @($menu.Items | ForEach-Object { if ($_ -is [System.Windows.Controls.Separator]) { '---' } else { [string]$_.Header } })
+    Check 'sıra: proje, stok, envanter (çizgi yok)' ($heads[0] -eq 'Proje' -and $heads[1] -like 'Stok*' -and $heads[2] -eq 'Envanter' -and -not ($heads -contains '---')) ($heads -join ' | ')
+    Check 'şablon / tür maddeleri yok' (-not ($heads -match 'Şablon|Türler'))
+    Check 'envanter türleri Türler''den' (($heads -contains 'Kablo') -and ($heads -contains 'Jig')) ($heads -join ' | ')
+    Check 'alt çizgi korunur (7000_MILKON)' ($vm.AddStockMenuText -eq 'Stok · 7000__MILKON') $vm.AddStockMenuText
+    $menu.IsOpen = $false
+    $vm.SelectNodeByPath((Join-Path $Data 'ENVANTER\Kablolar\JT-0001-0001_SATIMO_RF_kablosu')); Wait
+    Check 'proje yokken Stok soluk (çalışmaz)' (-not $vm.NewStockCommand.CanExecute($null)) $vm.AddStockMenuText
+    Snap $win "$Out\add-button.png"
+} finally {
+    if ($savedSettings -ne $null) { [IO.File]::WriteAllText($settingsFile, $savedSettings) }
+}
+"SONUÇ OK=$ok HATA=$fail"

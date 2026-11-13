@@ -1,0 +1,76 @@
+﻿param([string]$Bin, [string]$Out, [string]$Data, [string]$Sample)
+. (Join-Path $PSScriptRoot '..\_Ortak.ps1')
+$FD = [Pusula.Core.Types.FieldDefinition]
+"--- 1. Anahtar"
+Check 'Konnektör A → konnektor_a' ($FD::KeyFrom('Konnektör A') -eq 'konnektor_a')
+Check 'Faz kararlı → faz_kararli' ($FD::KeyFrom('Faz kararlı') -eq 'faz_kararli')
+$root = Join-Path $env:TEMP ('pusula-types-' + [guid]::NewGuid().ToString('N').Substring(0,6))
+New-Item -ItemType Directory $root | Out-Null
+try {
+    $set = [Pusula.Core.Types.TypeStore]::LoadOrCreate($root)
+    $app = New-Object Pusula.Wpf.App; $app.InitializeComponent(); $app.ShutdownMode = 'OnExplicitShutdown'
+    $vm = New-Object Pusula.Wpf.ViewModels.TypeEditor.TypeEditorViewModel($root, $set)
+    "--- 2. Düzenleme"
+    Check 'türler: Kablo, Jig, Yazılım, Test gereci, Kişi' ((($vm.Types | ForEach-Object Name) -join ',') -eq 'Kablo,Jig,Yazılım,Test gereci,Kişi')
+    $jig = $vm.Types | Where-Object Name -eq 'Jig'; $vm.Selected = $jig
+    Check 'jigin hazır alanları gelir' ($jig.Fields.Count -eq 6)
+    $jig.Fields.Clear()
+    $f = New-Object Pusula.Wpf.ViewModels.TypeEditor.FormatRow; $f.Pattern = 'JT-####-####'; $f.Label = 'Test jigi'; $jig.Formats.Add($f)
+    $f = New-Object Pusula.Wpf.ViewModels.TypeEditor.FormatRow; $f.Pattern = 'JX-####-####'; $f.Label = 'Üretim jigi'; $jig.Formats.Add($f)
+    $jig.TryNumber = 'JX-0002-0015'
+    Check 'dene: JX uyar' ($jig.TryResult -eq '✓ Üretim jigi') $jig.TryResult
+    $jig.TryNumber = 'JZ-1'
+    Check 'dene: uymaz' ($jig.TryResult -match 'uymuyor')
+    $fr = New-Object Pusula.Wpf.ViewModels.TypeEditor.FieldRow; $fr.Name = 'Malzeme'; $fr.Kind = 'choice'; $fr.Choices = 'Al 6061, Delrin, Paslanmaz'; $sc = New-Object Pusula.Core.Types.SubTypeChoiceList; $sc.SubType = 'Montaj'; $sc.Choices.Add('Delrin'); $fr.SubTypeChoices.Add($sc); $jig.Fields.Add($fr)
+    $fr = New-Object Pusula.Wpf.ViewModels.TypeEditor.FieldRow; $fr.Name = 'Tork'; $fr.Kind = 'number'; $fr.Unit = 'Nm'; $fr.SubTypes = 'Montaj'; $jig.Fields.Add($fr)
+    "--- 2b. Etiketler"
+    $faz = $vm.Tags | Where-Object Name -eq 'faz_kararli'
+    Check 'etiketler yüklendi, kapsam metni' ($vm.Tags.Count -eq $set.TagList.Count -and $faz.Scope -eq 'Kablo · RF kablo' -and ($vm.Tags | Where-Object Name -eq 'SATIMO').Scope -eq '') ("$($vm.Tags.Count) / $($faz.Scope)")
+    $tr = New-Object Pusula.Wpf.ViewModels.TypeEditor.TagRow; $tr.Name = '#yeni etiket'; $tr.Scope = 'Jig, Kablo · Güç'; $vm.Tags.Add($tr)
+    $fileTypes = $set.FileTypes.Count
+    $st = New-Object Pusula.Wpf.ViewModels.TypeEditor.StatusRow; $st.Name = 'Kalibrasyonda'; $st.Tone = 'waiting'; $st.IsSide = $true; $jig.Statuses.Add($st)
+    Check 'var olan durum kilitli' (($jig.Statuses | Where-Object Name -eq 'Talep').IsExisting -and $jig.AreFoldersLocked)
+    $vm.AddTypeCommand.Execute($null)
+    Check 'yeni tür: anahtar, klasörler açık' ($vm.Selected.IsNew -and $vm.Selected.Source.Key -eq 'yeni_tur' -and $vm.Selected.GeneralFolder -eq 'ENVANTER\Yeni_turler') ($vm.Selected.Source.Key + ' ' + $vm.Selected.GeneralFolder)
+    $vm.Selected.Name = 'Ölçüm cihazı'; $vm.Selected.PluralName = 'Ölçüm cihazları'
+    $win = New-Object Pusula.Wpf.TypeEditorWindow($vm)
+    $win.WindowStartupLocation = 'Manual'; $win.Left = -20000; $win.Top = -20000; $win.ShowActivated = $false
+    $win.Show(); $vm.Selected = $jig; Snap $win "$Out\types-window.png"
+"--- Tablo hücresi düzenleme kutusu temalı (beyaz değil)"
+function FindAll($d, [type]$type) { if ($d -is $type) { $d }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($d); $i++) { FindAll ([System.Windows.Media.VisualTreeHelper]::GetChild($d, $i)) $type } }
+$grid = @(FindAll $win ([System.Windows.Controls.DataGrid]) | Where-Object { [object]::ReferenceEquals($_.ItemsSource, $jig.Formats) })[0]
+$grid.Focus() | Out-Null
+$grid.CurrentCell = New-Object System.Windows.Controls.DataGridCellInfo($grid.Items[0], $grid.Columns[0])
+$grid.BeginEdit() | Out-Null; Pump; Pump
+$box = @(FindAll $grid ([System.Windows.Controls.TextBox]))[0]
+$bg = if ($box) { $box.Background.Color } else { $null }
+Check 'düzenleme kutusu açıldı' ($box -ne $null)
+Check 'arka plan şeffaf (satır rengi görünür, beyaz/siyah kutu yok)' ($bg -ne $null -and $bg.A -eq 0) ([string]$bg)
+Check 'altta vurgu çizgisi' ($box.BorderThickness.Bottom -eq 2 -and $box.BorderThickness.Top -eq 0)
+Snap $win "$Out\types-edit-cell.png"
+$grid.CancelEdit() | Out-Null
+    "--- 3. Kaydet"
+    $dup = New-Object Pusula.Wpf.ViewModels.TypeEditor.FieldRow; $dup.Name = 'malzeme'; $jig.Fields.Add($dup)
+    Check 'aynı alan iki kez → hata' (-not $vm.Save() -and $vm.Error -match 'iki kez') $vm.Error
+    $jig.Fields.Remove($dup) | Out-Null
+    Check 'kaydedildi' ($vm.Save()) $vm.Error
+    $win.Close()
+    $re = [Pusula.Core.Types.TypeStore]::LoadOrCreate($root)
+    $j = $re.Find('jig')
+    Check 'biçimler: JIG, JT, JX' ((($j.NumberFormats | ForEach-Object Pattern) -join ',') -eq 'JIG-####-####,JT-####-####,JX-####-####')
+    Check 'alanlar: malzeme (liste), tork (Nm, Montaj)' ($j.Fields.Count -eq 2 -and $j.Fields[0].Key -eq 'malzeme' -and $j.Fields[0].Choices.Count -eq 3 -and $j.Fields[1].Unit -eq 'Nm' -and $j.Fields[1].SubTypes[0] -eq 'Montaj')
+    Check 'alt türe göre alan' (@($j.FieldsFor('Mekanik')).Count -eq 1 -and @($j.FieldsFor('Montaj')).Count -eq 2)
+    Check 'yeni sıra dışı durum' ($j.FindStatus('Kalibrasyonda') -ne $null -and $j.SideStatuses.Count -eq 3)
+    $yt = $re.TagList | Where-Object Name -eq 'yeni_etiket'
+    Check 'yeni etiket kaydedildi: ad düzeltildi, kapsam jig + kablo · Güç' ($yt -ne $null -and $yt.Scopes.Count -eq 2 -and $yt.Scopes[0].Type -eq 'jig' -and $yt.Scopes[1].Type -eq 'cable' -and $yt.Scopes[1].SubType -eq 'Güç')
+    Check 'öteki etiketler ve kapsamları korundu' (@($re.TagList | Where-Object { $_.Name -eq 'faz_kararli' -and $_.Scopes[0].SubType -eq 'RF kablo' }).Count -eq 1)
+    Check 'kaydetme dosya türlerini, sürümü ve uç listelerini korur' ($re.FileTypes.Count -eq $fileTypes -and $re.SchemaVersion -ge 5 -and $j.Fields[0].SubTypeChoices.Count -eq 1 -and $j.Fields[0].ChoicesFor('Montaj')[0] -eq 'Delrin') ("$($re.FileTypes.Count)/$fileTypes v$($re.SchemaVersion)")
+    Check 'yeni tür: anahtar ve klasör son addan, stok/proje korunur' ($re.Find('olcum_cihazi').Name -eq 'Ölçüm cihazı' -and $re.Find('olcum_cihazi').GeneralFolder -eq 'ENVANTER\Olcum_cihazlari' -and $re.Find('stock') -ne $null -and $re.Find('project') -ne $null)
+    $old10 = [Pusula.Core.Types.TypeSet]::CreateDefault(); $old10.Types.RemoveAll([Predicate[Pusula.Core.Types.TypeDefinition]]{ param($x) $x.Key -eq 'equipment' }) | Out-Null; $old10.SchemaVersion = 10; $old10.Normalize()
+    $eq = $old10.Find('equipment')
+    Check 'sürüm 10 → 11: Test gereci eklendi' ($eq -ne $null -and $eq.IsInventory -and $eq.SubTypes -contains 'Adaptör' -and @($eq.Fields | % Key) -contains 'seri_no' -and $eq.StockFolder -eq '07_Test_Gerecleri') (@($eq.Fields | % Key) -join ',')
+    $kept = [Pusula.Core.Types.TypeSet]::CreateDefault(); $kept.Types.RemoveAll([Predicate[Pusula.Core.Types.TypeDefinition]]{ param($x) $x.Key -eq 'equipment' }) | Out-Null; $kept.SchemaVersion = 11; $kept.Normalize()
+    Check 'sürüm 11 dosyada silinen Test gereci geri gelmez' ($kept.Find('equipment') -eq $null)
+} finally { Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue }
+""
+"SONUC: $ok basarili, $fail hata"

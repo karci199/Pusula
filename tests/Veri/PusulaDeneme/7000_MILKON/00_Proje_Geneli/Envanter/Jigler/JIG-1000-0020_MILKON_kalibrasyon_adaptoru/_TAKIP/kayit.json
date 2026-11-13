@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "type": "jig",
+  "number": "JIG-1000-0020",
+  "name": "MILKON kalibrasyon adaptörü",
+  "subType": "Ölçüm adaptörü",
+  "note": "",
+  "fields": [ ],
+  "events": [
+    {
+      "status": "Talep",
+      "date": "2026-11-05",
+      "person": "a-demir",
+      "location": "",
+      "note": "VNA kalibrasyonu için"
+    }
+  ]
+}

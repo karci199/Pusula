@@ -1,0 +1,121 @@
+﻿<controls:ChromeWindow x:Class="Pusula.Wpf.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:DesignKit.Controls;assembly=DesignKit.Wpf"
+        xmlns:res="clr-namespace:Pusula.Wpf.Properties"
+        xmlns:local="clr-namespace:Pusula.Wpf"
+        Icon="/Pusula;component/Assets/pusula.ico"
+        Title="{x:Static res:Resources.Settings_Title}"
+        Width="620" SizeToContent="Height"
+        MinWidth="480"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        FontFamily="{DynamicResource AppFont}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        Background="{DynamicResource SurfaceBaseBrush}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="20,16,20,20">
+            <!-- Kök klasör -->
+            <TextBlock Style="{DynamicResource SubtitleTextBlockStyle}" Text="{x:Static res:Resources.Settings_Root}" />
+            <TextBlock Margin="0,2,0,8" TextWrapping="Wrap" Style="{DynamicResource CaptionTextBlockStyle}"
+                       Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Settings_RootHint}" />
+            <controls:FilePickerRow Mode="Folder"
+                                    SelectedPath="{Binding RootPath, Mode=TwoWay}"
+                                    PlaceholderText="{x:Static res:Resources.Root_Placeholder}"
+                                    BrowseText="{x:Static res:Resources.Root_Browse}"
+                                    DialogTitle="{x:Static res:Resources.Root_DialogTitle}" />
+
+            <!-- Tema -->
+            <TextBlock Margin="0,20,0,8" Style="{DynamicResource SubtitleTextBlockStyle}" Text="{x:Static res:Resources.Settings_Theme}" />
+            <ComboBox x:Name="ThemeBox" Width="260" HorizontalAlignment="Left"
+                      ItemsSource="{Binding AllThemes}" SelectedItem="{Binding Theme, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Border Width="28" Height="16" CornerRadius="3" VerticalAlignment="Center"
+                                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                                <Border.Background>
+                                    <SolidColorBrush Color="{Binding Background}" />
+                                </Border.Background>
+                                <Border Width="10" Height="6" CornerRadius="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,3,3">
+                                    <Border.Background>
+                                        <SolidColorBrush Color="{Binding Accent}" />
+                                    </Border.Background>
+                                </Border>
+                            </Border>
+                            <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" Text="{Binding Name}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <!-- Kullanıcı (ben): talep eden ve olay kişisinde varsayılan -->
+            <TextBlock Margin="0,20,0,2" Style="{DynamicResource SubtitleTextBlockStyle}" Text="{x:Static res:Resources.Settings_User}" />
+            <TextBlock Margin="0,0,0,8" TextWrapping="Wrap" Style="{DynamicResource CaptionTextBlockStyle}"
+                       Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Settings_UserHint}" />
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="UserBox" Width="230" Text="{Binding UserName, UpdateSourceTrigger=LostFocus}" local:MentionAssist.Mode="person"
+                         controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Placeholder_Person}" />
+                <ComboBox x:Name="UserRoleBox" Width="140" Margin="8,0,0,0" ItemsSource="{Binding PersonRoles}" SelectedItem="{Binding UserRole, Mode=TwoWay}"
+                          ToolTip="{x:Static res:Resources.Types_PersonRole}" />
+                <ComboBox x:Name="UserTeamBox" Width="160" Margin="8,0,0,0" ItemsSource="{Binding PersonTeams}" SelectedItem="{Binding UserTeam, Mode=TwoWay}"
+                          ToolTip="{x:Static res:Resources.Types_PersonTeam}" />
+            </StackPanel>
+            <!-- Notları açan program: "Notu aç" düğmeleri .md notunu bununla açar -->
+            <TextBlock Margin="0,20,0,2" Style="{DynamicResource SubtitleTextBlockStyle}" Text="{x:Static res:Resources.Settings_NoteApp}" />
+            <TextBlock Margin="0,0,0,8" TextWrapping="Wrap" Style="{DynamicResource CaptionTextBlockStyle}"
+                       Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Settings_NoteAppHint}" />
+            <ComboBox x:Name="NoteAppBox" Width="260" HorizontalAlignment="Left" DisplayMemberPath="Name"
+                      ItemsSource="{Binding NoteApps}" SelectedItem="{Binding NoteApp, Mode=TwoWay}" />
+
+            <!-- Tanımlar: kök klasörün _PUSULA altındaki dosyalar -->
+            <TextBlock Margin="0,20,0,8" Style="{DynamicResource SubtitleTextBlockStyle}" Text="{x:Static res:Resources.Settings_Definitions}" />
+            <WrapPanel IsEnabled="{Binding HasRoot}">
+                <Button Margin="0,0,8,8" Click="Templates_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <local:AppIcon Glyph="{x:Static local:AppIcons.Template}" FontSize="14" />
+                        <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Button_EditTemplates}" />
+                    </StackPanel>
+                </Button>
+                <Button Margin="0,0,8,8" Click="Types_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <local:AppIcon Glyph="{x:Static local:AppIcons.Inventory}" FontSize="14" />
+                        <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Button_EditTypes}" />
+                    </StackPanel>
+                </Button>
+                <Button Margin="0,0,8,8" Click="Trash_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <local:AppIcon Glyph="{x:Static local:AppIcons.Delete}" FontSize="14" />
+                        <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Settings_Trash}" />
+                    </StackPanel>
+                </Button>
+                <Button Margin="0,0,8,8" Click="ResetLayout_Click" ToolTip="{x:Static res:Resources.Settings_ResetLayoutHint}">
+                    <StackPanel Orientation="Horizontal">
+                        <local:AppIcon Glyph="{x:Static local:AppIcons.Refresh}" FontSize="14" />
+                        <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Settings_ResetLayout}" />
+                    </StackPanel>
+                </Button>
+                <Button Margin="0,0,8,8" Click="FileTypes_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
+                        <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Button_EditFileTypes}" />
+                    </StackPanel>
+                </Button>
+            </WrapPanel>
+        </StackPanel>
+
+        <Border Grid.Row="1" Padding="20,12"
+                Background="{DynamicResource LayerBrush}"
+                BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                BorderThickness="0,1,0,0">
+            <Button HorizontalAlignment="Right" MinWidth="96" IsCancel="True" IsDefault="True"
+                    Content="{x:Static res:Resources.Settings_Close}" Click="Close_Click" />
+        </Border>
+    </Grid>
+</controls:ChromeWindow>

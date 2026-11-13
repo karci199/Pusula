@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Pusula.Wpf — WPF arayüz. Çıktı: Pusula.exe.
+    Ortak ayarlar ..\..\Directory.Build.props dosyasından gelir.
+  -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>Pusula.Wpf</RootNamespace>
+    <AssemblyName>Pusula</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Exe ikonu (görev çubuğu, kısayol); tools\Ikon-Ciz.ps1 üretir. -->
+    <ApplicationIcon>Assets\pusula.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\pusula.ico" />
+    <Resource Include="Assets\pusula-logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Pusula.Core\Pusula.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="DesignKit.Wpf">
+      <HintPath>$(DependenciesDir)DesignKit\DesignKit.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="Markdig">
+      <HintPath>$(DependenciesDir)Markdig\Markdig.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.AvalonEdit">
+      <HintPath>$(DependenciesDir)AvalonEdit\ICSharpCode.AvalonEdit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory">
+      <HintPath>$(DependenciesDir)SystemMemory\System.Memory.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

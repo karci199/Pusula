@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Pusula.Core — alan modeli, ayrıştırıcılar, tarama ve kurallar.
+    Arayüzden bağımsızdır: WPF veya DesignKit referansı almaz.
+  -->
+  <PropertyGroup>
+    <RootNamespace>Pusula.Core</RootNamespace>
+    <AssemblyName>Pusula.Core</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Markdig">
+      <HintPath>$(DependenciesDir)Markdig\Markdig.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory">
+      <HintPath>$(DependenciesDir)SystemMemory\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Buffers">
+      <HintPath>$(DependenciesDir)SystemMemory\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe">
+      <HintPath>$(DependenciesDir)SystemMemory\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics.Vectors">
+      <HintPath>$(DependenciesDir)SystemMemory\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

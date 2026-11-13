@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "stockNo": "AB-7000-0003",
+  "name": "DA400 Döner Anten",
+  "template": "Döner anten",
+  "status": "Tamamlandı",
+  "statusSince": "2026-11-08",
+  "statusNote": "",
+  "inventory": [
+    "JIG-1000-0009",
+    "JIG-1000-0020",
+    "JT-0001-0002"
+  ]
+}

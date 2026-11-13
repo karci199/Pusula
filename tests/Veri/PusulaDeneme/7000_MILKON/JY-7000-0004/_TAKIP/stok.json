@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "stockNo": "JY-7000-0004",
+  "name": "Yeni besleme ağı (deneme)",
+  "template": "Pasif anten",
+  "status": "Testte",
+  "statusSince": "2026-11-08",
+  "statusNote": ""
+}

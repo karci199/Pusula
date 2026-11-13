@@ -1,0 +1,26 @@
+﻿# Derleme çıktıları
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+*.rsuser
+
+# Test sonuçları
+TestResults/
+*.trx
+
+# Claude Code yerel dosyaları
+.claude/worktrees/
+.claude/settings.local.json
+
+# Not: Dependencies/ altındaki DLL'ler bilerek repoya dahildir.
+
+# Test ekran görüntüleri
+tests/cikti/

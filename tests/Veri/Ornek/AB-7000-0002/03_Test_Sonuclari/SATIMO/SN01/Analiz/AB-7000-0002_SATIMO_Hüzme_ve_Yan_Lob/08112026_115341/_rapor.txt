@@ -1,0 +1,11 @@
+﻿Plan:       AB-7000-0002 SATIMO Hüzme ve Yan Lob
+Ham dizin:  C:\Projeler\Veri\Pusula-Ornek\AB-7000-0002\03_Test_Sonuclari\SATIMO\SN01\Ham
+Tarih:      2026-11-08 11:53:42
+
+TAMAM  H Duzlem Huzme  20261107_AB-7000-0002_SN01_P1_SATIMO_pattern.trx  → 1 sütun × 1241 nokta, 34 ms
+TAMAM  E Duzlem Huzme  20261107_AB-7000-0002_SN01_P1_SATIMO_pattern.trx  → 1 sütun × 1241 nokta, 34 ms
+TAMAM  Yan Lob  20261107_AB-7000-0002_SN01_P1_SATIMO_pattern.trx  → 1 sütun × 2482 nokta, 34 ms
+
+Excel: C:\Projeler\Veri\Pusula-Ornek\AB-7000-0002\03_Test_Sonuclari\SATIMO\SN01\Analiz\AB-7000-0002_SATIMO_Hüzme_ve_Yan_Lob\08112026_115341\H_Duzlem_Huzme\H_Duzlem_Huzme.xlsx
+Excel: C:\Projeler\Veri\Pusula-Ornek\AB-7000-0002\03_Test_Sonuclari\SATIMO\SN01\Analiz\AB-7000-0002_SATIMO_Hüzme_ve_Yan_Lob\08112026_115341\E_Duzlem_Huzme\E_Duzlem_Huzme.xlsx
+Excel: C:\Projeler\Veri\Pusula-Ornek\AB-7000-0002\03_Test_Sonuclari\SATIMO\SN01\Analiz\AB-7000-0002_SATIMO_Hüzme_ve_Yan_Lob\08112026_115341\Yan_Lob\Yan_Lob.xlsx
