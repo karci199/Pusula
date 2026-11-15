@@ -87,7 +87,21 @@ namespace Pusula.Wpf
         /// <summary>Ayarları okur; dosya yoksa ya da bozuksa varsayılanı döner.</summary>
         public static AppSettings Load()
         {
-            return JsonFile.TryRead<AppSettings>(FilePath) ?? new AppSettings();
+            // Dosya o an başka biri tarafından yazılıyorsa (ör. test koşucusu geri yüklerken) okuma boş döner;
+            // varsayılanla açılınca kök seçilmemiş görünüyor ve kapanışta boş ayar yazılıyordu. Birkaç kez denenir.
+            var path = FilePath;
+            for (var attempt = 0; attempt < 5; attempt++)
+            {
+                var settings = JsonFile.TryRead<AppSettings>(path);
+                if (settings != null || !File.Exists(path))
+                {
+                    return settings ?? new AppSettings();
+                }
+
+                System.Threading.Thread.Sleep(150);
+            }
+
+            return new AppSettings();
         }
 
         /// <summary>Ayarları yazar. Yazılamazsa sessizce geçer; ayar kaybı uygulamayı durdurmamalı.</summary>

@@ -285,6 +285,54 @@
   <data name="Home_Button" xml:space="preserve">
     <value>Ana sayfa</value>
   </data>
+  <data name="Home_TabJournal" xml:space="preserve">
+    <value>Günlük</value>
+  </data>
+  <data name="Home_TabTasks" xml:space="preserve">
+    <value>Yapılacaklar</value>
+  </data>
+  <data name="Home_TabRecords" xml:space="preserve">
+    <value>Kayıtlar</value>
+  </data>
+  <data name="Home_JournalSample" xml:space="preserve">
+    <value>Örnek görünüm · zaman çizelgesi stok sayfasıyla birlikte tasarlanacak</value>
+  </data>
+  <data name="Home_NoEvents" xml:space="preserve">
+    <value>Bu aralıkta olay yok.</value>
+  </data>
+  <data name="Day_Today" xml:space="preserve">
+    <value>Bugün</value>
+  </data>
+  <data name="Day_Yesterday" xml:space="preserve">
+    <value>Dün</value>
+  </data>
+  <data name="Home_Tasks" xml:space="preserve">
+    <value>İşlerim</value>
+  </data>
+  <data name="Home_TasksOpen" xml:space="preserve">
+    <value>{0} açık</value>
+  </data>
+  <data name="Home_TasksLate" xml:space="preserve">
+    <value>{0} geciken</value>
+  </data>
+  <data name="Home_RangeToday" xml:space="preserve">
+    <value>Bugün</value>
+  </data>
+  <data name="Home_RangeWeek" xml:space="preserve">
+    <value>Bu hafta</value>
+  </data>
+  <data name="Home_RangeMonth" xml:space="preserve">
+    <value>Bu ay</value>
+  </data>
+  <data name="Home_RangeAll" xml:space="preserve">
+    <value>Hepsi</value>
+  </data>
+  <data name="Home_NoTasks" xml:space="preserve">
+    <value>Bu aralıkta açık iş yok.</value>
+  </data>
+  <data name="Home_NoRecent" xml:space="preserve">
+    <value>Henüz bir şey açılmadı.</value>
+  </data>
   <data name="Card_Stocks" xml:space="preserve">
     <value>{0} stok</value>
   </data>

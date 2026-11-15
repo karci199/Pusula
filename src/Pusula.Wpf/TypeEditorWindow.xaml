@@ -156,13 +156,13 @@
                             <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_Formats}" />
                             <DataGrid Style="{StaticResource EditGrid}" ItemsSource="{Binding Formats}" PreviewMouseWheel="Grid_PreviewMouseWheel">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_Pattern}" Width="200" Binding="{Binding Pattern}" FontFamily="Consolas" />
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_Pattern}" Width="200" Binding="{Binding Pattern}" />
                                     <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_Label}" Width="*" Binding="{Binding Label}" />
                                 </DataGrid.Columns>
                             </DataGrid>
                             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                 <TextBlock Style="{StaticResource SectionLabel}" Margin="0,0,8,0" Text="{x:Static res:Resources.Types_Try}" />
-                                <TextBox Width="170" FontFamily="Consolas" Text="{Binding TryNumber, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBox Width="170" Text="{Binding TryNumber, UpdateSourceTrigger=PropertyChanged}" />
                                 <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" Text="{Binding TryResult}" />
                             </StackPanel>
                         </StackPanel>
@@ -190,7 +190,7 @@
                                 <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_RecordFolders}" />
                                 <DataGrid Style="{StaticResource EditGrid}" ItemsSource="{Binding RecordFolders}" PreviewMouseWheel="Grid_PreviewMouseWheel">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_Folder}" Width="*" Binding="{Binding Text}" FontFamily="Consolas" />
+                                        <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.Types_Folder}" Width="*" Binding="{Binding Text}" />
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </StackPanel>
@@ -293,13 +293,13 @@
                         <StackPanel>
                             <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Types_LevelFolders}" />
                             <controls:FormField Header="{x:Static res:Resources.Inv_LevelGeneral}" LabelWidth="70">
-                                <TextBox Text="{Binding GeneralFolder}" IsReadOnly="{Binding AreFoldersLocked}" FontFamily="Consolas" />
+                                <TextBox Text="{Binding GeneralFolder}" IsReadOnly="{Binding AreFoldersLocked}" />
                             </controls:FormField>
                             <controls:FormField Header="{x:Static res:Resources.Kind_Project}" LabelWidth="70" Margin="0,6,0,0">
-                                <TextBox Text="{Binding ProjectFolder}" IsReadOnly="{Binding AreFoldersLocked}" FontFamily="Consolas" />
+                                <TextBox Text="{Binding ProjectFolder}" IsReadOnly="{Binding AreFoldersLocked}" />
                             </controls:FormField>
                             <controls:FormField Header="{x:Static res:Resources.Kind_Stock}" LabelWidth="70" Margin="0,6,0,0">
-                                <TextBox Text="{Binding StockFolder}" IsReadOnly="{Binding AreFoldersLocked}" FontFamily="Consolas" />
+                                <TextBox Text="{Binding StockFolder}" IsReadOnly="{Binding AreFoldersLocked}" />
                             </controls:FormField>
                             <TextBlock Margin="0,6,0,0" Style="{StaticResource HintText}" Text="{x:Static res:Resources.Types_LevelFoldersHint}" />
                         </StackPanel>

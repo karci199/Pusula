@@ -70,5 +70,8 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Son tarihi geçmiş açık iş mi (kırmızı).</summary>
         public bool IsLate { get; }
+
+        /// <summary>Ana sayfada: işin geldiği projenin rengi (<c>#RRGGBB</c>); başka yerde boş.</summary>
+        public string ProjectColor { get; set; } = string.Empty;
     }
 }

@@ -416,6 +416,15 @@ namespace Pusula.Wpf
             viewModel.GoHome();
         }
 
+        // Ana sayfa Kayıtlar sekmesi: satırdaki kaydı ağaçta seçer.
+        private void HomeRecord_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is HomeRecord record)
+            {
+                viewModel.OpenHomeRecord(record);
+            }
+        }
+
         // Ana sayfada proje kartı: projeyi ağaçta seçer.
         private void ProjectCard_Click(object sender, RoutedEventArgs e)
         {

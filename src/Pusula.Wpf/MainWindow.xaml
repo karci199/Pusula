@@ -391,15 +391,11 @@
                                     </ControlTemplate>
                                 </ToggleButton.Template>
                             </ToggleButton>
-                            <!-- Vurgu açma okunu da kapsar (Win11 gezinme satırı gibi); seçiliyken solda vurgu çizgisi -->
+                            <!-- Vurgu açma okunu da kapsar (Win11 gezinme satırı gibi) -->
                             <Border x:Name="Bd" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Background="Transparent" MinHeight="34"
                                     CornerRadius="{DynamicResource ControlCornerRadius}" Padding="{TemplateBinding Padding}"
                                     SnapsToDevicePixels="True" Panel.ZIndex="-1">
-                                <Grid>
-                                    <Border x:Name="Pill" Width="3" Height="16" CornerRadius="1.5" HorizontalAlignment="Left" VerticalAlignment="Center"
-                                            Background="{DynamicResource AccentBrush}" Visibility="Collapsed" />
-                                    <ContentPresenter Margin="32,0,0,0" ContentSource="Header" VerticalAlignment="Center" />
-                                </Grid>
+                                <ContentPresenter Margin="32,0,0,0" ContentSource="Header" VerticalAlignment="Center" />
                             </Border>
                             <ItemsPresenter x:Name="ItemsHost" Grid.Row="1" Grid.Column="1" Visibility="Collapsed" />
                         </Grid>
@@ -419,7 +415,6 @@
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
-                                <Setter TargetName="Pill" Property="Visibility" Value="Visible" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
@@ -869,16 +864,10 @@
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
-                        <!-- Ağaçtaki seçili satırla aynı dil: ana sayfadayken solda vurgu çizgisi -->
-                        <Grid>
-                            <Border Width="3" Height="16" Margin="-12,0,0,0" CornerRadius="1.5" HorizontalAlignment="Left" VerticalAlignment="Center"
-                                    Background="{DynamicResource AccentBrush}"
-                                    Visibility="{Binding HasSelection, Converter={StaticResource InverseBoolToVis}}" />
-                            <StackPanel Orientation="Horizontal" Margin="8,0,0,0">
-                                <local:AppIcon Glyph="&#xE80F;" FontSize="16" VerticalAlignment="Center" Foreground="{DynamicResource AccentBrush}" />
-                                <TextBlock Margin="12,0,0,0" FontSize="14" Text="{x:Static res:Resources.Home_Button}" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Grid>
+                        <StackPanel Orientation="Horizontal" Margin="8,0,0,0">
+                            <local:AppIcon Glyph="&#xE80F;" FontSize="16" VerticalAlignment="Center" Foreground="{DynamicResource AccentBrush}" />
+                            <TextBlock Margin="12,0,0,0" FontSize="14" Text="{x:Static res:Resources.Home_Button}" VerticalAlignment="Center" />
+                        </StackPanel>
                     </Button>
                     <Grid Margin="16,6,8,4">
                         <Grid.RowDefinitions>
@@ -1043,17 +1032,17 @@
             </Border>
 
             <!-- Hiçbir şey seçili değil: başlangıç sayfası (son açılanlar, geciken işler, bana ait işler) -->
-            <ScrollViewer x:Name="HomePage" Grid.Column="1" VerticalScrollBarVisibility="Auto">
-                <ScrollViewer.Style>
-                    <Style TargetType="ScrollViewer">
+            <Grid x:Name="HomePage" Grid.Column="1">
+                <Grid.Style>
+                    <Style TargetType="Grid">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding HasSelection}" Value="True">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </ScrollViewer.Style>
-                <ScrollViewer.Resources>
+                </Grid.Style>
+                <Grid.Resources>
                     <DataTemplate x:Key="HomeTaskTemplate">
                         <Button Margin="0,0,0,6" Padding="12,8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                                 Click="HomeTask_Click" ToolTip="{x:Static res:Resources.Home_TaskHint}">
@@ -1077,18 +1066,21 @@
                             </DataTrigger>
                         </DataTemplate.Triggers>
                     </DataTemplate>
-                </ScrollViewer.Resources>
+                </Grid.Resources>
                 <!-- Ana sayfa (15.11.2026): yalnız proje kartları; son açılanlar ve işler sonraki adımda eklenecek -->
-                <StackPanel Margin="40,32,40,24" TextElement.FontWeight="Normal">
+                <!-- Sol-sağ: solda projeler (dikey kartlar, kendi kaydırması), sağda sekmeler tam yükseklikte (kendi kaydırması) -->
+                <Grid Margin="32,28,32,0" TextElement.FontWeight="Normal">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="300" /><ColumnDefinition Width="28" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
                     <!-- Başlık: Projeler + sayı, sağda Yeni proje -->
-                    <Grid Margin="0,0,0,20">
+                    <Grid Margin="0,0,0,16">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock FontSize="26" FontWeight="SemiBold" Text="{x:Static res:Resources.Home_Projects}" VerticalAlignment="Center" />
-                            <Border Margin="12,4,0,0" Padding="10,2" CornerRadius="11" VerticalAlignment="Center"
+                            <TextBlock FontSize="20" FontWeight="SemiBold" Text="{x:Static res:Resources.Home_Projects}" VerticalAlignment="Center" />
+                            <Border Margin="10,2,0,0" Padding="10,2" CornerRadius="11" VerticalAlignment="Center"
                                     Background="{DynamicResource SubtleFillColorSecondaryBrush}">
                                 <TextBlock Text="{Binding ProjectCount}" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" />
                             </Border>
@@ -1102,15 +1094,17 @@
                     </Grid>
 
                     <!-- Proje kartları: renk, kod, ad; altta stok sayısı ve son değişiklik (tarih · stok). Tıklayınca proje açılır. -->
+                    <!-- Kartlar alt alta; çok proje olunca sütun kendi içinde kayar -->
+                    <ScrollViewer Grid.Row="1" Margin="0,0,0,20" Padding="0,0,10,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <ItemsControl ItemsSource="{Binding ProjectCards}" Focusable="False">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <WrapPanel />
+                                <StackPanel />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button Width="280" Margin="0,0,14,14" Padding="0" Click="ProjectCard_Click"
+                                <Button HorizontalAlignment="Stretch" Margin="0,0,0,10" Padding="0" Click="ProjectCard_Click"
                                         HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
                                     <StackPanel>
                                     <!-- Üstte projenin renginde ince şerit -->
@@ -1123,13 +1117,13 @@
                                                                HorizontalAlignment="Center" VerticalAlignment="Center" />
                                             </Grid>
                                             <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding Code}" FontFamily="Consolas" FontSize="18" FontWeight="SemiBold" />
+                                                <TextBlock Text="{Binding Code}" FontSize="18" FontWeight="SemiBold" />
                                                 <TextBlock Margin="0,1,0,0" Text="{Binding Name}" TextTrimming="CharacterEllipsis" MaxWidth="190"
                                                            Foreground="{DynamicResource TextSecondaryBrush}" />
                                             </StackPanel>
                                         </StackPanel>
-                                        <!-- Stok çipleri: ilk 2 numara, fazlası "+N" (tek satır) -->
-                                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0" Visibility="{Binding HasChips, Converter={StaticResource BoolToVis}}">
+                                        <!-- Stok çipleri dar sütunda gösterilmez (sol-sağ düzen) -->
+                                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0" Visibility="Collapsed">
                                             <ItemsControl ItemsSource="{Binding StockChips}" Focusable="False">
                                                 <ItemsControl.ItemsPanel>
                                                     <ItemsPanelTemplate>
@@ -1140,7 +1134,7 @@
                                                     <DataTemplate>
                                                         <Border Margin="0,0,5,5" Padding="7,2" VerticalAlignment="Top" CornerRadius="5" BorderThickness="1"
                                                                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource SubtleFillColorTertiaryBrush}">
-                                                            <TextBlock Text="{Binding}" FontFamily="Consolas" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                                            <TextBlock Text="{Binding}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" />
                                                         </Border>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
@@ -1151,7 +1145,7 @@
                                                 <TextBlock Text="{Binding MoreText}" FontSize="11" Foreground="{DynamicResource TextTertiaryBrush}" />
                                             </Border>
                                         </StackPanel>
-                                        <Border Margin="0,8,0,0" Padding="0,10,0,0" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+                                        <Border Margin="0,14,0,0" Padding="0,10,0,0" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto" />
@@ -1174,9 +1168,10 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
+                    </ScrollViewer>
 
                     <!-- Hiç proje yokken -->
-                    <TextBlock Margin="0,8,0,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Card_NoProjects}">
+                    <TextBlock Grid.Row="1" Margin="0,4,0,0" VerticalAlignment="Top" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Card_NoProjects}">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
                                 <Setter Property="Visibility" Value="Collapsed" />
@@ -1188,8 +1183,260 @@
                             </Style>
                         </TextBlock.Style>
                     </TextBlock>
-                </StackPanel>
-            </ScrollViewer>
+
+                    <!-- Alt kısım: sekmeler (Günlük · Yapılacaklar · Kayıtlar); sağ üstte süzgeç -->
+                    <Grid Grid.Column="2" Grid.RowSpan="2" Margin="0,0,0,20">
+                        <Grid.Resources>
+                            <!-- Parçalı süzgeç düğmesi: seçili parça dolgulu ve kalın, diğerleri soluk -->
+                            <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
+                                <Setter Property="FontSize" Value="15" />
+                            </Style>
+                            <Style x:Key="SegmentStyle" TargetType="RadioButton">
+                                <Setter Property="FontSize" Value="14" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="RadioButton">
+                                            <Border x:Name="Bg" CornerRadius="4" Padding="12,4" Background="Transparent">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Bg" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                                                </Trigger>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter TargetName="Bg" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                            <Style x:Key="SegmentBox" TargetType="Border">
+                                <Setter Property="CornerRadius" Value="6" />
+                                <Setter Property="BorderThickness" Value="1" />
+                                <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+                                <Setter Property="Background" Value="{DynamicResource LayerBrush}" />
+                                <Setter Property="Padding" Value="2" />
+                            </Style>
+                        </Grid.Resources>
+
+                        <TabControl SelectedIndex="{Binding HomeTab, Mode=TwoWay}" Background="Transparent">
+                            <!-- Günlük: olmuş şeyler, en yeni üstte (şimdilik örnek kartlar) -->
+                            <TabItem Header="{x:Static res:Resources.Home_TabJournal}">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,14,0">
+                                <StackPanel Margin="0,16,0,0" MaxWidth="1000" HorizontalAlignment="Stretch">
+                                    <TextBlock Margin="0,0,0,10" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
+                                               Text="{x:Static res:Resources.Home_JournalSample}" />
+                                    <ItemsControl ItemsSource="{Binding HomeTimeline}" Focusable="False">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Margin="0,0,0,6">
+                                                    <TextBlock Margin="2,6,0,8" FontSize="13" FontWeight="SemiBold" Text="{Binding Title}" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                                    <ItemsControl ItemsSource="{Binding Events}" Focusable="False">
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <!-- Solda dikey çizgi ve projenin renginde nokta; sağda kart -->
+                                                                <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="30" />
+                                                                    <ColumnDefinition Width="*" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <Rectangle Width="2" HorizontalAlignment="Center" Fill="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                                                                <Ellipse Width="12" Height="12" Margin="0,16,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"
+                                                                         Fill="{Binding ProjectColor}" Stroke="{DynamicResource SurfaceBaseBrush}" StrokeThickness="2" />
+                                                                <Border Grid.Column="1" Margin="6,0,0,10" Padding="16,12" CornerRadius="8" BorderThickness="1"
+                                                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource LayerBrush}">
+                                                                    <StackPanel>
+                                                                        <Grid>
+                                                                            <Grid.ColumnDefinitions>
+                                                                                <ColumnDefinition Width="Auto" />
+                                                                                <ColumnDefinition Width="Auto" />
+                                                                                <ColumnDefinition Width="*" />
+                                                                                <ColumnDefinition Width="Auto" />
+                                                                            </Grid.ColumnDefinitions>
+                                                                            <StackPanel Orientation="Horizontal">
+                                                                                <TextBlock Text="{Binding Source}" FontSize="13"
+                                                                                           VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                                                            </StackPanel>
+                                                                            <Border Grid.Column="1" Margin="8,0,0,0" Padding="7,1" CornerRadius="5" VerticalAlignment="Center"
+                                                                                    Background="{DynamicResource SubtleFillColorSecondaryBrush}"
+                                                                                    Visibility="{Binding HasSerial, Converter={StaticResource BoolToVis}}">
+                                                                                <TextBlock Text="{Binding Serial}" FontSize="12" />
+                                                                            </Border>
+                                                                            <TextBlock Grid.Column="3" Text="{Binding TimeText}" VerticalAlignment="Center"
+                                                                                       Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" />
+                                                                        </Grid>
+                                                                        <TextBlock Margin="0,6,0,0" Text="{Binding Text}" TextWrapping="Wrap" FontSize="15" />
+                                                                    </StackPanel>
+                                                                </Border>
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <TextBlock Margin="2,4" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Home_NoEvents}"
+                                               Visibility="{Binding IsHomeTimelineEmpty, Converter={StaticResource BoolToVis}}" />
+                                </StackPanel>
+                                </ScrollViewer>
+                            </TabItem>
+
+                            <!-- Yapılacaklar: açık işler, son tarihe göre (gecikenler hep üstte, kırmızı) -->
+                            <TabItem>
+                                <TabItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{x:Static res:Resources.Home_TabTasks}" />
+                                        <!-- Bildirim rozeti: açık iş sayısı; geciken varsa kırmızı. Ayrıntı ipucunda ("9 açık · 1 geciken"). -->
+                                        <Border Margin="8,0,0,0" MinWidth="20" Height="20" Padding="6,0" CornerRadius="10" VerticalAlignment="Center"
+                                                ToolTip="{Binding HomeTaskSummary}"
+                                                Visibility="{Binding HasHomeOpen, Converter={StaticResource BoolToVis}}">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding HasHomeLate}" Value="True">
+                                                            <Setter Property="Background" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <TextBlock Text="{Binding HomeOpenCount}" FontSize="11" FontWeight="SemiBold"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding HasHomeLate}" Value="True">
+                                                                <Setter Property="Foreground" Value="White" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Border>
+                                    </StackPanel>
+                                </TabItem.Header>
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,14,0">
+                                <StackPanel Margin="0,14,0,0" MaxWidth="1000" HorizontalAlignment="Stretch">
+                                    <Border CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                            Background="{DynamicResource LayerBrush}" Padding="4">
+                                        <StackPanel>
+                                            <ItemsControl ItemsSource="{Binding HomeTasks}" Focusable="False">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Padding="12,8" Margin="0,1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                                                Background="Transparent" BorderThickness="0" Click="HomeTask_Click">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <ColumnDefinition Width="*" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <Ellipse Width="8" Height="8" VerticalAlignment="Center" Fill="{Binding ProjectColor}" />
+                                                                <StackPanel Grid.Column="1" Margin="12,0,12,0">
+                                                                    <TextBlock Text="{Binding Text}" TextTrimming="CharacterEllipsis" />
+                                                                    <TextBlock Margin="0,2,0,0" Text="{Binding Label}" TextTrimming="CharacterEllipsis" FontSize="11"
+                                                                               Foreground="{DynamicResource TextTertiaryBrush}" />
+                                                                </StackPanel>
+                                                                <TextBlock x:Name="Due" Grid.Column="2" VerticalAlignment="Center" Text="{Binding DueText}"
+                                                                           Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                                            </Grid>
+                                                        </Button>
+                                                        <DataTemplate.Triggers>
+                                                            <DataTrigger Binding="{Binding IsLate}" Value="True">
+                                                                <Setter TargetName="Due" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                                                            </DataTrigger>
+                                                        </DataTemplate.Triggers>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                            <TextBlock Margin="12,10" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Home_NoTasks}"
+                                                       Visibility="{Binding IsHomeTasksEmpty, Converter={StaticResource BoolToVis}}" />
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                                </ScrollViewer>
+                            </TabItem>
+
+                            <!-- Kayıtlar: elimdeki her şey (proje, stok, jig, kablo, yazılım …); türe göre süzülür -->
+                            <TabItem Header="{x:Static res:Resources.Home_TabRecords}">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,14,0">
+                                <Border Margin="0,14,0,0" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                        Background="{DynamicResource LayerBrush}" Padding="4">
+                                    <ItemsControl ItemsSource="{Binding HomeRecords}" Focusable="False">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Button Padding="12,7" Margin="0,1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                                        Background="Transparent" BorderThickness="0" Click="HomeRecord_Click">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="26" />
+                                                            <ColumnDefinition Width="150" />
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="90" />
+                                                            <ColumnDefinition Width="140" />
+                                                            <ColumnDefinition Width="140" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <local:AppIcon Glyph="{Binding Glyph}" FontSize="14" Foreground="{Binding Color}" VerticalAlignment="Center" />
+                                                        <TextBlock Grid.Column="1" Text="{Binding Number}" VerticalAlignment="Center" />
+                                                        <TextBlock Grid.Column="2" Margin="0,0,12,0" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
+                                                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                                                        <TextBlock Grid.Column="3" Text="{Binding KindName}" VerticalAlignment="Center"
+                                                                   Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" />
+                                                        <TextBlock Grid.Column="4" Text="{Binding Parent}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
+                                                                   Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" />
+                                                        <TextBlock Grid.Column="5" Text="{Binding Status}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
+                                                                   Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                                    </Grid>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Border>
+                                </ScrollViewer>
+                            </TabItem>
+                        </TabControl>
+
+                        <!-- Zaman süzgeci (Günlük: geriye, Yapılacaklar: ileriye) -->
+                        <Border Style="{StaticResource SegmentBox}" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                Visibility="{Binding IsHomeRecordsTab, Converter={StaticResource InverseBoolToVis}}">
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton Style="{StaticResource SegmentStyle}" GroupName="HomeRange" Content="{x:Static res:Resources.Home_RangeToday}" IsChecked="{Binding IsRangeToday, Mode=TwoWay}" />
+                                <RadioButton Style="{StaticResource SegmentStyle}" GroupName="HomeRange" Content="{x:Static res:Resources.Home_RangeWeek}" IsChecked="{Binding IsRangeWeek, Mode=TwoWay}" />
+                                <RadioButton Style="{StaticResource SegmentStyle}" GroupName="HomeRange" Content="{x:Static res:Resources.Home_RangeMonth}" IsChecked="{Binding IsRangeMonth, Mode=TwoWay}" />
+                                <RadioButton Style="{StaticResource SegmentStyle}" GroupName="HomeRange" Content="{x:Static res:Resources.Home_RangeAll}" IsChecked="{Binding IsRangeAll, Mode=TwoWay}" />
+                            </StackPanel>
+                        </Border>
+                        <!-- Tür süzgeci (Kayıtlar) -->
+                        <Border Style="{StaticResource SegmentBox}" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                Visibility="{Binding IsHomeRecordsTab, Converter={StaticResource BoolToVis}}">
+                            <ItemsControl ItemsSource="{Binding HomeRecordFilters}" Focusable="False">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <RadioButton Style="{StaticResource SegmentStyle}" GroupName="HomeKind" IsChecked="{Binding IsSelected, Mode=TwoWay}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Label}" />
+                                                <TextBlock Margin="6,0,0,0" Text="{Binding Count}" Foreground="{DynamicResource TextTertiaryBrush}" FontWeight="Normal" />
+                                            </StackPanel>
+                                        </RadioButton>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Grid>
 
             <!-- Seçili düğüm: başlık, özet kutucukları, tablo -->
             <Grid Grid.Column="1"
@@ -1804,7 +2051,7 @@
             <StackPanel>
                 <!-- Numara: salt okunur kutu (klasörün adı); açıklaması ipucunda -->
                 <controls:FormField Margin="0,0,0,10" Header="{x:Static res:Resources.Edit_Number}" LabelWidth="130">
-                    <TextBox Text="{Binding EditNumber, Mode=OneWay}" IsReadOnly="True" IsTabStop="False" FontFamily="Consolas"
+                    <TextBox Text="{Binding EditNumber, Mode=OneWay}" IsReadOnly="True" IsTabStop="False"
                              Foreground="{DynamicResource TextSecondaryBrush}" ToolTip="{x:Static res:Resources.Edit_NumberHint}" />
                 </controls:FormField>
                 <!-- Stokta "Tanım", proje ve envanter kaydında "Ad" -->

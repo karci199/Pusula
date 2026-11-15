@@ -25,7 +25,7 @@
                   HeadersVisibility="Column" SelectionUnit="FullRow">
             <DataGrid.Columns>
                 <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.FileTypes_Name}" Width="160" Binding="{Binding Name}" />
-                <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.FileTypes_Extensions}" Width="*" Binding="{Binding Extensions}" FontFamily="Consolas" />
+                <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.FileTypes_Extensions}" Width="*" Binding="{Binding Extensions}" />
                 <DataGridTextColumn EditingElementStyle="{StaticResource GridEditBox}" Header="{x:Static res:Resources.FileTypes_Group}" Width="150" Binding="{Binding Group}" />
             </DataGrid.Columns>
         </DataGrid>

@@ -54,6 +54,133 @@ namespace Pusula.Wpf.ViewModels
             HomeCounts.Add(new RecordCount(person.PluralName, person.Icon, person.Color, types.People.Count(p => !p.HasLeft)));
         }
 
+        private List<OpenTaskRow> allHomeTasks = new List<OpenTaskRow>();
+        private string homeRange = "week";
+
+        /// <summary>Ana sayfa "İşlerim": seçili zaman aralığındaki açık işler; gecikenler her zaman ve en üstte.</summary>
+        public ObservableCollection<OpenTaskRow> HomeTasks { get; } = new ObservableCollection<OpenTaskRow>();
+
+        /// <summary>Süzgeç: son tarihi bugün olanlar.</summary>
+        public bool IsRangeToday
+        {
+            get { return homeRange == "today"; }
+            set { SetHomeRange(value, "today"); }
+        }
+
+        /// <summary>Süzgeç: son tarihi bu hafta (pazara kadar) olanlar.</summary>
+        public bool IsRangeWeek
+        {
+            get { return homeRange == "week"; }
+            set { SetHomeRange(value, "week"); }
+        }
+
+        /// <summary>Süzgeç: son tarihi bu ay olanlar.</summary>
+        public bool IsRangeMonth
+        {
+            get { return homeRange == "month"; }
+            set { SetHomeRange(value, "month"); }
+        }
+
+        /// <summary>Süzgeç: bütün açık işler (tarihsizler en sonda).</summary>
+        public bool IsRangeAll
+        {
+            get { return homeRange == "all"; }
+            set { SetHomeRange(value, "all"); }
+        }
+
+        /// <summary>"4 açık · 1 geciken" (bütün açık işler, süzgeçten bağımsız).</summary>
+        public string HomeTaskSummary
+        {
+            get
+            {
+                var late = allHomeTasks.Count(t => t.IsLate);
+                var text = string.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.Home_TasksOpen, allHomeTasks.Count);
+                return late == 0 ? text : text + " · " + string.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.Home_TasksLate, late);
+            }
+        }
+
+        /// <summary>Açık iş sayısı (sekme rozeti).</summary>
+        public int HomeOpenCount
+        {
+            get { return allHomeTasks.Count; }
+        }
+
+        /// <summary>Açık iş var mı (rozet görünür).</summary>
+        public bool HasHomeOpen
+        {
+            get { return allHomeTasks.Count > 0; }
+        }
+
+        /// <summary>Geciken iş var mı (rozet kırmızı).</summary>
+        public bool HasHomeLate
+        {
+            get { return allHomeTasks.Any(t => t.IsLate); }
+        }
+
+        /// <summary>Süzgeçte gösterilecek iş yoksa.</summary>
+        public bool IsHomeTasksEmpty
+        {
+            get { return HomeTasks.Count == 0; }
+        }
+
+        private void SetHomeRange(bool on, string range)
+        {
+            if (!on || homeRange == range)
+            {
+                return;
+            }
+
+            homeRange = range;
+            OnPropertyChanged(nameof(IsRangeToday));
+            OnPropertyChanged(nameof(IsRangeWeek));
+            OnPropertyChanged(nameof(IsRangeMonth));
+            OnPropertyChanged(nameof(IsRangeAll));
+            FilterHomeTasks();
+            FilterHomeTimeline();
+        }
+
+        // Gecikenler hep; aralık son tarihe göre; sıra: gecikenler, yaklaşanlar, tarihsizler (yalnız "Hepsi"de).
+        private void FilterHomeTasks()
+        {
+            var today = DateTime.Today;
+            DateTime? until;
+            switch (homeRange)
+            {
+                case "today":
+                    until = today;
+                    break;
+                case "week":
+                    var toSunday = ((int)DayOfWeek.Sunday - (int)today.DayOfWeek + 7) % 7;
+                    until = today.AddDays(toSunday);
+                    break;
+                case "month":
+                    until = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
+                    break;
+                default:
+                    until = null;
+                    break;
+            }
+
+            var shown = allHomeTasks.Where(t =>
+                t.IsLate
+                || (until == null)
+                || (t.Task.Due.HasValue && t.Task.Due.Value.Date <= until.Value));
+            HomeTasks.Clear();
+            foreach (var row in shown.OrderBy(t => t.Task.Due ?? DateTime.MaxValue))
+            {
+                HomeTasks.Add(row);
+            }
+
+            OnPropertyChanged(nameof(IsHomeTasksEmpty));
+        }
+
+        // İşin geldiği proje düğümü (notun yolu proje klasörünün altında).
+        private TreeNodeViewModel? ProjectOf(string notePath)
+        {
+            return Nodes.FirstOrDefault(n => n.Kind == FolderKind.Project
+                && notePath.StartsWith(n.Path.TrimEnd('\\') + "\\", StringComparison.OrdinalIgnoreCase));
+        }
+
         /// <summary>Ana sayfadaki proje kartları (son değişikliği en yeni olan önce).</summary>
         public ObservableCollection<ProjectCard> ProjectCards { get; } = new ObservableCollection<ProjectCard>();
 
@@ -201,6 +328,9 @@ namespace Pusula.Wpf.ViewModels
             FillHomeCounts();
             var version = ++homeVersion;
             await LoadProjectCardsAsync(version).ConfigureAwait(true);
+            sampleEvents = null;
+            FilterHomeTimeline();
+            await LoadHomeRecordsAsync(version).ConfigureAwait(true);
             var root = rootPath;
             var user = CurrentUser;
             List<OpenTask> tasks;
@@ -225,7 +355,18 @@ namespace Pusula.Wpf.ViewModels
                 return;
             }
 
-            // await sonrası: kartlar okunurken yeni bir yükleme başlamış olabilir.
+            // İşlerim: bütün açık işler (herkesinkiler; kişi süzgeci yok), proje rengiyle; süzgeç aralığa göre gösterir.
+            allHomeTasks = tasks.Select(t =>
+            {
+                var project = ProjectOf(t.NotePath);
+                return new OpenTaskRow(t, project?.Path ?? root) { ProjectColor = project?.ProjectColor ?? string.Empty };
+            }).ToList();
+            FilterHomeTasks();
+            OnPropertyChanged(nameof(HomeTaskSummary));
+            OnPropertyChanged(nameof(HomeOpenCount));
+            OnPropertyChanged(nameof(HasHomeOpen));
+            OnPropertyChanged(nameof(HasHomeLate));
+
             HomeLateTasks.Clear();
             HomeMyTasks.Clear();
             var today = DateTime.Today;

@@ -67,12 +67,12 @@ namespace Pusula.Wpf.ViewModels
         }
 
         /// <summary>
-        /// Sol listede üzerine gelince çıkan ipucu: ek bilgi varsa <see cref="ToolTipText"/>, yoksa hiç
-        /// (satırdaki adı tekrar edip alttaki satırı kapatıyordu).
+        /// Sol listede üzerine gelince çıkan ipucu: yalnız envanter kaydında (tanımı satırda kesilebiliyor).
+        /// Diğer satırlarda satırdaki yazıyı tekrar edip alttaki satırı kapatıyordu ("Kablolar · 5").
         /// </summary>
         public string? RowToolTip
         {
-            get { return Subtitle.Length == 0 ? null : ToolTipText; }
+            get { return Entry.Kind == FolderKind.InventoryItem && Subtitle.Length > 0 ? ToolTipText : null; }
         }
 
         /// <summary>Klasörün tam yolu.</summary>

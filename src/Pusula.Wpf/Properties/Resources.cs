@@ -360,6 +360,54 @@ namespace Pusula.Wpf.Properties
         /// <summary>Sol üstteki "Ana sayfa" düğmesi.</summary>
         public static string Home_Button { get { return Get("Home_Button"); } }
 
+        /// <summary>Ana sayfa sekmesi: Günlük.</summary>
+        public static string Home_TabJournal { get { return Get("Home_TabJournal"); } }
+
+        /// <summary>Ana sayfa sekmesi: Yapılacaklar.</summary>
+        public static string Home_TabTasks { get { return Get("Home_TabTasks"); } }
+
+        /// <summary>Ana sayfa sekmesi: Kayıtlar.</summary>
+        public static string Home_TabRecords { get { return Get("Home_TabRecords"); } }
+
+        /// <summary>Günlük sekmesinin örnek olduğunu söyleyen not.</summary>
+        public static string Home_JournalSample { get { return Get("Home_JournalSample"); } }
+
+        /// <summary>Günlükte seçili aralıkta olay yokken.</summary>
+        public static string Home_NoEvents { get { return Get("Home_NoEvents"); } }
+
+        /// <summary>"Bugün".</summary>
+        public static string Day_Today { get { return Get("Day_Today"); } }
+
+        /// <summary>"Dün".</summary>
+        public static string Day_Yesterday { get { return Get("Day_Yesterday"); } }
+
+        /// <summary>Ana sayfa "İşlerim" başlığı.</summary>
+        public static string Home_Tasks { get { return Get("Home_Tasks"); } }
+
+        /// <summary>"{0} açık".</summary>
+        public static string Home_TasksOpen { get { return Get("Home_TasksOpen"); } }
+
+        /// <summary>"{0} geciken".</summary>
+        public static string Home_TasksLate { get { return Get("Home_TasksLate"); } }
+
+        /// <summary>Süzgeç: Bugün.</summary>
+        public static string Home_RangeToday { get { return Get("Home_RangeToday"); } }
+
+        /// <summary>Süzgeç: Bu hafta.</summary>
+        public static string Home_RangeWeek { get { return Get("Home_RangeWeek"); } }
+
+        /// <summary>Süzgeç: Bu ay.</summary>
+        public static string Home_RangeMonth { get { return Get("Home_RangeMonth"); } }
+
+        /// <summary>Süzgeç: Hepsi.</summary>
+        public static string Home_RangeAll { get { return Get("Home_RangeAll"); } }
+
+        /// <summary>Süzgeçte iş yokken.</summary>
+        public static string Home_NoTasks { get { return Get("Home_NoTasks"); } }
+
+        /// <summary>Son açılan yokken.</summary>
+        public static string Home_NoRecent { get { return Get("Home_NoRecent"); } }
+
         /// <summary>Proje kartında stok sayısı; {0} sayı.</summary>
         public static string Card_Stocks { get { return Get("Card_Stocks"); } }
 
