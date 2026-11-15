@@ -31,6 +31,9 @@
 
         /// <summary>Numara türün biçimlerine uymuyor.</summary>
         NumberFormat,
+
+        /// <summary>Bu numara başka bir proje / stokta zaten kullanılıyor (ad farklı olsa da).</summary>
+        NumberInUse,
     }
 
     /// <summary>

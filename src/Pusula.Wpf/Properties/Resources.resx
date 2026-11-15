@@ -120,6 +120,21 @@
   <data name="Error_InvalidCharacters" xml:space="preserve">
     <value>Klasör adında kullanılamayan bir karakter var.</value>
   </data>
+  <data name="Placeholder_Example" xml:space="preserve">
+    <value>örn. {0}</value>
+  </data>
+  <data name="Placeholder_ProjectNo" xml:space="preserve">
+    <value>örn. 7000</value>
+  </data>
+  <data name="Placeholder_ProjectName" xml:space="preserve">
+    <value>örn. MILKON</value>
+  </data>
+  <data name="Placeholder_StockName" xml:space="preserve">
+    <value>örn. Takım anten boynuz</value>
+  </data>
+  <data name="Error_NumberInUse" xml:space="preserve">
+    <value>Bu numara zaten kullanılıyor: {0}</value>
+  </data>
   <data name="Error_AlreadyExists" xml:space="preserve">
     <value>Bu klasör zaten var: {0}</value>
   </data>
@@ -332,6 +347,87 @@
   </data>
   <data name="Home_NoRecent" xml:space="preserve">
     <value>Henüz bir şey açılmadı.</value>
+  </data>
+  <data name="Records_ViewProjects" xml:space="preserve">
+    <value>Projeler</value>
+  </data>
+  <data name="Records_ViewStocks" xml:space="preserve">
+    <value>Stoklar</value>
+  </data>
+  <data name="Records_ViewTools" xml:space="preserve">
+    <value>Test yardımcı araçları</value>
+  </data>
+  <data name="Scope_AllProjects" xml:space="preserve">
+    <value>Tüm projeler</value>
+  </data>
+  <data name="Scope_Projects" xml:space="preserve">
+    <value>{0} proje</value>
+  </data>
+  <data name="Scope_AllStocks" xml:space="preserve">
+    <value>Tüm stoklar</value>
+  </data>
+  <data name="Scope_Stocks" xml:space="preserve">
+    <value>{0} stok</value>
+  </data>
+  <data name="Scope_SelectAll" xml:space="preserve">
+    <value>Tümünü seç</value>
+  </data>
+  <data name="Scope_Clear" xml:space="preserve">
+    <value>Temizle</value>
+  </data>
+  <data name="Records_Totals" xml:space="preserve">
+    <value>{0} proje · {1} stok · {2} araç · {3} açık iş</value>
+  </data>
+  <data name="Records_TotalsSize" xml:space="preserve">
+    <value>{0} dosya · {1}</value>
+  </data>
+  <data name="Records_General" xml:space="preserve">
+    <value>Genel</value>
+  </data>
+  <data name="Records_Search" xml:space="preserve">
+    <value>Ara: numara, ad…</value>
+  </data>
+  <data name="Records_SubTypeAll" xml:space="preserve">
+    <value>Tüm alt türler</value>
+  </data>
+  <data name="Col_Code" xml:space="preserve">
+    <value>Kod</value>
+  </data>
+  <data name="Col_Name" xml:space="preserve">
+    <value>Ad</value>
+  </data>
+  <data name="Col_Tools" xml:space="preserve">
+    <value>Araç</value>
+  </data>
+  <data name="Col_OpenTasks" xml:space="preserve">
+    <value>Açık iş</value>
+  </data>
+  <data name="Col_Number" xml:space="preserve">
+    <value>Numara</value>
+  </data>
+  <data name="Col_Description" xml:space="preserve">
+    <value>Tanım</value>
+  </data>
+  <data name="Col_Project" xml:space="preserve">
+    <value>Proje</value>
+  </data>
+  <data name="Col_Type" xml:space="preserve">
+    <value>Tür</value>
+  </data>
+  <data name="Col_SubType" xml:space="preserve">
+    <value>Alt tür</value>
+  </data>
+  <data name="Col_Attached" xml:space="preserve">
+    <value>Bağlı</value>
+  </data>
+  <data name="Col_Location" xml:space="preserve">
+    <value>Konum</value>
+  </data>
+  <data name="Records_ColumnsHint" xml:space="preserve">
+    <value>Sağ tıkla: sütunları seç · tıkla: sırala</value>
+  </data>
+  <data name="Records_ToolCount" xml:space="preserve">
+    <value>{0} araç</value>
   </data>
   <data name="Card_Stocks" xml:space="preserve">
     <value>{0} stok</value>
@@ -1108,10 +1204,10 @@
     <value>Sil · {0}</value>
   </data>
   <data name="Delete_Text" xml:space="preserve">
-    <value>Klasör kalıcı olarak silinmez; içindeki her şeyle birlikte silinenler klasörüne taşınır: {0}. Geri almak için oradan eski yerine taşıman yeter. Onaylamak için adı yaz: {1}</value>
+    <value>Kalıcı olarak silinmez; içindekilerle birlikte silinenler klasörüne taşınır. Geri almak için oradan eski yerine taşımak yeter.</value>
   </data>
   <data name="Delete_TypeHint" xml:space="preserve">
-    <value>Onay için adı yaz</value>
+    <value>Onaylamak için adını yazın:</value>
   </data>
   <data name="Delete_Confirm" xml:space="preserve">
     <value>Sil</value>

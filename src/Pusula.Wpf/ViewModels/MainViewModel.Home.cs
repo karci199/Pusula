@@ -327,10 +327,8 @@ namespace Pusula.Wpf.ViewModels
 
             FillHomeCounts();
             var version = ++homeVersion;
-            await LoadProjectCardsAsync(version).ConfigureAwait(true);
             sampleEvents = null;
             FilterHomeTimeline();
-            await LoadHomeRecordsAsync(version).ConfigureAwait(true);
             var root = rootPath;
             var user = CurrentUser;
             List<OpenTask> tasks;
@@ -401,6 +399,9 @@ namespace Pusula.Wpf.ViewModels
             OnPropertyChanged(nameof(HasHomeMyTasks));
             OnPropertyChanged(nameof(IsHomeEmpty));
             OnPropertyChanged(nameof(HasMyCounts));
+
+            // Kayıtlar sekmesi: işler okunduktan sonra (açık iş sayıları için).
+            await LoadRecordsAsync(version).ConfigureAwait(true);
         }
 
         private TreeNodeViewModel? FindNodeByPath(string path)

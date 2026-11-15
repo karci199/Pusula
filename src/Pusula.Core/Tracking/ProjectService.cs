@@ -29,6 +29,19 @@ namespace Pusula.Core.Tracking
                 return CreateResult.Fail(CreateError.NameEmpty, string.Empty);
             }
 
+            // Kod klasör adında ilk "_"e kadardır; kodda "_" olursa ad yanlış bölünür.
+            if (projectNo.IndexOf('_') >= 0)
+            {
+                return CreateResult.Fail(CreateError.InvalidCharacters, string.Empty);
+            }
+
+            // Aynı kodla ikinci proje açılmaz (7000_MILKON varken 7000_DENEME).
+            var sameCode = FindProjectByCode(projectsRoot, projectNo);
+            if (sameCode.Length > 0)
+            {
+                return CreateResult.Fail(CreateError.NumberInUse, sameCode);
+            }
+
             var info = new ProjectInfo { ProjectNo = projectNo, Name = name };
             return CreateFolder(projectsRoot, projectNo + "_" + name, subFolders, folder => JsonFile.WriteAtomic(TrackingFiles.ProjectFile(folder), info));
         }
@@ -45,6 +58,14 @@ namespace Pusula.Core.Tracking
             if (stockNo.Length == 0)
             {
                 return CreateResult.Fail(CreateError.NumberEmpty, string.Empty);
+            }
+
+            // Stok numarası bütün projelerde tektir: başka projede aynı numara varsa açılmaz.
+            var root = string.IsNullOrEmpty(projectFolder) ? null : Path.GetDirectoryName(projectFolder.TrimEnd('\\'));
+            var sameNumber = string.IsNullOrEmpty(root) ? string.Empty : FindStockByNumber(root!, stockNo);
+            if (sameNumber.Length > 0)
+            {
+                return CreateResult.Fail(CreateError.NumberInUse, sameNumber);
             }
 
             var info = new StockInfo { StockNo = stockNo, Name = name, Template = template ?? string.Empty };
@@ -199,6 +220,60 @@ namespace Pusula.Core.Tracking
             }
 
             return true;
+        }
+
+        /// <summary>Kökte kodu (klasör adının ilk "_"e kadarki kısmı) verilene eşit projenin klasörü; yoksa boş.</summary>
+        public static string FindProjectByCode(string projectsRoot, string code)
+        {
+            if (string.IsNullOrWhiteSpace(projectsRoot) || !Directory.Exists(projectsRoot))
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                foreach (var dir in Directory.EnumerateDirectories(projectsRoot))
+                {
+                    var name = Path.GetFileName(dir);
+                    var cut = name.IndexOf('_');
+                    var dirCode = cut > 0 ? name.Substring(0, cut) : name;
+                    if (string.Equals(dirCode, code, StringComparison.OrdinalIgnoreCase) && File.Exists(TrackingFiles.ProjectFile(dir)))
+                    {
+                        return dir;
+                    }
+                }
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>Kökteki projelerin altında bu numarayla açılmış stokun klasörü; yoksa boş.</summary>
+        public static string FindStockByNumber(string projectsRoot, string stockNo)
+        {
+            if (string.IsNullOrWhiteSpace(projectsRoot) || !Directory.Exists(projectsRoot))
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                foreach (var project in Directory.EnumerateDirectories(projectsRoot))
+                {
+                    var candidate = Path.Combine(project, stockNo);
+                    if (Directory.Exists(candidate))
+                    {
+                        return candidate;
+                    }
+                }
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+            }
+
+            return string.Empty;
         }
 
         private static CreateResult CreateFolder(string parent, string folderName, IEnumerable<string> subFolders, Action<string> writeMarker)

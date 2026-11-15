@@ -650,6 +650,15 @@ namespace Pusula.Wpf.ViewModels
             private set { SetProperty(ref deleteText, value); }
         }
 
+        private string deleteTrashPath = string.Empty;
+
+        /// <summary>Silinenler klasörünün yolu (diyalogda soluk satır).</summary>
+        public string DeleteTrashPath
+        {
+            get { return deleteTrashPath; }
+            private set { SetProperty(ref deleteTrashPath, value); }
+        }
+
         /// <summary>Onay için yazılması gereken ad (klasör adı).</summary>
         public string DeleteExpected
         {
@@ -702,7 +711,8 @@ namespace Pusula.Wpf.ViewModels
             DeleteExpected = Path.GetFileName(folder.TrimEnd('\\', '/'));
             DeleteTyped = string.Empty;
             DeleteTitle = string.Format(Resources.Delete_Title, DeleteExpected);
-            DeleteText = string.Format(Resources.Delete_Text, Path.Combine(rootPath, RecordEdit.TrashFolderName), DeleteExpected);
+            DeleteText = Resources.Delete_Text;
+            DeleteTrashPath = Path.Combine(rootPath, RecordEdit.TrashFolderName);
             OnPropertyChanged(nameof(DeletePrimaryText));
             IsDeleteOpen = true;
             return true;

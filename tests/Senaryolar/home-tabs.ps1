@@ -1,4 +1,4 @@
-param([string]$Bin, [string]$Out, [string]$Data, [string]$Sample)
+﻿param([string]$Bin, [string]$Out, [string]$Data, [string]$Sample)
 . (Join-Path $PSScriptRoot '..\_Ortak.ps1')
 # Ana sayfa alt kısmı: Günlük (örnek kartlar), Yapılacaklar (zaman süzgeci), Kayıtlar (tür süzgeci).
 [System.Threading.SynchronizationContext]::SetSynchronizationContext((New-Object System.Windows.Threading.DispatcherSynchronizationContext))
@@ -24,11 +24,17 @@ Check 'Hepsi, Bu hafta''dan az değil' ($vm.HomeTasks.Count -ge $week -and $vm.H
 Snap $win "$Out\home-yapilacaklar.png"
 
 "--- Kayıtlar"
-$vm.HomeTab = 2; Wait
-Check 'kayıtlar: proje + stok + envanter' ($vm.HomeRecords.Count -ge 5) ([string]$vm.HomeRecords.Count)
-$stock = @($vm.HomeRecordFilters | Where-Object { $_.Key -eq 'stock' })[0]
-$stock.IsSelected = $true; Wait
-Check 'tür süzgeci: yalnız stoklar' (@($vm.HomeRecords | Where-Object { $_.Kind -ne 'stock' }).Count -eq 0 -and $vm.HomeRecords.Count -ge 1)
+$vm.HomeTab = 2; Wait; Wait
+Check 'projeler görünümü: satır var' ($vm.ProjectRows.Count -ge 1) ([string]$vm.ProjectRows.Count)
+Check 'proje istatistiği: stok sayısı' ($vm.ProjectRows[0].Stocks -ge 1) ([string]$vm.ProjectRows[0].Stocks)
+$vm.IsViewStocks = $true; Wait
+Check 'stoklar: hepsi' ($vm.StockRows.Count -ge 3) ([string]$vm.StockRows.Count)
+$vm.IsViewTools = $true; Wait
+$all = $vm.ToolRows.Count
+$vm.StockOptions[0].IsChecked = $true; Wait
+Check 'stok seçince araçlar daralır' ($vm.ToolRows.Count -le $all) ("$all -> " + $vm.ToolRows.Count)
+$vm.SelectAllStocks($false); Wait
+Check 'temizleyince hepsi' ($vm.ToolRows.Count -eq $all) ([string]$vm.ToolRows.Count)
 Snap $win "$Out\home-kayitlar.png"
 $win.Close()
 "SONUÇ OK=$ok HATA=$fail"

@@ -182,6 +182,21 @@ namespace Pusula.Wpf.Properties
         /// <summary>Klasör zaten var; {0} yol.</summary>
         public static string Error_AlreadyExists { get { return Get("Error_AlreadyExists"); } }
 
+        /// <summary>Boş kutu yazısı: "örn. {0}".</summary>
+        public static string Placeholder_Example { get { return Get("Placeholder_Example"); } }
+
+        /// <summary>Yeni proje: kod kutusunun boşken yazısı.</summary>
+        public static string Placeholder_ProjectNo { get { return Get("Placeholder_ProjectNo"); } }
+
+        /// <summary>Yeni proje: ad kutusunun boşken yazısı.</summary>
+        public static string Placeholder_ProjectName { get { return Get("Placeholder_ProjectName"); } }
+
+        /// <summary>Yeni stok: tanım kutusunun boşken yazısı.</summary>
+        public static string Placeholder_StockName { get { return Get("Placeholder_StockName"); } }
+
+        /// <summary>Numara başka bir proje / stokta kullanılıyor; {0} o klasörün adı.</summary>
+        public static string Error_NumberInUse { get { return Get("Error_NumberInUse"); } }
+
         /// <summary>Disk hatası; {0} sistem mesajı.</summary>
         public static string Error_Io { get { return Get("Error_Io"); } }
 
@@ -407,6 +422,88 @@ namespace Pusula.Wpf.Properties
 
         /// <summary>Son açılan yokken.</summary>
         public static string Home_NoRecent { get { return Get("Home_NoRecent"); } }
+
+        /// <summary>Kayıtlar sekmesi: Projeler.</summary>
+        public static string Records_ViewProjects { get { return Get("Records_ViewProjects"); } }
+
+        /// <summary>Kayıtlar sekmesi: Stoklar.</summary>
+        public static string Records_ViewStocks { get { return Get("Records_ViewStocks"); } }
+
+        /// <summary>Kayıtlar sekmesi: Test yardımcı araçları.</summary>
+        public static string Records_ViewTools { get { return Get("Records_ViewTools"); } }
+
+        /// <summary>Kayıtlar sekmesi: Tüm projeler.</summary>
+        public static string Scope_AllProjects { get { return Get("Scope_AllProjects"); } }
+
+        /// <summary>Kayıtlar sekmesi: {0} proje.</summary>
+        public static string Scope_Projects { get { return Get("Scope_Projects"); } }
+
+        /// <summary>Kayıtlar sekmesi: Tüm stoklar.</summary>
+        public static string Scope_AllStocks { get { return Get("Scope_AllStocks"); } }
+
+        /// <summary>Kayıtlar sekmesi: {0} stok.</summary>
+        public static string Scope_Stocks { get { return Get("Scope_Stocks"); } }
+
+        /// <summary>Kayıtlar sekmesi: Tümünü seç.</summary>
+        public static string Scope_SelectAll { get { return Get("Scope_SelectAll"); } }
+
+        /// <summary>Kayıtlar sekmesi: Temizle.</summary>
+        public static string Scope_Clear { get { return Get("Scope_Clear"); } }
+
+        /// <summary>Kayıtlar sekmesi: {0} proje · {1} stok · {2} araç · {3} açık iş.</summary>
+        public static string Records_Totals { get { return Get("Records_Totals"); } }
+
+        /// <summary>Kayıtlar sekmesi: {0} dosya · {1}.</summary>
+        public static string Records_TotalsSize { get { return Get("Records_TotalsSize"); } }
+
+        /// <summary>Kayıtlar sekmesi: Genel.</summary>
+        public static string Records_General { get { return Get("Records_General"); } }
+
+        /// <summary>Kayıtlar sekmesi: Ara: numara, ad….</summary>
+        public static string Records_Search { get { return Get("Records_Search"); } }
+
+        /// <summary>Kayıtlar sekmesi: Tüm alt türler.</summary>
+        public static string Records_SubTypeAll { get { return Get("Records_SubTypeAll"); } }
+
+        /// <summary>Kayıtlar sekmesi: Kod.</summary>
+        public static string Col_Code { get { return Get("Col_Code"); } }
+
+        /// <summary>Kayıtlar sekmesi: Ad.</summary>
+        public static string Col_Name { get { return Get("Col_Name"); } }
+
+        /// <summary>Kayıtlar sekmesi: Araç.</summary>
+        public static string Col_Tools { get { return Get("Col_Tools"); } }
+
+        /// <summary>Kayıtlar sekmesi: Açık iş.</summary>
+        public static string Col_OpenTasks { get { return Get("Col_OpenTasks"); } }
+
+        /// <summary>Kayıtlar sekmesi: Numara.</summary>
+        public static string Col_Number { get { return Get("Col_Number"); } }
+
+        /// <summary>Kayıtlar sekmesi: Tanım.</summary>
+        public static string Col_Description { get { return Get("Col_Description"); } }
+
+        /// <summary>Kayıtlar sekmesi: Proje.</summary>
+        public static string Col_Project { get { return Get("Col_Project"); } }
+
+        /// <summary>Kayıtlar sekmesi: Tür.</summary>
+        public static string Col_Type { get { return Get("Col_Type"); } }
+
+        /// <summary>Kayıtlar sekmesi: Alt tür.</summary>
+        public static string Col_SubType { get { return Get("Col_SubType"); } }
+
+        /// <summary>Kayıtlar sekmesi: Bağlı.</summary>
+        public static string Col_Attached { get { return Get("Col_Attached"); } }
+
+        /// <summary>Kayıtlar sekmesi: Konum.</summary>
+        public static string Col_Location { get { return Get("Col_Location"); } }
+
+
+        /// <summary>Kayıtlar tablo başlığının ipucu.</summary>
+        public static string Records_ColumnsHint { get { return Get("Records_ColumnsHint"); } }
+
+        /// <summary>"{0} araç".</summary>
+        public static string Records_ToolCount { get { return Get("Records_ToolCount"); } }
 
         /// <summary>Proje kartında stok sayısı; {0} sayı.</summary>
         public static string Card_Stocks { get { return Get("Card_Stocks"); } }

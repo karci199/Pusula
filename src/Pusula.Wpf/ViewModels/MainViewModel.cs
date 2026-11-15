@@ -543,7 +543,17 @@ namespace Pusula.Wpf.ViewModels
             }
         }
 
-        /// <summary>Kabul edilen stok numarası biçimleri (örnekle): "AA-0000-0000 · JY-0000-0000".</summary>
+        /// <summary>Stok numarası kutusunun boşken yazısı: harfli biçimin örneği ("örn. AB-1234-5678").</summary>
+        public string StockNumberPlaceholder
+        {
+            get
+            {
+                var stockFormat = types.Stock.NumberFormats.FirstOrDefault(f => f.Pattern.StartsWith("@", StringComparison.Ordinal)) ?? types.Stock.NumberFormats.FirstOrDefault();
+                return stockFormat == null ? string.Empty : string.Format(Resources.Placeholder_Example, NumberPattern.Example(stockFormat.Pattern));
+            }
+        }
+
+        /// <summary>Stok numarası kutusunun ipucu: türün geçerli biçimleri ve örnekleri.</summary>
         public string StockNumberHint
         {
             get
@@ -1058,6 +1068,8 @@ namespace Pusula.Wpf.ViewModels
                     return Resources.Error_AlreadyMarked;
                 case CreateError.AlreadyExists:
                     return string.Format(Resources.Error_AlreadyExists, result.Folder);
+                case CreateError.NumberInUse:
+                    return string.Format(Resources.Error_NumberInUse, Path.GetFileName(result.Folder));
                 default:
                     return string.Format(Resources.Error_Io, result.Detail);
             }

@@ -66,6 +66,13 @@ namespace Pusula.Wpf
         [DataMember(Name = "recent", Order = 9, EmitDefaultValue = false)]
         public List<string> Recent { get; set; } = new List<string>();
 
+        /// <summary>
+        /// Kayıtlar tablolarında kullanıcının açıp kapattığı sütunlar: "tablo:sütun" → görünür mü.
+        /// Listede olmayan sütun varsayılanına göre görünür (araçlarda Bağlı, Konum, Durum varsayılan kapalı).
+        /// </summary>
+        [DataMember(Name = "recordColumns", Order = 10, EmitDefaultValue = false)]
+        public Dictionary<string, bool>? RecordColumns { get; set; }
+
         /// <summary>Ayar dosyasının yerini değiştiren ortam değişkeni (testler gerçek ayarlara dokunmasın diye).</summary>
         public const string PathVariable = "PUSULA_AYARLAR";
 

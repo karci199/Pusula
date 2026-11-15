@@ -61,6 +61,7 @@ namespace Pusula.Wpf
             }
 
             SetUpLayout();
+            SetUpRecordTables();
 
             // Tür düğümünde (hepsi aynı tür) envanter listesinin Tür sütunu gizlenir.
             viewModel.Inventory.PropertyChanged += (s, e) =>
@@ -416,13 +417,54 @@ namespace Pusula.Wpf
             viewModel.GoHome();
         }
 
-        // Ana sayfa Kayıtlar sekmesi: satırdaki kaydı ağaçta seçer.
-        private void HomeRecord_Click(object sender, RoutedEventArgs e)
+        // Kayıtlar: satıra tıklayınca kayıt (proje, stok, araç) ağaçta seçilir.
+        private void RecordRow_Click(object sender, MouseButtonEventArgs e)
         {
-            if ((sender as FrameworkElement)?.DataContext is HomeRecord record)
+            var context = (sender as FrameworkElement)?.DataContext;
+            var path = (context as ProjectRow)?.Path ?? (context as StockRow)?.Path ?? (context as ToolRow)?.Path;
+            if (path != null)
             {
-                viewModel.OpenHomeRecord(record);
+                viewModel.OpenRecordPath(path);
             }
+        }
+
+        // Kayıtlar: sütun başlığına tıklayınca o sütuna göre sıralanır; ikinci tıklama yönü çevirir.
+        private void RecordHeader_Click(object sender, RoutedEventArgs e)
+        {
+            var header = e.OriginalSource as GridViewColumnHeader;
+            var key = header?.Tag as string;
+            if (string.IsNullOrEmpty(key) || !(sender is ListView list))
+            {
+                return;
+            }
+
+            var view = System.Windows.Data.CollectionViewSource.GetDefaultView(list.ItemsSource);
+            var current = view.SortDescriptions.FirstOrDefault();
+            var direction = current.PropertyName == key && current.Direction == System.ComponentModel.ListSortDirection.Ascending
+                ? System.ComponentModel.ListSortDirection.Descending
+                : System.ComponentModel.ListSortDirection.Ascending;
+            view.SortDescriptions.Clear();
+            view.SortDescriptions.Add(new System.ComponentModel.SortDescription(key, direction));
+        }
+
+        private void ScopeProjectsAll_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.SelectAllProjects(true);
+        }
+
+        private void ScopeProjectsClear_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.SelectAllProjects(false);
+        }
+
+        private void ScopeStocksAll_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.SelectAllStocks(true);
+        }
+
+        private void ScopeStocksClear_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.SelectAllStocks(false);
         }
 
         // Ana sayfada proje kartı: projeyi ağaçta seçer.

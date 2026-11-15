@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -125,7 +125,7 @@ namespace Pusula.Wpf.ViewModels
         }
 
         // Klasörün, içindeki dosyaların ve depth düzeye kadar alt klasörlerin en yeni değişme zamanı.
-        private static DateTime? NewestWrite(string folder, int depth)
+        internal static DateTime? NewestWrite(string folder, int depth)
         {
             try
             {

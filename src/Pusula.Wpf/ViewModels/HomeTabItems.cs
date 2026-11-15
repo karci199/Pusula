@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Pusula.Wpf.Mvvm;
 
@@ -79,52 +79,7 @@ namespace Pusula.Wpf.ViewModels
         }
     }
 
-    /// <summary>Ana sayfa Kayıtlar sekmesinde bir satır: proje, stok ya da envanter kaydı.</summary>
-    public sealed class HomeRecord
-    {
-        /// <summary>Satırı kurar.</summary>
-        public HomeRecord(string kind, string kindName, string glyph, string color, string number, string name, string parent, string status, string path)
-        {
-            Kind = kind;
-            KindName = kindName;
-            Glyph = glyph;
-            Color = color;
-            Number = number;
-            Name = name;
-            Parent = parent;
-            Status = status;
-            Path = path;
-        }
-
-        /// <summary>Tür anahtarı ("project", "stock", envanter türü anahtarı).</summary>
-        public string Kind { get; }
-
-        /// <summary>Türün adı ("Stok", "Jig" …).</summary>
-        public string KindName { get; }
-
-        /// <summary>Simge.</summary>
-        public string Glyph { get; }
-
-        /// <summary>Simge rengi.</summary>
-        public string Color { get; }
-
-        /// <summary>Numara.</summary>
-        public string Number { get; }
-
-        /// <summary>Ad / tanım.</summary>
-        public string Name { get; }
-
-        /// <summary>Üst kayıt ya da konum (stokta proje, kayıtta sahibi).</summary>
-        public string Parent { get; }
-
-        /// <summary>Durum; yoksa boş.</summary>
-        public string Status { get; }
-
-        /// <summary>Klasör (tıklayınca ağaçta seçilir).</summary>
-        public string Path { get; }
-    }
-
-    /// <summary>Kayıtlar sekmesinde tür süzgecinin bir seçeneği ("Stok · 4").</summary>
+    /// <summary>Parçalı süzgecin bir seçeneği (Kayıtlar · araç türü: "Jig · 3").</summary>
     public sealed class HomeRecordFilter : ViewModelBase
     {
         private readonly Action<HomeRecordFilter> chosen;

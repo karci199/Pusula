@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -17,8 +17,6 @@ namespace Pusula.Wpf.ViewModels
     {
         private int homeTab;
         private List<HomeEvent>? sampleEvents;
-        private List<HomeRecord> allHomeRecords = new List<HomeRecord>();
-        private string recordKind = string.Empty;
 
         /// <summary>Seçili sekme: 0 Günlük, 1 Yapılacaklar, 2 Kayıtlar.</summary>
         public int HomeTab
@@ -46,21 +44,6 @@ namespace Pusula.Wpf.ViewModels
         public bool IsHomeTimelineEmpty
         {
             get { return HomeTimeline.Count == 0; }
-        }
-
-        /// <summary>Kayıtlar: seçili türdeki proje, stok ve envanter kayıtları.</summary>
-        public ObservableCollection<HomeRecord> HomeRecords { get; } = new ObservableCollection<HomeRecord>();
-
-        /// <summary>Kayıtlar sekmesinin tür süzgeci (Hepsi, Proje, Stok, Jig …).</summary>
-        public ObservableCollection<HomeRecordFilter> HomeRecordFilters { get; } = new ObservableCollection<HomeRecordFilter>();
-
-        /// <summary>Kayıt satırına tıklanınca ağaçta seçer.</summary>
-        public void OpenHomeRecord(HomeRecord record)
-        {
-            if (record != null)
-            {
-                SelectNodeByPath(record.Path);
-            }
         }
 
         // Seçili aralığın başlangıcı (geçmiş için): bugün, bu haftanın pazartesisi, ayın biri; Hepsi'de yok.
@@ -105,7 +88,8 @@ namespace Pusula.Wpf.ViewModels
         private List<HomeEvent> SampleEvents()
         {
             var project = Nodes.FirstOrDefault(n => n.Kind == FolderKind.Project);
-            var color = project?.ProjectColor ?? string.Empty;
+            // Renk boş kalırsa nokta ve çizgi siyah görünüyordu; projesiz durumda da paletin ilk rengi.
+            var color = string.IsNullOrEmpty(project?.ProjectColor) ? ProjectColors.Palette[2] : project!.ProjectColor;
             var stocks = project?.Children.Where(c => c.Kind == FolderKind.Stock).Select(c => c.Title).ToList() ?? new List<string>();
             var a = stocks.Count > 0 ? stocks[0] : "AB-7000-0001";
             var b = stocks.Count > 1 ? stocks[1] : "AB-7000-0002";
@@ -129,88 +113,6 @@ namespace Pusula.Wpf.ViewModels
                 new HomeEvent(today.AddDays(-28), false, b, string.Empty, "Stok açıldı, fotoğraf kondu.", color, none),
                 new HomeEvent(today.AddDays(-40), false, a, string.Empty, "Test dokümanı XX hazırlanmaya başlandı.", color, none),
             };
-        }
-
-        // Kayıtlar: projeler, stoklar (stok.json'dan ad ve durum), envanter kayıtları; arka planda okunur.
-        private async Task LoadHomeRecordsAsync(int version)
-        {
-            var projects = Nodes.Where(n => n.Kind == FolderKind.Project).ToList();
-            var items = inventoryItems.ToList();
-            var stockType = types.Stock;
-            var projectType = types.Find(Pusula.Core.Types.TypeSet.ProjectKey);
-            var inventoryTypes = types.InventoryTypes.GroupBy(t => t.Key, StringComparer.OrdinalIgnoreCase).Select(g => g.First()).ToList();
-            List<HomeRecord> rows;
-            try
-            {
-                rows = await Task.Run(() =>
-                {
-                    var list = new List<HomeRecord>();
-                    foreach (var project in projects)
-                    {
-                        var info = JsonFile.TryRead<ProjectInfo>(TrackingFiles.ProjectFile(project.Path));
-                        list.Add(new HomeRecord("project", projectType?.Name ?? Resources.Kind_Project, project.Glyph, project.ProjectColor,
-                            project.Title, info?.Name ?? string.Empty, string.Empty, string.Empty, project.Path));
-                        foreach (var stock in project.Children.Where(c => c.Kind == FolderKind.Stock))
-                        {
-                            var s = JsonFile.TryRead<StockInfo>(TrackingFiles.StockFile(stock.Path));
-                            list.Add(new HomeRecord("stock", stockType.Name, stock.Glyph, stockType.Color, stock.Title,
-                                s?.Name ?? string.Empty, project.Title, s?.Status ?? string.Empty, stock.Path));
-                        }
-                    }
-
-                    foreach (var item in items)
-                    {
-                        var type = inventoryTypes.FirstOrDefault(t => string.Equals(t.Key, item.Record.Type, StringComparison.OrdinalIgnoreCase));
-                        list.Add(new HomeRecord(item.Record.Type, type?.Name ?? item.Record.Type, TreeNodeViewModel.GlyphOf(type?.Icon ?? string.Empty),
-                            type?.Color ?? string.Empty, item.Record.Number, item.Record.Name,
-                            item.Owner.Length > 0 ? item.Owner : item.Record.Location, item.Record.CurrentStatus, item.Folder));
-                    }
-
-                    return list;
-                }).ConfigureAwait(true);
-            }
-            catch (Exception ex) when (ex is System.IO.IOException || ex is UnauthorizedAccessException)
-            {
-                rows = new List<HomeRecord>();
-            }
-
-            if (version != homeVersion)
-            {
-                return;
-            }
-
-            allHomeRecords = rows;
-            HomeRecordFilters.Clear();
-            HomeRecordFilters.Add(new HomeRecordFilter(string.Empty, Resources.Home_RangeAll, rows.Count, ChooseRecordKind));
-            foreach (var group in rows.GroupBy(r => r.Kind, StringComparer.OrdinalIgnoreCase))
-            {
-                HomeRecordFilters.Add(new HomeRecordFilter(group.Key, group.First().KindName, group.Count(), ChooseRecordKind));
-            }
-
-            var current = HomeRecordFilters.FirstOrDefault(f => string.Equals(f.Key, recordKind, StringComparison.OrdinalIgnoreCase)) ?? HomeRecordFilters[0];
-            recordKind = current.Key;
-            current.IsSelected = true;
-            FilterHomeRecords();
-        }
-
-        private void ChooseRecordKind(HomeRecordFilter filter)
-        {
-            recordKind = filter.Key;
-            foreach (var other in HomeRecordFilters.Where(f => !ReferenceEquals(f, filter)))
-            {
-                other.IsSelected = false;
-            }
-
-            FilterHomeRecords();
-        }
-
-        private void FilterHomeRecords()
-        {
-            HomeRecords.Clear();
-            foreach (var row in allHomeRecords.Where(r => recordKind.Length == 0 || string.Equals(r.Kind, recordKind, StringComparison.OrdinalIgnoreCase)))
-            {
-                HomeRecords.Add(row);
-            }
         }
     }
 }
