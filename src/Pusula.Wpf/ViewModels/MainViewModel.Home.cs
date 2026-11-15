@@ -354,7 +354,7 @@ namespace Pusula.Wpf.ViewModels
             }
 
             // İşlerim: bütün açık işler (herkesinkiler; kişi süzgeci yok), proje rengiyle; süzgeç aralığa göre gösterir.
-            allHomeTasks = tasks.Select(t =>
+            allHomeTasks = tasks.Where(t => InScope(t.NotePath)).Select(t =>
             {
                 var project = ProjectOf(t.NotePath);
                 return new OpenTaskRow(t, project?.Path ?? root) { ProjectColor = project?.ProjectColor ?? string.Empty };

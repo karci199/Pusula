@@ -230,7 +230,7 @@ namespace Pusula.Wpf.ViewModels
         // Kayıtlar arka planda okunur: stok.json'lar ve son değişiklik; sonra dosya sayısı / boyut ayrıca hesaplanır.
         private async Task LoadRecordsAsync(int version)
         {
-            var projects = Nodes.Where(n => n.Kind == FolderKind.Project).ToList();
+            var projects = Nodes.Where(n => n.Kind == FolderKind.Project && (scopeProject == null || string.Equals(n.Path, scopeProject, StringComparison.OrdinalIgnoreCase))).ToList();
             var pairs = projects.SelectMany(p => p.Children.Where(c => c.Kind == FolderKind.Stock).Select(s => new { Project = p, Stock = s })).ToList();
             List<StockData> data;
             try
@@ -287,7 +287,9 @@ namespace Pusula.Wpf.ViewModels
             (ToolKindFilters.FirstOrDefault(f => string.Equals(f.Key, kind, StringComparison.OrdinalIgnoreCase)) ?? ToolKindFilters[0]).IsSelected = true;
             RebuildStockOptions();
             ApplyRecords();
+            NotifyScopeHeader();
             await LoadSizesAsync(version).ConfigureAwait(true);
+            NotifyScopeHeader();
         }
 
         // Önce her stokun, sonra her projenin boyutu (bütün alt klasörler); ağ yolunda uzun sürebilir, tek tek gelir.

@@ -432,6 +432,9 @@
   <data name="Scope_None" xml:space="preserve">
     <value>Hiçbiri</value>
   </data>
+  <data name="Project_LastChange" xml:space="preserve">
+    <value>son değişiklik {0}</value>
+  </data>
   <data name="Card_Stocks" xml:space="preserve">
     <value>{0} stok</value>
   </data>

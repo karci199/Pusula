@@ -87,7 +87,7 @@ namespace Pusula.Wpf.ViewModels
         // Kaynak numaralar ağaçtaki ilk stoklardan alınır ki tıklanınca bir yere gitsin.
         private List<HomeEvent> SampleEvents()
         {
-            var project = Nodes.FirstOrDefault(n => n.Kind == FolderKind.Project);
+            var project = scopeProject != null ? selectedNode : Nodes.FirstOrDefault(n => n.Kind == FolderKind.Project);
             // Renk boş kalırsa nokta ve çizgi siyah görünüyordu; projesiz durumda da paletin ilk rengi.
             var color = string.IsNullOrEmpty(project?.ProjectColor) ? ProjectColors.Palette[2] : project!.ProjectColor;
             var stocks = project?.Children.Where(c => c.Kind == FolderKind.Stock).Select(c => c.Title).ToList() ?? new List<string>();

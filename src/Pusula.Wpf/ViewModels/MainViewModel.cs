@@ -160,6 +160,7 @@ namespace Pusula.Wpf.ViewModels
                     Inventory.Load(selectedNode, inventoryItems, types);
                     LoadMentions(selectedNode);
                     RememberRecent(selectedNode);
+                    SyncProjectScope();
                 }
             }
         }
@@ -399,7 +400,8 @@ namespace Pusula.Wpf.ViewModels
                 SelectNodeByPath(keepSelected);
             }
 
-            if (selectedNode == null)
+            // Ana sayfa ya da proje sayfası (aynı sekmeler) açıksa yeniden okunur.
+            if (selectedNode == null || selectedNode.Kind == FolderKind.Project)
             {
                 LoadHome();
             }

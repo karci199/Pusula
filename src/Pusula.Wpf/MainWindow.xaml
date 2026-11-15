@@ -1032,11 +1032,12 @@
             </Border>
 
             <!-- Hiçbir şey seçili değil: başlangıç sayfası (son açılanlar, geciken işler, bana ait işler) -->
+            <!-- Sekmeli sayfa: ana sayfa (kapsam: her şey) ve proje sayfası (kapsam: o proje) -->
             <Grid x:Name="HomePage" Grid.Column="1">
                 <Grid.Style>
                     <Style TargetType="Grid">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding HasSelection}" Value="True">
+                            <DataTrigger Binding="{Binding IsHomePageVisible}" Value="False">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
                         </Style.Triggers>
@@ -1073,7 +1074,39 @@
                     <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
 
                     <!-- Sekmeler (Günlük · Yapılacaklar · Kayıtlar); sağ üstte süzgeç -->
-                    <Grid Grid.RowSpan="2" Margin="0,0,0,20">
+                    <!-- Proje sayfasında üstte proje başlığı: renk, kod, ad, sayılar; sağda Birim bilgisi yok (proje), Klasör ve ⋯ -->
+                    <Grid Margin="0,0,0,18" Visibility="{Binding IsProjectScope, Converter={StaticResource BoolToVis}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Width="48" Height="48" VerticalAlignment="Top">
+                            <Border CornerRadius="10" Background="{Binding ScopeProjectColor}" Opacity="0.18" />
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.Project}" FontSize="24" Foreground="{Binding ScopeProjectColor}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Grid>
+                        <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontSize="26" FontWeight="SemiBold" Text="{Binding ScopeProjectCode}" VerticalAlignment="Bottom" />
+                                <TextBlock Margin="12,0,0,3" FontSize="18" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding ScopeProjectName}" VerticalAlignment="Bottom" />
+                            </StackPanel>
+                            <TextBlock Margin="0,4,0,0" Text="{Binding ScopeProjectStats}" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Top">
+                            <Button Command="{Binding OpenFolderCommand}" ToolTip="{x:Static res:Resources.Header_FolderHint}">
+                                <StackPanel Orientation="Horizontal">
+                                    <local:AppIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" VerticalAlignment="Center" />
+                                    <TextBlock Text="{x:Static res:Resources.Header_Folder}" Margin="8,0,0,0" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                            <Button Margin="6,0,0,0" Style="{DynamicResource IconButtonStyle}" Click="HeaderMore_Click" ToolTip="{x:Static res:Resources.Header_More}">
+                                <local:AppIcon Glyph="{x:Static local:AppIcons.More}" FontSize="16" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Grid.Row="1" Margin="0,0,0,20">
                         <Grid.Resources>
                             <!-- Parçalı süzgeç düğmesi: seçili parça dolgulu ve kalın, diğerleri soluk -->
                             <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
@@ -1337,6 +1370,7 @@
                                         <StackPanel>
                                             <!-- İlk satır: kapsam (Proje, Stok) -->
                                             <StackPanel Orientation="Horizontal">
+                                            <StackPanel Orientation="Horizontal" Visibility="{Binding IsProjectScope, Converter={StaticResource InverseBoolToVis}}">
                                             <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Col_Project}" />
                                             <ToggleButton x:Name="ProjectScopeButton" Padding="10,4" Margin="0,0,16,0">
                                                 <StackPanel Orientation="Horizontal">
@@ -1359,6 +1393,7 @@
                                                     </StackPanel>
                                                 </Border>
                                             </Popup>
+                                            </StackPanel>
 
                                             <StackPanel Orientation="Horizontal" Visibility="{Binding IsViewProjects, Converter={StaticResource InverseBoolToVis}}">
                                                 <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Col_Stock}" />
@@ -1526,7 +1561,8 @@
                         <Border Style="{StaticResource SegmentBox}" HorizontalAlignment="Right" VerticalAlignment="Top"
                                 Visibility="{Binding IsHomeRecordsTab, Converter={StaticResource BoolToVis}}">
                             <StackPanel Orientation="Horizontal">
-                                <RadioButton Style="{StaticResource SegmentStyle}" GroupName="RecordView" IsChecked="{Binding IsViewProjects, Mode=TwoWay}">
+                                <RadioButton Style="{StaticResource SegmentStyle}" GroupName="RecordView" IsChecked="{Binding IsViewProjects, Mode=TwoWay}"
+                                             Visibility="{Binding IsProjectScope, Converter={StaticResource InverseBoolToVis}}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{x:Static res:Resources.Records_ViewProjects}" />
                                         <TextBlock Margin="6,0,0,0" Text="{Binding ProjectRowCount}" Foreground="{DynamicResource TextTertiaryBrush}" FontWeight="Normal" />
@@ -1553,7 +1589,7 @@
             <!-- Seçili düğüm: başlık, özet kutucukları, tablo -->
             <Grid Grid.Column="1"
                   Margin="32,20,32,12"
-                  Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}">
+                  Visibility="{Binding IsDetailVisible, Converter={StaticResource BoolToVis}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />

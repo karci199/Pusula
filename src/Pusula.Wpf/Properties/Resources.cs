@@ -508,6 +508,9 @@ namespace Pusula.Wpf.Properties
         /// <summary>Kapsam süzgecinde hiçbir şey işaretli değil.</summary>
         public static string Scope_None { get { return Get("Scope_None"); } }
 
+        /// <summary>Proje başlığında: "son değişiklik {0}".</summary>
+        public static string Project_LastChange { get { return Get("Project_LastChange"); } }
+
         /// <summary>Proje kartında stok sayısı; {0} sayı.</summary>
         public static string Card_Stocks { get { return Get("Card_Stocks"); } }
 
