@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Stok sayfası</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1f1f1f;font-family:"Segoe UI",Arial,sans-serif;color:#e6e6e6;font-size:14px}
+.win{display:grid;grid-template-columns:300px 1fr;height:900px;width:1500px}
+.side{background:#1c1c1c;padding:10px 8px}
+.home{background:#2f3a44;border-radius:6px;padding:9px 12px;display:flex;gap:10px;align-items:center}
+.sh{display:flex;align-items:center;padding:16px 8px 8px;font-weight:600;font-size:13px;color:#bdbdbd}
+.sh span{flex:1}
+.srch{margin:0 4px 10px;background:#2b2b2b;border:1px solid #3a3a3a;border-radius:5px;padding:7px 10px;color:#888;font-size:13px}
+.tr{padding:7px 10px 7px 30px;color:#ddd;display:flex;gap:9px;align-items:center;border-radius:5px}
+.tr.p{padding-left:12px}
+.tr.sel{background:#353535}
+.ico{color:#4a9fe0}.icog{color:#5db55a}
+.main{background:#272727;margin:6px;border-radius:8px;padding:26px 32px;display:flex;flex-direction:column;gap:16px;overflow:hidden}
+.top{display:grid;grid-template-columns:340px 1fr;gap:22px}
+.teu{background:#2d2d2d;border:1px solid #3a3a3a;border-radius:10px;height:210px;position:relative;display:flex;align-items:center;justify-content:center;color:#777}
+.teu .ph{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#6c7a86,#3b434a);opacity:.9}
+.teu .cap{position:absolute;left:10px;bottom:8px;font-size:11px;color:#888}
+.hd{display:flex;align-items:flex-start;gap:10px}
+.hd .t{flex:1}
+.no{font-size:28px;font-weight:600}
+.nm{font-size:18px;color:#aaa;margin-left:12px}
+.ctx{margin-top:6px;color:#4a9fe0;font-size:13px}
+.ctx span{color:#888}
+.btn{border:1px solid #3d3d3d;background:#2e2e2e;border-radius:6px;padding:6px 12px;font-size:13px;display:inline-flex;gap:8px;align-items:center}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
+.st{background:#2d2d2d;border:1px solid #383838;border-radius:8px;padding:10px 12px}
+.st .l{font-size:11px;color:#8a8a8a}
+.st .v{font-size:20px;font-weight:600;margin-top:2px}
+.bar{height:6px;border-radius:3px;background:#3a3a3a;margin-top:8px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.sns{display:flex;gap:6px;margin-top:12px;align-items:center;font-size:12px;color:#888}
+.sn{background:#333;border-radius:5px;padding:2px 8px;color:#ddd;font-size:12px}
+.tabs{display:flex;align-items:flex-end;border-bottom:1px solid #383838}
+.tab{padding:9px 16px;color:#aaa;font-size:14px}
+.tab.on{color:#fff;font-weight:600;border:1px solid #383838;border-bottom:1px solid #272727;border-radius:6px 6px 0 0;margin-bottom:-1px;background:#272727}
+.bd{display:inline-block;min-width:18px;padding:0 6px;border-radius:9px;background:#3a3a3a;font-size:11px;text-align:center;margin-left:6px}
+.seg{margin-left:auto;margin-bottom:6px;display:flex;border:1px solid #3a3a3a;border-radius:6px;padding:2px;font-size:13px}
+.seg span{padding:3px 11px;border-radius:4px;color:#aaa}
+.seg .s{background:#36404a;color:#fff;font-weight:600}
+.panel{flex:1;background:#2a2a2a;border:1px solid #383838;border-top:0;border-radius:0 0 8px 8px;padding:12px 16px;overflow:hidden}
+.grp{display:flex;align-items:center;gap:8px;padding:12px 4px 6px;font-size:13px;font-weight:600;color:#bbb}
+.grp .c{color:#777;font-weight:400}
+.row{display:grid;grid-template-columns:22px minmax(0,2.2fr) 70px 90px 120px 150px 150px 30px;gap:10px;align-items:center;padding:10px 4px;border-bottom:1px solid #333;font-size:13.5px}
+.row.h{color:#777;font-size:11.5px;padding-top:2px}
+.nmc{font-weight:600}
+.dm{color:#8a8a8a;font-size:12px}
+.y{font-size:11px;padding:2px 8px;border-radius:5px;justify-self:start}
+.yt{background:#2e2a5c;color:#cecbf6}.ym{background:#06392f;color:#9fe1cb}.yb{background:#4b1528;color:#f4c0d1}.ya{background:#412402;color:#fac775}
+.alt{color:#85b7eb;font-size:12.5px}
+.s{font-size:11.5px;padding:2px 9px;border-radius:10px;justify-self:start}
+.s0{background:#3a3a3a;color:#bbb}.s1{background:#5a3a08;color:#fac775}.s2{background:#28470e;color:#c0dd97}.s3{background:#0c447c;color:#b5d4f4}
+.hz{display:flex;gap:5px;flex-wrap:wrap}
+.hz span{font-size:11px;padding:1px 7px;border-radius:5px}
+.ok{background:#28470e;color:#c0dd97}.wt{background:#5a3a08;color:#fac775}.na{background:#3a3a3a;color:#aaa}
+.warn{color:#ef9f27;text-align:center}
+.sub{display:grid;grid-template-columns:22px minmax(0,2.2fr) 70px 90px 120px 150px 150px 30px;gap:10px;padding:6px 4px;font-size:12.5px;color:#aaa;border-bottom:1px solid #2f2f2f}
+.sub .n{padding-left:18px;position:relative}
+.sub .n:before{content:"";position:absolute;left:4px;top:-6px;width:8px;height:14px;border-left:1px solid #555;border-bottom:1px solid #555}
+.ms{font-size:11px;padding:1px 8px;border-radius:9px}
+.foot{font-size:12px;color:#888;margin-top:10px}
+</style></head><body>
+<div class="win">
+<div class="side">
+<div class="home"><span class="ico">⌂</span>Ana sayfa</div>
+<div class="sh"><span>Projeler</span><b style="color:#4a9fe0">＋</b>&nbsp;&nbsp;↻&nbsp;&nbsp;⚙</div>
+<div class="srch">⌕ Ara: numara, ad…</div>
+<div class="tr p"><span>⌄</span><span class="icog">▣</span>7000_MILKON</div>
+<div class="tr"><span class="ico">◈</span>AB-7000-0001</div>
+<div class="tr sel"><span class="ico">◈</span>AB-7000-0002</div>
+<div class="tr"><span class="ico">◈</span>AB-7000-0003</div>
+<div class="tr"><span class="ico">◈</span>JY-7000-0004</div>
+<div class="tr p" style="margin-top:12px"><span>⌄</span><span style="color:#999">▤</span>Envanter</div>
+<div class="tr"><span style="color:#e0904a">⤳</span>Kablolar <span style="color:#777">5</span></div>
+<div class="tr"><span style="color:#9b7fe6">⚒</span>Jigler <span style="color:#777">3</span></div>
+</div>
+
+<div class="main">
+<div class="top">
+<div class="teu"><div class="ph"></div><span class="cap">TEÜ görünümü · 01_Ortak/AB-7000-0002_kapak.png</span></div>
+<div>
+<div class="hd">
+<div class="t"><span class="no">AB-7000-0002</span><span class="nm">TAKIM ANTEN BOYNUZ Y</span>
+<div class="ctx">7000_MILKON <span>› Pasif anten</span></div></div>
+<span class="btn">📝 Birim bilgisi</span><span class="btn">📁 Klasör</span><span class="btn" style="border:0;background:none">⋯</span>
+</div>
+<div class="stats">
+<div class="st"><div class="l">Doğrulama</div><div class="v">3 / 9</div><div class="bar"><i style="width:33%;background:#639922"></i><i style="width:22%;background:#ba7517"></i></div></div>
+<div class="st"><div class="l">Açık iş</div><div class="v">6 <span style="font-size:12px;color:#f09595;font-weight:400">· 1 geciken</span></div></div>
+<div class="st"><div class="l">Test yardımcı araçları</div><div class="v">5</div></div>
+<div class="st"><div class="l">Boyut · son değişiklik</div><div class="v" style="font-size:16px;margin-top:5px">820 MB · 15.11</div></div>
+</div>
+<div class="sns">Seri no: <span class="sn">SNP1</span><span class="sn">SNP2</span><span class="sn">SNP3</span></div>
+</div>
+</div>
+
+<div class="tabs">
+<span class="tab on">Doğrulamalar <span class="bd">9</span></span><span class="tab">Günlük</span><span class="tab">Yapılacaklar <span class="bd" style="background:#7a2a2a;color:#fff">6</span></span><span class="tab">Test yardımcı araçları <span class="bd">5</span></span>
+<div class="seg"><span class="s">Hepsi</span><span>İşlevsel</span><span>Özellik</span><span>ÇK/EMC</span><span>Diğer</span></div>
+</div>
+<div class="panel">
+<div class="row h"><span></span><span>İş</span><span>DM no</span><span>Yöntem</span><span>Altyapı</span><span>Durum</span><span>Hazırlık</span><span></span></div>
+<div class="grp">İşlevsel <span class="c">· 4</span></div>
+<div class="row"><span>⌄</span><span class="nmc">Anten örüntü testi</span><span class="dm">TG-1</span><span class="y yt">Test</span><span class="alt">#SATIMO</span><span class="s s1">Değerlendirmede</span><div class="hz"><span class="ok">Jig ✓</span><span class="wt">Dok. BA1</span></div><span></span></div>
+<div class="sub"><span></span><span class="n">Hüzme genişliği ≥ 60°</span><span class="dm">TG-1.1</span><span></span><span></span><span><span class="ms s2">Sağlandı</span></span><span class="dm">SNP1_T2</span><span></span></div>
+<div class="sub"><span></span><span class="n">Kazanç ≥ 5 dBi</span><span class="dm">TG-1.2</span><span></span><span></span><span><span class="ms s0">Bekliyor</span></span><span></span><span></span></div>
+<div class="sub"><span></span><span class="n">Yan lob (ek istek)</span><span class="dm">—</span><span></span><span></span><span><span class="ms s0">Bekliyor</span></span><span></span><span></span></div>
+<div class="row"><span>›</span><span class="nmc">S11</span><span class="dm">TG-2</span><span class="y yt">Test</span><span class="alt">#VNA</span><span class="s s2">Tamam</span><div class="hz"><span class="ok">Dok. AA ✓</span></div><span></span></div>
+<div class="row"><span>›</span><span class="nmc">Konnektör tipi (SMA dişi)</span><span class="dm">TG-5</span><span class="y ym">Muayene</span><span class="dm">—</span><span class="s s2">Tamam</span><span class="dm">—</span><span></span></div>
+<div class="grp">Özellik <span class="c">· 1</span></div>
+<div class="row"><span>›</span><span class="nmc">Ağırlık ≤ 350 g</span><span class="dm">TG-8</span><span class="y ya">Analiz</span><span class="dm">—</span><span class="s s0">Tanımlandı</span><span class="dm">—</span><span></span></div>
+<div class="grp">ÇK/EMC <span class="c">· 3</span></div>
+<div class="row"><span>›</span><span class="nmc">Yüksek sıcaklık depolama</span><span class="dm">—</span><span class="y yt">Test</span><span class="alt">#İklimKabini</span><span class="s s3">Hazırlık</span><div class="hz"><span class="na">Dok. XX</span></div><span></span></div>
+<div class="row"><span>›</span><span class="nmc">RE102 ışınım</span><span class="dm">TG-12</span><span class="y yt">Test</span><span class="alt">#EMCLab</span><span class="s s1">Yapılıyor</span><div class="hz"><span class="ok">Kablaj ✓</span></div><span class="warn">⚠</span></div>
+<div class="foot">9 iş · 3 tamam · 2 sürüyor · 1 sorunlu &nbsp;·&nbsp; satıra tıkla: test klasörü + test.md · ⌄ ile maddeler açılır</div>
+</div>
+</div>
+</div>
+</body></html>

@@ -417,6 +417,29 @@ namespace Pusula.Wpf
             viewModel.GoHome();
         }
 
+        // Stok sayfası: TEÜ görünümüne tıklayınca fotoğraf tam boy açılır (yoksa fotoğraflar / stok klasörü).
+        private void StockCover_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var cover = viewModel.Detail.Cover;
+            if (cover.HasCover)
+            {
+                viewModel.OpenNoteOrFolder(cover.CoverPhoto, cover.HasPhotosFolder ? cover.PhotosFolder : cover.StockFolder);
+            }
+            else
+            {
+                viewModel.OpenPath(cover.StockFolder);
+            }
+        }
+
+        // Stok sayfası · Test yardımcı araçları: satıra tıklayınca kayıt açılır.
+        private void StockToolRow_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is ToolRow row)
+            {
+                viewModel.OpenRecordPath(row.Path);
+            }
+        }
+
         // Kayıtlar: satıra tıklayınca kayıt (proje, stok, araç) ağaçta seçilir.
         private void RecordRow_Click(object sender, MouseButtonEventArgs e)
         {

@@ -511,6 +511,48 @@ namespace Pusula.Wpf.Properties
         /// <summary>Proje başlığında: "son değişiklik {0}".</summary>
         public static string Project_LastChange { get { return Get("Project_LastChange"); } }
 
+        /// <summary>Stok sayfası: Açık iş {0}</summary>
+        public static string Stock_OpenTasks { get { return Get("Stock_OpenTasks"); } }
+
+        /// <summary>Stok sayfası: ({0} geciken)</summary>
+        public static string Stock_LateTasks { get { return Get("Stock_LateTasks"); } }
+
+        /// <summary>Stok sayfası: Gecikmiş</summary>
+        public static string Group_Late { get { return Get("Group_Late"); } }
+
+        /// <summary>Stok sayfası: Sonra</summary>
+        public static string Group_Later { get { return Get("Group_Later"); } }
+
+        /// <summary>Stok sayfası: Tarihsiz</summary>
+        public static string Group_NoDate { get { return Get("Group_NoDate"); } }
+
+        /// <summary>Stok sayfası: Zaman çizelgesi</summary>
+        public static string Stock_Timeline { get { return Get("Stock_Timeline"); } }
+
+        /// <summary>Stok sayfası: Doğrulamalar</summary>
+        public static string Stock_TabVerification { get { return Get("Stock_TabVerification"); } }
+
+        /// <summary>Stok sayfası: Bu aralıkta kayıt yok.</summary>
+        public static string Stock_NoEvents { get { return Get("Stock_NoEvents"); } }
+
+        /// <summary>Stok sayfası: Açık iş yok.</summary>
+        public static string Stock_NoTasks { get { return Get("Stock_NoTasks"); } }
+
+        /// <summary>Stok sayfası: Bu stoka bağlı test yardımcı aracı yok.</summary>
+        public static string Stock_NoTools { get { return Get("Stock_NoTools"); } }
+
+        /// <summary>Stok sayfası: Seri no</summary>
+        public static string Stock_Serials { get { return Get("Stock_Serials"); } }
+
+        /// <summary>Stok sayfası: Doğrulama listesi henüz yok</summary>
+        public static string Stock_VerificationTitle { get { return Get("Stock_VerificationTitle"); } }
+
+        /// <summary>Stok sayfası: İşler ve maddeler 03_Testler\&lt;stok&gt;_Test_Gereksinimleri.md dosyasından okunacak (iş · DM no · yöntem · altyapı · durum · hazırlık). Bu bölüm sıradaki adımda bağlanacak.</summary>
+        public static string Stock_VerificationHint { get { return Get("Stock_VerificationHint"); } }
+
+        /// <summary>Stok sayfası: kapak fotoğrafı yokken.</summary>
+        public static string Stock_NoCover { get { return Get("Stock_NoCover"); } }
+
         /// <summary>Proje kartında stok sayısı; {0} sayı.</summary>
         public static string Card_Stocks { get { return Get("Card_Stocks"); } }
 

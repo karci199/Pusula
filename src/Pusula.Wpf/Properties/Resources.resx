@@ -435,6 +435,48 @@
   <data name="Project_LastChange" xml:space="preserve">
     <value>son değişiklik {0}</value>
   </data>
+  <data name="Stock_OpenTasks" xml:space="preserve">
+    <value>Açık iş {0}</value>
+  </data>
+  <data name="Stock_LateTasks" xml:space="preserve">
+    <value>({0} geciken)</value>
+  </data>
+  <data name="Group_Late" xml:space="preserve">
+    <value>Gecikmiş</value>
+  </data>
+  <data name="Group_Later" xml:space="preserve">
+    <value>Sonra</value>
+  </data>
+  <data name="Group_NoDate" xml:space="preserve">
+    <value>Tarihsiz</value>
+  </data>
+  <data name="Stock_Timeline" xml:space="preserve">
+    <value>Zaman çizelgesi</value>
+  </data>
+  <data name="Stock_TabVerification" xml:space="preserve">
+    <value>Doğrulamalar</value>
+  </data>
+  <data name="Stock_NoEvents" xml:space="preserve">
+    <value>Bu aralıkta kayıt yok.</value>
+  </data>
+  <data name="Stock_NoTasks" xml:space="preserve">
+    <value>Açık iş yok.</value>
+  </data>
+  <data name="Stock_NoTools" xml:space="preserve">
+    <value>Bu stoka bağlı test yardımcı aracı yok.</value>
+  </data>
+  <data name="Stock_Serials" xml:space="preserve">
+    <value>Seri no</value>
+  </data>
+  <data name="Stock_VerificationTitle" xml:space="preserve">
+    <value>Doğrulama listesi henüz yok</value>
+  </data>
+  <data name="Stock_VerificationHint" xml:space="preserve">
+    <value>İşler ve maddeler 03_Testler\&lt;stok&gt;_Test_Gereksinimleri.md dosyasından okunacak (iş · DM no · yöntem · altyapı · durum · hazırlık). Bu bölüm sıradaki adımda bağlanacak.</value>
+  </data>
+  <data name="Stock_NoCover" xml:space="preserve">
+    <value>TEÜ fotoğrafı yok · stok klasörüne adında "kapak" geçen bir resim koyun</value>
+  </data>
   <data name="Card_Stocks" xml:space="preserve">
     <value>{0} stok</value>
   </data>

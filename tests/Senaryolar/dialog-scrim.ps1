@@ -1,4 +1,4 @@
-param([string]$Bin, [string]$Out, [string]$Data, [string]$Sample)
+﻿param([string]$Bin, [string]$Out, [string]$Data, [string]$Sample)
 . (Join-Path $PSScriptRoot '..\_Ortak.ps1')
 # Diyalog kapanınca pencerenin üstündeki karartma (scrim) kalmamalı: yeni proje, yeni stok, hatalı onay sonrası yeniden açılış.
 [System.Threading.SynchronizationContext]::SetSynchronizationContext((New-Object System.Windows.Threading.DispatcherSynchronizationContext))

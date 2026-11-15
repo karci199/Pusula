@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Stok sayfası A</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1f1f1f;font-family:"Segoe UI",Arial,sans-serif;color:#e6e6e6;font-size:14px}
+.win{display:grid;grid-template-columns:300px 1fr;height:900px;width:1500px}
+.side{background:#1c1c1c;padding:10px 8px}
+.home{background:#2f3a44;border-radius:6px;padding:9px 12px;display:flex;gap:10px;align-items:center}
+.sh{display:flex;align-items:center;padding:16px 8px 8px;font-weight:600;font-size:13px;color:#bdbdbd}
+.sh span{flex:1}
+.srch{margin:0 4px 10px;background:#2b2b2b;border:1px solid #3a3a3a;border-radius:5px;padding:7px 10px;color:#888;font-size:13px}
+.tr{padding:7px 10px 7px 30px;color:#ddd;display:flex;gap:9px;align-items:center;border-radius:5px}
+.tr.p{padding-left:12px}.tr.sel{background:#353535}
+.ico{color:#4a9fe0}.icog{color:#5db55a}
+.main{background:#272727;margin:6px;border-radius:8px;padding:22px 30px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.hd{display:flex;align-items:flex-start;gap:10px}
+.hd .t{flex:1}
+.no{font-size:28px;font-weight:600}
+.nm{font-size:18px;color:#aaa;margin-left:12px}
+.ctx{margin-top:5px;font-size:13px;color:#8a8a8a;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.ctx a{color:#4a9fe0}
+.ctx b{color:#ddd;font-weight:600}
+.dot{color:#555}
+.btn{border:1px solid #3d3d3d;background:#2e2e2e;border-radius:6px;padding:6px 12px;font-size:13px;display:inline-flex;gap:8px;align-items:center}
+.mini{display:inline-block;width:70px;height:5px;border-radius:3px;background:#3a3a3a;overflow:hidden;vertical-align:middle;margin-left:6px}
+.mini i{display:block;height:100%;width:33%;background:#639922;float:left}.mini i+i{width:22%;background:#ba7517}
+.sn{background:#333;border-radius:5px;padding:1px 7px;color:#ddd;font-size:12px}
+.top{display:grid;grid-template-columns:330px 1fr;gap:18px;height:290px}
+.teu{background:#2d2d2d;border:1px solid #3a3a3a;border-radius:10px;position:relative;display:flex;align-items:center;justify-content:center}
+.teu .ph{width:170px;height:170px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#6c7a86,#3b434a)}
+.teu .cap{position:absolute;left:10px;bottom:8px;font-size:11px;color:#888}
+.tl{background:#2a2a2a;border:1px solid #383838;border-radius:10px;padding:10px 14px;overflow:hidden;display:flex;flex-direction:column}
+.tlh{display:flex;align-items:center;margin-bottom:6px}
+.tlh b{flex:1;font-size:15px}
+.seg{display:flex;border:1px solid #3a3a3a;border-radius:6px;padding:2px;font-size:12px}
+.seg span{padding:2px 9px;border-radius:4px;color:#aaa}
+.seg .s{background:#36404a;color:#fff;font-weight:600}
+.day{font-size:12px;color:#aaa;font-weight:600;margin:6px 0 4px 2px}
+.ev{display:grid;grid-template-columns:24px 1fr;}
+.ln{position:relative}
+.ln:before{content:"";position:absolute;left:11px;top:0;bottom:0;width:2px;background:#5db55a;opacity:.45}
+.ln i{position:absolute;left:6px;top:13px;width:12px;height:12px;border-radius:50%;background:#5db55a;border:2px solid #272727}
+.cd{background:#2f2f2f;border:1px solid #3a3a3a;border-radius:8px;padding:7px 12px;margin:0 0 6px 6px}
+.cd .m{display:flex;gap:8px;align-items:center;font-size:12px;color:#999}
+.cd .m .tm{margin-left:auto}
+.cd .x{font-size:14px;margin-top:2px}
+.add{margin-left:8px;border:1px solid #3d3d3d;border-radius:6px;padding:3px 10px;font-size:12px;background:#2e2e2e}
+.tabs{display:flex;align-items:flex-end;border-bottom:1px solid #383838}
+.tab{padding:9px 16px;color:#aaa;font-size:14px}
+.tab.on{color:#fff;font-weight:600;border:1px solid #383838;border-bottom:1px solid #272727;border-radius:6px 6px 0 0;margin-bottom:-1px;background:#272727}
+.bd{display:inline-block;min-width:18px;padding:0 6px;border-radius:9px;background:#3a3a3a;font-size:11px;text-align:center;margin-left:6px}
+.tabs .seg{margin-left:auto;margin-bottom:6px;font-size:13px}
+.panel{flex:1;background:#2a2a2a;border:1px solid #383838;border-top:0;border-radius:0 0 8px 8px;padding:8px 16px;overflow:hidden}
+.grp{display:flex;gap:8px;padding:10px 4px 4px;font-size:13px;font-weight:600;color:#bbb}
+.grp .c{color:#777;font-weight:400}
+.row{display:grid;grid-template-columns:22px minmax(0,2.2fr) 70px 90px 120px 150px 150px 30px;gap:10px;align-items:center;padding:8px 4px;border-bottom:1px solid #333;font-size:13.5px}
+.row.h{color:#777;font-size:11.5px;padding-top:2px}
+.nmc{font-weight:600}
+.dm{color:#8a8a8a;font-size:12px}
+.y{font-size:11px;padding:2px 8px;border-radius:5px;justify-self:start}
+.yt{background:#2e2a5c;color:#cecbf6}.ym{background:#06392f;color:#9fe1cb}.ya{background:#412402;color:#fac775}
+.alt{color:#85b7eb;font-size:12.5px}
+.s{font-size:11.5px;padding:2px 9px;border-radius:10px;justify-self:start}
+.s0{background:#3a3a3a;color:#bbb}.s1{background:#5a3a08;color:#fac775}.s2{background:#28470e;color:#c0dd97}.s3{background:#0c447c;color:#b5d4f4}
+.hz{display:flex;gap:5px}
+.hz span{font-size:11px;padding:1px 7px;border-radius:5px}
+.ok{background:#28470e;color:#c0dd97}.wt{background:#5a3a08;color:#fac775}.na{background:#3a3a3a;color:#aaa}
+.warn{color:#ef9f27;text-align:center}
+.sub{display:grid;grid-template-columns:22px minmax(0,2.2fr) 70px 90px 120px 150px 150px 30px;gap:10px;padding:5px 4px;font-size:12.5px;color:#aaa;border-bottom:1px solid #2f2f2f}
+.sub .n{padding-left:18px;position:relative}
+.sub .n:before{content:"";position:absolute;left:4px;top:-6px;width:8px;height:14px;border-left:1px solid #555;border-bottom:1px solid #555}
+.ms{font-size:11px;padding:1px 8px;border-radius:9px}
+.foot{font-size:12px;color:#888;margin-top:8px}
+.trow{display:grid;grid-template-columns:30px 150px minmax(0,1fr) 110px 150px;gap:10px;align-items:center;padding:10px 6px;border-bottom:1px solid #333;font-size:13.5px}
+.trow.h{color:#777;font-size:11.5px}
+.trow .n{font-weight:600;color:#fff}
+.trow .sec{color:#aaa}
+.fl{display:flex;align-items:center;gap:10px;padding:6px 2px 10px;font-size:13px;color:#aaa}
+.fl .seg{font-size:13px}
+.fl .dd{border:1px solid #3a3a3a;border-radius:6px;padding:3px 10px;background:#2e2e2e;color:#ddd}
+.fl .q{margin-left:auto;border:1px solid #3a3a3a;border-radius:6px;padding:5px 10px;width:280px;color:#888}
+#tools{display:none}
+body.tools #tools{display:block}
+body.tools #verif{display:none}
+</style></head><body>
+<div class="win">
+<div class="side">
+<div class="home"><span class="ico">⌂</span>Ana sayfa</div>
+<div class="sh"><span>Projeler</span><b style="color:#4a9fe0">＋</b>&nbsp;&nbsp;↻&nbsp;&nbsp;⚙</div>
+<div class="srch">⌕ Ara: numara, ad…</div>
+<div class="tr p"><span>⌄</span><span class="icog">▣</span>7000_MILKON</div>
+<div class="tr"><span class="ico">◈</span>AB-7000-0001</div>
+<div class="tr sel"><span class="ico">◈</span>AB-7000-0002</div>
+<div class="tr"><span class="ico">◈</span>AB-7000-0003</div>
+<div class="tr"><span class="ico">◈</span>JY-7000-0004</div>
+<div class="tr p" style="margin-top:12px"><span>⌄</span><span style="color:#999">▤</span>Envanter</div>
+<div class="tr"><span style="color:#e0904a">⤳</span>Kablolar <span style="color:#777">5</span></div>
+<div class="tr"><span style="color:#9b7fe6">⚒</span>Jigler <span style="color:#777">3</span></div>
+</div>
+
+<div class="main">
+<div class="hd">
+<div class="t"><span class="no">AB-7000-0002</span><span class="nm">TAKIM ANTEN BOYNUZ Y</span>
+<div class="ctx"><span><a>7000_MILKON</a> › Pasif anten</span><span class="dot">|</span><span>Doğrulama <b>3/9</b><span class="mini"><i></i><i></i></span></span><span class="dot">·</span><span>Açık iş <b>6</b> <span style="color:#f09595">(1 geciken)</span></span><span class="dot">·</span><span><b>820 MB</b></span><span class="dot">·</span><span>Seri no <span class="sn">SNP1</span> <span class="sn">SNP2</span> <span class="sn">SNP3</span></span></div></div>
+<span class="btn">📝 Birim bilgisi</span><span class="btn">📁 Klasör</span><span class="btn" style="border:0;background:none">⋯</span>
+</div>
+
+<div class="top">
+<div class="teu"><div class="ph"></div><span class="cap">TEÜ görünümü · 01_Ortak/AB-7000-0002_kapak.png</span></div>
+<div class="tl">
+<div class="tlh"><b>Zaman çizelgesi</b><div class="seg"><span>Bugün</span><span class="s">Bu hafta</span><span>Bu ay</span><span>Hepsi</span></div><span class="add">+ Not</span></div>
+<div class="day">Bugün</div>
+<div class="ev"><div class="ln"><i></i></div><div class="cd"><div class="m"><span class="sn">SNP1</span><span class="tm">14:20</span></div><div class="x">SATIMO testi başlatıldı. 2–18 GHz.</div></div></div>
+<div class="ev"><div class="ln"><i></i></div><div class="cd"><div class="m"><span>Gün boyu</span><span class="tm"></span></div><div class="x">Jig teslim alındı.</div></div></div>
+<div class="day">Dün</div>
+<div class="ev"><div class="ln"><i></i></div><div class="cd"><div class="m"><span class="sn">SNP2</span><span class="tm">17:40</span></div><div class="x">Yan lob tekrar ölçüldü, sonuç klasöre kondu.</div></div></div>
+</div>
+</div>
+
+<div class="tabs">
+<span class="tab" id="t1">Doğrulamalar <span class="bd">9</span></span><span class="tab">Yapılacaklar <span class="bd" style="background:#7a2a2a;color:#fff">6</span></span><span class="tab" id="t3">Test yardımcı araçları <span class="bd">5</span></span>
+<div class="seg" id="vseg"><span class="s">Hepsi</span><span>İşlevsel</span><span>Özellik</span><span>ÇK/EMC</span><span>Diğer</span></div>
+</div>
+
+<div class="panel">
+<div id="verif">
+<div class="row h"><span></span><span>İş</span><span>DM no</span><span>Yöntem</span><span>Altyapı</span><span>Durum</span><span>Hazırlık</span><span></span></div>
+<div class="grp">İşlevsel <span class="c">· 4</span></div>
+<div class="row"><span>⌄</span><span class="nmc">Anten örüntü testi</span><span class="dm">TG-1</span><span class="y yt">Test</span><span class="alt">#SATIMO</span><span class="s s1">Değerlendirmede</span><div class="hz"><span class="ok">Jig ✓</span><span class="wt">Dok. BA1</span></div><span></span></div>
+<div class="sub"><span></span><span class="n">Hüzme genişliği ≥ 60°</span><span class="dm">TG-1.1</span><span></span><span></span><span><span class="ms s2">Sağlandı</span></span><span class="dm">SNP1_T2</span><span></span></div>
+<div class="sub"><span></span><span class="n">Kazanç ≥ 5 dBi</span><span class="dm">TG-1.2</span><span></span><span></span><span><span class="ms s0">Bekliyor</span></span><span></span><span></span></div>
+<div class="row"><span>›</span><span class="nmc">S11</span><span class="dm">TG-2</span><span class="y yt">Test</span><span class="alt">#VNA</span><span class="s s2">Tamam</span><div class="hz"><span class="ok">Dok. AA ✓</span></div><span></span></div>
+<div class="row"><span>›</span><span class="nmc">Konnektör tipi (SMA dişi)</span><span class="dm">TG-5</span><span class="y ym">Muayene</span><span class="dm">—</span><span class="s s2">Tamam</span><span class="dm">—</span><span></span></div>
+<div class="grp">ÇK/EMC <span class="c">· 2</span></div>
+<div class="row"><span>›</span><span class="nmc">Yüksek sıcaklık depolama</span><span class="dm">—</span><span class="y yt">Test</span><span class="alt">#İklimKabini</span><span class="s s3">Hazırlık</span><div class="hz"><span class="na">Dok. XX</span></div><span></span></div>
+<div class="row"><span>›</span><span class="nmc">RE102 ışınım</span><span class="dm">TG-12</span><span class="y yt">Test</span><span class="alt">#EMCLab</span><span class="s s1">Yapılıyor</span><div class="hz"><span class="ok">Kablaj ✓</span></div><span class="warn">⚠</span></div>
+</div>
+
+<div id="tasks" style="display:none">
+<div class="fl">Zaman <div class="seg"><span>Bugün</span><span class="s">Bu hafta</span><span>Bu ay</span><span>Hepsi</span></div><span class="q">⌕ Ara: iş…</span></div>
+<div class="grp" style="color:#f09595">Gecikmiş <span class="c">· 1</span></div>
+<div class="trow" style="grid-template-columns:30px minmax(0,1fr) 140px 120px"><span style="width:14px;height:14px;border:1px solid #c05050;border-radius:3px"></span><span class="n" style="font-weight:400">SN02 tekrar ölç (yan lob)</span><span class="sec">Anten örüntü testi</span><span style="color:#f09595">13.11 · gecikti</span></div>
+<div class="grp">Bu hafta <span class="c">· 3</span></div>
+<div class="trow" style="grid-template-columns:30px minmax(0,1fr) 140px 120px"><span style="width:14px;height:14px;border:1px solid #666;border-radius:3px"></span><span class="n" style="font-weight:400">Jig teslimini kontrol et</span><span class="sec">JIG-1000-0009</span><span class="sec">17.11</span></div>
+<div class="trow" style="grid-template-columns:30px minmax(0,1fr) 140px 120px"><span style="width:14px;height:14px;border:1px solid #666;border-radius:3px"></span><span class="n" style="font-weight:400">Test dokümanı BA1 gözden geçir</span><span class="sec">Anten örüntü testi</span><span class="sec">18.11</span></div>
+<div class="trow" style="grid-template-columns:30px minmax(0,1fr) 140px 120px"><span style="width:14px;height:14px;border:1px solid #666;border-radius:3px"></span><span class="n" style="font-weight:400">İklim kabini randevusunu onayla</span><span class="sec">Yüksek sıcaklık</span><span class="sec">20.11</span></div>
+<div class="grp">Tarihsiz <span class="c">· 2</span></div>
+<div class="trow" style="grid-template-columns:30px minmax(0,1fr) 140px 120px"><span style="width:14px;height:14px;border:1px solid #666;border-radius:3px"></span><span class="n" style="font-weight:400">Kapak fotoğrafını yenile</span><span class="sec">Birim bilgisi</span><span class="sec">—</span></div>
+<div class="foot">6 açık · 1 geciken &nbsp;·&nbsp; kutuya bas: iş kapanır (md'de [x]) · satıra tıkla: notu açar</div>
+</div>
+
+<div id="tools">
+<div class="fl">Tür <div class="seg"><span class="s">Hepsi 5</span><span>Kablo 3</span><span>Jig 2</span><span>Yazılım 0</span><span>Diğer 0</span></div><span class="dd">Tüm alt türler ▾</span><span class="q">⌕ Ara: numara, ad…</span></div>
+<div class="trow h"><span></span><span>Numara</span><span>Ad</span><span>Tür</span><span>Alt tür</span></div>
+<div class="trow"><span style="color:#9b7fe6">⚒</span><span class="n">JIG-1000-0009</span><span>SATIMO adaptör plakası</span><span class="sec">Jig</span><span class="sec">Mekanik</span></div>
+<div class="trow"><span style="color:#9b7fe6">⚒</span><span class="n">JIG-1000-0014</span><span>Döner tabla montaj aparatı</span><span class="sec">Jig</span><span class="sec">Montaj</span></div>
+<div class="trow"><span style="color:#e0904a">⤳</span><span class="n">JT-0001-0002</span><span>RS422 test kablosu</span><span class="sec">Kablo</span><span class="sec">Haberleşme</span></div>
+<div class="trow"><span style="color:#e0904a">⤳</span><span class="n">JT-0001-0102</span><span>DA400 iç kablaj</span><span class="sec">Kablo</span><span class="sec">Kablaj</span></div>
+<div class="trow"><span style="color:#e0904a">⤳</span><span class="n">JT-0001-0010</span><span>MILKON ortak RF kablosu</span><span class="sec">Kablo</span><span class="sec">RF</span></div>
+<div class="foot">5 araç · Kablo 3 · Jig 2 &nbsp;·&nbsp; başlığa sağ tıkla: Konum, Durum, Bağlı sütunlarını aç</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+if (location.hash === '#araclar') { document.body.classList.add('tools'); document.getElementById('t3').classList.add('on'); document.getElementById('vseg').style.visibility = 'hidden'; }
+else { document.getElementById('t1').classList.add('on'); }
+</script>
+</body></html>

@@ -1,4 +1,4 @@
-param([string]$Bin, [string]$Out, [string]$Data, [string]$Sample)
+﻿param([string]$Bin, [string]$Out, [string]$Data, [string]$Sample)
 . (Join-Path $PSScriptRoot '..\_Ortak.ps1')
 # Proje sayfası = ana sayfanın o projeye daraltılmış hali: aynı sekmeler, proje başlığı, Projeler görünümü yok.
 [System.Threading.SynchronizationContext]::SetSynchronizationContext((New-Object System.Windows.Threading.DispatcherSynchronizationContext))

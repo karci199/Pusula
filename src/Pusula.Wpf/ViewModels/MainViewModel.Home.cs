@@ -137,6 +137,7 @@ namespace Pusula.Wpf.ViewModels
             OnPropertyChanged(nameof(IsRangeAll));
             FilterHomeTasks();
             FilterHomeTimeline();
+            FilterStockTimeline();
         }
 
         // Gecikenler hep; aralık son tarihe göre; sıra: gecikenler, yaklaşanlar, tarihsizler (yalnız "Hepsi"de).

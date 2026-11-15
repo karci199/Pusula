@@ -49,6 +49,7 @@ namespace Pusula.Wpf.ViewModels
             NewProjectCommand = new RelayCommand(OpenNewProject);
             NewStockCommand = new RelayCommand(OpenNewStock, () => SelectedProjectFolder().Length > 0);
             OpenFolderCommand = new RelayCommand(OpenSelectedFolder);
+            HookStockPage();
             AddModulesCommand = new RelayCommand(OpenAddModules);
             MarkAsStockCommand = new RelayCommand(() => OpenMark(true));
             MarkAsProjectCommand = new RelayCommand(() => OpenMark(false));
@@ -161,6 +162,8 @@ namespace Pusula.Wpf.ViewModels
                     LoadMentions(selectedNode);
                     RememberRecent(selectedNode);
                     SyncProjectScope();
+                    LoadStockSize();
+                    ScheduleStockRebuild();
                 }
             }
         }

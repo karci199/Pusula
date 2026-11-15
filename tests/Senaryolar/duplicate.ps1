@@ -1,4 +1,4 @@
-param([string]$Bin, [string]$Out, [string]$Data, [string]$Sample)
+﻿param([string]$Bin, [string]$Out, [string]$Data, [string]$Sample)
 . (Join-Path $PSScriptRoot '..\_Ortak.ps1')
 # Aynı kodla ikinci proje, başka projede aynı numarayla stok açılmaz; kodda "_" olmaz.
 $PS = [Pusula.Core.Tracking.ProjectService]
