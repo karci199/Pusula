@@ -65,7 +65,6 @@ Check 'tabloda Analiz sütunu dolu' ($row2.AnalysisText -eq $later.ToString('dd.
 $card = @($vm.Detail.Timeline | Where-Object { $_.Folder -eq $row.Folder })[0]
 Check 'günlük kartında analiz tarihi ve notu' ($card.Meta -match 'analiz ' -and $card.Detail -match 'Sonradan analiz edildi') ($card.Meta + ' | ' + $card.Detail)
 Check 'seçim korundu' ($vm.SelectedNode.Path -eq $stock)
-$tc = $win.FindName('StockTabs'); $tc.SelectedIndex = 1; Snap $win "$Out\analysis-runs.png"
 $vm.OpenAnalysis($row2) | Out-Null
 Check 'yeniden açınca kayıtlı analiz tarihi gelir' ($vm.AnalysisDateText -eq $later.ToString('dd.MM.yyyy') -and $vm.AnalysisNote -eq 'Sonradan analiz edildi')
 $vm.AnalysisDateText = ''; $vm.AnalysisNote = ''

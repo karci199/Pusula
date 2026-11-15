@@ -863,7 +863,8 @@ namespace Pusula.Wpf.ViewModels
             ShowTags(info?.Tags);
             ParentName = project;
             ParentPath = Path.GetDirectoryName(path) ?? string.Empty;
-            ContextText = string.Join(" · ", new[] { format?.Label ?? Resources.Kind_Stock, summary.Template }.Where(p => !string.IsNullOrEmpty(p)));
+            // Yalnız şablon (ör. "Döner anten"); genel "Stok numarası" etiketi bilgi taşımadığı için yazılmaz.
+            ContextText = summary.Template ?? string.Empty;
 
             var current = info?.Status ?? string.Empty;
             Status = StatusChip.For(stockType, current);

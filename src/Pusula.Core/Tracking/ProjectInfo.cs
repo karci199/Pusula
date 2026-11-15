@@ -38,5 +38,9 @@ namespace Pusula.Core.Tracking
         /// <summary>Projenin etiketleri (<c>#</c> olmadan; ana notun YAML'ında da durur).</summary>
         [DataMember(Name = "tags", Order = 4, EmitDefaultValue = false)]
         public System.Collections.Generic.List<string> Tags { get; set; } = new System.Collections.Generic.List<string>();
+
+        /// <summary>Sol listedeki renk (<c>#RRGGBB</c>); boşsa proje kodundan türetilir (bkz. <see cref="ProjectColors"/>).</summary>
+        [DataMember(Name = "color", Order = 5, EmitDefaultValue = false)]
+        public string? Color { get; set; }
     }
 }

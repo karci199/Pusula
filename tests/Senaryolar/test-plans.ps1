@@ -17,8 +17,6 @@ try {
     Check 'adım, limit, revizyon' ($plans[0].Meta -like 'KIWI · 3 adım · 3 limit · Rev 0*') $plans[0].Meta
     Check 'bu planla koşular sayıldı' ($plans[0].RunCount -ge 1) $plans[0].RunsText
     Check 'açıklama var' ($plans[0].HasDescription)
-    $win.FindName('StockTabs').SelectedIndex = 1; Wait
-    Snap $win "$Out\test-plans.png"
     $vm.SelectNodeByPath((Join-Path $Data '7000_MILKON\AB-7000-0003')); Wait
     Check 'boş plan klasörü: plan yok' ($vm.Detail.TestPlans.Count -eq 0 -and $vm.Detail.QualificationPlans.Count -eq 0)
 } finally {

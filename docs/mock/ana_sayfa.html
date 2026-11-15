@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Ana sayfa</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#202020;font-family:"Segoe UI",Arial,sans-serif;color:#e8e8e8}
+.page{display:grid;grid-template-columns:300px minmax(0,1fr);height:760px}
+.side{background:#1c1c1c;padding:14px 10px;border-right:1px solid #2a2a2a;font-size:14px}
+.side .h{font-size:12px;color:#9a9a9a;margin:4px 6px 10px}
+.side .s{background:#2b2b2b;border-radius:6px;padding:7px 10px;color:#8a8a8a;font-size:13px;margin-bottom:10px}
+.side .n{padding:6px 8px;display:flex;gap:9px;align-items:center}
+.side .c{padding:6px 8px 6px 30px;color:#cfcfcf}
+.main{background:#272727;margin:8px;border-radius:8px;padding:28px 32px;overflow:auto}
+.top{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
+.top h1{font-size:24px;margin:0;font-weight:600}
+.top .hi{color:#9a9a9a;font-size:14px}
+.sum{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:#a8a8a8;padding:10px 0 20px;border-bottom:1px solid #333;margin-bottom:22px}
+.sum b{color:#e8e8e8;font-weight:600;margin-left:4px}
+.sum .me{margin-left:auto}
+.sum .late b{color:#ff99a4}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px}
+.sec{display:flex;align-items:center;margin-bottom:12px}
+.sec h2{font-size:16px;margin:0;font-weight:600;flex:1}
+.btn{font-size:13px;border:1px solid #3d3d3d;background:#2e2e2e;border-radius:6px;padding:5px 12px;color:#e8e8e8}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.card{background:#2d2d2d;border:1px solid #383838;border-radius:8px;padding:14px 16px;cursor:pointer}
+.card:hover{background:#333}
+.ct{display:flex;align-items:center;gap:10px}
+.dot{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.code{font:600 16px Consolas,monospace}
+.name{font-size:13px;color:#a8a8a8}
+.meta{display:flex;gap:14px;margin-top:14px;font-size:12px;color:#a8a8a8}
+.meta b{color:#e8e8e8;font-weight:600}
+.meta .w b{color:#f0b35a}
+.last{margin-top:10px;font-size:12px;color:#7a7a7a}
+.list{background:#2d2d2d;border:1px solid #383838;border-radius:8px;padding:6px}
+.li{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;font-size:13px}
+.li:hover{background:#353535}
+.li .t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li .d{font-size:12px;color:#8a8a8a}
+.li .d.late{color:#ff99a4}
+.mono{font-family:Consolas,monospace}
+.cap{font-size:12px;color:#8a8a8a}
+.gap{height:22px}
+.empty{font-size:13px;color:#7a7a7a;padding:10px}
+</style></head><body>
+<div class="page">
+<div class="side">
+<div class="h">Projeler</div>
+<div class="s">⌕ Ara: numara, ad…</div>
+<div class="n"><span style="color:#5DB55A">▣</span> 7000_MILKON</div>
+<div class="c">AB-7000-0001</div><div class="c">AB-7000-0002</div><div class="c">AB-7000-0003</div>
+<div class="n"><span style="color:#4A9FE0">▣</span> 7100_KARAKUŞ</div>
+<div class="n"><span style="color:#E0709A">▣</span> 8200_YELKEN</div>
+</div>
+<div class="main">
+<div class="top"><h1>Pusula</h1><span class="hi">İyi çalışmalar</span></div>
+<div class="sum">
+<span>Projeler<b>3</b></span><span>Stoklar<b>9</b></span><span>Kablolar<b>5</b></span><span>Jigler<b>3</b></span><span>Yazılımlar<b>0</b></span>
+<span class="me">Açık işim<b>4</b></span><span class="late">Geciken<b>1</b></span>
+</div>
+
+<div class="grid">
+<div>
+<div class="sec"><h2>Projeler</h2><span class="btn">+ Proje</span></div>
+<div class="cards">
+<div class="card"><div class="ct"><div class="dot" style="background:#1f3a1e;color:#5DB55A">▣</div><div><div class="code">7000</div><div class="name">MILKON</div></div></div>
+<div class="meta"><span><b>4</b> stok</span><span><b>3</b> açık iş</span><span class="w"><b>1</b> geciken</span></div>
+<div class="last">Son değişiklik 14.11.2026 · AB-7000-0002</div></div>
+<div class="card"><div class="ct"><div class="dot" style="background:#1c3048;color:#4A9FE0">▣</div><div><div class="code">7100</div><div class="name">KARAKUŞ</div></div></div>
+<div class="meta"><span><b>3</b> stok</span><span><b>1</b> açık iş</span></div>
+<div class="last">Son değişiklik 10.11.2026 · AB-7100-0004</div></div>
+<div class="card"><div class="ct"><div class="dot" style="background:#45202e;color:#E0709A">▣</div><div><div class="code">8200</div><div class="name">YELKEN</div></div></div>
+<div class="meta"><span><b>2</b> stok</span><span><b>0</b> açık iş</span></div>
+<div class="last">Son değişiklik 02.11.2026 · AB-8200-0001</div></div>
+</div>
+</div>
+
+<div>
+<div class="sec"><h2>Son açılanlar</h2></div>
+<div class="list">
+<div class="li"><span style="color:#60CDFF">◈</span><span class="t mono">AB-7000-0001</span><span class="d">TAKIM ANTEN</span></div>
+<div class="li"><span style="color:#5DB55A">▣</span><span class="t mono">7000_MILKON</span><span class="d">proje</span></div>
+<div class="li"><span style="color:#60CDFF">◈</span><span class="t mono">AB-7000-0003</span><span class="d">DÖNER ANTEN</span></div>
+</div>
+<div class="gap"></div>
+<div class="sec"><h2>İşlerim</h2></div>
+<div class="list">
+<div class="li"><span>☐</span><span class="t">SN02 tekrar ölç (yan lob)</span><span class="d late">12.11</span></div>
+<div class="li"><span>☐</span><span class="t">Jig teslimini kontrol et</span><span class="d">18.11</span></div>
+<div class="li"><span>☐</span><span class="t">Test dokümanı BA1 gözden geçir</span><span class="d">20.11</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

@@ -54,6 +54,61 @@ namespace Pusula.Wpf.ViewModels
             HomeCounts.Add(new RecordCount(person.PluralName, person.Icon, person.Color, types.People.Count(p => !p.HasLeft)));
         }
 
+        /// <summary>Ana sayfadaki proje kartları (son değişikliği en yeni olan önce).</summary>
+        public ObservableCollection<ProjectCard> ProjectCards { get; } = new ObservableCollection<ProjectCard>();
+
+        /// <summary>Proje sayısı (ana sayfa başlığında).</summary>
+        public int ProjectCount
+        {
+            get { return Nodes.Count(n => n.Kind == FolderKind.Project); }
+        }
+
+        // Kartlar arka planda okunur (proje.json, klasör zamanları); yeni bir yükleme başladıysa sonuç atılır.
+        private async Task LoadProjectCardsAsync(int version)
+        {
+            var projects = Nodes.Where(n => n.Kind == FolderKind.Project)
+                .Select(p => new { Node = p, Stocks = (IList<TreeNodeViewModel>)p.Children.Where(c => c.Kind == FolderKind.Stock).ToList() })
+                .ToList();
+            List<ProjectCard> cards;
+            try
+            {
+                cards = await Task.Run(() => projects.Select(p => ProjectCard.Read(p.Node, p.Stocks)).ToList()).ConfigureAwait(true);
+            }
+            catch (Exception ex) when (ex is System.IO.IOException || ex is UnauthorizedAccessException)
+            {
+                cards = new List<ProjectCard>();
+            }
+
+            if (version != homeVersion)
+            {
+                return;
+            }
+
+            ProjectCards.Clear();
+            foreach (var card in cards.OrderByDescending(c => c.LastChange ?? DateTime.MinValue).ThenBy(c => c.Code, StringComparer.CurrentCultureIgnoreCase))
+            {
+                ProjectCards.Add(card);
+            }
+
+            OnPropertyChanged(nameof(ProjectCount));
+        }
+
+        /// <summary>Ana sayfaya döner: seçim kalkar, kartlar yeniden okunur.</summary>
+        public void GoHome()
+        {
+            SelectedNode = null;
+            LoadHome();
+        }
+
+        /// <summary>Karta tıklanınca projeyi ağaçta seçer.</summary>
+        public void OpenProjectCard(ProjectCard card)
+        {
+            if (card != null)
+            {
+                SelectNodeByPath(card.Node.Path);
+            }
+        }
+
         /// <summary>Son açılan var mı.</summary>
         public bool HasRecent
         {
@@ -145,6 +200,7 @@ namespace Pusula.Wpf.ViewModels
 
             FillHomeCounts();
             var version = ++homeVersion;
+            await LoadProjectCardsAsync(version).ConfigureAwait(true);
             var root = rootPath;
             var user = CurrentUser;
             List<OpenTask> tasks;
@@ -169,6 +225,7 @@ namespace Pusula.Wpf.ViewModels
                 return;
             }
 
+            // await sonrası: kartlar okunurken yeni bir yükleme başlamış olabilir.
             HomeLateTasks.Clear();
             HomeMyTasks.Clear();
             var today = DateTime.Today;

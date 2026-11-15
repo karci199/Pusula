@@ -26,6 +26,7 @@
         <!-- Türe özel alan girişi (düzenle ve yeni kayıt): yazı / sayı, seçim listesi, evet-hayır -->
         <!-- Düzenle penceresi: envanter kaydında (türe özel alanlar iki sütun) geniş, proje / stokta dar -->
         <Style x:Key="RecordEditDialog" TargetType="controls:ContentDialog">
+            <Setter Property="DialogWidth" Value="560" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsEditInventory}" Value="True">
                     <Setter Property="DialogWidth" Value="680" />
@@ -390,10 +391,15 @@
                                     </ControlTemplate>
                                 </ToggleButton.Template>
                             </ToggleButton>
-                            <Border x:Name="Bd" Grid.Row="0" Grid.Column="1" Background="Transparent"
+                            <!-- Vurgu açma okunu da kapsar (Win11 gezinme satırı gibi); seçiliyken solda vurgu çizgisi -->
+                            <Border x:Name="Bd" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Background="Transparent" MinHeight="34"
                                     CornerRadius="{DynamicResource ControlCornerRadius}" Padding="{TemplateBinding Padding}"
-                                    SnapsToDevicePixels="True">
-                                <ContentPresenter Margin="12,0,0,0" ContentSource="Header" VerticalAlignment="Center" />
+                                    SnapsToDevicePixels="True" Panel.ZIndex="-1">
+                                <Grid>
+                                    <Border x:Name="Pill" Width="3" Height="16" CornerRadius="1.5" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                            Background="{DynamicResource AccentBrush}" Visibility="Collapsed" />
+                                    <ContentPresenter Margin="32,0,0,0" ContentSource="Header" VerticalAlignment="Center" />
+                                </Grid>
                             </Border>
                             <ItemsPresenter x:Name="ItemsHost" Grid.Row="1" Grid.Column="1" Visibility="Collapsed" />
                         </Grid>
@@ -404,11 +410,16 @@
                             <Trigger Property="IsExpanded" Value="True">
                                 <Setter TargetName="ItemsHost" Property="Visibility" Value="Visible" />
                             </Trigger>
+                            <!-- Üzerine gelince hafif, seçiliyken daha belirgin + vurgu çizgisi -->
                             <Trigger SourceName="Bd" Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                            </Trigger>
+                            <Trigger SourceName="Expander" Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                <Setter TargetName="Pill" Property="Visibility" Value="Visible" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
@@ -465,6 +476,15 @@
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Kind}" Value="{x:Static core:FolderKind.InventoryItem}">
                     <Setter Property="Foreground" Value="{Binding Color}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Sol listede (ağaç) ikon: proje kendi renginde (proje.json ya da koddan türetilen); diğerleri KindIconStyle gibi. -->
+        <Style x:Key="TreeIconStyle" TargetType="local:AppIcon" BasedOn="{StaticResource KindIconStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Kind}" Value="{x:Static core:FolderKind.Project}">
+                    <Setter Property="Foreground" Value="{Binding ProjectColor}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -834,8 +854,33 @@
                         <RowDefinition Height="*" MinHeight="60" />
                     </Grid.RowDefinitions>
 
-                    <!-- Ağaç başlığı: Projeler + ekle + yenile -->
-                    <Grid Grid.Row="0" Margin="16,8,8,4">
+                    <!-- Ağaç başlığı: Ana sayfa satırı; altında Projeler + ekle + yenile + ayarlar, arama -->
+                    <StackPanel Grid.Row="0">
+                    <Button Margin="8,8,8,4" Padding="12,0" Height="38" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                            Click="HomeButton_Click">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="BorderThickness" Value="0" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasSelection}" Value="False">
+                                        <Setter Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <!-- Ağaçtaki seçili satırla aynı dil: ana sayfadayken solda vurgu çizgisi -->
+                        <Grid>
+                            <Border Width="3" Height="16" Margin="-12,0,0,0" CornerRadius="1.5" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                    Background="{DynamicResource AccentBrush}"
+                                    Visibility="{Binding HasSelection, Converter={StaticResource InverseBoolToVis}}" />
+                            <StackPanel Orientation="Horizontal" Margin="8,0,0,0">
+                                <local:AppIcon Glyph="&#xE80F;" FontSize="16" VerticalAlignment="Center" Foreground="{DynamicResource AccentBrush}" />
+                                <TextBlock Margin="12,0,0,0" FontSize="14" Text="{x:Static res:Resources.Home_Button}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Grid>
+                    </Button>
+                    <Grid Margin="16,6,8,4">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -852,19 +897,21 @@
                                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                                             Visibility="{Binding HasRoot, Converter={StaticResource BoolToVis}}" />
                         <TextBlock Grid.Column="0"
-                                   Style="{DynamicResource CaptionTextBlockStyle}"
+                                   FontSize="13" FontWeight="SemiBold"
                                    Foreground="{DynamicResource TextSecondaryBrush}"
                                    VerticalAlignment="Center"
                                    Text="{x:Static res:Resources.Tree_Header}" />
                         <Button x:Name="AddButton"
                                 Grid.Column="1"
+                                Width="34" Height="34"
                                 Style="{DynamicResource IconButtonStyle}"
                                 Click="AddButton_Click"
                                 ToolTip="{x:Static res:Resources.Button_Add}">
-                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="15" Foreground="{DynamicResource AccentBrush}" />
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="17" Foreground="{DynamicResource AccentBrush}" />
                         </Button>
                         <Button Grid.Column="2"
                                 Command="{Binding RefreshCommand}"
+                                Width="34" Height="34"
                                 Margin="4,0,0,0">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
@@ -876,7 +923,7 @@
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
-                            <local:AppIcon Glyph="{x:Static local:AppIcons.Refresh}" FontSize="14">
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.Refresh}" FontSize="16">
                                 <local:AppIcon.Style>
                                     <Style TargetType="local:AppIcon">
                                         <Style.Triggers>
@@ -889,12 +936,14 @@
                             </local:AppIcon>
                         </Button>
                         <Button Grid.Column="3"
+                                Width="34" Height="34" Margin="4,0,0,0"
                                 Style="{DynamicResource IconButtonStyle}"
                                 Click="Settings_Click"
                                 ToolTip="{x:Static res:Resources.Button_Settings}">
-                            <local:AppIcon Glyph="{x:Static local:AppIcons.Settings}" FontSize="14" />
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.Settings}" FontSize="16" />
                         </Button>
                     </Grid>
+                    </StackPanel>
 
                     <TextBlock Grid.Row="1"
                                Margin="16,8"
@@ -934,9 +983,9 @@
                         <TreeView.ItemTemplate>
                             <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                                 <StackPanel>
-                                    <StackPanel x:Name="Row" Orientation="Horizontal" Margin="0,1" ToolTip="{Binding ToolTipText}">
+                                    <StackPanel x:Name="Row" Orientation="Horizontal" Margin="0,1" ToolTip="{Binding RowToolTip}">
                                         <local:AppIcon x:Name="Icon" Glyph="{Binding Glyph}" FontSize="15"
-                                                           Style="{StaticResource KindIconStyle}"
+                                                           Style="{StaticResource TreeIconStyle}"
                                                            VerticalAlignment="Center" />
                                         <TextBlock x:Name="Title" Text="{Binding Title}" Margin="9,0,0,0" VerticalAlignment="Center" />
                                         <TextBlock x:Name="Subtitle" Text="{Binding DisplaySubtitle}" Margin="8,0,0,0" VerticalAlignment="Center" MaxWidth="120" TextWrapping="NoWrap"
@@ -1029,89 +1078,116 @@
                         </DataTemplate.Triggers>
                     </DataTemplate>
                 </ScrollViewer.Resources>
-                <StackPanel MaxWidth="760" Margin="32,40,32,24" TextElement.FontWeight="Normal">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <local:AppIcon Glyph="{x:Static local:AppIcons.Project}" FontSize="28" Foreground="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" />
-                        <TextBlock Margin="12,0,0,0" Style="{DynamicResource SubtitleTextBlockStyle}" VerticalAlignment="Center" Text="{x:Static res:Resources.Content_EmptyTitle}" />
-                    </StackPanel>
-                    <TextBlock Margin="0,6,0,24" HorizontalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Content_EmptyHint}" />
-
-                    <!-- Sayılar: en genel ve kullanıcının -->
-                    <Grid Margin="0,0,0,12">
+                <!-- Ana sayfa (15.11.2026): yalnız proje kartları; son açılanlar ve işler sonraki adımda eklenecek -->
+                <StackPanel Margin="40,32,40,24" TextElement.FontWeight="Normal">
+                    <!-- Başlık: Projeler + sayı, sağda Yeni proje -->
+                    <Grid Margin="0,0,0,20">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="60" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Margin="0,6,0,0" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Home_All}" />
-                        <ItemsControl Grid.Column="1" ItemsSource="{Binding HomeCounts}" ItemTemplate="{StaticResource CountChipTemplate}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
-                        <TextBlock Grid.Row="1" Margin="0,6,0,0" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Home_Me}"
-                                   Visibility="{Binding HasMyCounts, Converter={StaticResource BoolToVis}}" />
-                        <ItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding MyCounts}" ItemTemplate="{StaticResource CountChipTemplate}"
-                                      Visibility="{Binding HasMyCounts, Converter={StaticResource BoolToVis}}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock FontSize="26" FontWeight="SemiBold" Text="{x:Static res:Resources.Home_Projects}" VerticalAlignment="Center" />
+                            <Border Margin="12,4,0,0" Padding="10,2" CornerRadius="11" VerticalAlignment="Center"
+                                    Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                <TextBlock Text="{Binding ProjectCount}" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" />
+                            </Border>
+                        </StackPanel>
+                        <Button Grid.Column="1" Command="{Binding NewProjectCommand}" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" VerticalAlignment="Center" />
+                                <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Menu_NewProject}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
                     </Grid>
 
-                    <!-- Son açılanlar -->
-                    <StackPanel Margin="0,0,0,20" Visibility="{Binding HasRecent, Converter={StaticResource BoolToVis}}">
-                        <TextBlock Margin="0,0,0,8" FontSize="15" FontWeight="SemiBold" Text="{x:Static res:Resources.Home_Recent}" />
-                        <ItemsControl ItemsSource="{Binding RecentNodes}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Button Margin="0,0,8,8" Padding="12,7" Click="HomeRecent_Click" ToolTip="{Binding Path}">
+                    <!-- Proje kartları: renk, kod, ad; altta stok sayısı ve son değişiklik (tarih · stok). Tıklayınca proje açılır. -->
+                    <ItemsControl ItemsSource="{Binding ProjectCards}" Focusable="False">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Width="280" Margin="0,0,14,14" Padding="0" Click="ProjectCard_Click"
+                                        HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                                    <StackPanel>
+                                    <!-- Üstte projenin renginde ince şerit -->
+                                    <Border Height="3" Margin="16,0" CornerRadius="0,0,3,3" Background="{Binding Color}" />
+                                    <StackPanel Margin="18,14,18,14">
                                         <StackPanel Orientation="Horizontal">
-                                            <local:AppIcon Glyph="{Binding Glyph}" FontSize="14" Style="{StaticResource KindIconStyle}" VerticalAlignment="Center" />
-                                            <TextBlock Margin="8,0,0,0" Text="{Binding Title}" VerticalAlignment="Center" />
-                                            <TextBlock Margin="8,0,0,0" MaxWidth="160" Text="{Binding Subtitle}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
-                                                       Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" />
+                                            <Grid Width="40" Height="40">
+                                                <Border CornerRadius="9" Background="{Binding Color}" Opacity="0.18" />
+                                                <local:AppIcon Glyph="{x:Static local:AppIcons.Project}" FontSize="20" Foreground="{Binding Color}"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Grid>
+                                            <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Code}" FontFamily="Consolas" FontSize="18" FontWeight="SemiBold" />
+                                                <TextBlock Margin="0,1,0,0" Text="{Binding Name}" TextTrimming="CharacterEllipsis" MaxWidth="190"
+                                                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                                            </StackPanel>
                                         </StackPanel>
-                                    </Button>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
+                                        <!-- Stok çipleri: ilk 2 numara, fazlası "+N" (tek satır) -->
+                                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0" Visibility="{Binding HasChips, Converter={StaticResource BoolToVis}}">
+                                            <ItemsControl ItemsSource="{Binding StockChips}" Focusable="False">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <StackPanel Orientation="Horizontal" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Margin="0,0,5,5" Padding="7,2" VerticalAlignment="Top" CornerRadius="5" BorderThickness="1"
+                                                                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource SubtleFillColorTertiaryBrush}">
+                                                            <TextBlock Text="{Binding}" FontFamily="Consolas" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                            <Border Margin="0,0,5,5" Padding="7,2" CornerRadius="5" BorderThickness="1" VerticalAlignment="Top"
+                                                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                                    Visibility="{Binding HasMore, Converter={StaticResource BoolToVis}}">
+                                                <TextBlock Text="{Binding MoreText}" FontSize="11" Foreground="{DynamicResource TextTertiaryBrush}" />
+                                            </Border>
+                                        </StackPanel>
+                                        <Border Margin="0,8,0,0" Padding="0,10,0,0" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <local:AppIcon Glyph="{x:Static local:AppIcons.Stock}" FontSize="12" VerticalAlignment="Center"
+                                                                   Foreground="{DynamicResource TextTertiaryBrush}" />
+                                                    <TextBlock Margin="6,0,0,0" Text="{Binding StockText}" VerticalAlignment="Center"
+                                                               Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="1" Margin="12,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                           Text="{Binding LastText}" TextTrimming="CharacterEllipsis"
+                                                           Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" />
+                                            </Grid>
+                                        </Border>
+                                    </StackPanel>
+                                    </StackPanel>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
-                    <!-- Geciken işler ve bana ait işler yan yana -->
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="20" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" Visibility="{Binding HasHomeLateTasks, Converter={StaticResource BoolToVis}}">
-                            <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                                <local:AppIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="15" Foreground="{DynamicResource SystemFillColorCriticalBrush}" VerticalAlignment="Center" />
-                                <TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.Home_Late}" />
-                            </StackPanel>
-                            <ItemsControl ItemsSource="{Binding HomeLateTasks}" ItemTemplate="{StaticResource HomeTaskTemplate}" />
-                        </StackPanel>
-                        <StackPanel Grid.Column="2" Visibility="{Binding HasHomeMyTasks, Converter={StaticResource BoolToVis}}">
-                            <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                                <local:AppIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="15" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                                <TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.Home_Mine}" />
-                            </StackPanel>
-                            <ItemsControl ItemsSource="{Binding HomeMyTasks}" ItemTemplate="{StaticResource HomeTaskTemplate}" />
-                        </StackPanel>
-                    </Grid>
+                    <!-- Hiç proje yokken -->
+                    <TextBlock Margin="0,8,0,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Card_NoProjects}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ProjectCount}" Value="0">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
                 </StackPanel>
             </ScrollViewer>
 
@@ -1149,8 +1225,21 @@
                                     Content="{Binding DataContext.Detail.ParentName, RelativeSource={RelativeSource AncestorType=Window}}"
                                     ToolTip="{x:Static res:Resources.Header_GoParent}"
                                     Visibility="{Binding DataContext.Detail.HasParent, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
-                            <TextBlock Margin="8,0,8,0" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Text="›"
-                                       Visibility="{Binding DataContext.Detail.HasParent, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
+                            <!-- "›" yalnız üst kayıt ve yanında yazı (şablon, tür) varken -->
+                            <TextBlock Margin="8,0,8,0" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Text="›">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding DataContext.Detail.HasParent, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding DataContext.Detail.ContextText, RelativeSource={RelativeSource AncestorType=Window}}" Value="">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
                             <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}"
                                        Text="{Binding DataContext.Detail.ContextText, RelativeSource={RelativeSource AncestorType=Window}}" />
                         </StackPanel>
@@ -1170,21 +1259,9 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                            <controls:DropDownButton Padding="4,2"
-                                                     VerticalAlignment="Center"
-                                                     Menu="{StaticResource StatusMenu}"
-                                                     ToolTip="{x:Static res:Resources.Status_ChangeHint}"
-                                                     Visibility="{Binding DataContext.Detail.IsStock, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}">
-                                <ContentPresenter Content="{Binding DataContext.Detail.Status, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                  ContentTemplate="{DynamicResource StatusChipTemplate}" />
-                            </controls:DropDownButton>
-                            <TextBlock Margin="12,0,0,0"
-                                       VerticalAlignment="Center"
-                                       Style="{DynamicResource CaptionTextBlockStyle}"
-                                       Foreground="{DynamicResource TextTertiaryBrush}"
-                                       Text="{Binding DataContext.Detail.StatusInfo, RelativeSource={RelativeSource AncestorType=Window}}"
-                                       Visibility="{Binding DataContext.Detail.IsStock, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
+                        <!-- Stok durum çipi kaldırıldı (15.11.2026); yalnız envanter kaydının durumu kalır. -->
+                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0"
+                                    Visibility="{Binding DataContext.Inventory.IsRecord, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}">
                             <controls:DropDownButton Padding="4,2"
                                                      VerticalAlignment="Center"
                                                      Menu="{StaticResource InventoryStatusMenu}"
@@ -1201,11 +1278,20 @@
                                        Visibility="{Binding DataContext.Inventory.IsRecord, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
                         </StackPanel>
                     </StackPanel>
+                    <!-- Sağ üst: Birim bilgisi (stokun ana md'si, yoksa oluşturur) · Klasör (Gezgin'de) · ⋯ -->
                     <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Top">
-                        <Button Command="{Binding DataContext.OpenFolderCommand, RelativeSource={RelativeSource AncestorType=Window}}">
+                        <Button Margin="0,0,6,0" Click="HeaderUnitInfo_Click" ToolTip="{x:Static res:Resources.Header_UnitInfoHint}"
+                                Visibility="{Binding DataContext.Detail.IsStock, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}">
+                            <StackPanel Orientation="Horizontal">
+                                <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" VerticalAlignment="Center" />
+                                <TextBlock Text="{x:Static res:Resources.Header_UnitInfo}" Margin="8,0,0,0" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding DataContext.OpenFolderCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                ToolTip="{x:Static res:Resources.Header_FolderHint}">
                             <StackPanel Orientation="Horizontal">
                                 <local:AppIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" VerticalAlignment="Center" />
-                                <TextBlock Text="{x:Static res:Resources.Menu_OpenFolder}" Margin="8,0,0,0" VerticalAlignment="Center" />
+                                <TextBlock Text="{x:Static res:Resources.Header_Folder}" Margin="8,0,0,0" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
                         <Button x:Name="HeaderMoreButton" Margin="6,0,0,0" Style="{DynamicResource IconButtonStyle}" Click="HeaderMore_Click"
@@ -1214,37 +1300,6 @@
                         </Button>
                     </StackPanel>
                 </Grid>
-                <!-- Proje: durum dağılımı -->
-                <ItemsControl Grid.Row="1" Margin="0,14,0,0"
-                              ItemsSource="{Binding Detail.Distribution}"
-                              Visibility="{Binding Detail.IsProject, Converter={StaticResource BoolToVis}}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <ContentPresenter Content="{Binding}" ContentTemplate="{DynamicResource StatusChipTemplate}" Margin="0,0,6,0" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-
-                <!-- Özet kutucukları (proje) -->
-                <StackPanel Grid.Row="2" Margin="0,16,0,0" Visibility="{Binding Detail.IsProject, Converter={StaticResource BoolToVis}}">
-                    <ItemsControl ItemsSource="{Binding Detail.Tiles}"
-                                  ItemsPanel="{StaticResource TilesPanel}"
-                                  ItemTemplate="{StaticResource TileTemplate}" />
-                    <!-- Projede kullanılan kayıtlar: Kablolar 4 · Jigler 3 … -->
-                    <ItemsControl Margin="0,10,0,0" ItemsSource="{Binding Detail.ProjectCounts}" ItemTemplate="{StaticResource CountChipTemplate}"
-                                  Visibility="{Binding Detail.HasProjectCounts, Converter={StaticResource BoolToVis}}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
-                </StackPanel>
 
                 <!-- Hesaplanıyor -->
                 <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,16,0,0"
@@ -1254,152 +1309,27 @@
                                Text="{x:Static res:Resources.Detail_Loading}" />
                 </StackPanel>
 
-                <!-- Proje: kısa notlar ve stok tablosu -->
-                <Grid Grid.Row="3" Margin="0,16,0,0" Visibility="{Binding Detail.IsProject, Converter={StaticResource BoolToVis}}">
-                    <!-- Not / açık işler kartı en çok 340 px büyür, fazlası kendi içinde kayar: stok tablosu ezilmesin. -->
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" MaxHeight="340" />
-                        <RowDefinition Height="*" MinHeight="180" />
-                    </Grid.RowDefinitions>
-                    <!-- Solda kısa notlar, sağda yapılacaklar: ikisi de görünür, her kart kendi içinde kayar -->
-                    <Grid Grid.Row="0" Margin="0,0,0,14" TextElement.FontWeight="Normal">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="14" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" Padding="14,10"
-                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
-                            CornerRadius="{DynamicResource OverlayCornerRadius}">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel>
-                            <TextBlock Style="{StaticResource PaneLabel}" Text="{x:Static res:Resources.QuickNote_Section}" />
-                            <Grid Margin="0,0,0,6">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <TextBox Tag="Project" KeyDown="QuickNoteBox_KeyDown" local:MentionAssist.Mode="plain" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.QuickNote_Placeholder}" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
-                                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                    <Button Margin="6,0,0,0" Tag="Project" Click="QuickNoteAdd_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
-                                            <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.QuickNote_Add}" />
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Margin="6,0,0,0" Click="JournalAdd_Click" ToolTip="{x:Static res:Resources.Journal_ButtonHint}">
-                                        <StackPanel Orientation="Horizontal">
-                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" Foreground="{DynamicResource AccentBrush}" />
-                                            <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Journal_Button}" />
-                                        </StackPanel>
-                                    </Button>
-                                </StackPanel>
-                            </Grid>
-                            <ItemsControl ItemsSource="{Binding Detail.ProjectNotes}" ItemTemplate="{StaticResource HistoryTemplate}" />
-                            <ContentControl Content="{Binding}" ContentTemplate="{StaticResource MentionsCardTemplate}" Focusable="False" />
-                        </StackPanel>
-                        </ScrollViewer>
-                    </Border>
-                    <Border Grid.Column="2" Padding="14,10"
-                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
-                            CornerRadius="{DynamicResource OverlayCornerRadius}">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <!-- Projenin bütün stoklarındaki açık işler (aç / kapa) -->
-                            <Expander IsExpanded="{Binding Detail.OpenTasksExpanded, Mode=TwoWay}">
-                                <Expander.Header>
-                                    <StackPanel Orientation="Horizontal"><local:AppIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" /><TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding Detail.OpenTasksHeader}" /></StackPanel>
-                                </Expander.Header>
-                                <StackPanel>
-                                                <Grid Margin="0,6,0,8">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBox Text="{Binding NewTaskText, UpdateSourceTrigger=PropertyChanged}" KeyDown="TaskBox_KeyDown" local:MentionAssist.Mode="link"
-                                                             controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Task_Placeholder}" ToolTip="{x:Static res:Resources.Task_InputHint}" />
-                                                    <TextBox Grid.Column="1" Width="110" Margin="6,0,0,0" Text="{Binding NewTaskDueText, UpdateSourceTrigger=PropertyChanged}" KeyDown="TaskBox_KeyDown"
-                                                             controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Task_DuePlaceholder}" ToolTip="{x:Static res:Resources.Date_Placeholder}" />
-                                                    <Button Grid.Column="2" Margin="6,0,0,0" Style="{DynamicResource AccentButtonStyle}" Click="TaskAdd_Click">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" />
-                                                            <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Task_Add}" />
-                                                        </StackPanel>
-                                                    </Button>
-                                                </Grid>
-                                                <ItemsControl Margin="0,0,0,6" ItemsSource="{Binding Detail.TaskFilter.Options}">
-                                                    <ItemsControl.ItemsPanel>
-                                                        <ItemsPanelTemplate>
-                                                            <WrapPanel />
-                                                        </ItemsPanelTemplate>
-                                                    </ItemsControl.ItemsPanel>
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <controls:FilterChip Margin="0,0,6,6" Content="{Binding Label}" IsChecked="{Binding IsSelected, Mode=TwoWay}" />
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                <ItemsControl ItemsSource="{Binding Detail.OpenTasks}" ItemTemplate="{Binding ItemTemplate, ElementName=OpenTaskList}" />
-                                </StackPanel>
-                            </Expander>
-                        </ScrollViewer>
-                    </Border>
-                    </Grid>
-                <DockPanel Grid.Row="1">
-                    <!-- Stok tablosu sÃ¼zgeci: metin, durum -->
-                    <WrapPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8" TextElement.FontWeight="Normal">
-                        <controls:SearchBox x:Name="StockFilterBox" Width="220" Margin="0,0,8,0" PlaceholderText="{x:Static res:Resources.Filter_StockSearch}"
-                                            Text="{Binding Detail.StockFilterText, UpdateSourceTrigger=PropertyChanged}" />
-                        <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Col_Status}" />
-                        <ComboBox MinWidth="150" Margin="0,0,8,0" ItemsSource="{Binding Detail.StockStatusOptions}" SelectedItem="{Binding Detail.StockFilterStatus, Mode=TwoWay}" />
-                        <Button Margin="0,0,8,0" Style="{DynamicResource SubtleButtonStyle}" Click="StockFilterClear_Click"
-                                Visibility="{Binding Detail.IsStockFiltered, Converter={StaticResource BoolToVis}}" Content="{x:Static res:Resources.Filter_Clear}" />
-                        <TextBlock VerticalAlignment="Center" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Detail.StockFilterSummary}" />
-                    </WrapPanel>
-                    <ListView x:Name="ProjectStockList"
-                              ItemsSource="{Binding Detail.Rows}"
-                              ItemContainerStyle="{StaticResource DetailRowStyle}"
-                              MouseDoubleClick="DetailList_MouseDoubleClick">
-                        <ListView.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="{x:Static res:Resources.Row_Open}" Click="DetailRowOpen_Click" />
-                                <MenuItem Header="{x:Static res:Resources.Menu_OpenFolder}" Click="DetailRowFolder_Click" />
-                                <MenuItem Header="{x:Static res:Resources.QuickNote_AddMenu}" Click="DetailRowNote_Click" />
-                                <Separator />
-                                <MenuItem Header="{x:Static res:Resources.Menu_Edit}" Click="DetailRowEdit_Click" />
-                                <MenuItem Header="{x:Static res:Resources.Menu_Untrack}" Click="DetailRowUntrack_Click" />
-    <MenuItem Header="{x:Static res:Resources.Menu_Delete}" Click="DetailRowDelete_Click" />
-                            </ContextMenu>
-                        </ListView.ContextMenu>
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Width="44">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Style="{DynamicResource IconButtonStyle}" Tag="{Binding Path}" Click="RowFolder_Click"
-                                                    ToolTip="{x:Static res:Resources.Menu_OpenFolder}">
-                                                <local:AppIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="13" />
-                                            </Button>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="{x:Static res:Resources.Col_Stock}" Width="140" DisplayMemberBinding="{Binding Name}" />
-                                <GridViewColumn Header="{x:Static res:Resources.Col_Status}" Width="160">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <ContentPresenter Content="{Binding Status}" ContentTemplate="{DynamicResource StatusChipTemplate}" />
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="{x:Static res:Resources.Col_Template}" Width="130" DisplayMemberBinding="{Binding Template}" />
-                                <GridViewColumn Header="{x:Static res:Resources.Col_Files}" Width="80" DisplayMemberBinding="{Binding FileCount}" />
-                                <GridViewColumn Header="{x:Static res:Resources.Col_Size}" Width="100" DisplayMemberBinding="{Binding Size}" />
-                                <GridViewColumn Header="{x:Static res:Resources.Col_LastChange}" Width="150" DisplayMemberBinding="{Binding LastChange}" />
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                </DockPanel>
-                </Grid>
+                <!-- Proje / stok sayfasÄ±nÄ±n iÃ§i yeniden tasarlanacak (15.11.2026): ÅŸimdilik baÅŸlÄ±k ve yer tutucu -->
+                <Border Grid.Row="3" Grid.RowSpan="2" Margin="0,16,0,0" Padding="24"
+                        CornerRadius="{DynamicResource OverlayCornerRadius}"
+                        BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Detail.IsProject}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Detail.IsStock}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Foreground="{DynamicResource TextTertiaryBrush}"
+                               Text="{x:Static res:Resources.Detail_Redesign}" />
+                </Border>
 
                 <!-- Envanter kaydı: dosyalar, bilgiler, not ve geçmiş -->
                 <ScrollViewer Grid.Row="2" Grid.RowSpan="3" Margin="0,16,0,0" VerticalScrollBarVisibility="Auto"
@@ -1653,468 +1583,7 @@
                     </ListView>
                 </Grid>
 
-                <!-- Stok: sekmeler -->
-                <TabControl x:Name="StockTabs" Grid.Row="3" Grid.RowSpan="2" Margin="0,14,0,0"
-                            Visibility="{Binding Detail.IsStock, Converter={StaticResource BoolToVis}}">
-                    <!-- Genel -->
-                    <TabItem Tag="general">
-                        <TabItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <local:AppIcon Glyph="&#xE80F;" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-                                <TextBlock Margin="7,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Tab_General}" />
-                            </StackPanel>
-                        </TabItem.Header>
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,14,0,0" TextElement.FontWeight="Normal">
-                            <StackPanel>
-                                <!-- Kapak: fotoğraf + not. Kapak fotoğrafı yoksa çerçeve çizilmez, yalnız düğme satırı kalır. -->
-                                <Border Margin="0,0,0,16" DataContext="{Binding Detail.Cover}" CornerRadius="{DynamicResource OverlayCornerRadius}">
-                                    <Border.Style>
-                                        <Style TargetType="Border">
-                                            <Setter Property="Padding" Value="12" />
-                                            <Setter Property="Background" Value="{DynamicResource LayerBrush}" />
-                                            <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
-                                            <Setter Property="BorderThickness" Value="1" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding HasCover}" Value="False">
-                                                    <Setter Property="Padding" Value="0" />
-                                                    <Setter Property="Background" Value="Transparent" />
-                                                    <Setter Property="BorderThickness" Value="0" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <!--
-                                            Kapak kırpılmaz. Kutu fotoğrafın oranına göre boyutlanır: en çok 320×180; çok dar ya da çok geniş
-                                            fotoğrafta kutu en az 132×132 kalır, fotoğraf ortalanır. Köşedeki düğme fotoğrafı tam boy açar.
-                                        -->
-                                        <Grid Grid.Column="0" Margin="0,0,16,0" VerticalAlignment="Top" HorizontalAlignment="Left"
-                                              Visibility="{Binding HasCover, Converter={StaticResource BoolToVis}}">
-                                            <Border x:Name="CoverFrame" MinWidth="132" MinHeight="132" Padding="4"
-                                                    Background="{DynamicResource ControlFillColorDefaultBrush}"
-                                                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
-                                                    CornerRadius="{DynamicResource ControlCornerRadius}">
-                                                <Image x:Name="CoverImage" Source="{Binding CoverPhoto, Converter={StaticResource PathToImage}}"
-                                                       Stretch="Uniform" MaxWidth="320" MaxHeight="180"
-                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            </Border>
-                                            <Button x:Name="CoverButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,8,8" Padding="6"
-                                                    Click="CoverPhoto_Click" ToolTip="{x:Static res:Resources.Cover_Open}">
-                                                <local:AppIcon Glyph="{x:Static local:AppIcons.FullScreen}" FontSize="12" />
-                                            </Button>
-                                        </Grid>
-                                        <!-- Not önizlemesi kaldırıldı (ham md kötü görünüyordu, 10.11.2026); yalnız düğmeler kalır. -->
-                                        <StackPanel Grid.Column="1">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Button Click="StockNote_Click" Visibility="{Binding HasNote, Converter={StaticResource BoolToVis}}">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
-                                                        <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Inv_OpenNote}" />
-                                                    </StackPanel>
-                                                </Button>
-                                                <Button Click="StockCreateNote_Click" Visibility="{Binding HasNote, Converter={StaticResource InverseBoolToVis}}">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="14" />
-                                                        <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Inv_CreateNote}" />
-                                                    </StackPanel>
-                                                </Button>
-                                                <Button Margin="6,0,0,0" Click="StockPhotos_Click" Visibility="{Binding HasPhotosFolder, Converter={StaticResource BoolToVis}}">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" />
-                                                        <TextBlock Margin="8,0,0,0" Text="{Binding PhotosText}" />
-                                                    </StackPanel>
-                                                </Button>
-                                                <Button Margin="6,0,0,0" Click="StockDocuments_Click" ToolTip="{Binding DocumentsFolder}"
-                                                        Visibility="{Binding HasDocumentsFolder, Converter={StaticResource BoolToVis}}">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.OpenFolder}" FontSize="14" />
-                                                        <TextBlock Margin="8,0,0,0" Text="{Binding DocumentsText}" />
-                                                    </StackPanel>
-                                                </Button>
-                                            </StackPanel>
 
-                                            <ItemsControl Margin="0,10,0,0" ItemsSource="{Binding Strip}">
-                                                <ItemsControl.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <StackPanel Orientation="Horizontal" />
-                                                    </ItemsPanelTemplate>
-                                                </ItemsControl.ItemsPanel>
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Button Width="84" Height="56" Padding="0" Margin="0,0,6,0" Tag="{Binding}" Click="StockPhoto_Click" ToolTip="{Binding}">
-                                                            <Image Source="{Binding Converter={StaticResource PathToImage}}" Stretch="UniformToFill" />
-                                                        </Button>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-
-                                <ItemsControl ItemsSource="{Binding Detail.TestKpis}" ItemTemplate="{StaticResource KpiTemplate}" Margin="0,0,-10,16"
-                                              Visibility="{Binding Detail.HasRuns, Converter={StaticResource BoolToVis}}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <UniformGrid Rows="1" />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                </ItemsControl>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="9*" />
-                                        <ColumnDefinition Width="24" />
-                                        <ColumnDefinition Width="11*" />
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0">
-                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Error}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-                                            <TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.General_Attention}" />
-                                        </StackPanel>
-                                        <ItemsControl ItemsSource="{Binding Detail.Alerts}" ItemTemplate="{StaticResource AlertTemplate}" />
-                                        <TextBlock Style="{StaticResource HintText}" Text="{x:Static res:Resources.General_NoAttention}"
-                                                   Visibility="{Binding Detail.HasAlerts, Converter={StaticResource InverseBoolToVis}}" />
-
-                                        <!-- Yapılacaklar: md notlarındaki "- [ ]" maddeleri; buradan eklenir (ana notun ## Yapılacaklar bölümüne),
-                                             kutuyla kapatılır, satıra tıklayınca not açılır -->
-                                        <Expander Margin="0,12,0,0" IsExpanded="{Binding Detail.OpenTasksExpanded, Mode=TwoWay}">
-                                            <Expander.Header>
-                                                <StackPanel Orientation="Horizontal"><local:AppIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" /><TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding Detail.OpenTasksHeader}" /></StackPanel>
-                                            </Expander.Header>
-                                            <StackPanel>
-                                                <Grid Margin="0,6,0,8">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBox Text="{Binding NewTaskText, UpdateSourceTrigger=PropertyChanged}" KeyDown="TaskBox_KeyDown" local:MentionAssist.Mode="link"
-                                                             controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Task_Placeholder}" ToolTip="{x:Static res:Resources.Task_InputHint}" />
-                                                    <TextBox Grid.Column="1" Width="110" Margin="6,0,0,0" Text="{Binding NewTaskDueText, UpdateSourceTrigger=PropertyChanged}" KeyDown="TaskBox_KeyDown"
-                                                             controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Task_DuePlaceholder}" ToolTip="{x:Static res:Resources.Date_Placeholder}" />
-                                                    <Button Grid.Column="2" Margin="6,0,0,0" Style="{DynamicResource AccentButtonStyle}" Click="TaskAdd_Click">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" />
-                                                            <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Task_Add}" />
-                                                        </StackPanel>
-                                                    </Button>
-                                                </Grid>
-                                                <ItemsControl Margin="0,0,0,6" ItemsSource="{Binding Detail.TaskFilter.Options}">
-                                                    <ItemsControl.ItemsPanel>
-                                                        <ItemsPanelTemplate>
-                                                            <WrapPanel />
-                                                        </ItemsPanelTemplate>
-                                                    </ItemsControl.ItemsPanel>
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <controls:FilterChip Margin="0,0,6,6" Content="{Binding Label}" IsChecked="{Binding IsSelected, Mode=TwoWay}" />
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                            <ItemsControl x:Name="OpenTaskList" Margin="0,0,0,0" ItemsSource="{Binding Detail.OpenTasks}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Grid Margin="0,0,0,2">
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="Auto" />
-                                                                <ColumnDefinition Width="*" />
-                                                            </Grid.ColumnDefinitions>
-                                                            <CheckBox Margin="2,4,0,0" MinWidth="0" VerticalAlignment="Top" IsChecked="{Binding IsDone, Mode=OneWay}" Click="TaskDone_Click"
-                                                                      ToolTip="{x:Static res:Resources.Task_Hint}" />
-                                                            <Button Grid.Column="1" Style="{DynamicResource SubtleButtonStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                                                                    Padding="6,4" Tag="{Binding NotePath}" Click="OpenTaskNote_Click">
-                                                                <Grid>
-                                                                    <Grid.ColumnDefinitions>
-                                                                        <ColumnDefinition Width="*" />
-                                                                        <ColumnDefinition Width="Auto" />
-                                                                    </Grid.ColumnDefinitions>
-                                                                    <StackPanel>
-                                                                        <TextBlock x:Name="TaskText" TextWrapping="Wrap" Text="{Binding Text}" />
-                                                                        <TextBlock Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Meta}" />
-                                                                    </StackPanel>
-                                                                    <TextBlock x:Name="TaskDue" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Top" Style="{DynamicResource CaptionTextBlockStyle}"
-                                                                               Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding DueText}" />
-                                                                </Grid>
-                                                            </Button>
-                                                        </Grid>
-                                                        <DataTemplate.Triggers>
-                                                            <DataTrigger Binding="{Binding IsLate}" Value="True">
-                                                                <Setter TargetName="TaskDue" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
-                                                                <Setter TargetName="TaskDue" Property="FontWeight" Value="SemiBold" />
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding IsDone}" Value="True">
-                                                                <Setter TargetName="TaskText" Property="TextDecorations" Value="Strikethrough" />
-                                                                <Setter TargetName="TaskText" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
-                                                            </DataTrigger>
-                                                        </DataTemplate.Triggers>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                            </StackPanel>
-                                        </Expander>
-
-                                        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource MentionsCardTemplate}" Focusable="False" />
-
-                                        <StackPanel Orientation="Horizontal" Margin="0,22,0,10">
-                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Inventory}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-                                            <TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.StockInv_Section}" />
-                                        </StackPanel>
-                                        <ItemsControl ItemsSource="{Binding Detail.InventoryGroups}">
-                                            <ItemsControl.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <UniformGrid Rows="1" />
-                                                </ItemsPanelTemplate>
-                                            </ItemsControl.ItemsPanel>
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Border x:Name="Box" Margin="0,0,8,0" Padding="12,10" BorderThickness="3,0,0,0" Cursor="Hand"
-                                                            CornerRadius="{DynamicResource ControlCornerRadius}"
-                                                            Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{Binding Color}"
-                                                            Tag="{Binding Type.Key}" MouseLeftButtonUp="InventoryTile_MouseLeftButtonUp"
-                                                            ToolTip="{x:Static res:Resources.StockInv_TileHint}">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <local:AppIcon Glyph="{Binding Glyph}" Foreground="{Binding Color}" FontSize="16" VerticalAlignment="Center" />
-                                                            <TextBlock Margin="10,0,0,0" Text="{Binding Summary}" VerticalAlignment="Center" />
-                                                        </StackPanel>
-                                                    </Border>
-                                                    <DataTemplate.Triggers>
-                                                        <DataTrigger Binding="{Binding HasWarning}" Value="True">
-                                                            <Setter TargetName="Box" Property="Background" Value="{DynamicResource SystemFillColorCautionBackgroundBrush}" />
-                                                        </DataTrigger>
-                                                    </DataTemplate.Triggers>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-
-                                        <StackPanel Orientation="Horizontal" Margin="0,22,0,10">
-                                            <local:AppIcon Glyph="&#xE9D9;" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-                                            <TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.General_Latest}" />
-                                        </StackPanel>
-                                        <StackPanel Visibility="{Binding Detail.HasRuns, Converter={StaticResource BoolToVis}}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Border Width="96" />
-                                                <ItemsControl ItemsSource="{Binding Detail.MatrixHeaders}">
-                                                    <ItemsControl.ItemsPanel>
-                                                        <ItemsPanelTemplate>
-                                                            <StackPanel Orientation="Horizontal" />
-                                                        </ItemsPanelTemplate>
-                                                    </ItemsControl.ItemsPanel>
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <TextBlock Width="132" TextAlignment="Center" Text="{Binding}" Style="{DynamicResource CaptionTextBlockStyle}"
-                                                                       Foreground="{DynamicResource TextSecondaryBrush}" />
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                            </StackPanel>
-                                            <ItemsControl ItemsSource="{Binding Detail.MatrixRows}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                                                            <StackPanel Width="96" VerticalAlignment="Center">
-                                                                <TextBlock Text="{Binding Serial}" FontWeight="SemiBold" />
-                                                                <TextBlock x:Name="SerialKind" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
-                                                                           TextTrimming="CharacterEllipsis" ToolTip="{Binding Summary}">
-                                                                    <Run Text="{Binding KindLabel, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding RunCountText, Mode=OneWay}" />
-                                                                </TextBlock>
-                                                            </StackPanel>
-                                                            <ItemsControl ItemsSource="{Binding Cells}">
-                                                                <ItemsControl.ItemsPanel>
-                                                                    <ItemsPanelTemplate>
-                                                                        <StackPanel Orientation="Horizontal" />
-                                                                    </ItemsPanelTemplate>
-                                                                </ItemsControl.ItemsPanel>
-                                                                <ItemsControl.ItemTemplate>
-                                                                    <DataTemplate>
-                                                                        <Border x:Name="Cell" Width="126" Height="34" Margin="0,0,6,0"
-                                                                                Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                                                                                BorderThickness="1" CornerRadius="{DynamicResource ControlCornerRadius}"
-                                                                                Tag="{Binding}" MouseLeftButtonUp="SerialCell_MouseLeftButtonUp">
-                                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                                                              Content="{Binding Chip}" ContentTemplate="{DynamicResource StatusChipTemplate}" />
-                                                                        </Border>
-                                                                        <DataTemplate.Triggers>
-                                                                            <DataTrigger Binding="{Binding HasRun}" Value="True">
-                                                                                <Setter TargetName="Cell" Property="Cursor" Value="Hand" />
-                                                                                <Setter TargetName="Cell" Property="ToolTip" Value="{x:Static res:Resources.Serial_OpenHint}" />
-                                                                            </DataTrigger>
-                                                                        </DataTemplate.Triggers>
-                                                                    </DataTemplate>
-                                                                </ItemsControl.ItemTemplate>
-                                                            </ItemsControl>
-
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </StackPanel>
-                                        <TextBlock Style="{StaticResource HintText}" TextWrapping="Wrap" Text="{x:Static res:Resources.General_NoRuns}"
-                                                   Visibility="{Binding Detail.HasRuns, Converter={StaticResource InverseBoolToVis}}" />
-                                    </StackPanel>
-                                    <!-- Günlük kartı: kısa not (uygulamada kalır) + Olay (ana notun Günlük bölümüne) + zaman çizelgesi -->
-                                    <Border Grid.Column="2" VerticalAlignment="Top">
-                                        <StackPanel>
-                                            <StackPanel Orientation="Horizontal">
-                                                <local:AppIcon Glyph="{x:Static local:AppIcons.Clock}" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-                                                <TextBlock Margin="8,0,0,0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.General_Timeline}" />
-                                            </StackPanel>
-                                            <Grid Margin="0,12,0,14">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                </Grid.ColumnDefinitions>
-                                                <TextBox Tag="Stock" KeyDown="QuickNoteBox_KeyDown" local:MentionAssist.Mode="plain" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.QuickNote_Placeholder}" ToolTip="{x:Static res:Resources.QuickNote_Hint}" />
-                                                <Button Grid.Column="1" Margin="6,0,0,0" Tag="Stock" Click="QuickNoteAdd_Click" ToolTip="{x:Static res:Resources.QuickNote_Hint}">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="14" />
-                                                        <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.QuickNote_Add}" />
-                                                    </StackPanel>
-                                                </Button>
-                                                <Button x:Name="StockJournalButton" Grid.Column="2" Margin="6,0,0,0" Click="JournalAdd_Click" ToolTip="{x:Static res:Resources.Journal_ButtonHint}">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" Foreground="{DynamicResource AccentBrush}" />
-                                                        <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Journal_Button}" />
-                                                    </StackPanel>
-                                                </Button>
-                                            </Grid>
-                                            <ItemsControl Margin="0,0,0,10" ItemsSource="{Binding Detail.TimelineFilter.Options}">
-                                            <ItemsControl.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <WrapPanel />
-                                                </ItemsPanelTemplate>
-                                            </ItemsControl.ItemsPanel>
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <controls:FilterChip Margin="0,0,6,6" Content="{Binding Label}" IsChecked="{Binding IsSelected, Mode=TwoWay}" />
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                            <ItemsControl ItemsSource="{Binding Detail.Timeline}" ItemTemplate="{StaticResource TimelineTemplate}" />
-                                        </StackPanel>
-                                    </Border>
-                                </Grid>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </TabItem>
-
-                    <!-- Testler -->
-                    <TabItem Tag="tests">
-                        <TabItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <local:AppIcon Glyph="&#xE9D9;" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-                                <TextBlock Margin="7,0,0,0" VerticalAlignment="Center" Text="{Binding Detail.TestsHeader}" />
-                            </StackPanel>
-                        </TabItem.Header>
-                        <DockPanel Margin="0,8,0,0" TextElement.FontWeight="Normal">
-                            <ItemsControl x:Name="TestPlanList" DockPanel.Dock="Top" ItemsSource="{Binding Detail.TestPlans}" ItemTemplate="{StaticResource PlanTemplate}" />
-                            <!-- KoÅŸu sÃ¼zgeci (Testler ve Kalifikasyon ortak): metin, sonuÃ§, sistem -->
-                            <WrapPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,8">
-                                <controls:SearchBox Width="220" Margin="0,0,8,0" PlaceholderText="{x:Static res:Resources.Filter_RunSearch}"
-                                                    Text="{Binding Detail.RunFilterText, UpdateSourceTrigger=PropertyChanged}" />
-                                <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Filter_Result}" />
-                                <ComboBox MinWidth="110" Margin="0,0,8,0" ItemsSource="{Binding Detail.RunResultOptions}" SelectedItem="{Binding Detail.RunFilterResult, Mode=TwoWay}" />
-                                <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Filter_System}" />
-                                <ComboBox MinWidth="110" Margin="0,0,8,0" ItemsSource="{Binding Detail.RunSystemOptions}" SelectedItem="{Binding Detail.RunFilterSystem, Mode=TwoWay}" />
-                                <Button Margin="0,0,8,0" Style="{DynamicResource SubtleButtonStyle}" Click="RunFilterClear_Click"
-                                        Visibility="{Binding Detail.IsRunFiltered, Converter={StaticResource BoolToVis}}" Content="{x:Static res:Resources.Filter_Clear}" />
-                                <TextBlock VerticalAlignment="Center" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Detail.DevRunsSummary}" />
-                            </WrapPanel>
-                            <ListView x:Name="DevRunsList" ItemsSource="{Binding Detail.DevelopmentRuns}"
-                                      View="{StaticResource RunsGridView}"
-                                      GridViewColumnHeader.Click="RunsHeader_Click"
-                                      MouseDoubleClick="RunsList_MouseDoubleClick"
-                                      ContextMenu="{StaticResource RunMenu}" />
-                        </DockPanel>
-                    </TabItem>
-
-                    <!-- Kalifikasyon -->
-                    <TabItem Tag="qualification">
-                        <TabItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <local:AppIcon Glyph="&#xEB95;" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-                                <TextBlock Margin="7,0,0,0" VerticalAlignment="Center" Text="{Binding Detail.QualificationHeader}" />
-                            </StackPanel>
-                        </TabItem.Header>
-                        <DockPanel Margin="0,8,0,0" TextElement.FontWeight="Normal">
-                            <ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding Detail.QualificationPlans}" ItemTemplate="{StaticResource PlanTemplate}" />
-                            <!-- KoÅŸu sÃ¼zgeci (Testler ve Kalifikasyon ortak): metin, sonuÃ§, sistem -->
-                            <WrapPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,8">
-                                <controls:SearchBox Width="220" Margin="0,0,8,0" PlaceholderText="{x:Static res:Resources.Filter_RunSearch}"
-                                                    Text="{Binding Detail.RunFilterText, UpdateSourceTrigger=PropertyChanged}" />
-                                <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Filter_Result}" />
-                                <ComboBox MinWidth="110" Margin="0,0,8,0" ItemsSource="{Binding Detail.RunResultOptions}" SelectedItem="{Binding Detail.RunFilterResult, Mode=TwoWay}" />
-                                <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Filter_System}" />
-                                <ComboBox MinWidth="110" Margin="0,0,8,0" ItemsSource="{Binding Detail.RunSystemOptions}" SelectedItem="{Binding Detail.RunFilterSystem, Mode=TwoWay}" />
-                                <Button Margin="0,0,8,0" Style="{DynamicResource SubtleButtonStyle}" Click="RunFilterClear_Click"
-                                        Visibility="{Binding Detail.IsRunFiltered, Converter={StaticResource BoolToVis}}" Content="{x:Static res:Resources.Filter_Clear}" />
-                                <TextBlock VerticalAlignment="Center" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Detail.QualRunsSummary}" />
-                            </WrapPanel>
-                            <ListView x:Name="QualRunsList" ItemsSource="{Binding Detail.QualificationRuns}"
-                                      View="{StaticResource RunsGridView}"
-                                      GridViewColumnHeader.Click="RunsHeader_Click"
-                                      MouseDoubleClick="RunsList_MouseDoubleClick"
-                                      ContextMenu="{StaticResource RunMenu}" />
-                        </DockPanel>
-                    </TabItem>
-
-                    <!-- Klasörler -->
-                    <TabItem Tag="folders">
-                        <TabItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <local:AppIcon Glyph="&#xE8B7;" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-                                <TextBlock Margin="7,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Tab_Folders}" />
-                            </StackPanel>
-                        </TabItem.Header>
-                        <Grid Margin="0,12,0,0" TextElement.FontWeight="Normal">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <ItemsControl Grid.Row="0"
-                                          ItemsSource="{Binding Detail.Tiles}"
-                                          ItemsPanel="{StaticResource TilesPanel}"
-                                          ItemTemplate="{StaticResource TileTemplate}" />
-                            <TreeView Grid.Row="1" Margin="0,12,0,0"
-                                      ItemsSource="{Binding Detail.FolderTree}"
-                                      Background="Transparent" BorderThickness="0"
-                                      MouseDoubleClick="FolderTreeView_MouseDoubleClick">
-                                <TreeView.ItemContainerStyle>
-                                    <Style TargetType="TreeViewItem" BasedOn="{StaticResource TreeItemStyle}">
-                                        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                                    </Style>
-                                </TreeView.ItemContainerStyle>
-                                <TreeView.ItemTemplate>
-                                    <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                                        <StackPanel Orientation="Horizontal" Margin="0,1">
-                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="14"
-                                                               Foreground="{DynamicResource Pusula.ProjectIconBrush}" VerticalAlignment="Center" />
-                                            <TextBlock x:Name="FolderName" Text="{Binding Name}" Margin="8,0,0,0" FontFamily="Consolas" VerticalAlignment="Center" />
-                                            <TextBlock Text="{Binding CountText}" Margin="10,0,0,0" VerticalAlignment="Center"
-                                                       Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" />
-                                        </StackPanel>
-                                        <HierarchicalDataTemplate.Triggers>
-                                            <DataTrigger Binding="{Binding IsDim}" Value="True">
-                                                <Setter TargetName="FolderName" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
-                                            </DataTrigger>
-                                        </HierarchicalDataTemplate.Triggers>
-                                    </HierarchicalDataTemplate>
-                                </TreeView.ItemTemplate>
-                            </TreeView>
-                            <TextBlock Grid.Row="2" Style="{StaticResource HintText}" Text="{x:Static res:Resources.Folders_Hint}" />
-                        </Grid>
-                    </TabItem>
-                </TabControl>
-
-                <TextBlock Grid.Row="4" Margin="0,8,0,0"
-                           Style="{DynamicResource CaptionTextBlockStyle}"
-                           Foreground="{DynamicResource TextTertiaryBrush}"
-                           Text="{Binding Detail.Note}"
-                           Visibility="{Binding Detail.IsProject, Converter={StaticResource BoolToVis}}" />
             </Grid>
         </Grid>
 
@@ -2184,7 +1653,7 @@
                                 PrimaryButtonText="{x:Static res:Resources.Dialog_Create}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="StockDialog_PrimaryButtonClick">
-            <StackPanel Width="300">
+            <StackPanel Width="500">
                 <controls:FormField Margin="0,4,0,0" Header="{x:Static res:Resources.Field_StockNo}" IsRequired="True" LabelWidth="90">
                     <TextBox Text="{Binding NewStockNo, UpdateSourceTrigger=PropertyChanged}" ToolTip="{Binding StockNumberHint}"
                              IsVisibleChanged="FocusWhenVisible" />
@@ -2333,17 +1802,41 @@
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
                                 PrimaryButtonClick="Edit_PrimaryButtonClick">
             <StackPanel>
-                <controls:FormField Header="{x:Static res:Resources.Edit_Number}" LabelWidth="130">
-                    <TextBlock Text="{Binding EditNumber}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <!-- Numara: salt okunur kutu (klasörün adı); açıklaması ipucunda -->
+                <controls:FormField Margin="0,0,0,10" Header="{x:Static res:Resources.Edit_Number}" LabelWidth="130">
+                    <TextBox Text="{Binding EditNumber, Mode=OneWay}" IsReadOnly="True" IsTabStop="False" FontFamily="Consolas"
+                             Foreground="{DynamicResource TextSecondaryBrush}" ToolTip="{x:Static res:Resources.Edit_NumberHint}" />
                 </controls:FormField>
-                <TextBlock Margin="138,2,0,10" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
-                           Text="{x:Static res:Resources.Edit_NumberHint}" />
-                <controls:FormField Header="{x:Static res:Resources.Edit_Name}" LabelWidth="130">
+                <!-- Stokta "Tanım", proje ve envanter kaydında "Ad" -->
+                <controls:FormField LabelWidth="130">
+                    <controls:FormField.Style>
+                        <Style TargetType="controls:FormField" BasedOn="{StaticResource {x:Type controls:FormField}}">
+                            <Setter Property="Header" Value="{x:Static res:Resources.Edit_Name}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsEditStock}" Value="True">
+                                    <Setter Property="Header" Value="{x:Static res:Resources.Field_StockName}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </controls:FormField.Style>
                     <TextBox x:Name="EditNameBox" Text="{Binding EditName, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" controls:TextBoxHelper.PlaceholderText="{Binding EditNamePlaceholder}" />
                 </controls:FormField>
                 <controls:FormField Margin="0,10,0,0" Header="{x:Static res:Resources.Edit_Template}" LabelWidth="130"
                                     Visibility="{Binding IsEditStock, Converter={StaticResource BoolToVis}}">
-                    <ComboBox ItemsSource="{Binding EditTemplates}" SelectedItem="{Binding EditTemplate, Mode=TwoWay}" />
+                    <ComboBox ItemsSource="{Binding EditTemplates}" SelectedItem="{Binding EditTemplate, Mode=TwoWay}">
+                        <!-- Boş seçenek "Şablonsuz" diye görünür -->
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock x:Name="Text" Text="{Binding}" />
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding}" Value="">
+                                        <Setter TargetName="Text" Property="Text" Value="{x:Static res:Resources.Template_None}" />
+                                        <Setter TargetName="Text" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                 </controls:FormField>
                 <UniformGrid Columns="2" Margin="0,10,0,0" Visibility="{Binding IsEditInventory, Converter={StaticResource BoolToVis}}">
                     <controls:FormField Header="{x:Static res:Resources.Edit_SubType}" LabelWidth="130" Margin="0,0,16,0"

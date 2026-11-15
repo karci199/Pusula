@@ -10,7 +10,7 @@ using System.Windows.Media;
 
 namespace Pusula.Wpf
 {
-    /// <summary>Ana pencere: stok sekmelerinin sırası (sürükle-bırak) ve tablo sütunlarının sırası / genişliği (hatırlanır).</summary>
+    /// <summary>Ana pencere: pencere yeri ve tablo sütunlarının sırası / genişliği (hatırlanır).</summary>
     public partial class MainWindow
     {
         /// <summary>Sütun genişliğinin alt sınırı (piksel).</summary>
@@ -19,30 +19,18 @@ namespace Pusula.Wpf
         /// <summary>Sütun genişliğinin üst sınırı (piksel).</summary>
         public const double MaxColumnWidth = 600;
 
-        private const string GeneralTabTag = "general";
-
         private readonly List<TableLayout> tables = new List<TableLayout>();
-        private Point dragStart;
-        private TabItem? dragTab;
 
-        // Pencere açılınca: tablolar kaydedilen düzene getirilir, sekme sürükleme bağlanır; kapanırken düzen yazılır.
+        // Pencere açılınca: tablolar kaydedilen düzene getirilir; kapanırken düzen yazılır.
         private void SetUpLayout()
         {
-            tables.Add(new TableLayout("stocks", ProjectStockList));
             tables.Add(new TableLayout("inventory", InventoryList));
-            tables.Add(new TableLayout("runs", DevRunsList));
-            tables.Add(new TableLayout("qualification", QualRunsList));
             foreach (var table in tables)
             {
                 table.Apply(viewModel.Settings);
                 table.Moved += (s, e) => SaveLayout();
             }
 
-            StockTabs.AllowDrop = true;
-            StockTabs.PreviewMouseLeftButtonDown += StockTabs_PreviewMouseLeftButtonDown;
-            StockTabs.PreviewMouseMove += StockTabs_PreviewMouseMove;
-            StockTabs.Drop += StockTabs_Drop;
-            ApplyTabOrder();
             ApplyWindowBounds();
             Closing += (s, e) =>
             {
@@ -114,144 +102,18 @@ namespace Pusula.Wpf
                 table.Reset();
             }
 
-            ApplyTabOrder();
             viewModel.Settings.Save();
         }
 
+        // Stok sekmeleri kaldırıldı (15.11.2026, yeniden tasarlanacak); kayıtlı sekme sırası (TabOrder) olduğu gibi kalır.
         private void SaveLayout()
         {
-            viewModel.Settings.TabOrder = StockTabs.Items.OfType<TabItem>().Select(t => t.Tag as string ?? string.Empty).Where(t => t.Length > 0 && t != GeneralTabTag).ToList();
             foreach (var table in tables)
             {
                 table.Store(viewModel.Settings);
             }
 
             viewModel.Settings.Save();
-        }
-
-        // Kayıtlı sıra uygulanır: Genel hep ilk; kayıtta olmayan sekmeler (yeni tür) yerlerini korur, sona doğru kalır.
-        private void ApplyTabOrder()
-        {
-            var order = viewModel.Settings.TabOrder;
-            var tabs = StockTabs.Items.OfType<TabItem>().ToList();
-            var selected = StockTabs.SelectedItem;
-            var sorted = tabs
-                .Select((tab, index) => new { tab, index, tag = tab.Tag as string ?? string.Empty })
-                .OrderBy(x => x.tag == GeneralTabTag ? -1 : 0)
-                .ThenBy(x => order.Count == 0 ? DefaultRank(x.tag) * 100 + x.index : (order.IndexOf(x.tag) >= 0 ? order.IndexOf(x.tag) : order.Count + x.index))
-                .Select(x => x.tab)
-                .ToList();
-            if (sorted.SequenceEqual(tabs))
-            {
-                return;
-            }
-
-            rebuildingTabs = true;
-            try
-            {
-                StockTabs.Items.Clear();
-                foreach (var tab in sorted)
-                {
-                    StockTabs.Items.Add(tab);
-                }
-
-                StockTabs.SelectedItem = selected ?? sorted.FirstOrDefault();
-            }
-            finally
-            {
-                rebuildingTabs = false;
-            }
-        }
-
-        // Varsayılan sıra: Genel · Testler · Kalifikasyon · envanter türleri · Klasörler.
-        private static int DefaultRank(string tag)
-        {
-            switch (tag)
-            {
-                case GeneralTabTag:
-                    return 0;
-                case "tests":
-                    return 1;
-                case "qualification":
-                    return 2;
-                case "folders":
-                    return 9;
-                default:
-                    return tag.StartsWith(InventoryTabTag, StringComparison.Ordinal) ? 3 : 8;
-            }
-        }
-
-        private static TabItem? TabUnder(DependencyObject? source)
-        {
-            while (source != null && !(source is TabItem))
-            {
-                source = source is Visual || source is System.Windows.Media.Media3D.Visual3D ? VisualTreeHelper.GetParent(source) : LogicalTreeHelper.GetParent(source);
-            }
-
-            return source as TabItem;
-        }
-
-        private void StockTabs_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            var tab = TabUnder(e.OriginalSource as DependencyObject);
-            // Yalnız sekme başlığından sürüklenir (içerikten değil); Genel sabit.
-            dragTab = tab != null && tab.Parent == StockTabs && tab.Tag as string != GeneralTabTag && IsOnHeader(tab, e) ? tab : null;
-            dragStart = e.GetPosition(StockTabs);
-        }
-
-        private static bool IsOnHeader(TabItem tab, MouseEventArgs e)
-        {
-            var position = e.GetPosition(tab);
-            return position.Y >= 0 && position.Y <= tab.ActualHeight && position.X >= 0 && position.X <= tab.ActualWidth;
-        }
-
-        private void StockTabs_PreviewMouseMove(object sender, MouseEventArgs e)
-        {
-            if (dragTab == null || e.LeftButton != MouseButtonState.Pressed)
-            {
-                return;
-            }
-
-            var now = e.GetPosition(StockTabs);
-            if (Math.Abs(now.X - dragStart.X) < SystemParameters.MinimumHorizontalDragDistance)
-            {
-                return;
-            }
-
-            var tab = dragTab;
-            dragTab = null;
-            DragDrop.DoDragDrop(tab, tab, DragDropEffects.Move);
-        }
-
-        private void StockTabs_Drop(object sender, DragEventArgs e)
-        {
-            var source = e.Data.GetData(typeof(TabItem)) as TabItem;
-            var target = TabUnder(e.OriginalSource as DependencyObject);
-            MoveTab(source, target);
-        }
-
-        /// <summary>Sekmeyi hedef sekmenin yerine taşır ve sırayı kaydeder (Genel'in önüne geçemez).</summary>
-        internal void MoveTab(TabItem? source, TabItem? target)
-        {
-            if (source == null || target == null || ReferenceEquals(source, target) || source.Tag as string == GeneralTabTag)
-            {
-                return;
-            }
-
-            var index = Math.Max(1, StockTabs.Items.IndexOf(target));
-            rebuildingTabs = true;
-            try
-            {
-                StockTabs.Items.Remove(source);
-                StockTabs.Items.Insert(Math.Min(index, StockTabs.Items.Count), source);
-                StockTabs.SelectedItem = source;
-            }
-            finally
-            {
-                rebuildingTabs = false;
-            }
-
-            SaveLayout();
         }
 
         /// <summary>Bir tablonun sütunları: tasarımdaki sıra ve genişlik saklanır, kayıtlı düzen uygulanır, genişlik sınırlanır.</summary>

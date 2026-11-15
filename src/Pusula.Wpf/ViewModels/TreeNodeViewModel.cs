@@ -60,10 +60,19 @@ namespace Pusula.Wpf.ViewModels
             get { return searchCount.Length > 0 ? searchCount : Subtitle; }
         }
 
-        /// <summary>Üzerine gelince: ad ve ek bilgi ("JIG-1000-0009 · SATIMO adaptör plakası").</summary>
+        /// <summary>Ad ve ek bilgi ("JIG-1000-0009 · SATIMO adaptör plakası"); ek bilgi yoksa yalnız ad (aramada da kullanılır).</summary>
         public string ToolTipText
         {
             get { return Subtitle.Length == 0 ? Title : Title + " · " + Subtitle; }
+        }
+
+        /// <summary>
+        /// Sol listede üzerine gelince çıkan ipucu: ek bilgi varsa <see cref="ToolTipText"/>, yoksa hiç
+        /// (satırdaki adı tekrar edip alttaki satırı kapatıyordu).
+        /// </summary>
+        public string? RowToolTip
+        {
+            get { return Subtitle.Length == 0 ? null : ToolTipText; }
         }
 
         /// <summary>Klasörün tam yolu.</summary>
@@ -118,6 +127,30 @@ namespace Pusula.Wpf.ViewModels
         public string Color
         {
             get { return Type?.Color ?? string.Empty; }
+        }
+
+        private string? projectColor;
+
+        /// <summary>
+        /// Proje düğümünün sol listedeki rengi: proje.json'daki renk, yoksa proje kodundan türetilen; ilk istekte bir kez okunur.
+        /// Proje olmayan düğümde boş.
+        /// </summary>
+        public string ProjectColor
+        {
+            get
+            {
+                if (projectColor == null)
+                {
+                    projectColor = string.Empty;
+                    if (Entry.Kind == FolderKind.Project)
+                    {
+                        var info = JsonFile.TryRead<ProjectInfo>(TrackingFiles.ProjectFile(Entry.Path));
+                        projectColor = ProjectColors.For(System.IO.Path.GetFileName(Entry.Path), info?.Color);
+                    }
+                }
+
+                return projectColor;
+            }
         }
 
         /// <summary>Türün görünen adı.</summary>

@@ -15,7 +15,7 @@ try {
     $vm.SelectNodeByPath($stock); Wait
     Check 'stok: ad' ($vm.Detail.HeaderName -eq 'TAKIM ANTEN BOYNUZ Y') $vm.Detail.HeaderName
     Check 'stok: üst kayıt proje' ($vm.Detail.ParentName -eq '7000_MILKON' -and $vm.Detail.ParentPath -eq (Join-Path $Data '7000_MILKON')) $vm.Detail.ParentName
-    Check 'stok: bağlam' ($vm.Detail.ContextText -like '*numaras*') $vm.Detail.ContextText
+    Check 'stok: bağlamda "Stok numarası" yok (yalnız şablon)' ($vm.Detail.ContextText -notlike '*numaras*') $vm.Detail.ContextText
     Snap $win "$Out\header-stock.png"
     $win.GetType().GetMethod('HeaderParent_Click', [Reflection.BindingFlags]'Instance,NonPublic').Invoke($win, @($null, $null)) | Out-Null; Wait
     Check 'üst kayda git: proje seçildi' ($vm.SelectedNode.Path -eq (Join-Path $Data '7000_MILKON')) $vm.SelectedNode.Path

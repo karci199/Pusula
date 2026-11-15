@@ -46,43 +46,5 @@ $img = $conv.Convert("$tmp\yan.jpg", [object], $null, [Globalization.CultureInfo
 Check 'döndürülmüş resim dik (en < boy)' ($img.PixelWidth -lt $img.PixelHeight) ([string]$img.PixelWidth + 'x' + [string]$img.PixelHeight)
 Remove-Item $tmp -Recurse -Force
 
-"--- 2. Kapak kırpılmaz"
-$photos = Join-Path $Data '7000_MILKON\AB-7000-0002\07_Fotograflar'
-Remove-Item (Join-Path $photos 'SH2000_kapak.png')
-$cases = @(@{ Name = 'dikey'; W = 300; H = 600; O = 0 }, @{ Name = 'genis'; W = 1200; H = 300; O = 0 }, @{ Name = 'telefon'; W = 800; H = 600; O = 6 }, @{ Name = 'normal'; W = 1600; H = 1200; O = 0 })
-$settingsFile = Join-Path $env:LOCALAPPDATA 'Pusula\ayarlar.json'
-$savedSettings = if (Test-Path $settingsFile) { [IO.File]::ReadAllText($settingsFile) } else { $null }
-try {
-    [System.Threading.SynchronizationContext]::SetSynchronizationContext((New-Object System.Windows.Threading.DispatcherSynchronizationContext))
-    $app = New-Object Pusula.Wpf.App; $app.InitializeComponent(); $app.ShutdownMode = 'OnExplicitShutdown'
-    $win = New-Object Pusula.Wpf.MainWindow
-    $win.WindowStartupLocation = 'Manual'; $win.Left = -20000; $win.Top = -20000; $win.ShowActivated = $false; $win.Width = 1240; $win.Height = 760
-    $win.Show(); Pump
-    $vm = $win.DataContext; $vm.RootPath = $Data; Pump
-    foreach ($c in $cases)
-    {
-        Get-ChildItem $photos -Filter '*kapak*' | Remove-Item
-        $ext = if ($c.O -gt 0) { '.jpg' } else { '.png' }
-        NewPhoto (Join-Path $photos ('SH2000_kapak_' + $c.Name + $ext)) $c.W $c.H $c.O
-        $vm.Refresh(); Pump
-        $vm.SelectNodeByPath((Join-Path $Data '7000_MILKON\AB-7000-0002')); Wait
-        $button = $win.FindName('CoverFrame')
-        $image = $win.FindName('CoverImage')
-        $src = $image.Source
-        $shownRatio = $image.ActualWidth / $image.ActualHeight
-        $srcRatio = $src.PixelWidth / $src.PixelHeight
-        $fits = $image.ActualWidth -le $button.ActualWidth -and $image.ActualHeight -le $button.ActualHeight
-        Check ($c.Name + ': oran korunur, kutuya sığar') ([Math]::Abs($shownRatio - $srcRatio) -lt 0.03 -and $fits) ('gösterilen ' + $image.ActualWidth.ToString('0') + 'x' + $image.ActualHeight.ToString('0') + ' kaynak ' + $src.PixelWidth + 'x' + $src.PixelHeight)
-        if ($c.O -gt 0)
-        {
-            Check ($c.Name + ': dik gösterilir') ($image.ActualHeight -gt $image.ActualWidth)
-        }
-
-        Check ($c.Name + ': en çok 320x180') ($image.ActualWidth -le 320.5 -and $image.ActualHeight -le 180.5) ($image.ActualWidth.ToString('0') + 'x' + $image.ActualHeight.ToString('0'))
-        Check ($c.Name + ': kutu en az 132x132') ($button.ActualWidth -ge 131.5 -and $button.ActualHeight -ge 131.5)
-        Snap $win ($Out + '\kapak-' + $c.Name + '.png')
-    }
-} finally {
-    if ($savedSettings -ne $null) { [IO.File]::WriteAllText($settingsFile, $savedSettings) }
-}
+# 2. Kapak kırpılmaz: Genel sekmesindeki kapak çerçevesi kaldırıldı (15.11.2026, stok sayfası yeniden tasarlanıyor).
 "SONUÇ OK=$ok HATA=$fail"

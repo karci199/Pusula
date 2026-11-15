@@ -46,50 +46,10 @@ $win.WindowStartupLocation = 'Manual'; $win.Left = -20000; $win.Top = -20000; $w
 $win.Show(); Pump
 $vm = $win.DataContext; $vm.RootPath = $Data; Wait
 
-"--- 1. Stok kısa notu (düz numara)"
-$stock = FindNode $vm.Nodes 'AB-7000-0003'; $vm.SelectedNode = $stock; Wait
-$box = FindBox $win 'Stock'
-Check 'kısa not kutusu bulundu, öneri takılı' ($box -ne $null -and [Pusula.Wpf.MentionAssist]::GetMode($box) -eq 'plain')
-$box.Text = ''; Pump
-Check 'boş kısa not kutusunda ipucu metni görünür' ([DesignKit.Controls.TextBoxHelper]::IsPlaceholderShown($box) -and [DesignKit.Controls.TextBoxHelper]::GetPlaceholderText($box) -match 'Kısa not yaz') ([DesignKit.Controls.TextBoxHelper]::GetPlaceholderText($box))
-TypeText $box 'Ölçüm @JIG'
-Check 'yazınca ipucu kaybolur' (-not [DesignKit.Controls.TextBoxHelper]::IsPlaceholderShown($box))
-$items = $MA::Items($box)
-Check '@JIG: liste açılır, jigler gelir' ($MA::IsOpen($box) -and $items.Count -ge 1 -and @($items | Where-Object { $_.Key -like 'JIG-*' }).Count -eq $items.Count) (($items | ForEach-Object { $_.Key }) -join ', ')
-SnapPopup $box "$Out\mention-popup.png"
-$second = if ($items.Count -ge 2) { $items[1].Key } else { $items[0].Key }
-if ($items.Count -ge 2) { Key $box $K::Down }
-$notesBefore = $vm.Detail.Timeline.Count
-Key $box $K::Enter
-Check 'Enter: seçili öneri eklenir (düz numara), not gönderilmez' ($box.Text -eq "Ölçüm $second " -and -not $MA::IsOpen($box) -and $vm.Detail.Timeline.Count -eq $notesBefore) $box.Text
-$box.Undo() | Out-Null
-Check 'Ctrl+Z ile geri alınır' ($box.Text -eq 'Ölçüm @JIG') $box.Text
-TypeText $box 'Konuşuldu @'
+# Stok / proje kısa not kutusu kaldırıldı (15.11.2026, sayfa yeniden tasarlanıyor); o kutuya bağlı denemeler çıkarıldı.
 $user = [Environment]::UserName
-Check 'yalnız @: kişiler de listede' (@($MA::Items($box) | Where-Object { $_.Kind -eq 'Kişi' }).Count -ge 1 -or @($MA::Items($box)).Count -eq 12)
-TypeText $box ('Konuşuldu @' + $user.Substring(0, [Math]::Min(3, $user.Length)))
-Check 'kişi adıyla süzülür' (@($MA::Items($box) | Where-Object { $_.Key -eq $user }).Count -eq 1)
-Key $box $K::Escape
-Check 'Esc kapatır, metin kalır' (-not $MA::IsOpen($box) -and $box.Text.StartsWith('Konuşuldu @'))
-TypeText $box 'e-posta a@b'
-Check 'e-posta @ değil: liste açılmaz' (-not $MA::IsOpen($box))
-TypeText $box 'yok @zzzzqq'
-Check 'eşleşme yoksa açılmaz' (-not $MA::IsOpen($box))
-TypeText $box 'Rapor @AB-7000-0002'; Key $box $K::Tab
-Check 'Tab da ekler; stok önerisi' ($box.Text -eq 'Rapor AB-7000-0002 ') $box.Text
-Key $box $K::Enter; Wait
-Check 'liste kapalıyken Enter notu gönderir' ($vm.Detail.Timeline.Count -eq $notesBefore + 1 -and $box.Text -eq '') $vm.Detail.Timeline.Count
-$tl = @($vm.Detail.Timeline | Where-Object { $_.IsQuickNote -and $_.Summary -match 'AB-7000-0002' })
-Check 'not numarayla kaydedildi' ($tl.Count -ge 1)
-
-"--- 1b. # ile etiket (kısa not, Günlük etiketi)"
-TypeText $box 'Ölçüm #'
-Check 'serbest metinde # tek başına açılmaz' (-not $MA::IsOpen($box))
-TypeText $box 'Ölçüm #SAT'
-Check '#SAT: etiket önerisi' ($MA::IsOpen($box) -and @($MA::Items($box) | Where-Object { $_.Key -eq '#SATIMO' }).Count -eq 1) (($MA::Items($box) | % Key) -join ', ')
-Key $box $K::Enter
-Check 'etiket #ile eklenir' ($box.Text -eq 'Ölçüm #SATIMO ') $box.Text
-$box.Text = ''; Pump
+"--- 1. Günlük penceresinde # etiketi"
+$stock = FindNode $vm.Nodes 'AB-7000-0003'; $vm.SelectedNode = $stock; Wait
 $vm.OpenJournalHere() | Out-Null; Wait
 $jt = $null; $st = New-Object System.Collections.Stack; $st.Push($win)
 while ($st.Count -gt 0) { $n = $st.Pop(); if ($n -is [Pusula.Wpf.TagBox] -and $n.IsVisible) { $jt = $n; break }; foreach ($c in [System.Windows.LogicalTreeHelper]::GetChildren($n)) { if ($c -is [System.Windows.DependencyObject]) { $st.Push($c) } } }
@@ -112,10 +72,5 @@ TypeText $tb ('Ali ile @' + $user.Substring(0, [Math]::Min(3, $user.Length))); K
 Check 'link: kişi @Ad olarak' ($tb.Text -eq "Ali ile @$user ") $tb.Text
 $host2.Close()
 
-"--- 3. Diyalog kutuları"
-$modes = New-Object System.Collections.Generic.List[string]
-$stack = New-Object System.Collections.Stack; $stack.Push($win)
-while ($stack.Count -gt 0) { $node = $stack.Pop(); if ($node -is [System.Windows.Controls.TextBox]) { $m = $MA::GetMode($node); if ($m) { $modes.Add($m) } }; if ($node -is [System.Windows.DependencyObject]) { foreach ($c in [System.Windows.LogicalTreeHelper]::GetChildren($node)) { if ($c -is [System.Windows.DependencyObject]) { $stack.Push($c) } } } }
-Check 'öneri takılı kutular: 3 kısa not + not ekle + durum notu (düz), olay başlığı + açıklaması + 2 yapılacak iş (bağlantı), 3 etiket, 2 kişi' (@($modes | Where-Object { $_ -eq 'plain' }).Count -eq 5 -and @($modes | Where-Object { $_ -eq 'link' }).Count -eq 4 -and @($modes | Where-Object { $_ -eq 'tag' }).Count -eq 3 -and @($modes | Where-Object { $_ -eq 'person' }).Count -eq 2) ($modes -join ',')
 $win.Close()
 "SONUÇ OK=$ok HATA=$fail"

@@ -48,8 +48,6 @@ try {
     $jg = $groups | Where-Object { $_.Type.Key -eq 'jig' }; $cg = $groups | Where-Object { $_.Type.Key -eq 'cable' }
     Check 'jigler: 3 (1 stok + 2 bağ)' ($jg.Rows.Count -eq 3 -and @($jg.Rows | Where-Object IsLinked).Count -eq 2) (($jg.Rows | ForEach-Object Number) -join ',')
     Check 'kablolar: 2' ($cg.Rows.Count -eq 2) (($cg.Rows | ForEach-Object Number) -join ',')
-    $tc0 = $win.FindName('StockTabs'); $heads = ($tc0.Items | ForEach-Object { if ($_.Header -is [string]) { $_.Header } elseif ($_.Header -is [System.Windows.Controls.Panel]) { @($_.Header.Children | Where-Object { $_ -is [System.Windows.Controls.TextBlock] })[-1].Text } else { '?' } }) -join ' | '
-    Check 'sekmeler: kablolar ve jigler ayrı' ($heads -match 'Kalifikasyon · \d \| Kablolar · 2 \| Jigler · 3 \| Klasörler') $heads
     Check 'özet: Jig 3 · 1 dikkat' ($jg.Summary -eq 'Jig 3 · 1 dikkat' -and $jg.HasWarning) $jg.Summary
     Check 'dikkat kartı: onarımdaki jig' (@($vm.Detail.Alerts | Where-Object { $_.Detail -match 'JIG-1000-0009 · Onarım' }).Count -eq 1)
     Check 'aday listesinden bağlılar düşer' (@($vm.LinkCandidates($jig)).Count -eq 0)
@@ -80,21 +78,6 @@ try {
     Check 'yalnız stokun kendi kayıtları kalır' ((InvTitles) -eq 'JIG-1000-0014,JT-0001-0102') (InvTitles)
     $d = @($vm.Detail.Timeline | ForEach-Object SortDate)
     Check 'sıra yine yeniden eskiye' ((@($d | Sort-Object -Descending) -join ',') -eq ($d -join ','))
-    $tabs = [System.Windows.Media.VisualTreeHelper]; 
-    function FindTab($d) { if ($d -is [System.Windows.Controls.TabControl] -and $d.IsVisible) { return $d }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($d); $i++) { $r = FindTab ([System.Windows.Media.VisualTreeHelper]::GetChild($d, $i)); if ($r) { return $r } }; return $null }
-    $tc = $win.FindName('StockTabs'); $tc.SelectedIndex = 4; Snap $win "$Out\stock-inventory.png"; $vm.SelectedNode = (FindNode $vm.Nodes 'AB-7000-0001'); Wait; $vm.SelectedNode = $stock; Wait; Check 'stok değişince Jigler sekmesi açık kalır' ($tc.SelectedItem.Tag -eq 'inventory:jig') $tc.SelectedItem.Tag
-    # Fazladan "Jig 0" kutucuğu: Genel açıkken stoklar arasında geçince çizilen kart sayısı listeyle aynı olmalı.
-    $tc.SelectedIndex = 0; Wait
-    function DrawnCards() {
-        $st = New-Object System.Collections.Stack; $st.Push($win); $ic = $null
-        while ($st.Count -gt 0) { $x = $st.Pop(); if ($x -is [System.Windows.Controls.ItemsControl] -and [object]::ReferenceEquals($x.ItemsSource, $vm.Detail.InventoryGroups)) { $ic = $x; break }; if ($x -is [System.Windows.Media.Visual]) { for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($x); $i++) { $st.Push([System.Windows.Media.VisualTreeHelper]::GetChild($x, $i)) } } }
-        if (-not $ic) { return -1 }
-        $p = $null; $s2 = New-Object System.Collections.Stack; $s2.Push($ic); while ($s2.Count -gt 0) { $y = $s2.Pop(); if ($y -is [System.Windows.Controls.Primitives.UniformGrid]) { $p = $y; break }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($y); $i++) { $s2.Push([System.Windows.Media.VisualTreeHelper]::GetChild($y, $i)) } }
-        if ($p) { $p.Children.Count } else { -2 }
-    }
-    $mismatch = @()
-    foreach ($round in 1..3) { foreach ($n in 'AB-7000-0001', 'AB-7000-0003') { $vm.SelectedNode = (FindNode $vm.Nodes $n); Wait; $drawn = DrawnCards; if ($drawn -ne $vm.Detail.InventoryGroups.Count) { $mismatch += "$n : çizilen=$drawn liste=$($vm.Detail.InventoryGroups.Count)" } } }
-    Check 'Genel: kart sayısı listeyle aynı (fazladan Jig kutucuğu yok)' ($mismatch.Count -eq 0 -and (DrawnCards) -ge 1) ($mismatch -join ' / ')
     $win.Close()
 } finally { if ($savedSettings -ne $null) { [IO.File]::WriteAllText($settingsFile, $savedSettings) } }
 ""

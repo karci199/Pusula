@@ -9,15 +9,12 @@ try {
     $win.WindowStartupLocation = 'Manual'; $win.Left = -20000; $win.Top = -20000; $win.ShowActivated = $false; $win.Width = 1240; $win.Height = 760
     $win.Show(); Pump
     $vm = $win.DataContext; $vm.RootPath = $Data; Pump
-    "--- Yenile: seçim ve sekme korunur"
+    "--- Yenile: seçim korunur"
     $stock = Join-Path $Data '7000_MILKON\AB-7000-0002'
     $vm.SelectNodeByPath($stock); Wait
-    $tabs = $win.FindName('StockTabs')
-    $tabs.SelectedIndex = 1; Pump
     $vm.Refresh(); Wait
     Check 'seçili stok aynı' ($vm.SelectedNode -ne $null -and $vm.SelectedNode.Path -eq $stock) ([string]$vm.SelectedNode.Path)
     Check 'proje açık kaldı' ((FindNode $vm.Nodes '7000_MILKON').IsExpanded)
-    Check 'sekme aynı (Testler)' ($tabs.SelectedIndex -eq 1) ([string]$tabs.SelectedIndex)
     Check 'stok içeriği yeniden yüklendi' ($vm.Detail.IsStock)
 
     $jig = Join-Path $Data 'ENVANTER\Jigler\JIG-1000-0009_SATIMO_adaptor_plakasi'

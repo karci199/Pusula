@@ -45,6 +45,7 @@ namespace Pusula.Wpf
             Closed += (s, e) => viewModel.SaveRecentNow();
 
             // İlk açılışta kök klasör seçilmemişse Ayarlar açılır (kök seçimi artık orada).
+            Loaded += (s, e) => HookTitleBarLogo();
             ContentRendered += (s, e) =>
             {
                 if (App.Started && !viewModel.HasRoot)
@@ -59,11 +60,6 @@ namespace Pusula.Wpf
                 ((ContextMenu)FindResource(key)).DataContext = viewModel;
             }
 
-            // Sekmeler, liste değişirken değil değişiklik bittikten sonra ve bir kez kurulur. Değişiklik anında kurulunca
-            // Genel'deki "Jig ve kablo" kartları, bildirim gelmeden listeyi yeniden okuyup aynı kartı iki kez ekliyordu
-            // (fazladan "Jig 0" kutucuğu).
-            viewModel.Detail.InventoryGroups.CollectionChanged += (s, e) => ScheduleInventoryTabs();
-            StockTabs.SelectionChanged += StockTabs_SelectionChanged;
             SetUpLayout();
 
             // Tür düğümünde (hepsi aynı tür) envanter listesinin Tür sütunu gizlenir.
@@ -74,85 +70,6 @@ namespace Pusula.Wpf
                     InventoryTypeColumn.Width = viewModel.Inventory.TypeColumnWidth;
                 }
             };
-        }
-
-        // Stok sekmeleri: her envanter türü (Jigler, Kablolar …) Kalifikasyon'dan sonra kendi sekmesinde.
-        // Stok değişince sekmeler yeniden kurulur; açık olan tür sekmesi korunur.
-        private const string InventoryTabTag = "inventory:";
-        private string? preferredInventoryKey;
-        private bool rebuildingTabs;
-
-        // Kullanıcının seçtiği sekme hatırlanır (yeniden kurulurken oluşan seçim değişiklikleri sayılmaz).
-        private void StockTabs_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (rebuildingTabs || !ReferenceEquals(e.OriginalSource, StockTabs) || !(StockTabs.SelectedItem is TabItem selected))
-            {
-                return;
-            }
-
-            var tag = selected.Tag as string;
-            preferredInventoryKey = tag != null && tag.StartsWith(InventoryTabTag, StringComparison.Ordinal) ? tag : null;
-        }
-
-        private bool inventoryTabsPending;
-
-        private void ScheduleInventoryTabs()
-        {
-            if (inventoryTabsPending)
-            {
-                return;
-            }
-
-            inventoryTabsPending = true;
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                inventoryTabsPending = false;
-                RebuildInventoryTabs();
-            }), DispatcherPriority.Loaded);
-        }
-
-        private void RebuildInventoryTabs()
-        {
-            rebuildingTabs = true;
-            try
-            {
-                RebuildInventoryTabsCore();
-            }
-            finally
-            {
-                rebuildingTabs = false;
-            }
-
-            ApplyTabOrder();
-        }
-
-        private void RebuildInventoryTabsCore()
-        {
-            foreach (var old in StockTabs.Items.OfType<TabItem>().Where(i => (i.Tag as string)?.StartsWith(InventoryTabTag, StringComparison.Ordinal) == true).ToList())
-            {
-                StockTabs.Items.Remove(old);
-            }
-
-            var index = 3;
-            var template = (DataTemplate)FindResource("StockInventoryTabTemplate");
-            foreach (var group in viewModel.Detail.InventoryGroups)
-            {
-                var header = new StackPanel { Orientation = Orientation.Horizontal };
-                header.Children.Add(new AppIcon { Glyph = TreeNodeViewModel.GlyphOf(group.Type.Icon), FontSize = 13, Foreground = BrushOf(group.Type.Color), VerticalAlignment = VerticalAlignment.Center });
-                header.Children.Add(new TextBlock { Text = group.Header, Margin = new Thickness(7, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center });
-                var tab = new TabItem
-                {
-                    Header = header,
-                    Content = group,
-                    ContentTemplate = template,
-                    Tag = InventoryTabTag + group.Type.Key,
-                };
-                StockTabs.Items.Insert(index++, tab);
-                if (tab.Tag as string == preferredInventoryKey)
-                {
-                    StockTabs.SelectedItem = tab;
-                }
-            }
         }
 
         private void FolderTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -469,6 +386,59 @@ namespace Pusula.Wpf
             viewModel.OpenNoteOrFolder(cover.NoteFile, cover.StockFolder);
         }
 
+        // Başlık çubuğundaki Pusula simgesi (ChromeWindow şablonundaki ilk Image): tıklayınca ana sayfa.
+        // Başlık çubuğu sürükleme alanı olduğu için simge tıklamaya açılır (IsHitTestVisibleInChrome).
+        private void HookTitleBarLogo()
+        {
+            var pending = new Stack<DependencyObject>();
+            pending.Push(this);
+            while (pending.Count > 0)
+            {
+                var node = pending.Pop();
+                if (node is Image logo && ReferenceEquals(logo.TemplatedParent, this))
+                {
+                    logo.Cursor = Cursors.Hand;
+                    System.Windows.Shell.WindowChrome.SetIsHitTestVisibleInChrome(logo, true);
+                    logo.MouseLeftButtonUp += (s, e) => viewModel.GoHome();
+                    return;
+                }
+
+                for (var i = 0; i < VisualTreeHelper.GetChildrenCount(node); i++)
+                {
+                    pending.Push(VisualTreeHelper.GetChild(node, i));
+                }
+            }
+        }
+
+        // Sol üstte "Ana sayfa": seçimi kaldırıp proje kartlarını gösterir.
+        private void HomeButton_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.GoHome();
+        }
+
+        // Ana sayfada proje kartı: projeyi ağaçta seçer.
+        private void ProjectCard_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is ProjectCard card)
+            {
+                viewModel.OpenProjectCard(card);
+            }
+        }
+
+        // Başlıktaki "Birim bilgisi": stokun ana md'si varsa açılır, yoksa oluşturulup açılır.
+        private void HeaderUnitInfo_Click(object sender, RoutedEventArgs e)
+        {
+            var cover = viewModel.Detail.Cover;
+            if (cover.HasNote)
+            {
+                viewModel.OpenNoteOrFolder(cover.NoteFile, cover.StockFolder);
+            }
+            else
+            {
+                viewModel.CreateStockNote();
+            }
+        }
+
         private void StockCreateNote_Click(object sender, RoutedEventArgs e)
         {
             viewModel.CreateStockNote();
@@ -754,17 +724,6 @@ namespace Pusula.Wpf
             if ((sender as FrameworkElement)?.Tag is MatrixCell cell && cell.HasRun)
             {
                 viewModel.OpenNoteOrFolder(cell.NotePath, cell.Folder);
-            }
-        }
-
-        // Genel'deki jig / kablo kutucuğu: o türün sekmesine geçer.
-        private void InventoryTile_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            var key = (sender as FrameworkElement)?.Tag as string;
-            var tab = StockTabs.Items.OfType<TabItem>().FirstOrDefault(t => t.Tag as string == InventoryTabTag + key);
-            if (tab != null)
-            {
-                StockTabs.SelectedItem = tab;
             }
         }
 

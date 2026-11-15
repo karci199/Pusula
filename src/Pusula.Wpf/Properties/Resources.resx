@@ -94,7 +94,7 @@
     <value>Stok no</value>
   </data>
   <data name="Field_StockName" xml:space="preserve">
-    <value>Stok adı</value>
+    <value>Tanım</value>
   </data>
   <data name="Status_SelectRootFirst" xml:space="preserve">
     <value>Önce projeler klasörünü seçin.</value>
@@ -266,6 +266,33 @@
   </data>
   <data name="Detail_Loading" xml:space="preserve">
     <value>Hesaplanıyor…</value>
+  </data>
+  <data name="Header_UnitInfo" xml:space="preserve">
+    <value>Birim bilgisi</value>
+  </data>
+  <data name="Header_UnitInfoHint" xml:space="preserve">
+    <value>Stokun ana notunu düzenleyicide açar (yoksa oluşturur)</value>
+  </data>
+  <data name="Header_Folder" xml:space="preserve">
+    <value>Klasör</value>
+  </data>
+  <data name="Header_FolderHint" xml:space="preserve">
+    <value>Klasörü Gezgin'de açar</value>
+  </data>
+  <data name="Template_None" xml:space="preserve">
+    <value>Şablonsuz</value>
+  </data>
+  <data name="Home_Button" xml:space="preserve">
+    <value>Ana sayfa</value>
+  </data>
+  <data name="Card_Stocks" xml:space="preserve">
+    <value>{0} stok</value>
+  </data>
+  <data name="Card_NoProjects" xml:space="preserve">
+    <value>Henüz proje yok. "Yeni proje" ile başlayın.</value>
+  </data>
+  <data name="Detail_Redesign" xml:space="preserve">
+    <value>Bu sayfa yeniden tasarlanıyor.</value>
   </data>
   <data name="Detail_General" xml:space="preserve">
     <value>Proje geneli: {0} dosya</value>
@@ -1603,7 +1630,7 @@
     <value>Etiketler</value>
   </data>
   <data name="Tag_Placeholder" xml:space="preserve">
-    <value># yazınca bu türde geçerli etiketler önerilir</value>
+    <value># ile etiket ekle</value>
   </data>
   <data name="Tag_Kind" xml:space="preserve">
     <value>Etiket</value>

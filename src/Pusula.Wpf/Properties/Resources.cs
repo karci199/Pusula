@@ -342,6 +342,33 @@ namespace Pusula.Wpf.Properties
         /// <summary>Özet hesaplanırken.</summary>
         public static string Detail_Loading { get { return Get("Detail_Loading"); } }
 
+        /// <summary>Başlıktaki "Birim bilgisi" düğmesi.</summary>
+        public static string Header_UnitInfo { get { return Get("Header_UnitInfo"); } }
+
+        /// <summary>"Birim bilgisi" düğmesinin ipucu.</summary>
+        public static string Header_UnitInfoHint { get { return Get("Header_UnitInfoHint"); } }
+
+        /// <summary>Başlıktaki "Klasör" düğmesi.</summary>
+        public static string Header_Folder { get { return Get("Header_Folder"); } }
+
+        /// <summary>"Klasör" düğmesinin ipucu.</summary>
+        public static string Header_FolderHint { get { return Get("Header_FolderHint"); } }
+
+        /// <summary>Şablon listesinde boş seçenek.</summary>
+        public static string Template_None { get { return Get("Template_None"); } }
+
+        /// <summary>Sol üstteki "Ana sayfa" düğmesi.</summary>
+        public static string Home_Button { get { return Get("Home_Button"); } }
+
+        /// <summary>Proje kartında stok sayısı; {0} sayı.</summary>
+        public static string Card_Stocks { get { return Get("Card_Stocks"); } }
+
+        /// <summary>Ana sayfada hiç proje yokken.</summary>
+        public static string Card_NoProjects { get { return Get("Card_NoProjects"); } }
+
+        /// <summary>Proje / stok sayfasının içi yerine geçici yer tutucu (yeniden tasarlanıyor).</summary>
+        public static string Detail_Redesign { get { return Get("Detail_Redesign"); } }
+
         /// <summary>Proje özetinin notu; {0} dosya sayısı.</summary>
         public static string Detail_General { get { return Get("Detail_General"); } }
 
