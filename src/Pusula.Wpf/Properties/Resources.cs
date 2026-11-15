@@ -505,6 +505,9 @@ namespace Pusula.Wpf.Properties
         /// <summary>"{0} araç".</summary>
         public static string Records_ToolCount { get { return Get("Records_ToolCount"); } }
 
+        /// <summary>Kapsam süzgecinde hiçbir şey işaretli değil.</summary>
+        public static string Scope_None { get { return Get("Scope_None"); } }
+
         /// <summary>Proje kartında stok sayısı; {0} sayı.</summary>
         public static string Card_Stocks { get { return Get("Card_Stocks"); } }
 

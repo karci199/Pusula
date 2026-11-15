@@ -376,7 +376,7 @@
     <value>Temizle</value>
   </data>
   <data name="Records_Totals" xml:space="preserve">
-    <value>{0} proje · {1} stok · {2} araç · {3} açık iş</value>
+    <value>{0} proje · {1} stok</value>
   </data>
   <data name="Records_TotalsSize" xml:space="preserve">
     <value>{0} dosya · {1}</value>
@@ -428,6 +428,9 @@
   </data>
   <data name="Records_ToolCount" xml:space="preserve">
     <value>{0} araç</value>
+  </data>
+  <data name="Scope_None" xml:space="preserve">
+    <value>Hiçbiri</value>
   </data>
   <data name="Card_Stocks" xml:space="preserve">
     <value>{0} stok</value>

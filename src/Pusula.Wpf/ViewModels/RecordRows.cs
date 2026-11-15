@@ -107,9 +107,30 @@ namespace Pusula.Wpf.ViewModels
         }
     }
 
-    /// <summary>Kayıtlar · Stoklar satırı.</summary>
-    public sealed class StockRow
+    /// <summary>Kayıtlar · Stoklar satırı. Boyut arka planda sonradan gelir.</summary>
+    public sealed class StockRow : ViewModelBase
     {
+        private long? bytes;
+
+        /// <summary>Stok klasörünün toplam boyutu, bayt (hesaplanana kadar <c>null</c>).</summary>
+        public long? Bytes
+        {
+            get { return bytes; }
+            set
+            {
+                if (SetProperty(ref bytes, value))
+                {
+                    OnPropertyChanged(nameof(SizeText));
+                }
+            }
+        }
+
+        /// <summary>"820 MB"; hesaplanırken "…".</summary>
+        public string SizeText
+        {
+            get { return bytes.HasValue ? ProjectRow.FormatSize(bytes.Value) : "…"; }
+        }
+
         /// <summary>Satırı kurar.</summary>
         public StockRow(string path, string color, string number, string name, string project, string template, string status, int tools, int openTasks, DateTime? lastChange)
         {

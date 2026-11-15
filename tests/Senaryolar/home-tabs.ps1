@@ -31,10 +31,13 @@ $vm.IsViewStocks = $true; Wait
 Check 'stoklar: hepsi' ($vm.StockRows.Count -ge 3) ([string]$vm.StockRows.Count)
 $vm.IsViewTools = $true; Wait
 $all = $vm.ToolRows.Count
-$vm.StockOptions[0].IsChecked = $true; Wait
-Check 'stok seçince araçlar daralır' ($vm.ToolRows.Count -le $all) ("$all -> " + $vm.ToolRows.Count)
+Check 'başta bütün stoklar işaretli' (@($vm.StockOptions | Where-Object { -not $_.IsChecked }).Count -eq 0)
 $vm.SelectAllStocks($false); Wait
-Check 'temizleyince hepsi' ($vm.ToolRows.Count -eq $all) ([string]$vm.ToolRows.Count)
+Check 'hiçbiri işaretli değilse araç yok' ($vm.ToolRows.Count -eq 0) ([string]$vm.ToolRows.Count)
+$vm.StockOptions[0].IsChecked = $true; Wait
+Check 'bir stok seçince araçlar daralır' ($vm.ToolRows.Count -le $all) ("$all -> " + $vm.ToolRows.Count)
+$vm.SelectAllStocks($true); Wait
+Check 'tümünü seçince hepsi' ($vm.ToolRows.Count -eq $all) ([string]$vm.ToolRows.Count)
 Snap $win "$Out\home-kayitlar.png"
 $win.Close()
 "SONUÇ OK=$ok HATA=$fail"

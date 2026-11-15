@@ -1283,6 +1283,40 @@
                                                 </Trigger>
                                             </DataTemplate.Triggers>
                                         </DataTemplate>
+                                        <!-- Tablo satırı: düz zemin (zebra yok), ince ayraç, ferah yükseklik; ikincil sütunlar soluk -->
+                                        <Style x:Key="RecordItemStyle" TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
+                                            <EventSetter Event="MouseLeftButtonUp" Handler="RecordRow_Click" />
+                                            <Setter Property="Cursor" Value="Hand" />
+                                            <Setter Property="MinHeight" Value="42" />
+                                            <Setter Property="Margin" Value="0" />
+                                            <Setter Property="Background" Value="Transparent" />
+                                            <Setter Property="BorderThickness" Value="0,0,0,1" />
+                                            <Setter Property="BorderBrush" Value="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+                                            <Setter Property="FontWeight" Value="Normal" />
+                                        </Style>
+                                        <!-- Başlık: zeminsiz, küçük ve soluk; altında ince çizgi -->
+                                        <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource {x:Type GridViewColumnHeader}}">
+                                            <Setter Property="Background" Value="Transparent" />
+                                            <Setter Property="BorderThickness" Value="0,0,0,1" />
+                                            <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+                                            <Setter Property="FontSize" Value="12" />
+                                            <Setter Property="FontWeight" Value="Normal" />
+                                            <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                            <Setter Property="Padding" Value="10,8" />
+                                            <Setter Property="Cursor" Value="Hand" />
+                                        </Style>
+                                        <!-- Numara: kalın, ana renk; Ad: ana renk -->
+                                        <DataTemplate x:Key="RecordNumberCell">
+                                            <TextBlock Text="{Binding Number}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                        </DataTemplate>
+                                        <DataTemplate x:Key="RecordNameCell">
+                                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                        </DataTemplate>
+                                        <DataTemplate x:Key="RecordCodeCell">
+                                            <TextBlock Text="{Binding Code}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                        </DataTemplate>
                                         <Style x:Key="ScopePopupBox" TargetType="Border">
                                             <Setter Property="Margin" Value="0,4,0,0" />
                                             <Setter Property="Padding" Value="8,10" />
@@ -1295,12 +1329,14 @@
                                     </Grid.Resources>
 
                                     <!-- Süzgeç satırı: Proje, Stok (Projeler görünümünde yok), araç türü ve alt tür (yalnız araçlarda), arama -->
-                                    <Grid Margin="0,0,0,10">
+                                    <Grid Margin="0,0,0,14">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <WrapPanel VerticalAlignment="Center">
+                                        <StackPanel>
+                                            <!-- İlk satır: kapsam (Proje, Stok) -->
+                                            <StackPanel Orientation="Horizontal">
                                             <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Col_Project}" />
                                             <ToggleButton x:Name="ProjectScopeButton" Padding="10,4" Margin="0,0,16,0">
                                                 <StackPanel Orientation="Horizontal">
@@ -1349,8 +1385,10 @@
                                                 </Popup>
                                             </StackPanel>
 
-                                            <!-- Araç türü (tek seçim) ve alt tür (ayrı süzgeç) -->
-                                            <StackPanel Orientation="Horizontal" Visibility="{Binding IsViewTools, Converter={StaticResource BoolToVis}}">
+                                            </StackPanel>
+                                            <!-- İkinci satır (yalnız araçlarda): Tür (tek seçim) ve Alt tür (ayrı süzgeç) -->
+                                            <StackPanel Orientation="Horizontal" Margin="0,12,0,0" Visibility="{Binding IsViewTools, Converter={StaticResource BoolToVis}}">
+                                                <TextBlock Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Col_Type}" />
                                                 <Border Style="{StaticResource SegmentBox}" Margin="0,0,10,0">
                                                     <ItemsControl ItemsSource="{Binding ToolKindFilters}" Focusable="False">
                                                         <ItemsControl.ItemsPanel>
@@ -1384,20 +1422,17 @@
                                                     </ComboBox.ItemTemplate>
                                                 </ComboBox>
                                             </StackPanel>
-                                        </WrapPanel>
-                                        <controls:SearchBox Grid.Column="1" Width="230" VerticalAlignment="Center" PlaceholderText="{x:Static res:Resources.Records_Search}"
+                                        </StackPanel>
+                                        <controls:SearchBox Grid.Column="1" Width="360" Margin="16,0,0,0" VerticalAlignment="Top" PlaceholderText="{x:Static res:Resources.Records_Search}"
                                                             Text="{Binding RecordSearch, UpdateSourceTrigger=PropertyChanged}" />
                                     </Grid>
 
                                     <!-- Projeler: istatistikler (dosya sayısı ve boyut arka planda gelir) -->
                                     <ListView x:Name="ProjectRecordsList" Grid.Row="1" ItemsSource="{Binding ProjectRows}"
                                               Visibility="{Binding IsViewProjects, Converter={StaticResource BoolToVis}}"
-                                              GridViewColumnHeader.Click="RecordHeader_Click">
+                                              GridViewColumnHeader.Click="RecordHeader_Click" SelectionChanged="RecordList_SelectionChanged" AlternationCount="0" BorderThickness="0" Background="Transparent">
                                         <ListView.ItemContainerStyle>
-                                            <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
-                                                <EventSetter Event="MouseLeftButtonUp" Handler="RecordRow_Click" />
-                                                <Setter Property="Cursor" Value="Hand" />
-                                            </Style>
+                                            <StaticResource ResourceKey="RecordItemStyle" />
                                         </ListView.ItemContainerStyle>
                                         <ListView.View>
                                             <GridView>
@@ -1406,8 +1441,8 @@
                                                         <DataTemplate><Ellipse Width="9" Height="9" Fill="{Binding Color}" /></DataTemplate>
                                                     </GridViewColumn.CellTemplate>
                                                 </GridViewColumn>
-                                                <GridViewColumn Width="90" DisplayMemberBinding="{Binding Code}"><GridViewColumnHeader Tag="Code" Content="{x:Static res:Resources.Col_Code}" /></GridViewColumn>
-                                                <GridViewColumn Width="220" DisplayMemberBinding="{Binding Name}"><GridViewColumnHeader Tag="Name" Content="{x:Static res:Resources.Col_Name}" /></GridViewColumn>
+                                                <GridViewColumn Width="90" CellTemplate="{StaticResource RecordCodeCell}"><GridViewColumnHeader Tag="Code" Content="{x:Static res:Resources.Col_Code}" /></GridViewColumn>
+                                                <GridViewColumn Width="220" CellTemplate="{StaticResource RecordNameCell}"><GridViewColumnHeader Tag="Name" Content="{x:Static res:Resources.Col_Name}" /></GridViewColumn>
                                                 <GridViewColumn Width="70" DisplayMemberBinding="{Binding Stocks}"><GridViewColumnHeader Tag="Stocks" Content="{x:Static res:Resources.Col_Stock}" /></GridViewColumn>
                                                 <GridViewColumn Width="70" DisplayMemberBinding="{Binding Tools}"><GridViewColumnHeader Tag="Tools" Content="{x:Static res:Resources.Col_Tools}" /></GridViewColumn>
                                                 <GridViewColumn Width="80" DisplayMemberBinding="{Binding OpenTasks}"><GridViewColumnHeader Tag="OpenTasks" Content="{x:Static res:Resources.Col_OpenTasks}" /></GridViewColumn>
@@ -1421,12 +1456,9 @@
                                     <!-- Stoklar: projeden bağımsız; kapsamdaki projelerin (ve seçilen stokların) hepsi -->
                                     <ListView x:Name="StockRecordsList" Grid.Row="1" ItemsSource="{Binding StockRows}"
                                               Visibility="{Binding IsViewStocks, Converter={StaticResource BoolToVis}}"
-                                              GridViewColumnHeader.Click="RecordHeader_Click">
+                                              GridViewColumnHeader.Click="RecordHeader_Click" SelectionChanged="RecordList_SelectionChanged" AlternationCount="0" BorderThickness="0" Background="Transparent">
                                         <ListView.ItemContainerStyle>
-                                            <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
-                                                <EventSetter Event="MouseLeftButtonUp" Handler="RecordRow_Click" />
-                                                <Setter Property="Cursor" Value="Hand" />
-                                            </Style>
+                                            <StaticResource ResourceKey="RecordItemStyle" />
                                         </ListView.ItemContainerStyle>
                                         <ListView.View>
                                             <GridView>
@@ -1435,13 +1467,14 @@
                                                         <DataTemplate><Ellipse Width="9" Height="9" Fill="{Binding Color}" /></DataTemplate>
                                                     </GridViewColumn.CellTemplate>
                                                 </GridViewColumn>
-                                                <GridViewColumn Width="120" DisplayMemberBinding="{Binding Number}"><GridViewColumnHeader Tag="Number" Content="{x:Static res:Resources.Col_Number}" /></GridViewColumn>
-                                                <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}"><GridViewColumnHeader Tag="Name" Content="{x:Static res:Resources.Col_Description}" /></GridViewColumn>
+                                                <GridViewColumn Width="120" CellTemplate="{StaticResource RecordNumberCell}"><GridViewColumnHeader Tag="Number" Content="{x:Static res:Resources.Col_Number}" /></GridViewColumn>
+                                                <GridViewColumn Width="200" CellTemplate="{StaticResource RecordNameCell}"><GridViewColumnHeader Tag="Name" Content="{x:Static res:Resources.Col_Description}" /></GridViewColumn>
                                                 <GridViewColumn Width="70" DisplayMemberBinding="{Binding Project}"><GridViewColumnHeader Tag="Project" Content="{x:Static res:Resources.Col_Project}" /></GridViewColumn>
                                                 <GridViewColumn Width="110" DisplayMemberBinding="{Binding Template}"><GridViewColumnHeader Tag="Template" Content="{x:Static res:Resources.Col_Template}" /></GridViewColumn>
                                                 <GridViewColumn Width="120" DisplayMemberBinding="{Binding Status}"><GridViewColumnHeader Tag="Status" Content="{x:Static res:Resources.Col_Status}" /></GridViewColumn>
                                                 <GridViewColumn Width="70" DisplayMemberBinding="{Binding Tools}"><GridViewColumnHeader Tag="Tools" Content="{x:Static res:Resources.Col_Tools}" /></GridViewColumn>
                                                 <GridViewColumn Width="80" DisplayMemberBinding="{Binding OpenTasks}"><GridViewColumnHeader Tag="OpenTasks" Content="{x:Static res:Resources.Col_OpenTasks}" /></GridViewColumn>
+                                                <GridViewColumn Width="90" DisplayMemberBinding="{Binding SizeText}"><GridViewColumnHeader Tag="Bytes" Content="{x:Static res:Resources.Col_Size}" /></GridViewColumn>
                                                 <GridViewColumn Width="110" DisplayMemberBinding="{Binding LastChangeText}"><GridViewColumnHeader Tag="LastChange" Content="{x:Static res:Resources.Col_LastChange}" /></GridViewColumn>
                                             </GridView>
                                         </ListView.View>
@@ -1450,12 +1483,9 @@
                                     <!-- Test yardımcı araçları: kapsamdaki stoklara / projelere bağlı olanlar (kapsam yoksa hepsi) -->
                                     <ListView x:Name="ToolRecordsList" Grid.Row="1" ItemsSource="{Binding ToolRows}"
                                               Visibility="{Binding IsViewTools, Converter={StaticResource BoolToVis}}"
-                                              GridViewColumnHeader.Click="RecordHeader_Click">
+                                              GridViewColumnHeader.Click="RecordHeader_Click" SelectionChanged="RecordList_SelectionChanged" AlternationCount="0" BorderThickness="0" Background="Transparent">
                                         <ListView.ItemContainerStyle>
-                                            <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
-                                                <EventSetter Event="MouseLeftButtonUp" Handler="RecordRow_Click" />
-                                                <Setter Property="Cursor" Value="Hand" />
-                                            </Style>
+                                            <StaticResource ResourceKey="RecordItemStyle" />
                                         </ListView.ItemContainerStyle>
                                         <ListView.View>
                                             <GridView>
@@ -1464,8 +1494,8 @@
                                                         <DataTemplate><local:AppIcon Glyph="{Binding Glyph}" FontSize="14" Foreground="{Binding Color}" /></DataTemplate>
                                                     </GridViewColumn.CellTemplate>
                                                 </GridViewColumn>
-                                                <GridViewColumn Width="120" DisplayMemberBinding="{Binding Number}"><GridViewColumnHeader Tag="Number" Content="{x:Static res:Resources.Col_Number}" /></GridViewColumn>
-                                                <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}"><GridViewColumnHeader Tag="Name" Content="{x:Static res:Resources.Col_Name}" /></GridViewColumn>
+                                                <GridViewColumn Width="120" CellTemplate="{StaticResource RecordNumberCell}"><GridViewColumnHeader Tag="Number" Content="{x:Static res:Resources.Col_Number}" /></GridViewColumn>
+                                                <GridViewColumn Width="200" CellTemplate="{StaticResource RecordNameCell}"><GridViewColumnHeader Tag="Name" Content="{x:Static res:Resources.Col_Name}" /></GridViewColumn>
                                                 <GridViewColumn Width="70" DisplayMemberBinding="{Binding TypeName}"><GridViewColumnHeader Tag="TypeName" Content="{x:Static res:Resources.Col_Type}" /></GridViewColumn>
                                                 <GridViewColumn Width="100" DisplayMemberBinding="{Binding SubType}"><GridViewColumnHeader Tag="SubType" Content="{x:Static res:Resources.Col_SubType}" /></GridViewColumn>
                                                 <GridViewColumn Width="120" DisplayMemberBinding="{Binding AttachedTo}"><GridViewColumnHeader Tag="AttachedTo" Content="{x:Static res:Resources.Col_Attached}" /></GridViewColumn>

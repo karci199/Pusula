@@ -428,6 +428,16 @@ namespace Pusula.Wpf
             }
         }
 
+        // Kayıtlar tablolarında seçim tutulmaz: satıra tıklamak kaydı açar. Fareye basıp dışarı çekince
+        // kalan seçim, üzerine gelinen satırla aynı renkte görünüp iki satır seçili gibi duruyordu.
+        private void RecordList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ListView list && list.SelectedIndex >= 0)
+            {
+                list.SelectedIndex = -1;
+            }
+        }
+
         // Kayıtlar: sütun başlığına tıklayınca o sütuna göre sıralanır; ikinci tıklama yönü çevirir.
         private void RecordHeader_Click(object sender, RoutedEventArgs e)
         {

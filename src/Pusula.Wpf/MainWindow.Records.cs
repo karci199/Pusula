@@ -12,10 +12,12 @@ namespace Pusula.Wpf
     /// </summary>
     public partial class MainWindow
     {
-        // Varsayılan kapalı sütunlar: araçlarda yalnız Numara, Ad, Tür, Alt tür görünür.
+        // Varsayılan kapalı sütunlar: araçlarda yalnız Numara, Ad, Tür, Alt tür; projelerde Kod, Ad, Stok, Boyut, Son değişiklik.
         private static readonly HashSet<string> HiddenByDefault = new HashSet<string>(StringComparer.Ordinal)
         {
             "tools:AttachedTo", "tools:Location", "tools:Status",
+            "projects:Tools", "projects:OpenTasks", "projects:Files",
+            "stocks:Template", "stocks:Status", "stocks:Tools", "stocks:OpenTasks",
         };
 
         private readonly Dictionary<ListView, RecordTable> recordTables = new Dictionary<ListView, RecordTable>();

@@ -24,6 +24,7 @@ namespace Pusula.Wpf.ViewModels
         private bool scopeQuiet;
         private List<StockData> stockData = new List<StockData>();
         private Dictionary<string, ProjectRow> projectRows = new Dictionary<string, ProjectRow>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, long> stockSizes = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
 
         // Okunmuş stok: ağaç düğümü, projesi, stok.json ve son değişiklik.
         private sealed class StockData
@@ -108,7 +109,7 @@ namespace Pusula.Wpf.ViewModels
             get
             {
                 var n = ProjectOptions.Count(o => o.IsChecked);
-                return n == 0 ? Resources.Scope_AllProjects : string.Format(CultureInfo.CurrentCulture, Resources.Scope_Projects, n);
+                return n == ProjectOptions.Count ? Resources.Scope_AllProjects : n == 0 ? Resources.Scope_None : string.Format(CultureInfo.CurrentCulture, Resources.Scope_Projects, n);
             }
         }
 
@@ -118,7 +119,7 @@ namespace Pusula.Wpf.ViewModels
             get
             {
                 var n = StockOptions.Count(o => o.IsChecked);
-                return n == 0 ? Resources.Scope_AllStocks : string.Format(CultureInfo.CurrentCulture, Resources.Scope_Stocks, n);
+                return n == StockOptions.Count ? Resources.Scope_AllStocks : n == 0 ? Resources.Scope_None : string.Format(CultureInfo.CurrentCulture, Resources.Scope_Stocks, n);
             }
         }
 
@@ -146,10 +147,10 @@ namespace Pusula.Wpf.ViewModels
             get
             {
                 var rows = ProjectRows.ToList();
-                var text = string.Format(CultureInfo.CurrentCulture, Resources.Records_Totals, rows.Count, rows.Sum(r => r.Stocks), rows.Sum(r => r.Tools), rows.Sum(r => r.OpenTasks));
-                if (rows.Count > 0 && rows.All(r => r.Files.HasValue && r.Bytes.HasValue))
+                var text = string.Format(CultureInfo.CurrentCulture, Resources.Records_Totals, rows.Count, rows.Sum(r => r.Stocks));
+                if (rows.Count > 0 && rows.All(r => r.Bytes.HasValue))
                 {
-                    text += " · " + string.Format(CultureInfo.CurrentCulture, Resources.Records_TotalsSize, rows.Sum(r => r.Files!.Value).ToString("N0", CultureInfo.CurrentCulture), ProjectRow.FormatSize(rows.Sum(r => r.Bytes!.Value)));
+                    text += " · " + ProjectRow.FormatSize(rows.Sum(r => r.Bytes!.Value));
                 }
 
                 return text;
@@ -253,7 +254,7 @@ namespace Pusula.Wpf.ViewModels
             }
 
             stockData = data;
-            var checkedProjects = new HashSet<string>(ProjectOptions.Where(o => o.IsChecked).Select(o => o.Key), StringComparer.OrdinalIgnoreCase);
+            var uncheckedProjects = new HashSet<string>(ProjectOptions.Where(o => !o.IsChecked).Select(o => o.Key), StringComparer.OrdinalIgnoreCase);
             ProjectOptions.Clear();
             projectRows = new Dictionary<string, ProjectRow>(StringComparer.OrdinalIgnoreCase);
             foreach (var project in projects)
@@ -264,7 +265,7 @@ namespace Pusula.Wpf.ViewModels
                 var code = cut > 0 ? folder.Substring(0, cut) : folder;
                 var name = info != null && info.Name.Length > 0 ? info.Name : (cut > 0 ? folder.Substring(cut + 1) : string.Empty);
                 var option = new ScopeOption(project.Path, folder, name, project.ProjectColor, () => ScopeChanged(true));
-                option.SetQuiet(checkedProjects.Contains(project.Path));
+                option.SetQuiet(!uncheckedProjects.Contains(project.Path));
                 ProjectOptions.Add(option);
 
                 var stocks = data.Where(d => ReferenceEquals(d.Project, project)).ToList();
@@ -289,9 +290,25 @@ namespace Pusula.Wpf.ViewModels
             await LoadSizesAsync(version).ConfigureAwait(true);
         }
 
-        // Her projenin dosya sayısı ve toplam boyutu (bütün alt klasörler); ağ yolunda uzun sürebilir, tek tek gelir.
+        // Önce her stokun, sonra her projenin boyutu (bütün alt klasörler); ağ yolunda uzun sürebilir, tek tek gelir.
         private async Task LoadSizesAsync(int version)
         {
+            foreach (var stock in stockData.ToList())
+            {
+                var stockPath = stock.Node.Path;
+                var size = await Task.Run(() => CountFiles(stockPath)).ConfigureAwait(true);
+                if (version != homeVersion)
+                {
+                    return;
+                }
+
+                stockSizes[stockPath] = size.Item2;
+                foreach (var shown in StockRows.Where(r => string.Equals(r.Path, stockPath, StringComparison.OrdinalIgnoreCase)))
+                {
+                    shown.Bytes = size.Item2;
+                }
+            }
+
             foreach (var row in projectRows.Values.ToList())
             {
                 var path = row.Path;
@@ -383,15 +400,15 @@ namespace Pusula.Wpf.ViewModels
             ApplyRecords();
         }
 
-        // Stok seçenekleri yalnız seçili projelerinki (hiç proje seçili değilse hepsi); önceki işaretler korunur.
+        // Stok seçenekleri yalnız işaretli projelerinki; yeni gelenler işaretli, kullanıcının kaldırdıkları kalkık kalır.
         private void RebuildStockOptions()
         {
-            var checkedStocks = new HashSet<string>(StockOptions.Where(o => o.IsChecked).Select(o => o.Key), StringComparer.OrdinalIgnoreCase);
+            var uncheckedStocks = new HashSet<string>(StockOptions.Where(o => !o.IsChecked).Select(o => o.Key), StringComparer.OrdinalIgnoreCase);
             StockOptions.Clear();
             foreach (var stock in StocksOfScopeProjects())
             {
                 var option = new ScopeOption(stock.Node.Path, stock.Node.Title, stock.Info?.Name ?? string.Empty, stock.Project.ProjectColor, () => ScopeChanged(false));
-                option.SetQuiet(checkedStocks.Contains(stock.Node.Path));
+                option.SetQuiet(!uncheckedStocks.Contains(stock.Node.Path));
                 StockOptions.Add(option);
             }
 
@@ -401,7 +418,7 @@ namespace Pusula.Wpf.ViewModels
         private List<StockData> StocksOfScopeProjects()
         {
             var projects = new HashSet<string>(ProjectOptions.Where(o => o.IsChecked).Select(o => o.Key), StringComparer.OrdinalIgnoreCase);
-            return stockData.Where(s => projects.Count == 0 || projects.Contains(s.Project.Path)).ToList();
+            return stockData.Where(s => projects.Contains(s.Project.Path)).ToList();
         }
 
         // Araç bu stoklara / projelere bağlı mı: stok düzeyinde sahibi, proje düzeyinde sahibi (stok seçilmediyse), ya da stok.json bağı.
@@ -438,11 +455,12 @@ namespace Pusula.Wpf.ViewModels
             var checkedProjects = ProjectOptions.Where(o => o.IsChecked).Select(o => o.Key).ToList();
             var scopeStocks = StocksOfScopeProjects();
             var checkedStocks = new HashSet<string>(StockOptions.Where(o => o.IsChecked).Select(o => o.Key), StringComparer.OrdinalIgnoreCase);
-            var stocks = checkedStocks.Count == 0 ? scopeStocks : scopeStocks.Where(s => checkedStocks.Contains(s.Node.Path)).ToList();
-            var narrowed = checkedProjects.Count > 0 || checkedStocks.Count > 0;
+            var stocks = scopeStocks.Where(s => checkedStocks.Contains(s.Node.Path)).ToList();
+            var stocksNarrowed = StockOptions.Any(o => !o.IsChecked);
+            var narrowed = ProjectOptions.Any(o => !o.IsChecked) || stocksNarrowed;
 
             ProjectRows.Clear();
-            foreach (var option in ProjectOptions.Where(o => checkedProjects.Count == 0 || o.IsChecked))
+            foreach (var option in ProjectOptions.Where(o => o.IsChecked))
             {
                 ProjectRow? row;
                 if (projectRows.TryGetValue(option.Key, out row) && Matches(row.Code, row.Name))
@@ -461,12 +479,19 @@ namespace Pusula.Wpf.ViewModels
                 }
 
                 var one = new[] { s };
-                StockRows.Add(new StockRow(s.Node.Path, s.Project.ProjectColor, s.Node.Title, info?.Name ?? string.Empty,
+                var stockRow = new StockRow(s.Node.Path, s.Project.ProjectColor, s.Node.Title, info?.Name ?? string.Empty,
                     projectRows.TryGetValue(s.Project.Path, out var p) ? p.Code : s.Project.Title,
                     info?.Template ?? string.Empty, info?.Status ?? string.Empty,
                     inventoryItems.Count(i => ToolBelongsTo(i, one, new string[0], false)),
                     allHomeTasks.Count(t => t.NotePath.StartsWith(s.Node.Path.TrimEnd('\\') + "\\", StringComparison.OrdinalIgnoreCase)),
-                    s.LastChange));
+                    s.LastChange);
+                long size;
+                if (stockSizes.TryGetValue(s.Node.Path, out size))
+                {
+                    stockRow.Bytes = size;
+                }
+
+                StockRows.Add(stockRow);
             }
 
             ToolRows.Clear();
@@ -485,7 +510,7 @@ namespace Pusula.Wpf.ViewModels
                     continue;
                 }
 
-                if (narrowed && !ToolBelongsTo(item, stocks, projectFolders, checkedStocks.Count == 0))
+                if (narrowed && !ToolBelongsTo(item, stocks, projectFolders, !stocksNarrowed))
                 {
                     continue;
                 }
