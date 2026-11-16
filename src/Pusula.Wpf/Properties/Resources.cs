@@ -2275,5 +2275,180 @@ namespace Pusula.Wpf.Properties
         public static string Error_UnexpectedTitle { get { return Get("Error_UnexpectedTitle"); } }
 
         #endregion
+
+        #region Doğrulamalar
+
+        /// <summary>Doğrulama grubu: İşlevsel</summary>
+        public static string Verify_GroupFunctional { get { return Get("Verify_GroupFunctional"); } }
+
+        /// <summary>Doğrulama grubu: Özellik</summary>
+        public static string Verify_GroupFeature { get { return Get("Verify_GroupFeature"); } }
+
+        /// <summary>Doğrulama grubu: ÇK/EMC</summary>
+        public static string Verify_GroupEmc { get { return Get("Verify_GroupEmc"); } }
+
+        /// <summary>Doğrulama grubu: Diğer</summary>
+        public static string Verify_GroupOther { get { return Get("Verify_GroupOther"); } }
+
+        /// <summary>Doğrulama durumu: Bekliyor</summary>
+        public static string Verify_StatusPending { get { return Get("Verify_StatusPending"); } }
+
+        /// <summary>Doğrulama durumu: Geçti</summary>
+        public static string Verify_StatusPassed { get { return Get("Verify_StatusPassed"); } }
+
+        /// <summary>Doğrulama durumu: Kaldı</summary>
+        public static string Verify_StatusFailed { get { return Get("Verify_StatusFailed"); } }
+
+        /// <summary>Doğrulama grubu başlığında geçen madde sayısı; {0} sayı.</summary>
+        public static string Verify_Passed { get { return Get("Verify_Passed"); } }
+
+        /// <summary>Stok sayı satırı: geçen / toplam madde.</summary>
+        public static string Verify_Summary { get { return Get("Verify_Summary"); } }
+
+        /// <summary>Doğrulamalar: madde ekleme düğmesi (+ simgesiyle).</summary>
+        public static string Verify_Add { get { return Get("Verify_Add"); } }
+
+        /// <summary>Madde ekleme penceresinin başlığı.</summary>
+        public static string Verify_DialogTitle { get { return Get("Verify_DialogTitle"); } }
+
+        /// <summary>Pencere alanı: madde metni.</summary>
+        public static string Verify_FieldText { get { return Get("Verify_FieldText"); } }
+
+        /// <summary>Pencere alanı: grup.</summary>
+        public static string Verify_FieldGroup { get { return Get("Verify_FieldGroup"); } }
+
+        /// <summary>Pencere alanı ve sütun: alt grup.</summary>
+        public static string Verify_FieldSubGroup { get { return Get("Verify_FieldSubGroup"); } }
+
+        /// <summary>Pencere alanı ve sütun: altyapı.</summary>
+        public static string Verify_FieldFacility { get { return Get("Verify_FieldFacility"); } }
+
+        /// <summary>Pencere alanı ve sütun: TG no.</summary>
+        public static string Verify_FieldTgNo { get { return Get("Verify_FieldTgNo"); } }
+
+        /// <summary>Pencere alanı ve sütun: durum.</summary>
+        public static string Verify_FieldStatus { get { return Get("Verify_FieldStatus"); } }
+
+        /// <summary>Sütun: sıra numarası.</summary>
+        public static string Verify_ColumnNo { get { return Get("Verify_ColumnNo"); } }
+
+        /// <summary>Madde metni ipucu.</summary>
+        public static string Verify_PlaceholderText { get { return Get("Verify_PlaceholderText"); } }
+
+        /// <summary>Alt grup ipucu.</summary>
+        public static string Verify_PlaceholderSubGroup { get { return Get("Verify_PlaceholderSubGroup"); } }
+
+        /// <summary>Altyapı ipucu.</summary>
+        public static string Verify_PlaceholderFacility { get { return Get("Verify_PlaceholderFacility"); } }
+
+        /// <summary>TG no ipucu.</summary>
+        public static string Verify_PlaceholderTgNo { get { return Get("Verify_PlaceholderTgNo"); } }
+
+        /// <summary>Altyapı alanının altındaki açıklama.</summary>
+        public static string Verify_FacilityHint { get { return Get("Verify_FacilityHint"); } }
+
+        /// <summary>Pencerede: arka arkaya madde girme kutusu.</summary>
+        public static string Verify_KeepOpen { get { return Get("Verify_KeepOpen"); } }
+
+        /// <summary>Madde metni boşken hata.</summary>
+        public static string Verify_TextRequired { get { return Get("Verify_TextRequired"); } }
+
+        /// <summary>Md yazılamadığında hata; {0} ayrıntı.</summary>
+        public static string Verify_WriteFailed { get { return Get("Verify_WriteFailed"); } }
+
+        /// <summary>Durum çubuğu: madde eklendi; {0} numara, {1} metin.</summary>
+        public static string Verify_Added { get { return Get("Verify_Added"); } }
+
+        /// <summary>Doğrulamalar boşken.</summary>
+        public static string Verify_Empty { get { return Get("Verify_Empty"); } }
+
+        /// <summary>Yeni doğrulama dosyasının içeriği; {0} stok no.</summary>
+        public static string Verify_FileTemplate { get { return Get("Verify_FileTemplate"); } }
+
+        /// <summary>Yeni altyapı listesinin içeriği.</summary>
+        public static string Verify_FacilityTemplate { get { return Get("Verify_FacilityTemplate"); } }
+
+        /// <summary>Seçim listesinde boş seçenek.</summary>
+        public static string Verify_None { get { return Get("Verify_None"); } }
+
+        /// <summary>Doğrulama durumu: Planlandı.</summary>
+        public static string Verify_StatusPlanned { get { return Get("Verify_StatusPlanned"); } }
+
+        /// <summary>Sütun / alan: test planı numarası.</summary>
+        public static string Verify_FieldTpNo { get { return Get("Verify_FieldTpNo"); } }
+
+        /// <summary>Sütun / alan: test raporu numarası.</summary>
+        public static string Verify_FieldTrNo { get { return Get("Verify_FieldTrNo"); } }
+
+        /// <summary>Pencerede TG / TP / TR numaralarının alanı.</summary>
+        public static string Verify_FieldDocs { get { return Get("Verify_FieldDocs"); } }
+
+        /// <summary>Doküman no alanının açıklaması.</summary>
+        public static string Verify_DocsHint { get { return Get("Verify_DocsHint"); } }
+
+        /// <summary>Metni boş satırda (yalnız alt grup) gösterilen yazı.</summary>
+        public static string Verify_TextLater { get { return Get("Verify_TextLater"); } }
+
+        /// <summary>Metin ve alt grup boşken hata.</summary>
+        public static string Verify_TextOrSubGroup { get { return Get("Verify_TextOrSubGroup"); } }
+
+        /// <summary>Doğrulama durumu: Yapılıyor.</summary>
+        public static string Verify_StatusInProgress { get { return Get("Verify_StatusInProgress"); } }
+
+        /// <summary>Doğrulama durumu: Tekrarlanacak.</summary>
+        public static string Verify_StatusRepeat { get { return Get("Verify_StatusRepeat"); } }
+
+        /// <summary>Doğrulama durumu: Kapsam dışı (ilerlemeye sayılmaz).</summary>
+        public static string Verify_StatusNotApplicable { get { return Get("Verify_StatusNotApplicable"); } }
+
+        /// <summary>Düzenleme penceresi başlığı.</summary>
+        public static string Verify_EditTitle { get { return Get("Verify_EditTitle"); } }
+
+        /// <summary>Düzenleme penceresi onay düğmesi.</summary>
+        public static string Verify_Save { get { return Get("Verify_Save"); } }
+
+        /// <summary>Satır menüsü: düzenle.</summary>
+        public static string Verify_Edit { get { return Get("Verify_Edit"); } }
+
+        /// <summary>Satır menüsü / onay düğmesi: sil.</summary>
+        public static string Verify_Delete { get { return Get("Verify_Delete"); } }
+
+        /// <summary>Silme onayı başlığı.</summary>
+        public static string Verify_DeleteTitle { get { return Get("Verify_DeleteTitle"); } }
+
+        /// <summary>Silme onayı metni; {0} numara, {1} madde.</summary>
+        public static string Verify_DeleteText { get { return Get("Verify_DeleteText"); } }
+
+        /// <summary>Durum çubuğu: madde silindi.</summary>
+        public static string Verify_Deleted { get { return Get("Verify_Deleted"); } }
+
+        /// <summary>Durum çubuğu: madde güncellendi.</summary>
+        public static string Verify_Updated { get { return Get("Verify_Updated"); } }
+
+        /// <summary>Durum çubuğu: durum değişti; {0} numara, {1} yeni durum.</summary>
+        public static string Verify_StatusSet { get { return Get("Verify_StatusSet"); } }
+
+        /// <summary>Satır bulunamadı.</summary>
+        public static string Verify_Missing { get { return Get("Verify_Missing"); } }
+
+        /// <summary>Gereksinim md dosyasını açan düğme.</summary>
+        public static string Verify_OpenFile { get { return Get("Verify_OpenFile"); } }
+
+        /// <summary>Dosyayı aç ipucu.</summary>
+        public static string Verify_OpenFileHint { get { return Get("Verify_OpenFileHint"); } }
+
+        /// <summary>Durum etiketinin ipucu.</summary>
+        public static string Verify_StatusHint { get { return Get("Verify_StatusHint"); } }
+
+        /// <summary>Satır menü düğmesinin ipucu.</summary>
+        public static string Verify_RowMenuHint { get { return Get("Verify_RowMenuHint"); } }
+
+        /// <summary>Alt grup listesinin sonundaki yeni ekleme seçeneği.</summary>
+        public static string Verify_NewSubGroup { get { return Get("Verify_NewSubGroup"); } }
+
+        /// <summary>Altyapı listesinin sonundaki yeni ekleme seçeneği.</summary>
+        public static string Verify_NewFacility { get { return Get("Verify_NewFacility"); } }
+
+        #endregion
     }
 }

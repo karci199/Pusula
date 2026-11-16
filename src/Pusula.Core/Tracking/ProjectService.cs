@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Pusula.Core.Tracking
 {
@@ -10,6 +11,9 @@ namespace Pusula.Core.Tracking
     /// </summary>
     public static class ProjectService
     {
+        /// <summary>Her stokta açılan ortak klasör (spek, DM, çizim, kapak fotoğrafı, sınıflandırılamayanlar).</summary>
+        public const string CommonFolder = "01_Ortak";
+
         /// <summary>
         /// <c>&lt;projelerKökü&gt;\&lt;no&gt;_&lt;ad&gt;</c> klasörünü, <c>_TAKIP\proje.json</c> dosyasını
         /// ve verilen alt klasörleri oluşturur.
@@ -74,7 +78,14 @@ namespace Pusula.Core.Tracking
                 info.SetStatus(initialStatus, string.Empty, DateTime.Today);
             }
 
-            return CreateFolder(projectFolder, stockNo, subFolders, folder => JsonFile.WriteAtomic(TrackingFiles.StockFile(folder), info));
+            // Her stokta (şablondan bağımsız): birim bilgisi notu (<stok>.md) ve 01_Ortak; geri kalanı şablondan.
+            var folders = new[] { CommonFolder }.Concat(subFolders ?? Enumerable.Empty<string>()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            var project = Path.GetFileName((projectFolder ?? string.Empty).TrimEnd('\\'));
+            return CreateFolder(projectFolder ?? string.Empty, stockNo, folders, folder =>
+            {
+                JsonFile.WriteAtomic(TrackingFiles.StockFile(folder), info);
+                Notes.StockCover.CreateNote(folder, info, project);
+            });
         }
 
         /// <summary>

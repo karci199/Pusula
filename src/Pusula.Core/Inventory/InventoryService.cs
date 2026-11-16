@@ -98,8 +98,8 @@ namespace Pusula.Core.Inventory
                 return CreateResult.Fail(CreateError.ParentMissing, string.Empty);
             }
 
-            var folderName = number + (name.Length > 0 ? "_" + ToFolderName(name) : string.Empty);
-            var folder = Path.Combine(parent, folderName);
+            // Klasör adı yalnız numara (16.11.2026: "yazılım ve diğer araçlarda klasör adı stok numarası"); tanım kayıtta durur.
+            var folder = Path.Combine(parent, number);
             if (Directory.Exists(folder) || File.Exists(folder))
             {
                 return CreateResult.Fail(CreateError.AlreadyExists, folder);
@@ -266,6 +266,22 @@ namespace Pusula.Core.Inventory
             return result.OrderBy(i => i.Record.Number, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
+        // Stok düzeyinde türün klasörü ve (varsa) 16.11.2026 öncesi eski klasörü (05_Jigler …).
+        private static IEnumerable<string> StockFolders(TypeDefinition type, string root, string stock)
+        {
+            var current = LevelFolder(type, InventoryLevel.Stock, root, stock);
+            yield return current;
+            string legacy;
+            if (TypeSet.LegacyStockFolders.TryGetValue(type.Key, out legacy))
+            {
+                var old = Path.Combine(stock, legacy);
+                if (!string.Equals(old, current, StringComparison.OrdinalIgnoreCase) && Directory.Exists(old))
+                {
+                    yield return old;
+                }
+            }
+        }
+
         // Türün bütün düzey klasörleri: (klasör, düzey, sahip adı).
         private static IEnumerable<Tuple<string, InventoryLevel, string>> LevelFolders(string root, TypeDefinition type)
         {
@@ -277,12 +293,18 @@ namespace Pusula.Core.Inventory
                     yield return Tuple.Create(LevelFolder(type, InventoryLevel.Project, root, entry.Path), InventoryLevel.Project, entry.Title);
                     foreach (var stock in FolderReader.ListChildren(entry.Path).Where(c => c.Kind == FolderKind.Stock))
                     {
-                        yield return Tuple.Create(LevelFolder(type, InventoryLevel.Stock, root, stock.Path), InventoryLevel.Stock, stock.Title);
+                        foreach (var folder in StockFolders(type, root, stock.Path))
+                        {
+                            yield return Tuple.Create(folder, InventoryLevel.Stock, stock.Title);
+                        }
                     }
                 }
                 else if (entry.Kind == FolderKind.Stock)
                 {
-                    yield return Tuple.Create(LevelFolder(type, InventoryLevel.Stock, root, entry.Path), InventoryLevel.Stock, entry.Title);
+                    foreach (var folder in StockFolders(type, root, entry.Path))
+                    {
+                        yield return Tuple.Create(folder, InventoryLevel.Stock, entry.Title);
+                    }
                 }
             }
         }
@@ -412,7 +434,10 @@ namespace Pusula.Core.Inventory
                     {
                         foreach (var type in typeList)
                         {
-                            Collect(LevelFolder(type, InventoryLevel.Stock, root, stock.Path), type, InventoryLevel.Stock, stock.Title, result);
+                            foreach (var folder in StockFolders(type, root, stock.Path))
+                            {
+                                Collect(folder, type, InventoryLevel.Stock, stock.Title, result);
+                            }
                         }
                     }
                 }
@@ -420,7 +445,10 @@ namespace Pusula.Core.Inventory
                 {
                     foreach (var type in typeList)
                     {
-                        Collect(LevelFolder(type, InventoryLevel.Stock, root, entry.Path), type, InventoryLevel.Stock, entry.Title, result);
+                        foreach (var folder in StockFolders(type, root, entry.Path))
+                        {
+                            Collect(folder, type, InventoryLevel.Stock, entry.Title, result);
+                        }
                     }
                 }
             }
@@ -459,40 +487,6 @@ namespace Pusula.Core.Inventory
 
                 result.Add(new InventoryItem { Folder = child, Level = level, Owner = owner, Record = record });
             }
-        }
-
-        // "SATIMO adaptör plakası" → "SATIMO_adaptor_plakasi"
-        private static string ToFolderName(string name)
-        {
-            var builder = new StringBuilder();
-            foreach (var c in name)
-            {
-                switch (c)
-                {
-                    case 'ç': builder.Append('c'); break;
-                    case 'Ç': builder.Append('C'); break;
-                    case 'ğ': builder.Append('g'); break;
-                    case 'Ğ': builder.Append('G'); break;
-                    case 'ı': builder.Append('i'); break;
-                    case 'İ': builder.Append('I'); break;
-                    case 'ö': builder.Append('o'); break;
-                    case 'Ö': builder.Append('O'); break;
-                    case 'ş': builder.Append('s'); break;
-                    case 'Ş': builder.Append('S'); break;
-                    case 'ü': builder.Append('u'); break;
-                    case 'Ü': builder.Append('U'); break;
-                    case ' ': builder.Append('_'); break;
-                    default:
-                        if (char.IsLetterOrDigit(c) || c == '_' || c == '-')
-                        {
-                            builder.Append(c);
-                        }
-
-                        break;
-                }
-            }
-
-            return builder.ToString();
         }
     }
 }

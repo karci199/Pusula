@@ -122,6 +122,90 @@ namespace Pusula.Wpf
             }
         }
 
+        // Doğrulama maddesi: hata varsa ya da "yenisini aç" işaretliyse pencere hemen yeniden açılır (metin kutusu odakta).
+        private void VerificationDialog_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (!viewModel.ConfirmNewVerification())
+            {
+                Dispatcher.BeginInvoke(new Action(() => viewModel.IsVerificationDialogOpen = true));
+            }
+        }
+
+        private void VerificationDelete_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            viewModel.ConfirmDeleteVerification();
+        }
+
+        // Doğrulama satırına çift tık: düzenleme penceresi.
+        private void VerificationRow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2 && (sender as FrameworkElement)?.DataContext is VerificationRow row)
+            {
+                e.Handled = true;
+                viewModel.EditVerification(row);
+            }
+        }
+
+        // Satırın sağ tık menüsü: Düzenle · Sil.
+        private void VerificationRow_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            var element = (FrameworkElement)sender;
+            if (element.DataContext is VerificationRow row && element.ContextMenu != null)
+            {
+                FillVerificationRowMenu(element.ContextMenu, row);
+            }
+        }
+
+        // Satır sonundaki ⋯ düğmesi: aynı menü düğmenin altında açılır.
+        private void VerificationRowMenu_Click(object sender, RoutedEventArgs e)
+        {
+            var button = (FrameworkElement)sender;
+            if (button.DataContext is VerificationRow row)
+            {
+                var menu = new ContextMenu { PlacementTarget = button, Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom };
+                FillVerificationRowMenu(menu, row);
+                menu.IsOpen = true;
+            }
+        }
+
+        private void FillVerificationRowMenu(ContextMenu menu, VerificationRow row)
+        {
+            menu.Items.Clear();
+            var edit = new MenuItem { Header = Properties.Resources.Verify_Edit, Icon = new AppIcon { Glyph = AppIcons.Edit } };
+            edit.Click += (s, a) => viewModel.EditVerification(row);
+            var delete = new MenuItem { Header = Properties.Resources.Verify_Delete, Icon = new AppIcon { Glyph = AppIcons.Delete } };
+            delete.Click += (s, a) => viewModel.RequestDeleteVerification(row);
+            menu.Items.Add(edit);
+            menu.Items.Add(delete);
+        }
+
+        // Durum etiketine basınca durum menüsü: seçilen durum yalnız o satırın durum hücresine yazılır.
+        private void VerificationStatus_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var pill = (FrameworkElement)sender;
+            if (!(pill.DataContext is VerificationRow row))
+            {
+                return;
+            }
+
+            e.Handled = true;
+            var menu = new ContextMenu { PlacementTarget = pill, Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom };
+            foreach (var status in viewModel.VerificationStatuses)
+            {
+                var value = status;
+                var item = new MenuItem
+                {
+                    Header = value,
+                    IsCheckable = false,
+                    IsChecked = string.Equals(value, row.StatusText, StringComparison.CurrentCultureIgnoreCase),
+                };
+                item.Click += (s, a) => viewModel.SetVerificationStatus(row, value);
+                menu.Items.Add(item);
+            }
+
+            menu.IsOpen = true;
+        }
+
         // Durum menüsü her açılışta tür kalıbından kurulur: sıralı durumlar, ayraç, sıra dışı durumlar.
         private void StatusMenu_Opened(object sender, RoutedEventArgs e)
         {

@@ -68,7 +68,7 @@ $grid.CancelEdit() | Out-Null
     Check 'yeni tür: anahtar ve klasör son addan, stok/proje korunur' ($re.Find('olcum_cihazi').Name -eq 'Ölçüm cihazı' -and $re.Find('olcum_cihazi').GeneralFolder -eq 'ENVANTER\Olcum_cihazlari' -and $re.Find('stock') -ne $null -and $re.Find('project') -ne $null)
     $old10 = [Pusula.Core.Types.TypeSet]::CreateDefault(); $old10.Types.RemoveAll([Predicate[Pusula.Core.Types.TypeDefinition]]{ param($x) $x.Key -eq 'equipment' }) | Out-Null; $old10.SchemaVersion = 10; $old10.Normalize()
     $eq = $old10.Find('equipment')
-    Check 'sürüm 10 → 11: Test gereci eklendi' ($eq -ne $null -and $eq.IsInventory -and $eq.SubTypes -contains 'Adaptör' -and @($eq.Fields | % Key) -contains 'seri_no' -and $eq.StockFolder -eq '07_Test_Gerecleri') (@($eq.Fields | % Key) -join ',')
+    Check 'sürüm 10 → 12: Test gereci eklendi (02_Test_Araclari\Diger)' ($eq -ne $null -and $eq.IsInventory -and $eq.SubTypes -contains 'Adaptör' -and @($eq.Fields | % Key) -contains 'seri_no' -and $eq.StockFolder -eq '02_Test_Araclari\Diger') (@($eq.Fields | % Key) -join ',')
     $kept = [Pusula.Core.Types.TypeSet]::CreateDefault(); $kept.Types.RemoveAll([Predicate[Pusula.Core.Types.TypeDefinition]]{ param($x) $x.Key -eq 'equipment' }) | Out-Null; $kept.SchemaVersion = 11; $kept.Normalize()
     Check 'sürüm 11 dosyada silinen Test gereci geri gelmez' ($kept.Find('equipment') -eq $null)
 } finally { Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue }

@@ -7,18 +7,23 @@ using Pusula.Core.Tracking;
 namespace Pusula.Core.Notes
 {
     /// <summary>
-    /// Stokun kapağı: kökteki Obsidian notu (<c>&lt;stok no&gt;.md</c>) ve fotoğraf klasöründeki (<c>07_Fotograflar</c>) resimler.
+    /// Stokun kapağı: kökteki Obsidian notu (<c>&lt;stok no&gt;.md</c>) ve kapak fotoğrafı. 15.11.2026 düzeninde kapak
+    /// <c>01_Ortak</c> içinde adında "kapak" geçen resimdir (diğer resimler gösterilmez); eski stoklarda fotoğraf klasörü
+    /// (<c>07_Fotograflar</c>) okunur.
     /// Yalnızca okur.
     /// </summary>
     public sealed class StockCover
     {
-        /// <summary>Fotoğraf klasörünün adı (numara öneki olmadan).</summary>
+        /// <summary>Ortak klasörün adı (numara öneki olmadan): spek, DM, çizim, kapak.</summary>
+        public const string CommonLabel = "Ortak";
+
+        /// <summary>Eski düzende fotoğraf klasörünün adı (numara öneki olmadan).</summary>
         public const string PhotosLabel = "Fotograflar";
 
-        /// <summary>Doküman klasörünün adı (numara öneki olmadan).</summary>
+        /// <summary>Eski düzende doküman klasörünün adı (numara öneki olmadan).</summary>
         public const string DocumentsLabel = "Dokumanlar";
 
-        /// <summary>Doküman klasörü (<c>01_Dokumanlar</c>); yoksa boş.</summary>
+        /// <summary>Doküman klasörü (<c>01_Ortak</c>, eski stoklarda <c>01_Dokumanlar</c>); yoksa boş.</summary>
         public string DocumentsFolder { get; private set; } = string.Empty;
 
         /// <summary>Doküman klasöründeki dosya sayısı (alt klasörler dahil).</summary>
@@ -50,10 +55,28 @@ namespace Pusula.Core.Notes
 
             cover.NoteFile = Notes.NoteFile.Find(stockFolder, stockNo);
             cover.NoteExcerpt = cover.NoteFile.Length == 0 ? string.Empty : Notes.NoteFile.Excerpt(cover.NoteFile);
-            cover.PhotosFolder = RecordContents.FindFolder(stockFolder, PhotosLabel);
-            cover.Photos = cover.PhotosFolder.Length == 0 ? new List<string>() : RecordContents.ImagesUnder(cover.PhotosFolder);
+            var common = RecordContents.FindFolder(stockFolder, CommonLabel);
+            if (common.Length > 0)
+            {
+                // 01_Ortak'ta yalnız doğrudan klasörde duran, adında "kapak" geçen resimler.
+                var covers = RecordContents.ImagesUnder(common)
+                    .Where(p => string.Equals(Path.GetDirectoryName(p), common, System.StringComparison.OrdinalIgnoreCase)
+                        && Path.GetFileNameWithoutExtension(p).IndexOf(CoverWord, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                    .ToList();
+                if (covers.Count > 0)
+                {
+                    cover.PhotosFolder = common;
+                    cover.Photos = covers;
+                }
+            }
 
-            cover.DocumentsFolder = RecordContents.FindFolder(stockFolder, DocumentsLabel);
+            if (cover.Photos.Count == 0)
+            {
+                cover.PhotosFolder = RecordContents.FindFolder(stockFolder, PhotosLabel);
+                cover.Photos = cover.PhotosFolder.Length == 0 ? new List<string>() : RecordContents.ImagesUnder(cover.PhotosFolder);
+            }
+
+            cover.DocumentsFolder = common.Length > 0 ? common : RecordContents.FindFolder(stockFolder, DocumentsLabel);
             cover.DocumentCount = cover.DocumentsFolder.Length == 0 ? 0 : RecordContents.CountFiles(cover.DocumentsFolder);
 
             // Adında "kapak" geçen fotoğraf varsa kapak odur; yoksa ada göre ilki.

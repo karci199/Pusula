@@ -22,7 +22,7 @@ try {
     "--- 3. Kayıt açma"
     $svc = [Pusula.Core.Inventory.InventoryService]
     $r = $svc::Create($root, $cable, 'General', '', 'jt-0001-0002', 'RS422 test kablosu', 'Haberleşme', 'ekranlı · MOXA pin', 'katan')
-    Check 'genel düzeyde açıldı' ($r.Succeeded -and $r.Folder -like '*\ENVANTER\Kablolar\JT-0001-0002_RS422_test_kablosu') $r.Folder
+    Check 'genel düzeyde açıldı' ($r.Succeeded -and $r.Folder -like '*\ENVANTER\Kablolar\JT-0001-0002') $r.Folder
     Check '_TAKIP gizli' (((Get-Item -Force "$($r.Folder)\_TAKIP").Attributes -band [IO.FileAttributes]::Hidden) -ne 0)
     Check 'aynı numara reddedilir' ($svc::Create($root, $cable, 'General', '', 'JT-0001-0002', 'X', 'RF', '', 'katan').Error -eq 'AlreadyExists')
     Check 'biçim dışı reddedilir' ($svc::Create($root, $cable, 'General', '', 'KBL-1', 'X', 'RF', '', 'katan').Error -eq 'NumberFormat')
@@ -33,8 +33,8 @@ try {
     [Pusula.Core.Tracking.ProjectService]::MarkAsStock("$root\7000_MILKON\AB-7000-0003", 'AB-7000-0003', '', 'Hazırlık') | Out-Null
     $p = $svc::Create($root, $cable, 'Project', "$root\7000_MILKON", 'JT-0001-0010', 'MILKON ortak RF kablosu', 'RF', '', 'katan')
     $s = $svc::Create($root, $jig, 'Stock', "$root\7000_MILKON\AB-7000-0003", 'JIG-1000-0014', 'Döner tabla montaj aparatı', 'Montaj', '', 'katan')
-    Check 'proje düzeyi klasörü' ($p.Folder -like '*\7000_MILKON\00_Proje_Geneli\Envanter\Kablolar\JT-0001-0010_*') $p.Folder
-    Check 'stok düzeyi klasörü' ($s.Folder -like '*\AB-7000-0003\05_Jigler\JIG-1000-0014_*') $s.Folder
+    Check 'proje düzeyi klasörü' ($p.Folder -like '*\7000_MILKON\00_Proje_Geneli\Envanter\Kablolar\JT-0001-0010') $p.Folder
+    Check 'stok düzeyi klasörü (02_Test_Araclari\Jig, ad yalnız numara)' ($s.Folder -like '*\AB-7000-0003\02_Test_Araclari\Jig\JIG-1000-0014') $s.Folder
 
     "--- 4. Olaylar"
     $e1 = [Pusula.Core.Inventory.InventoryEvent]::Create('Hazırlanıyor', [datetime]'2026-09-05', 'M. Yılmaz', '', 'kablo atölyesi')

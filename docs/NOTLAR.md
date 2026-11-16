@@ -93,23 +93,34 @@ Son güncelleme: 08.11.2026. Dal: `claude/pusula-project-setup-c6ce02` (push edi
   Sayılmaz: uygulamanın kendi yazdıkları (3 sn pencere), `.obsidian` gibi gizli klasörler, `_TAKIP`, `_PUSULA`, geçici dosyalar,
   klasörün yalnız tarih değişmesi.
 
-## Stok klasör yapısı (kararlaştırılan)
+## Stok klasör yapısı (15.11.2026 kararı, 16.11.2026'da koda geçti)
 
 ```
-00_Diger             temel
-01_Dokumanlar        temel
-02_Test_Planlari     modül  (ATD/KIWI, test prosedürleri)
-03_Test_Sonuclari    temel  (VNA, SATIMO\Ham, SATIMO\Analiz, Yankisiz, CK)
-04_Kalifikasyon      modül  (01_Isterler, 02_Test_Plani, 03_Test_Sonuclari, 04_Rapor)
-05_Jigler            modül  (Mekanik, Kablaj)
-06_Yazilimlar        modül
-07_Fotograflar       temel
-08                   boş (ileride, örn. Analiz)
-_ARSIV               temel
+AB-7000-0002\
+  AB-7000-0002.md        Birim bilgisi (her stokta; YAML'da test_gereksinimleri: "[[…_Test_Gereksinimleri]]")
+  01_Ortak\              her stokta: spek, DM, çizim, ÇK/EMC gerekleri, kapak (adında "kapak"), sınıflandırılamayanlar
+  02_Test_Araclari\      şablona göre: Jig\ Kablo\ Yazilim\ Diger\  — kayıt klasörü yalnız numara (JY-7000-0005)
+  03_Testler\            şablona göre: 01_Islevsel\ 02_Ozellik\ 03_CK_EMC\ 04_Diger\
+     AB-7000-0002_Test_Gereksinimleri.md     doğrulama tablosu
+     01_Islevsel\Anten_Oruntu\SNP1_T1\      koşum (test klasörü isteğe bağlı; koşum doğrudan grup altında da olabilir)
+  _ARSIV\                gerektiğinde; uygulama okumaz
+  _TAKIP\                gizli, uygulama verisi
 ```
 
-"Temel" = yeni şablonda hazır gelen modül; "her stokta" kavramı kaldırıldı, her şablon kendi listesini tutar.
-Kural: kalifikasyona ait her şey `04_Kalifikasyon` altında; geri kalanı türüne göre. Numaralar sabit.
+- Şablonlar: Pasif anten → 01_Ortak, 03_Testler · Döner anten → 01_Ortak, 02_Test_Araclari, 03_Testler.
+- `_PUSULA\sablon.json` sürüm 4: eski varsayılan modüller (00_Diger, 01_Dokumanlar, 02_Test_Planlari, 03_Test_Sonuclari,
+  04_Kalifikasyon, 05_Jigler, 06_Yazilimlar, 07_Fotograflar) yeni üç modüle çevrilir; kullanıcının eklediği modüller kalır.
+- `_PUSULA\turler.json` sürüm 12: stok düzeyi kayıt klasörleri `02_Test_Araclari\…`; yazılım numarası `JY-####-####`.
+- **Eski stoklar taşınmaz**, okunmaya devam eder: `05_Jigler` / `05_Kablolar` / `06_Yazilimlar` / `07_Test_Gerecleri`,
+  `03_Test_Sonuclari` ve `04_Kalifikasyon\03_Test_Sonuclari` koşuları, `07_Fotograflar` kapağı, `01_Dokumanlar`.
+
+### Doğrulama tablosu (16.11.2026)
+
+- Sütunlar: # · Doğrulama maddesi · Grup · Alt grup · Altyapı · TG no · TP no · TR no · Durum (başlıktan tanınır,
+  sıra serbest, tanınmayan sütunlar korunur; eski 7 sütunlu tablo ilk yazımda 9 sütuna yükselir).
+- Durumlar: Bekliyor · Planlandı · Yapılıyor · Geçti · Kaldı · Tekrarlanacak · Kapsam dışı (ilerlemeye sayılmaz).
+- Maddeler belli değilse yalnız alt grup ("Anten örüntü") yazılır; satır "Maddeler sonra yazılacak" görünür, sonra düzenlenir.
+- Satır silinince diğer numaralar değişmez.
 
 ## Sıradaki adımlar (kullanıcıyla konuşulan sıra)
 

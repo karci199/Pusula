@@ -15,10 +15,24 @@ namespace Pusula.Core.Templates
     public sealed class TemplateSet
     {
         /// <summary>Geçerli dosya biçimi sürümü.</summary>
-        public const int CurrentSchemaVersion = 3;
+        public const int CurrentSchemaVersion = 4;
 
         /// <summary>Yeni şablonda hazır gelen temel modüllerin anahtarları.</summary>
-        public static readonly string[] BasicModuleKeys = { "other", "documents", "testResults", "photos", "archive" };
+        public static readonly string[] BasicModuleKeys = { "common", "tests" };
+
+        // Sürüm 4 (16.11.2026): eski varsayılan modül klasörleri → yeni modül anahtarı (15.11.2026 klasör düzeni).
+        private static readonly Dictionary<string, string> LegacyModuleMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "00_Diger", "common" },
+            { "01_Dokumanlar", "common" },
+            { "07_Fotograflar", "common" },
+            { "02_Test_Planlari", "tests" },
+            { "03_Test_Sonuclari", "tests" },
+            { "04_Kalifikasyon", "tests" },
+            { "05_Jigler", "testTools" },
+            { "05_Kablolar", "testTools" },
+            { "06_Yazilimlar", "testTools" },
+        };
 
         /// <summary>Serileştirici kurucuyu çağırmaz; dosyada olmayan alanlar boş değerle başlar.</summary>
         [OnDeserializing]
@@ -114,6 +128,42 @@ namespace Pusula.Core.Templates
                 }
             }
 
+            // Sürüm 4 (16.11.2026): yeni klasör düzeni. Eski varsayılan modüller (Dokümanlar, Test sonuçları, Kalifikasyon,
+            // Jigler, Yazılımlar, Fotoğraflar, Diğer) 01_Ortak · 02_Test_Araclari · 03_Testler'e döner; şablonlardaki
+            // anahtarlar da çevrilir. Kullanıcının kendi eklediği modüller kalır. Diskteki klasörlere dokunulmaz.
+            if (SchemaVersion < 4)
+            {
+                var renamed = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var module in Modules.ToList())
+                {
+                    string target;
+                    if (LegacyModuleMap.TryGetValue(module.Folder, out target))
+                    {
+                        renamed[module.Key] = target;
+                        Modules.Remove(module);
+                    }
+                }
+
+                if (renamed.Count > 0)
+                {
+                    foreach (var fresh in defaults.Where(d => renamed.Values.Contains(d.Key, StringComparer.OrdinalIgnoreCase)))
+                    {
+                        if (!Modules.Any(m => string.Equals(m.Key, fresh.Key, StringComparison.OrdinalIgnoreCase) || string.Equals(m.Folder, fresh.Folder, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            Modules.Add(fresh);
+                        }
+                    }
+
+                    foreach (var template in Templates)
+                    {
+                        template.Modules = template.Modules
+                            .Select(k => renamed.ContainsKey(k) ? renamed[k] : k)
+                            .Distinct(StringComparer.OrdinalIgnoreCase)
+                            .ToList();
+                    }
+                }
+            }
+
             foreach (var module in Modules)
             {
                 module.Core = false;
@@ -128,39 +178,29 @@ namespace Pusula.Core.Templates
         {
             var set = new TemplateSet();
             set.ProjectFolders.Add("00_Proje_Geneli");
-            set.Modules.Add(new ModuleDefinition { Key = "other", Name = "Diğer", Folder = "00_Diger" });
-            set.Modules.Add(new ModuleDefinition { Key = "documents", Name = "Dokümanlar", Folder = "01_Dokumanlar" });
-            set.Modules.Add(new ModuleDefinition { Key = "testPlans", Name = "Test planları", Folder = "02_Test_Planlari" });
+            // 15.11.2026 klasör düzeni: 01_Ortak her stokta açılır (şablondan bağımsız); test araçları ve testler şablona göre.
+            // Test alt klasörleri (Anten_Oruntu …) iş tanımlanınca, koşum klasörleri (SNP1_T1) koşum eklenince açılır.
+            set.Modules.Add(new ModuleDefinition { Key = "common", Name = "Ortak", Folder = "01_Ortak" });
             set.Modules.Add(new ModuleDefinition
             {
-                Key = "testResults",
-                Name = "Test sonuçları",
-                Folder = "03_Test_Sonuclari",
-                // Yalnızca ölçüm sistemleri; SN01\Ham, SN01\Analiz gibi klasörler ölçüm geldikçe açılır.
-                SubFolders = new List<string> { "VNA", "SATIMO", "Yankisiz", "CK" },
+                Key = "testTools",
+                Name = "Test araçları",
+                Folder = "02_Test_Araclari",
+                SubFolders = new List<string> { "Jig", "Kablo", "Yazilim", "Diger" },
             });
             set.Modules.Add(new ModuleDefinition
             {
-                Key = "qualification",
-                Name = "Kalifikasyon",
-                Folder = "04_Kalifikasyon",
-                SubFolders = new List<string> { "01_Isterler", "02_Test_Plani", "03_Test_Sonuclari", "04_Rapor" },
+                Key = "tests",
+                Name = "Testler",
+                Folder = "03_Testler",
+                SubFolders = new List<string> { "01_Islevsel", "02_Ozellik", "03_CK_EMC", "04_Diger" },
             });
-            set.Modules.Add(new ModuleDefinition
-            {
-                Key = "jig",
-                Name = "Jigler (mekanik, kablaj)",
-                Folder = "05_Jigler",
-                SubFolders = new List<string> { "Mekanik", "Kablaj" },
-            });
-            set.Modules.Add(new ModuleDefinition { Key = "software", Name = "Yazılımlar", Folder = "06_Yazilimlar" });
-            set.Modules.Add(new ModuleDefinition { Key = "photos", Name = "Fotoğraflar", Folder = "07_Fotograflar" });
             set.Modules.Add(new ModuleDefinition { Key = "archive", Name = "Arşiv", Folder = "_ARSIV" });
             set.Templates.Add(new TemplatePreset { Name = "Pasif anten", Modules = BasicModuleKeys.ToList() });
             set.Templates.Add(new TemplatePreset
             {
                 Name = "Döner anten",
-                Modules = BasicModuleKeys.Concat(new[] { "testPlans", "qualification", "jig", "software" }).ToList(),
+                Modules = new List<string> { "common", "testTools", "tests" },
             });
             return set;
         }

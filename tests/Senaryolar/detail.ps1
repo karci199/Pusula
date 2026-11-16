@@ -19,26 +19,28 @@ try {
     $s1 = [Pusula.Core.Tracking.ProjectService]::CreateStock($p.Folder, 'AB-7000-0001', '', 'Döner anten', $set.StockFoldersFor([string[]]$doner.Modules))
     $pasif = $set.Templates | Where-Object Name -eq 'Pasif anten'
     $s2 = [Pusula.Core.Tracking.ProjectService]::CreateStock($p.Folder, 'AB-7000-0002', '', 'Pasif anten', $set.StockFoldersFor([string[]]$pasif.Modules))
-    MakeFile "$($s1.Folder)\01_Dokumanlar\AB-7000-0001_101_AA.docx" 300 (Get-Date '2026-11-02 10:00')
-    MakeFile "$($s1.Folder)\03_Test_Sonuclari\SATIMO\Ham\20261108_AB-7000-0001_SN02_P2_SATIMO_pattern_v01.csv" 2048 (Get-Date).AddMinutes(-30)
-    MakeFile "$($s1.Folder)\03_Test_Sonuclari\VNA\20261101_S11.s2p" 120 (Get-Date '2026-11-01 09:00')
+    MakeFile "$($s1.Folder)\01_Ortak\AB-7000-0001_101_AA.docx" 300 (Get-Date '2026-11-02 10:00')
+    MakeFile "$($s1.Folder)\03_Testler\01_Islevsel\Anten_Oruntu\SN02_P2\20261108_AB-7000-0001_SN02_P2_SATIMO_pattern_v01.csv" 2048 (Get-Date).AddMinutes(-30)
+    MakeFile "$($s1.Folder)\03_Testler\01_Islevsel\S11\20261101_S11.s2p" 120 (Get-Date '2026-11-01 09:00')
     MakeFile "$($s1.Folder)\_ARSIV\eski.zip" 5000 (Get-Date '2026-06-01')
-    MakeFile "$($s2.Folder)\07_Fotograflar\IMG_2041.jpg" 900 (Get-Date '2026-11-05 12:00')
+    MakeFile "$($s2.Folder)\01_Ortak\AB-7000-0002_kapak.jpg" 900 (Get-Date '2026-11-05 12:00')
     MakeFile "$($p.Folder)\00_Proje_Geneli\Sartname.pdf" 400 (Get-Date '2026-10-01')
-    Remove-Item "$($s1.Folder)\06_Yazilimlar"
+    Remove-Item -Recurse "$($s1.Folder)\02_Test_Araclari"
+    # Yeni stokta birim bilgisi notu da açılır; sayımda son değişen olmasın diye eski tarihli.
+    foreach ($note in @("$($s1.Folder)\AB-7000-0001.md", "$($s2.Folder)\AB-7000-0002.md")) { (Get-Item $note).LastWriteTime = Get-Date '2026-09-01' }
 
     "--- 2. Sayim (Core)"
     $none = [Threading.CancellationToken]::None
     $ps = [Pusula.Core.Scanning.FolderSummary]::ForProject($p.Folder, $set.ProjectFolders, $none)
     Check 'proje: 2 stok' ($ps.StockCount -eq 2)
-    Check 'proje: 5 dosya (arsiv haric)' ($ps.Total.FileCount -eq 5) ("sayi=" + $ps.Total.FileCount)
+    Check 'proje: 7 dosya (2 birim notu dahil, arsiv haric)' ($ps.Total.FileCount -eq 7) ("sayi=" + $ps.Total.FileCount)
     Check 'proje geneli 1 dosya' ($ps.General.FileCount -eq 1)
     Check 'stok satirinda sablon' (($ps.Rows | Where-Object Name -eq 'AB-7000-0001').Template -eq 'Döner anten')
     $ss = [Pusula.Core.Scanning.FolderSummary]::ForStock($s1.Folder, $set, $none)
-    Check 'stok: 3 dosya (arsiv haric)' ($ss.Total.FileCount -eq 3) ("sayi=" + $ss.Total.FileCount)
+    Check 'stok: 4 dosya (birim notu dahil, arsiv haric)' ($ss.Total.FileCount -eq 4) ("sayi=" + $ss.Total.FileCount)
     Check 'son degisen SATIMO' ($ss.Total.LastFile -match 'SATIMO_pattern') $ss.Total.LastFile
     Check 'arsiv ayri sayilir' (($ss.Rows | Where-Object Name -eq '_ARSIV').Stats.FileCount -eq 1)
-    Check 'silinen klasor eksik gorunur' (($ss.Rows | Where-Object Name -eq '06_Yazilimlar').IsMissing)
+    Check 'silinen klasor eksik gorunur' (($ss.Rows | Where-Object Name -eq '02_Test_Araclari').IsMissing)
     Check '_TAKIP listede yok' (-not ($ss.Rows | Where-Object Name -eq '_TAKIP'))
 
     "--- 3. Ana pencere"
@@ -57,7 +59,7 @@ try {
     Check 'kutucuk: Stok 2' ($vm.Detail.Tiles[0].Value -eq '2')
     Snap $win (Join-Path $Out 'detay-proje.png')
     $vm.SelectedNode = ($project.Children | Where-Object Title -eq 'AB-7000-0001'); WaitDetail $vm
-    Check 'stok tablosu' ($vm.Detail.IsStock -and $vm.Detail.Rows.Count -ge 9) ("satir=" + $vm.Detail.Rows.Count)
+    Check 'stok tablosu' ($vm.Detail.IsStock -and $vm.Detail.Rows.Count -ge 3) ("satir=" + $vm.Detail.Rows.Count)
     Check 'alt baslik' ($vm.Detail.Subtitle -match 'Döner anten') $vm.Detail.Subtitle
     Snap $win (Join-Path $Out 'detay-stok.png')
     if ($global:lastErr) { "  YAKALANAN HATA: " + $global:lastErr.Substring(0, [Math]::Min(1500, $global:lastErr.Length)) }

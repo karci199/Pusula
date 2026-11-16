@@ -41,7 +41,7 @@ namespace Pusula.Core.Types
 
         /// <summary>Dosya biçiminin sürümü.</summary>
         [DataMember(Name = "schemaVersion", Order = 0)]
-        public int SchemaVersion { get; set; } = 11;
+        public int SchemaVersion { get; set; } = 12;
 
         /// <summary>Kayıt türleri.</summary>
         [DataMember(Name = "types", Order = 1)]
@@ -357,8 +357,44 @@ namespace Pusula.Core.Types
                 Types.Add(defaults.Find(EquipmentKey)!);
             }
 
-            SchemaVersion = 11;
+            // Sürüm 12 (16.11.2026): stoka özel test araçları 02_Test_Araclari altında (Jig, Kablo, Yazilim, Diger);
+            // yazılım numarası yalnız stok numarası biçiminde (JY-####-####). Eski klasörler okunmaya devam eder
+            // (bkz. LegacyStockFolders); diskteki klasörlere dokunulmaz.
+            if (SchemaVersion < 12)
+            {
+                foreach (var type in Types.Where(t => t.IsInventory))
+                {
+                    var fallback = defaults.Find(type.Key);
+                    string legacy;
+                    if (fallback != null && LegacyStockFolders.TryGetValue(type.Key, out legacy) && string.Equals(type.StockFolder, legacy, StringComparison.OrdinalIgnoreCase))
+                    {
+                        type.StockFolder = fallback.StockFolder;
+                    }
+                }
+
+                var software = Find("software");
+                if (software != null)
+                {
+                    foreach (var format in software.NumberFormats.Where(n => n.Pattern == "YZ-####-####"))
+                    {
+                        format.Pattern = "JY-####-####";
+                    }
+                }
+            }
+
+            SchemaVersion = 12;
         }
+
+        /// <summary>
+        /// 16.11.2026 öncesi stok düzeyi klasörleri (tür anahtarı → klasör); eski stoklardaki kayıtlar buradan da okunur.
+        /// </summary>
+        public static readonly IReadOnlyDictionary<string, string> LegacyStockFolders = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "cable", "05_Kablolar" },
+            { "jig", "05_Jigler" },
+            { "software", "06_Yazilimlar" },
+            { EquipmentKey, "07_Test_Gerecleri" },
+        };
 
         private static bool SameSet(IEnumerable<string> a, IEnumerable<string> b)
         {
@@ -472,12 +508,12 @@ namespace Pusula.Core.Types
                 FileType("Arşiv", "Arşiv", "zip", "7z", "rar"),
             });
 
-            set.Types.Add(Inventory("cable", "Kablo", "Kablolar", "E703", "#F7A35C", "JT-####-####", "Kablo numarası", "Kablolar", "05_Kablolar",
+            set.Types.Add(Inventory("cable", "Kablo", "Kablolar", "E703", "#F7A35C", "JT-####-####", "Kablo numarası", "Kablolar", @"02_Test_Araclari\Kablo",
                 CableSubTypes, new[] { "01_Belgeler", "02_Fotograflar" }));
-            set.Types.Add(Inventory("jig", "Jig", "Jigler", "E90F", "#B4A7F5", "JIG-####-####", "Jig numarası", "Jigler", "05_Jigler",
+            set.Types.Add(Inventory("jig", "Jig", "Jigler", "E90F", "#B4A7F5", "JIG-####-####", "Jig numarası", "Jigler", @"02_Test_Araclari\Jig",
                 JigSubTypes, new[] { "01_Cizimler", "02_Belgeler", "03_Fotograflar" }));
 
-            var software = Inventory("software", "Yazılım", "Yazılımlar", "E943", "#4CC38A", "YZ-####-####", "Yazılım numarası", "Yazilimlar", "06_Yazilimlar",
+            var software = Inventory("software", "Yazılım", "Yazılımlar", "E943", "#4CC38A", "JY-####-####", "Yazılım numarası", "Yazilimlar", @"02_Test_Araclari\Yazilim",
                 new string[0], new[] { "01_Kaynak", "02_Belgeler" });
             software.Statuses.Clear();
             software.Statuses.AddRange(new[]
@@ -493,7 +529,7 @@ namespace Pusula.Core.Types
             set.Types.Add(software);
 
             // Test gereci: kablo ve jig dışındaki yardımcı araçlar (adaptör, zayıflatıcı, yük …); kablo / jig durumları.
-            set.Types.Add(Inventory(EquipmentKey, "Test gereci", "Test gereçleri", "E950", "#5FD4C4", "TG-####-####", "Test gereci numarası", "Test_Gerecleri", "07_Test_Gerecleri",
+            set.Types.Add(Inventory(EquipmentKey, "Test gereci", "Test gereçleri", "E950", "#5FD4C4", "TG-####-####", "Test gereci numarası", "Test_Gerecleri", @"02_Test_Araclari\Diger",
                 EquipmentSubTypes, new[] { "01_Belgeler", "02_Fotograflar" }));
             // Kişi: klasörsüz tür; alt türler roller, Ekip listeden (Türler penceresinden değiştirilir).
             var person = new TypeDefinition { Key = PersonKey, Name = "Kişi", PluralName = "Kişiler", Icon = "E77B", Color = "#F28CB1" };

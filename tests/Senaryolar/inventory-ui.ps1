@@ -35,7 +35,7 @@ try {
     $vm.NewInventoryNumber = 'JT-0001-0002'; $vm.NewInventoryName = 'RS422 test kablosu'; $vm.NewInventorySubType = 'Haberleşme'
     Check 'kablo açıldı' ($vm.ConfirmNewInventory())
     Pump
-    Check 'stok klasöründe' (Test-Path "$root\7000_MILKON\AB-7000-0003\05_Kablolar\JT-0001-0002_RS422_test_kablosu\_TAKIP\kayit.json")
+    Check 'stok klasöründe' (Test-Path "$root\7000_MILKON\AB-7000-0003\02_Test_Araclari\Kablo\JT-0001-0002\_TAKIP\kayit.json")
     Check 'kayıt seçildi, sayfa açık' ($vm.Inventory.IsRecord -and $vm.SelectedNode.Title -eq 'JT-0001-0002')
     Check 'durum Talep, kişi oturum sahibi' ($vm.Inventory.Status.Name -eq 'Talep' -and $vm.Inventory.History[0].Meta -match [Environment]::UserName)
 
@@ -57,7 +57,7 @@ try {
     $vm.SelectedNode = $stock; Pump
     Check 'stok seçilince envanter paneli kapanır' (-not $vm.Inventory.IsRecord -and -not $vm.Inventory.IsList)
     "--- 5. Şablon alt klasörleri ve elle açılmış klasör"
-    $made = Get-ChildItem "$root\7000_MILKON\AB-7000-0003\05_Kablolar\JT-0001-0002_RS422_test_kablosu" -Directory | Where-Object { $_.Name -notlike '_*' } | ForEach-Object Name
+    $made = Get-ChildItem "$root\7000_MILKON\AB-7000-0003\02_Test_Araclari\Kablo\JT-0001-0002" -Directory | Where-Object { $_.Name -notlike '_*' } | ForEach-Object Name
     Check 'kablo şablon klasörleri' (($made -join ',') -eq '01_Belgeler,02_Fotograflar') ($made -join ',')
     New-Item -ItemType Directory "$root\ENVANTER\Jigler\JIG-1000-0030_Test_Aparati" -Force | Out-Null
     New-Item -ItemType Directory "$root\7000_MILKON\AB-7000-0003\05_Jigler\Mekanik" -Force | Out-Null

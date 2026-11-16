@@ -23,7 +23,7 @@ try {
     Check 'bulunamayan bağ' (($missing -join ',') -eq 'JIG-1000-0099')
     $svc::SetStockLink($stock, 'JIG-1000-0099', $false) | Out-Null
     $info = $readInfo.Invoke($null, @("$stock\_TAKIP\stok.json"))
-    Check 'bağ kaldırıldı, kayıt yerinde' (($info.Inventory -join ',') -eq 'JIG-1000-0001' -and (Test-Path "$tmp\ENVANTER\Jigler\JIG-1000-0001_Genel_jig"))
+    Check 'bağ kaldırıldı, kayıt yerinde' (($info.Inventory -join ',') -eq 'JIG-1000-0001' -and (Test-Path "$tmp\ENVANTER\Jigler\JIG-1000-0001"))
 } finally { Remove-Item -Recurse -Force $tmp -ErrorAction SilentlyContinue }
 
 "--- 2. Arayüz (deneme verisi, AB-7000-0003)"

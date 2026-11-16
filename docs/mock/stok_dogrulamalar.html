@@ -1,0 +1,217 @@
+﻿<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Doğrulamalar</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1f1f1f;font-family:"Segoe UI",Arial,sans-serif;color:#e6e6e6;font-size:14px}
+.win{display:grid;grid-template-columns:300px 1fr;height:900px;width:1500px}
+.side{background:#1c1c1c;padding:10px 8px}
+.home{background:#2f3a44;border-radius:6px;padding:9px 12px;display:flex;gap:10px;align-items:center}
+.sh{display:flex;align-items:center;padding:16px 8px 8px;font-weight:600;font-size:13px;color:#bdbdbd}
+.sh span{flex:1}
+.srch{margin:0 4px 10px;background:#2b2b2b;border:1px solid #3a3a3a;border-radius:5px;padding:7px 10px;color:#888;font-size:13px}
+.tr{padding:7px 10px 7px 30px;color:#ddd;display:flex;gap:9px;align-items:center;border-radius:5px}
+.tr.p{padding-left:12px}.tr.sel{background:#353535}
+.ico{color:#4a9fe0}.icog{color:#5db55a}
+.main{background:#272727;margin:6px;border-radius:8px;padding:22px 30px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.hd{display:flex;align-items:flex-start;gap:10px}
+.hd .t{flex:1}
+.no{font-size:28px;font-weight:600}
+.nm{font-size:18px;color:#aaa;margin-left:12px}
+.ctx{margin-top:5px;font-size:13px;color:#8a8a8a;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.ctx a{color:#4a9fe0}
+.ctx b{color:#ddd;font-weight:600}
+.dot{color:#555}
+.btn{border:1px solid #3d3d3d;background:#2e2e2e;border-radius:6px;padding:6px 12px;font-size:13px;display:inline-flex;gap:8px;align-items:center}
+.mini{display:inline-block;width:70px;height:5px;border-radius:3px;background:#3a3a3a;overflow:hidden;vertical-align:middle;margin-left:6px}
+.mini i{display:block;height:100%;width:33%;background:#639922;float:left}.mini i+i{width:22%;background:#ba7517}
+.sn{background:#333;border-radius:5px;padding:1px 7px;color:#ddd;font-size:12px}
+.top{display:grid;grid-template-columns:330px 1fr;gap:18px;height:290px}
+.teu{background:#2d2d2d;border:1px solid #3a3a3a;border-radius:10px;position:relative;display:flex;align-items:center;justify-content:center}
+.teu .ph{width:170px;height:170px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#6c7a86,#3b434a)}
+.teu .cap{position:absolute;left:10px;bottom:8px;font-size:11px;color:#888}
+.tl{background:#2a2a2a;border:1px solid #383838;border-radius:10px;padding:10px 14px;overflow:hidden;display:flex;flex-direction:column}
+.tlh{display:flex;align-items:center;margin-bottom:6px}
+.tlh b{flex:1;font-size:15px}
+.seg{display:flex;border:1px solid #3a3a3a;border-radius:6px;padding:2px;font-size:12px}
+.seg span{padding:2px 9px;border-radius:4px;color:#aaa}
+.seg .s{background:#36404a;color:#fff;font-weight:600}
+.day{font-size:12px;color:#aaa;font-weight:600;margin:6px 0 4px 2px}
+.ev{display:grid;grid-template-columns:24px 1fr;}
+.ln{position:relative}
+.ln:before{content:"";position:absolute;left:11px;top:0;bottom:0;width:2px;background:#5db55a;opacity:.45}
+.ln i{position:absolute;left:6px;top:13px;width:12px;height:12px;border-radius:50%;background:#5db55a;border:2px solid #272727}
+.cd{background:#2f2f2f;border:1px solid #3a3a3a;border-radius:8px;padding:7px 12px;margin:0 0 6px 6px}
+.cd .m{display:flex;gap:8px;align-items:center;font-size:12px;color:#999}
+.cd .m .tm{margin-left:auto}
+.cd .x{font-size:14px;margin-top:2px}
+.add{margin-left:8px;border:1px solid #3d3d3d;border-radius:6px;padding:3px 10px;font-size:12px;background:#2e2e2e}
+.tabs{display:flex;align-items:flex-end;border-bottom:1px solid #383838}
+.tab{padding:9px 16px;color:#aaa;font-size:14px}
+.tab.on{color:#fff;font-weight:600;border:1px solid #383838;border-bottom:1px solid #272727;border-radius:6px 6px 0 0;margin-bottom:-1px;background:#272727}
+.bd{display:inline-block;min-width:18px;padding:0 6px;border-radius:9px;background:#3a3a3a;font-size:11px;text-align:center;margin-left:6px}
+.tabs .seg{margin-left:auto;margin-bottom:6px;font-size:13px}
+.panel{flex:1;background:#2a2a2a;border:1px solid #383838;border-top:0;border-radius:0 0 8px 8px;padding:8px 16px;overflow:hidden}
+.grp{display:flex;gap:8px;padding:10px 4px 4px;font-size:13px;font-weight:600;color:#bbb}
+.grp .c{color:#777;font-weight:400}
+.row{display:grid;grid-template-columns:22px minmax(0,2.2fr) 70px 90px 120px 150px 150px 30px;gap:10px;align-items:center;padding:8px 4px;border-bottom:1px solid #333;font-size:13.5px}
+.row.h{color:#777;font-size:11.5px;padding-top:2px}
+.nmc{font-weight:600}
+.dm{color:#8a8a8a;font-size:12px}
+.y{font-size:11px;padding:2px 8px;border-radius:5px;justify-self:start}
+.yt{background:#2e2a5c;color:#cecbf6}.ym{background:#06392f;color:#9fe1cb}.ya{background:#412402;color:#fac775}
+.alt{color:#85b7eb;font-size:12.5px}
+.s{font-size:11.5px;padding:2px 9px;border-radius:10px;justify-self:start}
+.s0{background:#3a3a3a;color:#bbb}.s1{background:#5a3a08;color:#fac775}.s2{background:#28470e;color:#c0dd97}.s3{background:#0c447c;color:#b5d4f4}
+.hz{display:flex;gap:5px}
+.hz span{font-size:11px;padding:1px 7px;border-radius:5px}
+.ok{background:#28470e;color:#c0dd97}.wt{background:#5a3a08;color:#fac775}.na{background:#3a3a3a;color:#aaa}
+.warn{color:#ef9f27;text-align:center}
+.sub{display:grid;grid-template-columns:22px minmax(0,2.2fr) 70px 90px 120px 150px 150px 30px;gap:10px;padding:5px 4px;font-size:12.5px;color:#aaa;border-bottom:1px solid #2f2f2f}
+.sub .n{padding-left:18px;position:relative}
+.sub .n:before{content:"";position:absolute;left:4px;top:-6px;width:8px;height:14px;border-left:1px solid #555;border-bottom:1px solid #555}
+.ms{font-size:11px;padding:1px 8px;border-radius:9px}
+.foot{font-size:12px;color:#888;margin-top:8px}
+.trow{display:grid;grid-template-columns:30px 150px minmax(0,1fr) 110px 150px;gap:10px;align-items:center;padding:10px 6px;border-bottom:1px solid #333;font-size:13.5px}
+.trow.h{color:#777;font-size:11.5px}
+.trow .n{font-weight:600;color:#fff}
+.trow .sec{color:#aaa}
+.fl{display:flex;align-items:center;gap:10px;padding:6px 2px 10px;font-size:13px;color:#aaa}
+.fl .seg{font-size:13px}
+.fl .dd{border:1px solid #3a3a3a;border-radius:6px;padding:3px 10px;background:#2e2e2e;color:#ddd}
+.fl .q{margin-left:auto;border:1px solid #3a3a3a;border-radius:6px;padding:5px 10px;width:280px;color:#888}
+#tools{display:none}
+body.tools #tools{display:block}
+body.tools #verif{display:none}
+.tabs .tbar{margin-left:auto;margin-bottom:6px;display:flex;gap:8px;align-items:center}
+.pbtn{background:#2f6fb0;color:#fff;border-radius:6px;padding:5px 14px;font-size:13px;font-weight:600}
+.vrow{display:grid;grid-template-columns:34px minmax(0,1fr) 150px 140px 90px 120px;gap:12px;align-items:center;padding:6px 6px;border-bottom:1px solid #333;font-size:13.5px}
+.vrow.h{color:#777;font-size:11.5px;padding-top:4px;padding-bottom:6px}
+.vrow .i{color:#777;font-size:12px}
+.vrow .sg{color:#aaa}
+.chip{font-size:12px;padding:2px 9px;border-radius:5px;background:#26384a;color:#b5d4f4;justify-self:start}
+.ghd{display:flex;gap:8px;align-items:center;padding:10px 6px 4px;font-size:13px;font-weight:600;color:#ccc}
+.ghd .c{color:#777;font-weight:400}
+.ghd .bar{width:60px;height:4px;border-radius:2px;background:#3a3a3a;overflow:hidden;margin-left:6px}
+.ghd .bar i{display:block;height:100%;background:#639922}
+.st{font-size:11.5px;padding:2px 10px;border-radius:10px;justify-self:start}
+.b0{background:#3a3a3a;color:#bbb}.b1{background:#28470e;color:#c0dd97}.b2{background:#5c1f1f;color:#f5b3b3}
+.scrim{display:none;position:absolute;left:0;top:0;width:1500px;height:900px;background:rgba(0,0,0,.55)}
+body.dlg .scrim{display:block}
+.dl{position:absolute;left:440px;top:120px;width:620px;background:#2b2b2b;border:1px solid #444;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.dl .tt{padding:18px 22px 6px;font-size:18px;font-weight:600}
+.dl .sb{padding:0 22px 14px;font-size:12.5px;color:#888}
+.dl .bd2{padding:4px 22px 16px;display:flex;flex-direction:column;gap:13px}
+.fld label{display:block;font-size:12.5px;color:#bbb;margin-bottom:5px}
+.fld label em{color:#e08080;font-style:normal}
+.fld label span{color:#777;font-weight:400}
+.inp{background:#1f1f1f;border:1px solid #444;border-radius:6px;padding:8px 10px;font-size:13.5px;color:#eee}
+.inp.ta{height:58px}
+.inp.ph{color:#777}
+.inp.dd{display:flex;justify-content:space-between}
+.inp.focus{border-color:#4a9fe0;border-bottom:2px solid #4a9fe0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.seg2{display:flex;border:1px solid #444;border-radius:6px;padding:2px;font-size:13px;width:max-content}
+.seg2 span{padding:5px 14px;border-radius:4px;color:#aaa}
+.seg2 .s{background:#36404a;color:#fff;font-weight:600}
+.pop{position:absolute;left:0;right:0;top:100%;margin-top:3px;background:#2f2f2f;border:1px solid #474747;border-radius:7px;box-shadow:0 10px 30px rgba(0,0,0,.5);padding:4px;z-index:5}
+.pop div{padding:7px 10px;border-radius:5px;font-size:13px;display:flex;justify-content:space-between}
+.pop div span{color:#777;font-size:11.5px}
+.pop .on{background:#36404a}
+.pop .new{border-top:1px solid #444;margin-top:4px;color:#7db8f0;border-radius:0}
+.md{background:#1b1b1b;border:1px dashed #444;border-radius:6px;padding:8px 10px;font-family:"Segoe UI";font-size:12px;color:#999}
+.md b{color:#ccc;font-weight:600}
+.ft{display:flex;gap:8px;justify-content:flex-end;padding:12px 22px;border-top:1px solid #3a3a3a;background:#272727;border-radius:0 0 10px 10px}
+.ft .b{border:1px solid #444;border-radius:6px;padding:6px 14px;font-size:13px}
+.ft .chk{margin-right:auto;font-size:12.5px;color:#aaa;display:flex;gap:7px;align-items:center}
+.ft .chk i{width:14px;height:14px;border:1px solid #777;border-radius:3px;display:inline-block}
+.inl{display:none;margin-top:8px;background:#232a31;border:1px solid #3a4a5a;border-radius:7px;padding:10px 12px}
+body.yeni .inl{display:block}
+body.yeni .pop{display:none}
+.inl .r{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center}
+.inl .h{font-size:12px;color:#9fc4e8;margin-bottom:7px;font-weight:600}
+.inl .n{font-size:11.5px;color:#888;margin-top:7px}
+.top{height:250px}.teu .ph{width:150px;height:150px}
+</style></head><body>
+<div class="win">
+<div class="side">
+<div class="home"><span class="ico">⌂</span>Ana sayfa</div>
+<div class="sh"><span>Projeler</span><b style="color:#4a9fe0">＋</b>&nbsp;&nbsp;↻&nbsp;&nbsp;⚙</div>
+<div class="srch">⌕ Ara: numara, ad…</div>
+<div class="tr p"><span>⌄</span><span class="icog">▣</span>7000_MILKON</div>
+<div class="tr"><span class="ico">◈</span>AB-7000-0001</div>
+<div class="tr sel"><span class="ico">◈</span>AB-7000-0002</div>
+<div class="tr"><span class="ico">◈</span>AB-7000-0003</div>
+<div class="tr"><span class="ico">◈</span>JY-7000-0004</div>
+<div class="tr p" style="margin-top:12px"><span>⌄</span><span style="color:#999">▤</span>Envanter</div>
+<div class="tr"><span style="color:#e0904a">⤳</span>Kablolar <span style="color:#777">5</span></div>
+<div class="tr"><span style="color:#9b7fe6">⚒</span>Jigler <span style="color:#777">3</span></div>
+</div>
+
+<div class="main">
+<div class="hd">
+<div class="t"><span class="no">AB-7000-0002</span><span class="nm">TAKIM ANTEN BOYNUZ Y</span>
+<div class="ctx"><span><a>7000_MILKON</a> › Pasif anten</span><span class="dot">|</span><span>Doğrulama <b>3/8</b><span class="mini"><i></i><i></i></span></span><span class="dot">·</span><span>Açık iş <b>6</b> <span style="color:#f09595">(1 geciken)</span></span><span class="dot">·</span><span><b>820 MB</b></span><span class="dot">·</span><span>Seri no <span class="sn">SNP1</span> <span class="sn">SNP2</span> <span class="sn">SNP3</span></span></div></div>
+<span class="btn">📝 Birim bilgisi</span><span class="btn">📁 Klasör</span><span class="btn" style="border:0;background:none">⋯</span>
+</div>
+
+<div class="top">
+<div class="teu"><div class="ph"></div><span class="cap">TEÜ görünümü · 01_Ortak/AB-7000-0002_kapak.png</span></div>
+<div class="tl">
+<div class="tlh"><b>Zaman çizelgesi</b><div class="seg"><span>Bugün</span><span class="s">Bu hafta</span><span>Bu ay</span><span>Hepsi</span></div><span class="add">+ Not</span></div>
+<div class="day">Bugün</div>
+<div class="ev"><div class="ln"><i></i></div><div class="cd"><div class="m"><span class="sn">SNP1</span><span class="tm">14:20</span></div><div class="x">SATIMO testi başlatıldı. 2–18 GHz.</div></div></div>
+<div class="ev"><div class="ln"><i></i></div><div class="cd"><div class="m"><span>Gün boyu</span><span class="tm"></span></div><div class="x">Jig teslim alındı.</div></div></div>
+<div class="day">Dün</div>
+<div class="ev"><div class="ln"><i></i></div><div class="cd"><div class="m"><span class="sn">SNP2</span><span class="tm">17:40</span></div><div class="x">Yan lob tekrar ölçüldü, sonuç klasöre kondu.</div></div></div>
+</div>
+</div>
+
+
+<div class="tabs">
+<span class="tab on">Doğrulamalar <span class="bd">8</span></span><span class="tab">Yapılacaklar <span class="bd" style="background:#7a2a2a;color:#fff">6</span></span><span class="tab">Test yardımcı araçları <span class="bd">5</span></span>
+<div class="tbar"><div class="seg"><span class="s">Hepsi 8</span><span>İşlevsel 5</span><span>Özellik 1</span><span>ÇK/EMC 2</span><span>Diğer 0</span></div><span class="pbtn">＋ Madde</span></div>
+</div>
+
+<div class="panel">
+<div class="vrow h"><span>#</span><span>Doğrulama maddesi</span><span>Alt grup</span><span>Altyapı</span><span>TG no</span><span>Durum</span></div>
+<div class="ghd">İşlevsel <span class="c">· 5 · 2 geçti</span><span class="bar"><i style="width:40%"></i></span></div>
+<div class="vrow"><span class="i">1</span><span>Kazanç ≥ 5 dBi @ 2,4 GHz</span><span class="sg">Anten örüntü</span><span class="chip">SATIMO</span><span class="i">TG-012</span><span class="st b0">Bekliyor</span></div>
+<div class="vrow"><span class="i">2</span><span>Hüzme genişliği 60° ± 5°</span><span class="sg">Anten örüntü</span><span class="chip">SATIMO</span><span class="i"></span><span class="st b1">Geçti</span></div>
+<div class="vrow"><span class="i">3</span><span>Yan lob ≤ −15 dB</span><span class="sg">Anten örüntü</span><span class="chip">Yankısız oda</span><span class="i"></span><span class="st b0">Bekliyor</span></div>
+<div class="vrow"><span class="i">4</span><span>S11 ≤ −10 dB (2–18 GHz)</span><span class="sg">RF</span><span class="chip">VNA</span><span class="i">TG-015</span><span class="st b1">Geçti</span></div>
+<div class="vrow"><span class="i">5</span><span>28 V'ta akım ≤ 2 A</span><span class="sg">Güç</span><span class="chip">Tezgâh</span><span class="i">TG-020</span><span class="st b2">Kaldı</span></div>
+<div class="ghd">ÇK/EMC <span class="c">· 2</span><span class="bar"><i style="width:0"></i></span></div>
+<div class="vrow"><span class="i">6</span><span>RE102 sınırı içinde</span><span class="sg">Işınım</span><span class="chip">EMC lab</span><span class="i"></span><span class="st b0">Bekliyor</span></div>
+<div class="vrow"><span class="i">7</span><span>+71 °C depolama sonrası çalışır</span><span class="sg">Sıcaklık</span><span class="chip">İklim kabini</span><span class="i">TG-030</span><span class="st b0">Bekliyor</span></div>
+<div class="ghd">Özellik <span class="c">· 1 · 1 geçti</span><span class="bar"><i style="width:100%"></i></span></div>
+<div class="vrow"><span class="i">8</span><span>Ağırlık ≤ 1,2 kg</span><span class="sg"></span><span class="i">—</span><span class="i"></span><span class="st b1">Geçti</span></div>
+</div>
+</div>
+</div>
+
+<div class="scrim"><div class="dl">
+<div class="tt">Doğrulama maddesi ekle</div>
+<div class="sb">AB-7000-0002 · 03_Testler\AB-7000-0002_Test_Gereksinimleri.md</div>
+<div class="bd2">
+<div class="fld"><label>Doğrulama maddesi <em>*</em></label><div class="inp ta">Yan lob ≤ −15 dB (E ve H düzlemi)</div></div>
+<div class="fld"><label>Grup <em>*</em></label><div class="seg2"><span class="s">İşlevsel</span><span>Özellik</span><span>ÇK/EMC</span><span>Diğer</span></div></div>
+<div class="two">
+<div class="fld"><label>Alt grup <span>(isteğe bağlı)</span></label><div class="inp dd">Anten örüntü <span style="color:#777">▾</span></div></div>
+<div class="fld" style="position:relative"><label>Altyapı <span>(isteğe bağlı)</span></label><div class="inp dd focus">SATIMO <span style="color:#777">▾</span></div>
+<div class="pop"><div class="on">SATIMO <span>3 madde</span></div><div>Yankısız oda <span>1 madde</span></div><div>VNA <span>1 madde</span></div><div>İklim kabini <span>1 madde</span></div><div>EMC lab <span>1 madde</span></div><div class="new">＋ Yeni altyapı…</div></div>
+<div class="inl"><div class="h">Yeni altyapı</div><div class="r"><div class="inp">Döner tabla</div><div class="inp ph">Yer (isteğe bağlı)</div><span class="pbtn">Ekle</span></div><div class="n">Altyapı listesi tüm projelerde ortak.</div></div>
+</div>
+</div>
+<div class="two">
+<div class="fld"><label>TG no <span>(isteğe bağlı)</span></label><div class="inp ph">örn. TG-012</div></div>
+<div class="fld"><label>Durum</label><div class="inp dd">Bekliyor <span style="color:#777">▾</span></div></div>
+</div>
+<div class="md"><b>md'ye eklenecek satır:</b><br>| 9 | Yan lob ≤ −15 dB (E ve H düzlemi) | İşlevsel | Anten örüntü | SATIMO | | Bekliyor |</div>
+</div>
+<div class="ft"><span class="chk"><i></i>Ekledikten sonra yenisini aç</span><span class="b">Vazgeç</span><span class="pbtn">Ekle</span></div>
+</div></div>
+<script>
+if (location.hash === '#ekle') { document.body.classList.add('dlg'); }
+if (location.hash === '#yeni') { document.body.classList.add('dlg'); document.body.classList.add('yeni'); }
+</script>
+</body></html>

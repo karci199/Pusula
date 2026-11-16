@@ -13,7 +13,8 @@ namespace Pusula.Core.Testing
     /// <summary>
     /// Bir stokun test koşularını okur. Koşu = <c>&lt;SİSTEM&gt;\&lt;SN&gt;_T&lt;tur&gt;</c> klasörü
     /// (<c>_P&lt;tur&gt;</c> da kabul edilir). Aranan yerler:
-    /// <c>03_Test_Sonuclari</c> (geliştirme) ve <c>04_Kalifikasyon\03_Test_Sonuclari</c> (kalifikasyon).
+    /// <c>03_Testler\&lt;grup&gt;\&lt;test&gt;\&lt;SN&gt;_T&lt;tur&gt;</c> ya da doğrudan grup altında (15.11.2026 düzeni);
+    /// eski stoklarda <c>03_Test_Sonuclari</c> (geliştirme) ve <c>04_Kalifikasyon\03_Test_Sonuclari</c> (kalifikasyon).
     /// Sonuç sırasıyla: <c>test.md</c> YAML'ı → KIWI <c>_kosu.md</c> → bilinmiyor.
     /// </summary>
     public static class TestRunReader
@@ -41,7 +42,31 @@ namespace Pusula.Core.Testing
             var runs = new List<TestRun>();
             ReadArea(Path.Combine(stockFolder, DevelopmentFolder), false, runs);
             ReadArea(Path.Combine(stockFolder, QualificationFolder), true, runs);
+            ReadTests(Path.Combine(stockFolder, VerificationList.FolderName), runs);
             return runs.OrderByDescending(r => r.Date).ThenBy(r => r.System).ThenBy(r => r.SerialNo).ToList();
+        }
+
+        // 03_Testler: her grup (01_Islevsel …) altında koşum klasörleri doğrudan ya da test klasöründe (Anten_Oruntu\SNP1_T1).
+        private static void ReadTests(string testsRoot, List<TestRun> runs)
+        {
+            foreach (var groupFolder in SafeDirectories(testsRoot))
+            {
+                var group = Path.GetFileName(groupFolder);
+                if (group.StartsWith("_", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                ReadRuns(groupFolder, Inventory.RecordContents.LabelOf(group), false, runs);
+                foreach (var testFolder in SafeDirectories(groupFolder))
+                {
+                    var test = Path.GetFileName(testFolder);
+                    if (!test.StartsWith("_", StringComparison.Ordinal) && !RunFolder.IsMatch(test))
+                    {
+                        ReadRuns(testFolder, Inventory.RecordContents.LabelOf(test), false, runs);
+                    }
+                }
+            }
         }
 
         private static void ReadArea(string area, bool qualification, List<TestRun> runs)
@@ -54,38 +79,44 @@ namespace Pusula.Core.Testing
                     continue;
                 }
 
-                foreach (var runFolder in SafeDirectories(systemFolder))
+                ReadRuns(systemFolder, system, qualification, runs);
+            }
+        }
+
+        // Klasörün doğrudan altındaki koşum klasörleri (SN01_T1 …).
+        private static void ReadRuns(string systemFolder, string system, bool qualification, List<TestRun> runs)
+        {
+            foreach (var runFolder in SafeDirectories(systemFolder))
+            {
+                var match = RunFolder.Match(Path.GetFileName(runFolder));
+                if (!match.Success)
                 {
-                    var match = RunFolder.Match(Path.GetFileName(runFolder));
-                    if (!match.Success)
-                    {
-                        continue;
-                    }
-
-                    var run = new TestRun
-                    {
-                        Folder = runFolder,
-                        System = system,
-                        SerialNo = match.Groups[1].Value.ToUpperInvariant(),
-                        Round = int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture),
-                        IsQualification = qualification,
-                        Date = EarliestWrite(runFolder),
-                    };
-
-                    if (!ReadNote(run) && !ReadKiwi(run, false))
-                    {
-                        run.Source = TestRunSource.Folder;
-                    }
-
-                    if (run.AnalysisDate == DateTime.MinValue)
-                    {
-                        run.AnalysisDate = run.Date;
-                    }
-
-                    run.Photo = FirstPhoto(runFolder);
-
-                    runs.Add(run);
+                    continue;
                 }
+
+                var run = new TestRun
+                {
+                    Folder = runFolder,
+                    System = system,
+                    SerialNo = match.Groups[1].Value.ToUpperInvariant(),
+                    Round = int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture),
+                    IsQualification = qualification,
+                    Date = EarliestWrite(runFolder),
+                };
+
+                if (!ReadNote(run) && !ReadKiwi(run, false))
+                {
+                    run.Source = TestRunSource.Folder;
+                }
+
+                if (run.AnalysisDate == DateTime.MinValue)
+                {
+                    run.AnalysisDate = run.Date;
+                }
+
+                run.Photo = FirstPhoto(runFolder);
+
+                runs.Add(run);
             }
         }
 
