@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    MeDitor — Pusula'dan bağımsız çalışan md düzenleyici. Çıktı: MeDitor.exe.
+    Pusula projelerine referans almaz; düzenleyici kodu buraya kopyalanmıştır ve ayrı gelişir.
+    Ortak ayarlar ..\..\Directory.Build.props dosyasından gelir.
+  -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>MeDitor</RootNamespace>
+    <AssemblyName>MeDitor</AssemblyName>
+    <Product>MeDitor</Product>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\meditor.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\meditor.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="DesignKit.Wpf">
+      <HintPath>$(DependenciesDir)DesignKit\DesignKit.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="Markdig">
+      <HintPath>$(DependenciesDir)Markdig\Markdig.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.AvalonEdit">
+      <HintPath>$(DependenciesDir)AvalonEdit\ICSharpCode.AvalonEdit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory">
+      <HintPath>$(DependenciesDir)SystemMemory\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Buffers">
+      <HintPath>$(DependenciesDir)SystemMemory\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe">
+      <HintPath>$(DependenciesDir)SystemMemory\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics.Vectors">
+      <HintPath>$(DependenciesDir)SystemMemory\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

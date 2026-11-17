@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pusula.Core", "src\Pusula.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pusula.Wpf", "src\Pusula.Wpf\Pusula.Wpf.csproj", "{6BB4F528-D551-4F07-AD6C-CADD75E79915}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeDitor", "src\MeDitor\MeDitor.csproj", "{3C1E7A52-9B4D-4E6F-A1C2-7D8E9F0A1B2C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -23,6 +25,10 @@ Global
 		{6BB4F528-D551-4F07-AD6C-CADD75E79915}.Debug|x64.Build.0 = Debug|x64
 		{6BB4F528-D551-4F07-AD6C-CADD75E79915}.Release|x64.ActiveCfg = Release|x64
 		{6BB4F528-D551-4F07-AD6C-CADD75E79915}.Release|x64.Build.0 = Release|x64
+		{3C1E7A52-9B4D-4E6F-A1C2-7D8E9F0A1B2C}.Debug|x64.ActiveCfg = Debug|x64
+		{3C1E7A52-9B4D-4E6F-A1C2-7D8E9F0A1B2C}.Debug|x64.Build.0 = Debug|x64
+		{3C1E7A52-9B4D-4E6F-A1C2-7D8E9F0A1B2C}.Release|x64.ActiveCfg = Release|x64
+		{3C1E7A52-9B4D-4E6F-A1C2-7D8E9F0A1B2C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -30,6 +36,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{F5A04FF2-2CCD-499A-9ACE-03C055B7CEE5} = {FA44A14B-5B01-4E00-ADFB-6207E9BA35AD}
 		{6BB4F528-D551-4F07-AD6C-CADD75E79915} = {FA44A14B-5B01-4E00-ADFB-6207E9BA35AD}
+		{3C1E7A52-9B4D-4E6F-A1C2-7D8E9F0A1B2C} = {FA44A14B-5B01-4E00-ADFB-6207E9BA35AD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {91C9B67A-620C-44D2-B194-072EFFB66BD6}

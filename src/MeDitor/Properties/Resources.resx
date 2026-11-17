@@ -1,0 +1,414 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>Vazgeç</value>
+  </data>
+  <data name="Edit_Save" xml:space="preserve">
+    <value>Kaydet</value>
+  </data>
+  <data name="Note_AutoPair" xml:space="preserve">
+    <value>Parantez ve işaretleri kendiliğinden kapat</value>
+  </data>
+  <data name="Note_AutoSave" xml:space="preserve">
+    <value>Otomatik kaydet</value>
+  </data>
+  <data name="Note_Bold" xml:space="preserve">
+    <value>Kalın (Ctrl+B)</value>
+  </data>
+  <data name="Note_Callout" xml:space="preserve">
+    <value>Uyarı kutusu ekle</value>
+  </data>
+  <data name="Note_CalloutTitle" xml:space="preserve">
+    <value>Dikkat</value>
+  </data>
+  <data name="Note_Caret" xml:space="preserve">
+    <value>Satır {0}, Sütun {1}</value>
+  </data>
+  <data name="Note_CloseDiscard" xml:space="preserve">
+    <value>Kaydetme</value>
+  </data>
+  <data name="Note_CloseText" xml:space="preserve">
+    <value>{0} kaydedilsin mi?</value>
+  </data>
+  <data name="Note_CloseTitle" xml:space="preserve">
+    <value>Kaydedilmemiş değişiklik</value>
+  </data>
+  <data name="Note_Code" xml:space="preserve">
+    <value>Kod (Ctrl+E)</value>
+  </data>
+  <data name="Note_Comment" xml:space="preserve">
+    <value>Yorum (görünümde gizlenir) (Ctrl+Shift+C)</value>
+  </data>
+  <data name="Note_Divider" xml:space="preserve">
+    <value>Ayraç çizgisi</value>
+  </data>
+  <data name="Note_EditorFont" xml:space="preserve">
+    <value>Yazı tipi (düz)</value>
+  </data>
+  <data name="Note_EditorSize" xml:space="preserve">
+    <value>Yazı boyutu (düz)</value>
+  </data>
+  <data name="Note_ExternalChanged" xml:space="preserve">
+    <value>Bu not dışarıda değişti (Obsidian, VS Code …).</value>
+  </data>
+  <data name="Note_FindClose" xml:space="preserve">
+    <value>Kapat (Esc)</value>
+  </data>
+  <data name="Note_FindCount" xml:space="preserve">
+    <value>{0} / {1}</value>
+  </data>
+  <data name="Note_FindGlyphCase" xml:space="preserve">
+    <value>Aa</value>
+  </data>
+  <data name="Note_FindGlyphRegex" xml:space="preserve">
+    <value>.*</value>
+  </data>
+  <data name="Note_FindGlyphWord" xml:space="preserve">
+    <value>ab</value>
+  </data>
+  <data name="Note_FindMatchCase" xml:space="preserve">
+    <value>Büyük / küçük harf ayır</value>
+  </data>
+  <data name="Note_FindNext" xml:space="preserve">
+    <value>Sonraki (Enter, F3)</value>
+  </data>
+  <data name="Note_FindNone" xml:space="preserve">
+    <value>Sonuç yok</value>
+  </data>
+  <data name="Note_FindPlaceholder" xml:space="preserve">
+    <value>Bul</value>
+  </data>
+  <data name="Note_FindPrevious" xml:space="preserve">
+    <value>Önceki (Shift+Enter, Shift+F3)</value>
+  </data>
+  <data name="Note_FindRegex" xml:space="preserve">
+    <value>Düzenli ifade (regex)</value>
+  </data>
+  <data name="Note_FindToggleReplace" xml:space="preserve">
+    <value>Değiştir satırını aç / kapat (Ctrl+R)</value>
+  </data>
+  <data name="Note_FindTotal" xml:space="preserve">
+    <value>{0} sonuç</value>
+  </data>
+  <data name="Note_FindWholeWord" xml:space="preserve">
+    <value>Yalnız tam kelime</value>
+  </data>
+  <data name="Note_FrontMatter" xml:space="preserve">
+    <value>YAML özelliklerini göster</value>
+  </data>
+  <data name="Note_FullScreen" xml:space="preserve">
+    <value>Tam ekran (F11)</value>
+  </data>
+  <data name="Note_GlyphHeading" xml:space="preserve">
+    <value>H</value>
+  </data>
+  <data name="Note_GlyphStrike" xml:space="preserve">
+    <value>S</value>
+  </data>
+  <data name="Note_Heading" xml:space="preserve">
+    <value>Başlık (Ctrl+1…3 yerine Ctrl+H döner)</value>
+  </data>
+  <data name="Note_Highlight" xml:space="preserve">
+    <value>Vurgu (Ctrl+Shift+H)</value>
+  </data>
+  <data name="Note_KeepMine" xml:space="preserve">
+    <value>Benimkini koru</value>
+  </data>
+  <data name="Note_LineBreaks" xml:space="preserve">
+    <value>Tek satır sonu yeni satır olsun</value>
+  </data>
+  <data name="Note_Link" xml:space="preserve">
+    <value>Bağlantı: jig, kablo, stok, kişi (@ ya da [[)</value>
+  </data>
+  <data name="Note_LinkMissing" xml:space="preserve">
+    <value>[[{0}]] bulunamadı; yeni not oluşturulmaz.</value>
+  </data>
+  <data name="Note_List" xml:space="preserve">
+    <value>Madde listesi</value>
+  </data>
+  <data name="Note_MissingFiles" xml:space="preserve">
+    <value>{0} dosya bulunamadı</value>
+  </data>
+  <data name="Note_NoTable" xml:space="preserve">
+    <value>İmleç bir tablonun içinde değil (Ctrl+Shift+T tabloyu hizalar).</value>
+  </data>
+  <data name="Note_NumberList" xml:space="preserve">
+    <value>Numaralı liste</value>
+  </data>
+  <data name="Note_OpenExternal" xml:space="preserve">
+    <value>Ayarlardaki programda aç (Obsidian, VS Code …)</value>
+  </data>
+  <data name="Note_OpenFolder" xml:space="preserve">
+    <value>Klasörde aç</value>
+  </data>
+  <data name="Note_Outline" xml:space="preserve">
+    <value>Başlıklar</value>
+  </data>
+  <data name="Note_OutlineCount" xml:space="preserve">
+    <value>Başlıklar · {0}</value>
+  </data>
+  <data name="Note_OutlineEmpty" xml:space="preserve">
+    <value>Bu notta başlık yok. Satır başına # ve boşluk yazarak başlık ekleyebilirsin.</value>
+  </data>
+  <data name="Note_OutlineToggle" xml:space="preserve">
+    <value>Başlık paneli (Ctrl+Shift+O)</value>
+  </data>
+  <data name="Note_PreviewSize" xml:space="preserve">
+    <value>Yazı boyutu (görünüm)</value>
+  </data>
+  <data name="Note_Quote" xml:space="preserve">
+    <value>Alıntı</value>
+  </data>
+  <data name="Note_Reload" xml:space="preserve">
+    <value>Diskteki hali yükle</value>
+  </data>
+  <data name="Note_Replace" xml:space="preserve">
+    <value>Değiştir</value>
+  </data>
+  <data name="Note_ReplaceAll" xml:space="preserve">
+    <value>Tümünü değiştir</value>
+  </data>
+  <data name="Note_ReplaceAllHint" xml:space="preserve">
+    <value>Bütün eşleşmeleri değiştir (Ctrl+Enter); Ctrl+Z ile tek seferde geri alınır</value>
+  </data>
+  <data name="Note_ReplacedCount" xml:space="preserve">
+    <value>{0} değiştirildi</value>
+  </data>
+  <data name="Note_ReplaceHint" xml:space="preserve">
+    <value>Seçili eşleşmeyi değiştir, sonrakine geç (Enter)</value>
+  </data>
+  <data name="Note_ReplacePlaceholder" xml:space="preserve">
+    <value>Değiştir</value>
+  </data>
+  <data name="Note_Save" xml:space="preserve">
+    <value>Kaydet (Ctrl+S)</value>
+  </data>
+  <data name="Note_Saved" xml:space="preserve">
+    <value>Kaydedildi {0}</value>
+  </data>
+  <data name="Note_SaveError" xml:space="preserve">
+    <value>Kaydedilemedi: {0}</value>
+  </data>
+  <data name="Note_Settings" xml:space="preserve">
+    <value>Görünüm ayarları</value>
+  </data>
+  <data name="Note_StartMaximized" xml:space="preserve">
+    <value>Ekranı kaplayarak aç</value>
+  </data>
+  <data name="Note_Strike" xml:space="preserve">
+    <value>Üstü çizili (Ctrl+Shift+X)</value>
+  </data>
+  <data name="Note_SyncScroll" xml:space="preserve">
+    <value>Yan yanada birlikte kaydır</value>
+  </data>
+  <data name="Note_Table" xml:space="preserve">
+    <value>Tablo ekle</value>
+  </data>
+  <data name="Note_TableHeader" xml:space="preserve">
+    <value>Başlık</value>
+  </data>
+  <data name="Note_Task" xml:space="preserve">
+    <value>Görev kutusu (Ctrl+L)</value>
+  </data>
+  <data name="Note_Unsaved" xml:space="preserve">
+    <value>Kaydedilmemiş değişiklik</value>
+  </data>
+  <data name="Note_ViewEdit" xml:space="preserve">
+    <value>Düz</value>
+  </data>
+  <data name="Note_ViewPreview" xml:space="preserve">
+    <value>Görünüm</value>
+  </data>
+  <data name="Note_ViewSplit" xml:space="preserve">
+    <value>Yan yana</value>
+  </data>
+  <data name="Note_Width" xml:space="preserve">
+    <value>Okuma genişliği</value>
+  </data>
+  <data name="Note_WidthFull" xml:space="preserve">
+    <value>Tam genişlik</value>
+  </data>
+  <data name="Note_WidthPx" xml:space="preserve">
+    <value>{0} px</value>
+  </data>
+  <data name="Note_WindowTitle" xml:space="preserve">
+    <value>{0}{1} — MeDitor</value>
+  </data>
+  <data name="Note_Words" xml:space="preserve">
+    <value>{0} kelime</value>
+  </data>
+  <data name="Note_Wrap" xml:space="preserve">
+    <value>Uzun satırları kaydır</value>
+  </data>
+  <data name="Note_FindInvalid" xml:space="preserve">
+    <value>Geçersiz ifade</value>
+  </data>
+  <data name="Note_Image" xml:space="preserve">
+    <value>Resim ekle (ya da yapıştır / sürükle bırak)</value>
+  </data>
+  <data name="Note_ImageCopied" xml:space="preserve">
+    <value>Resim not klasörüne kopyalandı: {0}</value>
+  </data>
+  <data name="Note_Images" xml:space="preserve">
+    <value>{0} resim</value>
+  </data>
+  <data name="Note_ImagesFilter" xml:space="preserve">
+    <value>Resimler</value>
+  </data>
+  <data name="Note_Italic" xml:space="preserve">
+    <value>İtalik (Ctrl+I)</value>
+  </data>
+  <data name="App_Name" xml:space="preserve">
+    <value>MeDitor</value>
+  </data>
+  <data name="Main_WindowTitle" xml:space="preserve">
+    <value>{0} — MeDitor</value>
+  </data>
+  <data name="Main_Untitled" xml:space="preserve">
+    <value>Adsız</value>
+  </data>
+  <data name="Main_File" xml:space="preserve">
+    <value>Dosya</value>
+  </data>
+  <data name="Main_New" xml:space="preserve">
+    <value>Yeni not</value>
+  </data>
+  <data name="Main_Open" xml:space="preserve">
+    <value>Aç…</value>
+  </data>
+  <data name="Main_OpenFolder" xml:space="preserve">
+    <value>Klasör aç…</value>
+  </data>
+  <data name="Main_Recent" xml:space="preserve">
+    <value>Son açılanlar</value>
+  </data>
+  <data name="Main_RecentEmpty" xml:space="preserve">
+    <value>Henüz yok</value>
+  </data>
+  <data name="Main_RecentClear" xml:space="preserve">
+    <value>Listeyi temizle</value>
+  </data>
+  <data name="Main_Save" xml:space="preserve">
+    <value>Kaydet</value>
+  </data>
+  <data name="Main_SaveAs" xml:space="preserve">
+    <value>Farklı kaydet…</value>
+  </data>
+  <data name="Main_SaveAll" xml:space="preserve">
+    <value>Tümünü kaydet</value>
+  </data>
+  <data name="Main_ExportHtml" xml:space="preserve">
+    <value>HTML olarak dışa aktar…</value>
+  </data>
+  <data name="Main_Print" xml:space="preserve">
+    <value>Yazdır / PDF…</value>
+  </data>
+  <data name="Main_CloseTab" xml:space="preserve">
+    <value>Sekmeyi kapat</value>
+  </data>
+  <data name="Main_Exit" xml:space="preserve">
+    <value>Çıkış</value>
+  </data>
+  <data name="Main_View" xml:space="preserve">
+    <value>Görünüm</value>
+  </data>
+  <data name="Main_Sidebar" xml:space="preserve">
+    <value>Kenar çubuğu</value>
+  </data>
+  <data name="Main_Theme" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="Main_NoFolder" xml:space="preserve">
+    <value>Klasör açılmadı</value>
+  </data>
+  <data name="Main_NoFolderHint" xml:space="preserve">
+    <value>Bir klasör açınca içindeki md dosyaları burada listelenir; [[ önerileri ve bağlantılar o klasörden gelir.</value>
+  </data>
+  <data name="Main_RefreshFolder" xml:space="preserve">
+    <value>Klasörü yenile</value>
+  </data>
+  <data name="Main_CloseFolder" xml:space="preserve">
+    <value>Klasörü kapat</value>
+  </data>
+  <data name="Main_EmptyText" xml:space="preserve">
+    <value>Yeni bir not başlatın ya da bir md dosyası açın. Dosyaları ve klasörleri pencereye sürükleyip bırakabilirsiniz.</value>
+  </data>
+  <data name="Main_MdFilter" xml:space="preserve">
+    <value>Markdown (*.md)|*.md;*.markdown|Tüm dosyalar (*.*)|*.*</value>
+  </data>
+  <data name="Main_HtmlFilter" xml:space="preserve">
+    <value>HTML (*.html)|*.html</value>
+  </data>
+  <data name="Main_Exported" xml:space="preserve">
+    <value>Dışa aktarıldı: {0}</value>
+  </data>
+  <data name="Main_KindNote" xml:space="preserve">
+    <value>Not</value>
+  </data>
+  <data name="Main_KindTag" xml:space="preserve">
+    <value>Etiket</value>
+  </data>
+  <data name="Gesture_New" xml:space="preserve">
+    <value>Ctrl+N</value>
+  </data>
+  <data name="Gesture_Open" xml:space="preserve">
+    <value>Ctrl+O</value>
+  </data>
+  <data name="Gesture_OpenFolder" xml:space="preserve">
+    <value>Ctrl+Shift+O</value>
+  </data>
+  <data name="Gesture_Save" xml:space="preserve">
+    <value>Ctrl+S</value>
+  </data>
+  <data name="Gesture_SaveAs" xml:space="preserve">
+    <value>Ctrl+Shift+S</value>
+  </data>
+  <data name="Gesture_Print" xml:space="preserve">
+    <value>Ctrl+P</value>
+  </data>
+  <data name="Gesture_CloseTab" xml:space="preserve">
+    <value>Ctrl+W</value>
+  </data>
+  <data name="Gesture_Sidebar" xml:space="preserve">
+    <value>Ctrl+Shift+E</value>
+  </data>
+  <data name="Theme_FluentLight" xml:space="preserve">
+    <value>Fluent Açık</value>
+  </data>
+  <data name="Theme_FluentDark" xml:space="preserve">
+    <value>Fluent Koyu</value>
+  </data>
+  <data name="Theme_Night" xml:space="preserve">
+    <value>Gece Mavisi</value>
+  </data>
+  <data name="Theme_Amber" xml:space="preserve">
+    <value>Grafit Kehribar</value>
+  </data>
+  <data name="Theme_Forest" xml:space="preserve">
+    <value>Orman</value>
+  </data>
+  <data name="Theme_Plum" xml:space="preserve">
+    <value>Mürdüm</value>
+  </data>
+  <data name="Theme_Glacier" xml:space="preserve">
+    <value>Buzul</value>
+  </data>
+  <data name="Theme_Sand" xml:space="preserve">
+    <value>Kum</value>
+  </data>
+  <data name="Theme_Mint" xml:space="preserve">
+    <value>Nane</value>
+  </data>
+</root>
