@@ -2371,6 +2371,150 @@ namespace Pusula.Wpf.Properties
         /// <summary>Seçim listesinde boş seçenek.</summary>
         public static string Verify_None { get { return Get("Verify_None"); } }
 
+        /// <summary>Doğrulama durumu: hazırlık (jig, kablo, yazılım, altyapı).</summary>
+        public static string Verify_StatusPreparing { get { return Get("Verify_StatusPreparing"); } }
+
+        /// <summary>Doğrulama durumu: ölçüldü, analiz / rapor.</summary>
+        public static string Verify_StatusEvaluating { get { return Get("Verify_StatusEvaluating"); } }
+
+        /// <summary>Doğrulama durumu: sapma / feragat ile kabul.</summary>
+        public static string Verify_StatusConditional { get { return Get("Verify_StatusConditional"); } }
+
+        /// <summary>Yöntem.</summary>
+        public static string Verify_MethodTest { get { return Get("Verify_MethodTest"); } }
+
+        /// <summary>Yöntem.</summary>
+        public static string Verify_MethodInspection { get { return Get("Verify_MethodInspection"); } }
+
+        /// <summary>Yöntem.</summary>
+        public static string Verify_MethodDocument { get { return Get("Verify_MethodDocument"); } }
+
+        /// <summary>Yöntem.</summary>
+        public static string Verify_MethodDemonstration { get { return Get("Verify_MethodDemonstration"); } }
+
+        /// <summary>Yöntem.</summary>
+        public static string Verify_MethodOther { get { return Get("Verify_MethodOther"); } }
+
+        /// <summary>Tür: şartnamede yazan.</summary>
+        public static string Verify_KindBasic { get { return Get("Verify_KindBasic"); } }
+
+        /// <summary>Tür: temel için tasarımcının koyduğu.</summary>
+        public static string Verify_KindDerived { get { return Get("Verify_KindDerived"); } }
+
+        /// <summary>Grup özeti; {0} madde sayısı.</summary>
+        public static string Verify_GroupCount { get { return Get("Verify_GroupCount"); } }
+
+        /// <summary>Grup özeti; {0} kalan.</summary>
+        public static string Verify_Failed { get { return Get("Verify_Failed"); } }
+
+        /// <summary>Açılan satır: plan özeti altyapı.</summary>
+        public static string Verify_PlanFacility { get { return Get("Verify_PlanFacility"); } }
+
+        /// <summary>Açılan satır: plan yok.</summary>
+        public static string Verify_PlanEmpty { get { return Get("Verify_PlanEmpty"); } }
+
+        /// <summary>Açılan satır: rapor yok.</summary>
+        public static string Verify_ReportEmpty { get { return Get("Verify_ReportEmpty"); } }
+
+        /// <summary>Doküman numarası yok.</summary>
+        public static string Verify_DocNone { get { return Get("Verify_DocNone"); } }
+
+        /// <summary>Doküman yayınlandı (revizyon eki).</summary>
+        public static string Verify_DocPublished { get { return Get("Verify_DocPublished"); } }
+
+        /// <summary>Doküman hazırlanıyor (_XX ya da sonu rakamlı).</summary>
+        public static string Verify_DocDraft { get { return Get("Verify_DocDraft"); } }
+
+        /// <summary>Doküman türü.</summary>
+        public static string Verify_DocRequirement { get { return Get("Verify_DocRequirement"); } }
+
+        /// <summary>Doküman türü.</summary>
+        public static string Verify_DocDesigner { get { return Get("Verify_DocDesigner"); } }
+
+        /// <summary>Doküman türü.</summary>
+        public static string Verify_DocPlan { get { return Get("Verify_DocPlan"); } }
+
+        /// <summary>Doküman türü.</summary>
+        public static string Verify_DocReport { get { return Get("Verify_DocReport"); } }
+
+        /// <summary>Doküman alanı yer tutucusu.</summary>
+        public static string Verify_DocRequirementHint { get { return Get("Verify_DocRequirementHint"); } }
+
+        /// <summary>Doküman alanı yer tutucusu.</summary>
+        public static string Verify_DocDesignerHint { get { return Get("Verify_DocDesignerHint"); } }
+
+        /// <summary>Doküman alanı yer tutucusu.</summary>
+        public static string Verify_DocPlanHint { get { return Get("Verify_DocPlanHint"); } }
+
+        /// <summary>Doküman alanı yer tutucusu.</summary>
+        public static string Verify_DocReportHint { get { return Get("Verify_DocReportHint"); } }
+
+        /// <summary>Durum çubuğu.</summary>
+        public static string Verify_DocsSaved { get { return Get("Verify_DocsSaved"); } }
+
+        /// <summary>Doküman düğmesi ve pencere başlığı.</summary>
+        public static string Verify_Documents { get { return Get("Verify_Documents"); } }
+
+        /// <summary>Açılan satır: bu temele bağlı türetilmiş maddeler.</summary>
+        public static string Verify_Children { get { return Get("Verify_Children"); } }
+
+        /// <summary>Sütun başlığı.</summary>
+        public static string Verify_ColRequirement { get { return Get("Verify_ColRequirement"); } }
+
+        /// <summary>Sütun başlığı.</summary>
+        public static string Verify_ColKind { get { return Get("Verify_ColKind"); } }
+
+        /// <summary>Sütun başlığı.</summary>
+        public static string Verify_ColMethod { get { return Get("Verify_ColMethod"); } }
+
+        /// <summary>Sütun başlığı.</summary>
+        public static string Verify_ColPlan { get { return Get("Verify_ColPlan"); } }
+
+        /// <summary>Sütun başlığı.</summary>
+        public static string Verify_ColReport { get { return Get("Verify_ColReport"); } }
+
+        /// <summary>Pencere alanı.</summary>
+        public static string Verify_FieldTitle { get { return Get("Verify_FieldTitle"); } }
+
+        /// <summary>Pencere alanı.</summary>
+        public static string Verify_FieldDescription { get { return Get("Verify_FieldDescription"); } }
+
+        /// <summary>Pencere alanı.</summary>
+        public static string Verify_FieldRequirement { get { return Get("Verify_FieldRequirement"); } }
+
+        /// <summary>Pencere alanı.</summary>
+        public static string Verify_FieldSource { get { return Get("Verify_FieldSource"); } }
+
+        /// <summary>Pencere alanı.</summary>
+        public static string Verify_FieldKind { get { return Get("Verify_FieldKind"); } }
+
+        /// <summary>Pencere alanı.</summary>
+        public static string Verify_FieldParent { get { return Get("Verify_FieldParent"); } }
+
+        /// <summary>Pencere alanı.</summary>
+        public static string Verify_FieldMethod { get { return Get("Verify_FieldMethod"); } }
+
+        /// <summary>Pencere alanı.</summary>
+        public static string Verify_FieldPlanReport { get { return Get("Verify_FieldPlanReport"); } }
+
+        /// <summary>Yer tutucu.</summary>
+        public static string Verify_PlaceholderTitle { get { return Get("Verify_PlaceholderTitle"); } }
+
+        /// <summary>Yer tutucu.</summary>
+        public static string Verify_PlaceholderDescription { get { return Get("Verify_PlaceholderDescription"); } }
+
+        /// <summary>Yer tutucu.</summary>
+        public static string Verify_PlaceholderRequirement { get { return Get("Verify_PlaceholderRequirement"); } }
+
+        /// <summary>Yer tutucu.</summary>
+        public static string Verify_PlaceholderSource { get { return Get("Verify_PlaceholderSource"); } }
+
+        /// <summary>Yer tutucu.</summary>
+        public static string Verify_PlaceholderTp { get { return Get("Verify_PlaceholderTp"); } }
+
+        /// <summary>Yer tutucu.</summary>
+        public static string Verify_PlaceholderTr { get { return Get("Verify_PlaceholderTr"); } }
+
         /// <summary>Doğrulama durumu: Planlandı.</summary>
         public static string Verify_StatusPlanned { get { return Get("Verify_StatusPlanned"); } }
 

@@ -136,14 +136,38 @@ namespace Pusula.Wpf
             viewModel.ConfirmDeleteVerification();
         }
 
-        // Doğrulama satırına çift tık: düzenleme penceresi.
+        // Doğrulama satırı: tek tık açar / kapar (tam gereksinim, plan / rapor özeti), çift tık düzenleme penceresi.
         private void VerificationRow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ClickCount == 2 && (sender as FrameworkElement)?.DataContext is VerificationRow row)
+            if (!((sender as FrameworkElement)?.DataContext is VerificationRow row))
             {
-                e.Handled = true;
+                return;
+            }
+
+            e.Handled = true;
+            viewModel.ToggleVerification(row);
+            if (e.ClickCount == 2)
+            {
+                // İlk tık açmıştı; çift tıkta satır eski hâline döner, düzenleme açılır.
                 viewModel.EditVerification(row);
             }
+        }
+
+        // Durum etiketine basmak satırı açıp kapamaz (menüsü açılır).
+        private void VerificationStatus_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        // Doküman kartına tıklanınca doküman numaraları penceresi.
+        private void VerificationDocument_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            viewModel.OpenDocumentsDialog();
+        }
+
+        private void DocumentsDialog_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            viewModel.ConfirmDocuments();
         }
 
         // Satırın sağ tık menüsü: Düzenle · Sil.

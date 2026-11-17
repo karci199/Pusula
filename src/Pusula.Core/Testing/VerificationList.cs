@@ -14,8 +14,26 @@ namespace Pusula.Core.Testing
         /// <summary>Sıra numarası (# sütunu).</summary>
         public int Number { get; set; }
 
-        /// <summary>Doğrulama maddesi metni; henüz bilinmiyorsa boş (alt grup yazılıdır, madde sonra doldurulur).</summary>
+        /// <summary>Başlık (kısa ad, örn. "Yanca hüzme genişliği"); henüz bilinmiyorsa boş (alt grup yazılıdır, sonra doldurulur).</summary>
         public string Text { get; set; } = string.Empty;
+
+        /// <summary>Kısa not: ölçüt ya da sınırın tek satırlık özeti (örn. "Azimutta −3 dB genişliği 60° ± 5°").</summary>
+        public string Description { get; set; } = string.Empty;
+
+        /// <summary>Tam gereksinim metni (satır açılınca gösterilir); isteğe bağlı.</summary>
+        public string Requirement { get; set; } = string.Empty;
+
+        /// <summary>Kaynak doküman: TG no yoksa (tasarımcı dokümanı gibi) maddenin geldiği dokümanın numarası.</summary>
+        public string Source { get; set; } = string.Empty;
+
+        /// <summary>Tür: Temel (şartnamede yazan) ya da Türetilmiş (tasarımcının temel için koyduğu); boş olabilir.</summary>
+        public string Kind { get; set; } = string.Empty;
+
+        /// <summary>Türetilmiş maddenin bağlı olduğu temel madde (TG no), örn. "TG-1".</summary>
+        public string Parent { get; set; } = string.Empty;
+
+        /// <summary>Doğrulama yöntemi: Test, Muayene, Belge, Gösterim, Diğer (test planında belirlenir).</summary>
+        public string Method { get; set; } = string.Empty;
 
         /// <summary>Grup: İşlevsel, Özellik, ÇK/EMC, Diğer.</summary>
         public string Group { get; set; } = string.Empty;
@@ -26,16 +44,16 @@ namespace Pusula.Core.Testing
         /// <summary>Altyapı (isteğe bağlı), örn. "SATIMO".</summary>
         public string Facility { get; set; } = string.Empty;
 
-        /// <summary>Test gereksinimi doküman numarası (isteğe bağlı).</summary>
+        /// <summary>Test gereksinimi dokümanındaki madde numarası (TG-1); tasarımcı dokümanından gelen maddede boş olabilir.</summary>
         public string TgNo { get; set; } = string.Empty;
 
-        /// <summary>Test planı doküman numarası (isteğe bağlı).</summary>
+        /// <summary>Test planındaki madde numarası (TP-5.1); isteğe bağlı.</summary>
         public string TpNo { get; set; } = string.Empty;
 
-        /// <summary>Test raporu doküman numarası (isteğe bağlı).</summary>
+        /// <summary>Test raporundaki madde numarası (TR-5.1); isteğe bağlı.</summary>
         public string TrNo { get; set; } = string.Empty;
 
-        /// <summary>Durum metni: Bekliyor, Planlandı, Yapılıyor, Geçti, Kaldı, Tekrarlanacak, Kapsam dışı.</summary>
+        /// <summary>Durum metni: Bekliyor, Planlandı, Hazırlık yapılıyor, Yapılıyor, Değerlendiriliyor, Geçti, Kaldı, Şartlı kabul, Tekrarlanacak, Kapsam dışı.</summary>
         public string Status { get; set; } = string.Empty;
 
         /// <summary>Tabloda uygulamanın tanımadığı sütunların değerleri (başlık → değer); yazarken korunur.</summary>
@@ -44,8 +62,10 @@ namespace Pusula.Core.Testing
 
     /// <summary>
     /// Stokun doğrulama listesi: <c>03_Testler\&lt;stok&gt;_Test_Gereksinimleri.md</c> içindeki ilk tablo.
-    /// Sütunlar başlıklarından tanınır: # · madde · grup · alt grup · altyapı · TG no · TP no · TR no · durum (sıra serbest,
-    /// tanınmayan sütunlar korunur). Eski 7 sütunlu tabloda eksik sütunlar ilk yazımda eklenir. Uygulama tabloya satır
+    /// Sütunlar başlıklarından tanınır: # · TG no · kaynak · başlık · kısa not · gereksinim · grup · alt grup · tür · bağlı ·
+    /// yöntem · altyapı · TP no · TR no · durum (sıra serbest, tanınmayan sütunlar korunur). Eski tablolarda eksik sütunlar
+    /// ilk yazımda eklenir. Dokümanların numaraları (test gereksinimi, tasarımcı dokümanı, test planı, test raporu) dosyanın
+    /// YAML başlığındadır. Uygulama tabloya satır
     /// ekler, satırı değiştirir ya da kaldırır (16.11.2026 kullanıcı kararı); dosyanın geri kalanına dokunmaz.
     /// </summary>
     public static class VerificationList
@@ -61,18 +81,27 @@ namespace Pusula.Core.Testing
 
         // Sütun anahtarları (tablodaki tanınan sütunlar).
         private const int ColNumber = 0;
-        private const int ColText = 1;
-        private const int ColGroup = 2;
-        private const int ColSubGroup = 3;
-        private const int ColFacility = 4;
-        private const int ColTg = 5;
-        private const int ColTp = 6;
-        private const int ColTr = 7;
-        private const int ColStatus = 8;
-        private const int KnownCount = 9;
+        private const int ColTg = 1;
+        private const int ColSource = 2;
+        private const int ColText = 3;
+        private const int ColDescription = 4;
+        private const int ColRequirement = 5;
+        private const int ColGroup = 6;
+        private const int ColSubGroup = 7;
+        private const int ColKind = 8;
+        private const int ColParent = 9;
+        private const int ColMethod = 10;
+        private const int ColFacility = 11;
+        private const int ColTp = 12;
+        private const int ColTr = 13;
+        private const int ColStatus = 14;
+        private const int KnownCount = 15;
 
         /// <summary>Yeni ya da yükseltilen tablonun başlıkları (sırasıyla).</summary>
-        public static readonly string[] Headers = { "#", "Doğrulama maddesi", "Grup", "Alt grup", "Altyapı", "TG no", "TP no", "TR no", "Durum" };
+        public static readonly string[] Headers = { "#", "TG no", "Kaynak", "Başlık", "Kısa not", "Gereksinim", "Grup", "Alt grup", "Tür", "Bağlı", "Yöntem", "Altyapı", "TP no", "TR no", "Durum" };
+
+        /// <summary>YAML başlığındaki doküman alanları (sırasıyla): test gereksinimi, tasarımcı dokümanı, test planı, test raporu.</summary>
+        public static readonly string[] DocumentKeys = { "test_gereksinimi", "tasarimci_dokumani", "test_plani", "test_raporu" };
 
         // Eski (16.11.2026 öncesi) 7 sütunlu tablonun sırası; başlık tanınmazsa kullanılır.
         private static readonly int[] LegacyOrder = { ColNumber, ColText, ColGroup, ColSubGroup, ColFacility, ColTg, ColStatus };
@@ -132,7 +161,7 @@ namespace Pusula.Core.Testing
             for (var i = table.Start + 2; i < table.End; i++)
             {
                 var item = table.ItemOf(table.Lines[i], items.Count + 1);
-                if (item.Text.Length > 0 || item.SubGroup.Length > 0)
+                if (item.Text.Length > 0 || item.SubGroup.Length > 0 || item.TgNo.Length > 0)
                 {
                     items.Add(item);
                 }
@@ -224,6 +253,100 @@ namespace Pusula.Core.Testing
         public static string Remove(string stockFolder, int number)
         {
             return EditRow(stockFolder, number, null);
+        }
+
+        /// <summary>Doğrulama dosyası yoksa <paramref name="template"/> ile oluşturur (varsa dokunmaz). Hata metni ya da boş.</summary>
+        public static string EnsureFile(string stockFolder, string template)
+        {
+            var path = PathFor(stockFolder);
+            if (File.Exists(path))
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path) ?? stockFolder);
+                return WriteAtomic(path, (template ?? string.Empty).Replace("\r\n", "\n").Replace("\n", "\r\n"), false);
+            }
+            catch (IOException ex)
+            {
+                return ex.Message;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// Dosyanın YAML başlığındaki doküman numaraları (<see cref="DocumentKeys"/> sırasıyla; yoksa boş). Dosya yoksa hepsi boş.
+        /// </summary>
+        public static string[] ReadDocuments(string stockFolder)
+        {
+            var result = DocumentKeys.Select(k => string.Empty).ToArray();
+            var path = PathFor(stockFolder);
+            try
+            {
+                if (File.Exists(path))
+                {
+                    string body;
+                    var fields = FrontMatter.Parse(File.ReadAllText(path), out body);
+                    for (var i = 0; i < DocumentKeys.Length; i++)
+                    {
+                        string value;
+                        if (fields.TryGetValue(DocumentKeys[i], out value))
+                        {
+                            result[i] = (value ?? string.Empty).Trim().Trim('"').Replace("[[", string.Empty).Replace("]]", string.Empty).Trim();
+                        }
+                    }
+                }
+            }
+            catch (IOException)
+            {
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Doküman numaralarını YAML başlığına yazar (boş değer satırı kaldırır); gövdeye dokunulmaz. Dosya yoksa bir şey yapmaz.
+        /// Hata metni ya da boş döndürür.
+        /// </summary>
+        public static string WriteDocuments(string stockFolder, IList<string> values)
+        {
+            var path = PathFor(stockFolder);
+            if (!File.Exists(path) || values == null)
+            {
+                return string.Empty;
+            }
+
+            var map = new Dictionary<string, string>();
+            for (var i = 0; i < DocumentKeys.Length && i < values.Count; i++)
+            {
+                map[DocumentKeys[i]] = (values[i] ?? string.Empty).Trim();
+            }
+
+            return Journal.SetFrontMatter(path, map);
+        }
+
+        /// <summary>
+        /// Doküman adından yayın durumu (revizyon eki): <c>_AA</c> gibi iki büyük harf yayınlandı (1), <c>_XX</c> ya da
+        /// <c>_BA1</c> gibi sonu rakamlı hazırlanıyor (2), ek yoksa bilinmiyor (0).
+        /// </summary>
+        public static int DocumentState(string name)
+        {
+            var n = System.IO.Path.GetFileNameWithoutExtension((name ?? string.Empty).Trim());
+            var m = System.Text.RegularExpressions.Regex.Match(n, @"_([A-Z]{2})(\d*)$");
+            if (!m.Success)
+            {
+                return 0;
+            }
+
+            return m.Groups[1].Value == "XX" || m.Groups[2].Value.Length > 0 ? 2 : 1;
         }
 
         /// <summary>
@@ -337,11 +460,34 @@ namespace Pusula.Core.Testing
                 case "no":
                 case "sıra":
                     return ColNumber;
+                case "başlık":
+                case "baslik":
                 case "doğrulamamaddesi":
                 case "madde":
-                case "gereksinim":
                 case "metin":
                     return ColText;
+                case "kaynak":
+                case "doküman":
+                    return ColSource;
+                case "kısanot":
+                case "kisanot":
+                case "açıklama":
+                case "not":
+                    return ColDescription;
+                case "gereksinim":
+                case "tamgereksinim":
+                    return ColRequirement;
+                case "tür":
+                case "tur":
+                    return ColKind;
+                case "bağlı":
+                case "bagli":
+                case "temel":
+                    return ColParent;
+                case "yöntem":
+                case "yontem":
+                case "doğrulamayöntemi":
+                    return ColMethod;
                 case "grup":
                     return ColGroup;
                 case "altgrup":
@@ -460,6 +606,12 @@ namespace Pusula.Core.Testing
                 int number;
                 item.Number = int.TryParse(values[ColNumber], out number) ? number : fallbackNumber;
                 item.Text = values[ColText] ?? string.Empty;
+                item.Description = values[ColDescription] ?? string.Empty;
+                item.Requirement = values[ColRequirement] ?? string.Empty;
+                item.Source = values[ColSource] ?? string.Empty;
+                item.Kind = values[ColKind] ?? string.Empty;
+                item.Parent = values[ColParent] ?? string.Empty;
+                item.Method = values[ColMethod] ?? string.Empty;
                 item.Group = values[ColGroup] ?? string.Empty;
                 item.SubGroup = values[ColSubGroup] ?? string.Empty;
                 item.Facility = values[ColFacility] ?? string.Empty;
@@ -483,6 +635,24 @@ namespace Pusula.Core.Testing
                             break;
                         case ColText:
                             value = item.Text;
+                            break;
+                        case ColDescription:
+                            value = item.Description;
+                            break;
+                        case ColRequirement:
+                            value = item.Requirement;
+                            break;
+                        case ColSource:
+                            value = item.Source;
+                            break;
+                        case ColKind:
+                            value = item.Kind;
+                            break;
+                        case ColParent:
+                            value = item.Parent;
+                            break;
+                        case ColMethod:
+                            value = item.Method;
                             break;
                         case ColGroup:
                             value = item.Group;

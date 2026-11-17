@@ -26,8 +26,8 @@ Check 'eklenir, pencere kapanabilir' ($vm.ConfirmNewVerification())
 $vm.IsVerificationDialogOpen = $false; Wait
 Check 'dosya oluştu' (Test-Path $file)
 $text = [IO.File]::ReadAllText($file)
-Check 'dosyada 9 sütunlu başlık' ($text -like '*| # | Doğrulama maddesi | Grup | Alt grup | Altyapı | TG no | TP no | TR no | Durum |*') $text
-Check 'dosyada satır' ($text -like '*| 1 | Kazanç ≥ 5 dBi @ 2,4 GHz | İşlevsel | Anten örüntü | SATIMO | TG-012 |  |  | Bekliyor |*') $text
+Check 'dosyada 15 sütunlu başlık' ($text -like '*| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | TP no | TR no | Durum |*') $text
+Check 'dosyada satır' ($text -like '*| 1 | TG-012 |  | Kazanç ≥ 5 dBi @ 2,4 GHz |  |  | İşlevsel | Anten örüntü |  |  |  | SATIMO |  |  | Bekliyor |*') $text
 Check 'dosyada Plan ve Sonuç kısımları' ($text -like '*## Plan*' -and $text -like '*## Sonuç*')
 Check 'altyapı ortak listede' ((Test-Path $facilities) -and ([IO.File]::ReadAllText($facilities) -like '*- SATIMO*'))
 Check 'listede 1 madde' ($vm.VerificationCount -eq 1 -and $vm.VerificationGroups.Count -eq 1)
@@ -64,21 +64,46 @@ Check 'Dosyayı aç görünür' ($vm.HasVerificationFile)
 
 "--- durum değiştirme"
 $row = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows[0]
-Check 'durum seçenekleri 7 (Planlandı dahil)' (@($vm.VerificationStatuses).Count -eq 7 -and @($vm.VerificationStatuses)[1] -eq 'Planlandı') (@($vm.VerificationStatuses) -join ',')
+Check 'durum seçenekleri 10 (Planlandı, Hazırlık yapılıyor, Değerlendiriliyor, Şartlı kabul dahil)' (@($vm.VerificationStatuses).Count -eq 10 -and @($vm.VerificationStatuses)[2] -eq 'Hazırlık yapılıyor' -and @($vm.VerificationStatuses)[1] -eq 'Planlandı') (@($vm.VerificationStatuses) -join ',')
 $vm.SetVerificationStatus($row, 'Yapılıyor'); Wait
 $text = [IO.File]::ReadAllText($file)
-Check 'yalnız durum hücresi değişti' ($text -like '*| 1 | Kazanç ≥ 5 dBi @ 2,4 GHz | İşlevsel | Anten örüntü | SATIMO | TG-012 |  |  | Yapılıyor |*' -and $text -like '*| 2 | RE102 \| CE102 sınır içinde | ÇK/EMC |*') $text
+Check 'yalnız durum hücresi değişti' ($text -like '*| 1 | TG-012 |  | Kazanç ≥ 5 dBi @ 2,4 GHz |  |  | İşlevsel | Anten örüntü |  |  |  | SATIMO |  |  | Yapılıyor |*' -and $text -like '*| 2 |  |  | RE102 \| CE102 sınır içinde |  |  | ÇK/EMC |*') $text
 $row = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows[0]
 Check 'yapılıyor türü' ($row.StatusKind -eq 3 -and $row.StatusText -eq 'Yapılıyor')
 
 "--- düzenleme"
 $vm.EditVerification($row); Wait
 Check 'düzenleme penceresi dolu' ($vm.IsVerificationDialogOpen -and $vm.IsEditingVerification -and $vm.NewVerText -eq 'Kazanç ≥ 5 dBi @ 2,4 GHz' -and $vm.FacilityPick.Selected -eq 'SATIMO' -and $vm.NewVerSubGroup -eq 'Anten örüntü' -and $vm.NewVerStatus -eq 'Yapılıyor') $vm.VerificationDialogTitle
-$vm.NewVerText = 'Kazanç ≥ 6 dBi @ 2,4 GHz'; $vm.NewVerTgNo = 'TG-013'; $vm.NewVerTpNo = 'TP-004'; $vm.NewVerTrNo = 'TR-009'
+$vm.NewVerText = 'Kazanç ≥ 6 dBi @ 2,4 GHz'; $vm.NewVerDescription = '≥ 6 dBi ana yönde'; $vm.NewVerRequirement = 'Anten 2,4 GHz''de ana yönde en az 6 dBi kazanç sağlamalıdır.'; $vm.NewVerKind = 'Temel'; $vm.NewVerMethod = 'Test'; $vm.NewVerTgNo = 'TG-013'; $vm.NewVerTpNo = 'TP-004'; $vm.NewVerTrNo = 'TR-009'
 Check 'kaydedilir' ($vm.ConfirmNewVerification())
 $vm.IsVerificationDialogOpen = $false; Wait
 $text = [IO.File]::ReadAllText($file)
-Check 'satır yerinde değişti, numara aynı' ($text -like '*| 1 | Kazanç ≥ 6 dBi @ 2,4 GHz | İşlevsel | Anten örüntü | SATIMO | TG-013 | TP-004 | TR-009 | Yapılıyor |*' -and $text -notlike '*5 dBi*' -and $vm.VerificationCount -eq 2) $text
+Check 'satır yerinde değişti, numara aynı' ($text -like '*| 1 | TG-013 |  | Kazanç ≥ 6 dBi @ 2,4 GHz | ≥ 6 dBi ana yönde | Anten 2,4 GHz''de ana yönde en az 6 dBi kazanç sağlamalıdır. | İşlevsel | Anten örüntü | Temel |  | Test | SATIMO | TP-004 | TR-009 | Yapılıyor |*' -and $text -notlike '*5 dBi*' -and $vm.VerificationCount -eq 2) $text
+$row1 = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows[0]
+Check 'satır: TG no, kısa not, tür, yöntem, plan / rapor' ($row1.Id -eq 'TG-013' -and $row1.Description -eq '≥ 6 dBi ana yönde' -and $row1.KindText -eq 'Temel' -and $row1.MethodTone -eq 1 -and $row1.TpText -eq 'TP-004' -and $row1.TrText -eq 'TR-009') ($row1.Id + ' ' + $row1.KindText)
+$vm.ToggleVerification($row1)
+Check 'satır açılır: tam gereksinim ve kaynak satırı' ($row1.IsExpanded -and $row1.Requirement -like 'Anten 2,4 GHz*' -and $row1.SourceLine -like '*TG-013*') $row1.SourceLine
+
+"--- türetilmiş madde ve dokümanlar"
+$vm.AddVerificationCommand.Execute($null); Wait
+Check 'bağlı temel seçenekleri TG no''lardan' (@($vm.VerificationParents) -contains 'TG-013')
+$vm.KeepVerificationOpen = $false; $vm.NewVerSource = 'AB-7000-0002_TAS_01'; $vm.NewVerText = 'Yan lob seviyesi'; $vm.NewVerDescription = 'Ana hüzmeye göre ≤ −15 dB'
+$vm.NewVerKind = 'Türetilmiş'; $vm.NewVerParent = 'TG-013'; $vm.NewVerMethod = 'Test'; $vm.NewVerStatus = 'Değerlendiriliyor'
+Check 'türetilmiş madde eklenir' ($vm.IsNewVerDerived -and $vm.ConfirmNewVerification())
+$vm.IsVerificationDialogOpen = $false; Wait
+$der = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows | Where-Object { $_.Text -eq 'Yan lob seviyesi' }
+Check 'türetilmiş: kaynak doküman, bağlı temel, değerlendiriliyor' ($der.IsSourceOnly -and $der.Id -eq 'AB-7000-0002_TAS_01' -and $der.ParentText -eq '← TG-013' -and $der.StatusKind -eq 8) ($der.Id + ' ' + $der.ParentText)
+$row1 = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows[0]
+Check 'temelin kaynak satırında bağlı türetilmiş' ($row1.SourceLine -like '*Yan lob seviyesi*') $row1.SourceLine
+$vm.OpenDocumentsDialog(); Wait
+Check 'doküman penceresi: 4 alan' ($vm.IsDocumentsDialogOpen -and $vm.DocumentFields.Count -eq 4)
+$vm.DocumentFields[0].Value = 'AB-7000-0002_TG_AA'; $vm.DocumentFields[2].Value = 'AB-7000-0002_TP_AA'; $vm.DocumentFields[3].Value = 'AB-7000-0002_TR_XX'
+$vm.ConfirmDocuments(); Wait
+$text = [IO.File]::ReadAllText($file)
+Check 'doküman numaraları YAML''da' ($text -like '*test_gereksinimi: AB-7000-0002_TG_AA*' -and $text -like '*test_raporu: AB-7000-0002_TR_XX*') ($text.Substring(0, [Math]::Min(300, $text.Length)))
+Check 'doküman şeridi: yayınlandı / hazırlanıyor / belirtilmedi' ($vm.HasVerificationDocuments -and $vm.VerificationDocuments[0].State -eq 1 -and $vm.VerificationDocuments[3].State -eq 2 -and $vm.VerificationDocuments[1].State -eq -1) ((@($vm.VerificationDocuments) | % { $_.State }) -join ',')
+$row1 = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows[0]; $row1.IsExpanded = $true; Wait
+Snap $win "$Out\verification.png"
 $vm.AddVerificationCommand.Execute($null); Wait
 Check 'yeni madde penceresi düzenleme kipinde değil' (-not $vm.IsEditingVerification -and $vm.NewVerText -eq '' -and $vm.NewVerTpNo -eq '')
 Check 'metin ve alt grup boşsa eklenmez' (-not $vm.ConfirmNewVerification() -and $vm.VerificationError.Length -gt 0)
@@ -86,22 +111,21 @@ $vm.KeepVerificationOpen = $false; $vm.NewVerSubGroup = 'S11'; $vm.NewVerStatus 
 Check 'yalnız alt grupla eklenir (madde sonra)' ($vm.ConfirmNewVerification())
 $vm.IsVerificationDialogOpen = $false; Wait
 $later = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows | Where-Object { $_.SubGroup -eq 'S11' }
-Check 'sonra yazılacak satır listede' ($later -and $later.IsTextLater -and $later.StatusKind -eq 6 -and $vm.VerificationCount -eq 3) ([string]$vm.VerificationCount)
-Snap $win "$Out\verification.png"
+Check 'sonra yazılacak satır listede' ($later -and $later.IsTextLater -and $later.StatusKind -eq 6 -and $vm.VerificationCount -eq 4) ([string]$vm.VerificationCount)
 
 "--- kapsam dışı ilerlemeye sayılmaz"
 $row = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows[0]
 $vm.SetVerificationStatus($row, 'Kapsam dışı'); Wait
-Check 'Doğrulama 1/2 (kapsam dışı sayılmaz)' ($vm.StockVerificationText -like '*1/2*' -and $vm.VerificationProgress -eq 50) $vm.StockVerificationText
+Check 'Doğrulama 1/3 (kapsam dışı sayılmaz)' ($vm.StockVerificationText -like '*1/3*' -and [Math]::Round($vm.VerificationProgress) -eq 33) $vm.StockVerificationText
 
 "--- silme"
 $row = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows[0]
 $vm.RequestDeleteVerification($row); Wait
 Check 'önce sorulur' ($vm.IsVerificationDeleteOpen -and $vm.VerificationDeleteText -like '1. Kazanç*') $vm.VerificationDeleteText
-Check 'sormadan silinmedi' ($vm.VerificationCount -eq 3)
+Check 'sormadan silinmedi' ($vm.VerificationCount -eq 4)
 $vm.ConfirmDeleteVerification(); Wait
 $text = [IO.File]::ReadAllText($file)
-Check 'satır kalktı, diğerinin numarası aynı' ($vm.VerificationCount -eq 2 -and $text -notlike '*| 1 | Kazanç*' -and $text -like '*| 2 | RE102*' -and $text -like '*## Plan*') $text
+Check 'satır kalktı, diğerinin numarası aynı' ($vm.VerificationCount -eq 3 -and $text -notlike '*| 1 | Kazanç*' -and $text -like '*| 2 |  |  | RE102*' -and $text -like '*## Plan*') $text
 
 "--- elle yazılmış dosya: başka satırlara dokunulmaz"
 $other = Join-Path $Data '7000_MILKON\AB-7000-0003'
@@ -117,7 +141,7 @@ $vm.NewVerText = 'Boyut 100x50 mm'
 Check 'eklenir' ($vm.ConfirmNewVerification())
 $vm.IsVerificationDialogOpen = $false; Wait
 $after = [IO.File]::ReadAllText($md)
-Check 'eski 7 sütunlu tablo 9 sütuna yükseldi, numara 8 sonda' ($after -like "*| # | Doğrulama maddesi | Grup | Alt grup | Altyapı | TG no | TP no | TR no | Durum |`n|---|---|---|---|---|---|---|---|---|`n| 7 | Ağırlık ≤ 1,2 kg | Özellik |  |  |  |  |  | Geçti |`n| 8 | Boyut 100x50 mm | İşlevsel |  |  |  |  |  | Bekliyor |`n`nSon not.*") $after
+Check 'eski 7 sütunlu tablo 15 sütuna yükseldi, numara 8 sonda' ($after -like "*| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | TP no | TR no | Durum |`n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|`n| 7 |  |  | Ağırlık ≤ 1,2 kg |  |  | Özellik |  |  |  |  |  |  |  | Geçti |`n| 8 |  |  | Boyut 100x50 mm |  |  | İşlevsel |  |  |  |  |  |  |  | Bekliyor |`n`nSon not.*") $after
 Check 'giriş ve son not korunur, LF korunur' ($after.StartsWith("# Elle`n`nGiriş metni.") -and $after -notlike "*`r`n*")
 Check 'yeni dosya açılmadı' (@(Get-ChildItem (Split-Path $md) -Filter *.md).Count -eq 1)
 

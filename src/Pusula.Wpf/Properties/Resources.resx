@@ -2111,7 +2111,7 @@ Ayrıntı: {1}</value>
     <value>Listeden seçin ya da yeni ad yazın (isteğe bağlı)</value>
   </data>
   <data name="Verify_PlaceholderTgNo" xml:space="preserve">
-    <value>örn. TG-012 (isteğe bağlı)</value>
+    <value>örn. TG-1</value>
   </data>
   <data name="Verify_FacilityHint" xml:space="preserve">
     <value>Yeni yazılan altyapı ortak listeye (_TAKIP\Altyapilar.md) eklenir; tüm projelerde görünür.</value>
@@ -2135,14 +2135,18 @@ Ayrıntı: {1}</value>
     <value>---
 tur: test-gereksinimleri
 stok: {0}
+test_gereksinimi:
+tasarimci_dokumani:
+test_plani:
+test_raporu:
 ---
 
 # {0} Test Gereksinimleri
 
 ## Gereksinimler
 
-| # | Doğrulama maddesi | Grup | Alt grup | Altyapı | TG no | TP no | TR no | Durum |
-|---|---|---|---|---|---|---|---|---|
+| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | TP no | TR no | Durum |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 ## Plan
 
@@ -2230,12 +2234,156 @@ Satır md tablosundan kaldırılır; diğer maddelerin numaraları değişmez.</
     <value>Doküman no</value>
   </data>
   <data name="Verify_DocsHint" xml:space="preserve">
-    <value>Test gereksinimi · test planı · test raporu numaraları; hepsi isteğe bağlı.</value>
+    <value>Numaralar test gereksinimleri dosyasının YAML başlığına yazılır. Sonu iki büyük harfle biten (_AA) yayınlanmış, _XX ya da sonu rakamlı (_BA1) hazırlanıyor sayılır.</value>
   </data>
   <data name="Verify_TextLater" xml:space="preserve">
     <value>Maddeler sonra yazılacak</value>
   </data>
   <data name="Verify_TextOrSubGroup" xml:space="preserve">
-    <value>Doğrulama maddesini yazın; maddeler henüz belli değilse yalnız alt grubu seçip sonra doldurun.</value>
+    <value>TG no, başlık ya da alt gruptan en az birini yazın.</value>
+  </data>
+  <data name="Verify_StatusPreparing" xml:space="preserve">
+    <value>Hazırlık yapılıyor</value>
+  </data>
+  <data name="Verify_StatusEvaluating" xml:space="preserve">
+    <value>Değerlendiriliyor</value>
+  </data>
+  <data name="Verify_StatusConditional" xml:space="preserve">
+    <value>Şartlı kabul</value>
+  </data>
+  <data name="Verify_MethodTest" xml:space="preserve">
+    <value>Test</value>
+  </data>
+  <data name="Verify_MethodInspection" xml:space="preserve">
+    <value>Muayene</value>
+  </data>
+  <data name="Verify_MethodDocument" xml:space="preserve">
+    <value>Belge</value>
+  </data>
+  <data name="Verify_MethodDemonstration" xml:space="preserve">
+    <value>Gösterim</value>
+  </data>
+  <data name="Verify_MethodOther" xml:space="preserve">
+    <value>Diğer</value>
+  </data>
+  <data name="Verify_KindBasic" xml:space="preserve">
+    <value>Temel</value>
+  </data>
+  <data name="Verify_KindDerived" xml:space="preserve">
+    <value>Türetilmiş</value>
+  </data>
+  <data name="Verify_GroupCount" xml:space="preserve">
+    <value>{0} madde</value>
+  </data>
+  <data name="Verify_Failed" xml:space="preserve">
+    <value>{0} kaldı</value>
+  </data>
+  <data name="Verify_PlanFacility" xml:space="preserve">
+    <value>Altyapı {0}</value>
+  </data>
+  <data name="Verify_PlanEmpty" xml:space="preserve">
+    <value>Planda henüz yok</value>
+  </data>
+  <data name="Verify_ReportEmpty" xml:space="preserve">
+    <value>Henüz sonuç yok</value>
+  </data>
+  <data name="Verify_DocNone" xml:space="preserve">
+    <value>belirtilmedi</value>
+  </data>
+  <data name="Verify_DocPublished" xml:space="preserve">
+    <value>✓ yayınlandı</value>
+  </data>
+  <data name="Verify_DocDraft" xml:space="preserve">
+    <value>hazırlanıyor</value>
+  </data>
+  <data name="Verify_DocRequirement" xml:space="preserve">
+    <value>Test gereksinimi</value>
+  </data>
+  <data name="Verify_DocDesigner" xml:space="preserve">
+    <value>Tasarımcı dokümanı</value>
+  </data>
+  <data name="Verify_DocPlan" xml:space="preserve">
+    <value>Test planı</value>
+  </data>
+  <data name="Verify_DocReport" xml:space="preserve">
+    <value>Test raporu</value>
+  </data>
+  <data name="Verify_DocRequirementHint" xml:space="preserve">
+    <value>örn. AB-7000-0002_TG_AA (DOORS&apos;ta yayınlanan)</value>
+  </data>
+  <data name="Verify_DocDesignerHint" xml:space="preserve">
+    <value>örn. AB-7000-0002_TAS_01 (yayınlanmamış Word)</value>
+  </data>
+  <data name="Verify_DocPlanHint" xml:space="preserve">
+    <value>örn. AB-7000-0002_TP_AA</value>
+  </data>
+  <data name="Verify_DocReportHint" xml:space="preserve">
+    <value>örn. AB-7000-0002_TR_XX</value>
+  </data>
+  <data name="Verify_DocsSaved" xml:space="preserve">
+    <value>Doküman numaraları kaydedildi</value>
+  </data>
+  <data name="Verify_Documents" xml:space="preserve">
+    <value>Dokümanlar</value>
+  </data>
+  <data name="Verify_Children" xml:space="preserve">
+    <value>bağlı türetilmiş: {0}</value>
+  </data>
+  <data name="Verify_ColRequirement" xml:space="preserve">
+    <value>Gereksinim</value>
+  </data>
+  <data name="Verify_ColKind" xml:space="preserve">
+    <value>Tür</value>
+  </data>
+  <data name="Verify_ColMethod" xml:space="preserve">
+    <value>Yöntem</value>
+  </data>
+  <data name="Verify_ColPlan" xml:space="preserve">
+    <value>Test planı</value>
+  </data>
+  <data name="Verify_ColReport" xml:space="preserve">
+    <value>Test raporu</value>
+  </data>
+  <data name="Verify_FieldTitle" xml:space="preserve">
+    <value>Başlık</value>
+  </data>
+  <data name="Verify_FieldDescription" xml:space="preserve">
+    <value>Kısa not</value>
+  </data>
+  <data name="Verify_FieldRequirement" xml:space="preserve">
+    <value>Gereksinim</value>
+  </data>
+  <data name="Verify_FieldSource" xml:space="preserve">
+    <value>Kaynak doküman</value>
+  </data>
+  <data name="Verify_FieldKind" xml:space="preserve">
+    <value>Tür</value>
+  </data>
+  <data name="Verify_FieldParent" xml:space="preserve">
+    <value>Bağlı temel madde</value>
+  </data>
+  <data name="Verify_FieldMethod" xml:space="preserve">
+    <value>Yöntem</value>
+  </data>
+  <data name="Verify_FieldPlanReport" xml:space="preserve">
+    <value>Plan / rapor maddesi</value>
+  </data>
+  <data name="Verify_PlaceholderTitle" xml:space="preserve">
+    <value>örn. Yanca hüzme genişliği</value>
+  </data>
+  <data name="Verify_PlaceholderDescription" xml:space="preserve">
+    <value>örn. Azimutta −3 dB genişliği 60° ± 5°</value>
+  </data>
+  <data name="Verify_PlaceholderRequirement" xml:space="preserve">
+    <value>Gereksinimin tam metni (isteğe bağlı; satır açılınca görünür)</value>
+  </data>
+  <data name="Verify_PlaceholderSource" xml:space="preserve">
+    <value>TG no yoksa doküman, örn. AB-7000-0002_TAS_01</value>
+  </data>
+  <data name="Verify_PlaceholderTp" xml:space="preserve">
+    <value>örn. TP-5.1</value>
+  </data>
+  <data name="Verify_PlaceholderTr" xml:space="preserve">
+    <value>örn. TR-5.1</value>
   </data>
 </root>

@@ -114,13 +114,20 @@ AB-7000-0002\
 - **Eski stoklar taşınmaz**, okunmaya devam eder: `05_Jigler` / `05_Kablolar` / `06_Yazilimlar` / `07_Test_Gerecleri`,
   `03_Test_Sonuclari` ve `04_Kalifikasyon\03_Test_Sonuclari` koşuları, `07_Fotograflar` kapağı, `01_Dokumanlar`.
 
-### Doğrulama tablosu (16.11.2026)
+### Doğrulama tablosu (17.11.2026: test gereksinimi → test planı → test raporu)
 
-- Sütunlar: # · Doğrulama maddesi · Grup · Alt grup · Altyapı · TG no · TP no · TR no · Durum (başlıktan tanınır,
-  sıra serbest, tanınmayan sütunlar korunur; eski 7 sütunlu tablo ilk yazımda 9 sütuna yükselir).
-- Durumlar: Bekliyor · Planlandı · Yapılıyor · Geçti · Kaldı · Tekrarlanacak · Kapsam dışı (ilerlemeye sayılmaz).
-- Maddeler belli değilse yalnız alt grup ("Anten örüntü") yazılır; satır "Maddeler sonra yazılacak" görünür, sonra düzenlenir.
-- Satır silinince diğer numaralar değişmez.
+- Sütunlar: # · TG no · Kaynak · Başlık · Kısa not · Gereksinim · Grup · Alt grup · Tür · Bağlı · Yöntem · Altyapı · TP no · TR no · Durum
+  (başlıktan tanınır, sıra serbest, tanınmayan sütunlar korunur; eski tablolar ilk yazımda yükselir).
+- TG no = DOORS'taki test gereksinimi dokümanının madde no'su. Tasarımcının yayınlamadığı Word dokümanındaki maddelerde no
+  yoktur; Kaynak sütununa doküman no yazılır.
+- Tür: Temel (şartnamede) / Türetilmiş (temelin sağlanması için tasarımcının koyduğu; Bağlı = temel TG no); boş olabilir.
+- Yöntem: Test · Muayene · Belge · Gösterim · Diğer (test planında belirlenir). TP no / TR no: plan ve rapordaki madde no.
+- Dokümanlar (stokta her biri tek) dosyanın YAML'ında: `test_gereksinimi`, `tasarimci_dokumani`, `test_plani`, `test_raporu`.
+  Addan durum: `_AA` yayınlandı, `_XX` / `_BA1` hazırlanıyor.
+- Durumlar: Bekliyor · Planlandı · Hazırlık yapılıyor · Yapılıyor · Değerlendiriliyor · Geçti · Kaldı · Şartlı kabul ·
+  Tekrarlanacak · Kapsam dışı (ilerlemeye sayılmaz; şartlı kabul geçti sayılır).
+- Arayüz: satır tek tıkla açılır (tam gereksinim, kaynak satırı, plan / rapor özeti), çift tıkla düzenlenir.
+- Sırada: test planı ve test raporu md'de ayrıntılandırılacak (altyapı, dikkat, sonuçlar, bildirim no, sonuç dizini, ekler).
 
 ## Sıradaki adımlar (kullanıcıyla konuşulan sıra)
 
