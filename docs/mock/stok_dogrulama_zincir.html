@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Doğrulama zinciri</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1f1f1f;font-family:"Segoe UI",Arial,sans-serif;color:#e6e6e6;font-size:14px}
+.page{width:1500px;padding:24px 32px 28px;background:#262626}
+.hd{display:flex;align-items:baseline;gap:12px}
+.no{font-size:26px;font-weight:600;letter-spacing:.2px}.nm{font-size:17px;color:#a8a8a8}
+.ctx{margin-top:6px;font-size:13px;color:#8a8a8a;display:flex;gap:12px;align-items:center}
+.ctx b{color:#e6e6e6}
+.prog{display:inline-flex;width:120px;height:6px;border-radius:3px;background:#3a3a3a;overflow:hidden;vertical-align:middle;margin-left:8px}
+.prog i{display:block;height:100%}
+/* doküman şeridi */
+.docs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0 18px}
+.doc{background:#2c2c2c;border:1px solid #383838;border-radius:10px;padding:10px 14px;display:flex;gap:12px;align-items:center}
+.doc .ic{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.i1{background:#2e2a5c;color:#cecbf6}.i2{background:#3a3a3a;color:#ccc}.i3{background:#0c3a52;color:#a8dcf5}.i4{background:#412402;color:#fac775}
+.doc .k{font-size:11.5px;color:#8a8a8a}
+.doc .v{font-size:13.5px;font-weight:600;margin-top:1px}
+.doc .st{font-size:11.5px;margin-top:1px}
+.okc{color:#97c459}.wtc{color:#fac775}.muc{color:#8a8a8a}
+/* sekmeler */
+.tabs{display:flex;align-items:flex-end;border-bottom:1px solid #383838}
+.tab{padding:9px 16px;color:#a8a8a8;font-size:14.5px}
+.tab.on{color:#fff;font-weight:600;border:1px solid #383838;border-bottom:1px solid #262626;border-radius:7px 7px 0 0;margin-bottom:-1px;background:#262626}
+.bd{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:#3a3a3a;font-size:11.5px;text-align:center;margin-left:7px;font-weight:400;color:#ccc}
+/* süzgeç: hap düğmeler, sayı rozetli */
+.bar{display:flex;align-items:center;gap:8px;margin:16px 0 12px}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 8px 6px 14px;border-radius:18px;background:#2e2e2e;border:1px solid #3a3a3a;font-size:13px;color:#cfcfcf}
+.pill .c{min-width:22px;height:20px;padding:0 6px;border-radius:10px;background:#3b3b3b;font-size:11.5px;display:inline-flex;align-items:center;justify-content:center;color:#bbb}
+.pill.on{background:#16384d;border-color:#2c6a8f;color:#fff;font-weight:600}
+.pill.on .c{background:#4cc2ff;color:#062033;font-weight:700}
+.pill .dt{width:8px;height:8px;border-radius:50%}
+.btn{border:1px solid #3d3d3d;background:#2e2e2e;border-radius:7px;padding:7px 14px;font-size:13px}
+.acc{background:#4cc2ff;color:#062033;border:0;font-weight:600}
+.sp{flex:1}
+/* tablo */
+.card{background:#2a2a2a;border:1px solid #373737;border-radius:12px;padding:8px 16px 12px}
+.row{display:grid;grid-template-columns:4px 84px minmax(0,1fr) 140px 108px 100px 100px 150px 20px;gap:14px;align-items:center;padding:11px 8px 11px 0;border-bottom:1px solid #333}
+.row.h{color:#7d7d7d;font-size:11.5px;padding:8px 8px 8px 0;letter-spacing:.2px}
+.row .lb{align-self:stretch;border-radius:2px}
+.grp{display:flex;gap:10px;align-items:center;padding:16px 4px 6px;font-weight:600;font-size:15.5px}
+.grp .c{color:#7d7d7d;font-weight:400;font-size:13px}
+.gbar{width:90px;height:5px;border-radius:3px;background:#3a3a3a;overflow:hidden;display:flex}
+.gbar i{display:block;height:100%}
+.tg{font-weight:600;font-size:13.5px}
+.tg.mu{color:#8a8a8a;font-weight:400;font-size:12.5px}
+.it b{font-weight:600;font-size:14px}
+.it .a{font-size:12.5px;color:#999;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ty{font-size:12.5px;color:#c4c4c4}
+.ty .l{color:#79c0ff}
+.m{font-size:11.5px;padding:2px 9px;border-radius:6px;justify-self:start}
+.mt{background:#2e2a5c;color:#cecbf6}.mm{background:#06392f;color:#9fe1cb}.mb{background:#412402;color:#fac775}.mg{background:#0c3a52;color:#a8dcf5}
+.ref{font-size:13px;color:#d6d6d6}.ref.no{color:#5c5c5c}
+.s{font-size:12px;padding:3px 11px;border-radius:11px;justify-self:start;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.s:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.9}
+.s-bek{background:#353535;color:#a8a8a8}
+.s-pln{background:#353535;color:#e8e8e8}
+.s-haz{background:#3a3218;color:#e9cf7a}
+.s-yap{background:#16384d;color:#79c0ff}
+.s-deg{background:#2a3550;color:#b5c8f4}
+.s-gec{background:#25420f;color:#b8da8a}
+.s-kal{background:#521c1c;color:#f3a9a9}
+.s-sar{background:#3a4012;color:#dbe08f}
+.s-tek{background:#4f3307;color:#f6c46f}
+.s-kd{background:transparent;color:#777;border:1px dashed #4a4a4a}
+.chev{color:#6d6d6d;text-align:center;font-size:15px}
+.row.open{background:#2f3337;border-radius:10px 10px 0 0;border-bottom:0}
+/* açılan ayrıntı: gereksinimin tamamı + plan / rapor kısa özeti */
+.det{background:#2f3337;border-radius:0 0 10px 10px;padding:2px 16px 16px 22px;margin-bottom:8px}
+.req{font-size:13.5px;line-height:1.55;color:#dcdcdc;max-width:1100px;padding:4px 0 12px 98px}
+.req .src{display:block;font-size:12px;color:#8a8a8a;margin-top:6px}
+.req .src .l{color:#79c0ff}
+.mini2{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-left:98px}
+.pane{background:#2a2d31;border:1px solid #3d4349;border-radius:9px;padding:10px 14px}
+.pane .t{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.pane .t .d{font-weight:400;color:#8a8a8a;font-size:12px}
+.pane .t .go{margin-left:auto;font-weight:400;font-size:12px;color:#79c0ff}
+.pane .x{font-size:12.8px;color:#c8c8c8;margin-top:6px;line-height:1.5}
+.pane .x .k{color:#8a8a8a}
+.chip{display:inline-block;font-size:11.5px;padding:1px 7px;border-radius:5px;background:#3a3a3a;margin-right:4px}
+.lnk{color:#79c0ff}
+/* durumlar */
+.leg{margin-top:18px;background:#2a2a2a;border:1px solid #373737;border-radius:12px;padding:12px 16px}
+.leg .h{font-size:12px;color:#8a8a8a;font-weight:600;margin-bottom:10px;letter-spacing:.3px}
+.flow{display:flex;align-items:flex-start;gap:6px}
+.st{display:flex;flex-direction:column;gap:6px;align-items:flex-start;min-width:0}
+.st .d{font-size:11.5px;color:#8a8a8a;max-width:150px;line-height:1.35}
+.arr{color:#555;padding-top:3px}
+.side{margin-left:auto;display:flex;gap:18px;border-left:1px solid #3a3a3a;padding-left:18px}
+.new{font-size:10px;color:#4cc2ff;border:1px solid #2d5d7a;border-radius:4px;padding:0 4px;margin-left:4px}
+</style></head><body><div class="page">
+
+<div class="hd"><span class="no">AB-7000-0002</span><span class="nm">TAKIM ANTEN BOYNUZ Y</span></div>
+<div class="ctx"><span>7000_MILKON</span><span>·</span><span>Doğrulama <b>2 / 7</b><span class="prog"><i style="width:28%;background:#6cb33f"></i><i style="width:14%;background:#d65c5c"></i><i style="width:14%;background:#79c0ff"></i></span></span><span>·</span><span>1 kapsam dışı</span></div>
+
+<!-- Dokümanlar: her biri stokta tek; plan ve rapor md'de ayrıca ayrıntılanır -->
+<div class="docs">
+  <div class="doc"><span class="ic i1">TG</span><div><div class="k">Test gereksinimi</div><div class="v">AB-7000-0002_TG_AA</div><div class="st okc">✓ yayınlandı · 6 madde</div></div></div>
+  <div class="doc"><span class="ic i2">W</span><div><div class="k">Tasarımcı dokümanı</div><div class="v">AB-7000-0002_TAS_01</div><div class="st muc">yayınlanmadı · 2 madde</div></div></div>
+  <div class="doc"><span class="ic i3">TP</span><div><div class="k">Test planı</div><div class="v">AB-7000-0002_TP_AA</div><div class="st okc">✓ yayınlandı · 6 madde bağlı</div></div></div>
+  <div class="doc"><span class="ic i4">TR</span><div><div class="k">Test raporu</div><div class="v">AB-7000-0002_TR_XX</div><div class="st wtc">hazırlanıyor · 3 madde sonuçlu</div></div></div>
+</div>
+
+<div class="tabs"><span class="tab on">Doğrulamalar<span class="bd">8</span></span><span class="tab">Yapılacaklar<span class="bd">6</span></span><span class="tab">Test yardımcı araçları<span class="bd">5</span></span></div>
+
+<div class="bar">
+  <span class="pill on">Hepsi <span class="c">8</span></span>
+  <span class="pill"><span class="dt" style="background:#9b8cf0"></span>İşlevsel <span class="c">4</span></span>
+  <span class="pill"><span class="dt" style="background:#5fd4b0"></span>Özellik <span class="c">2</span></span>
+  <span class="pill"><span class="dt" style="background:#f0a35c"></span>ÇK/EMC <span class="c">1</span></span>
+  <span class="pill"><span class="dt" style="background:#8a8a8a"></span>Diğer <span class="c">1</span></span>
+  <span class="sp"></span>
+  <span class="btn">Dosyayı aç</span><span class="btn acc">+ Madde</span>
+</div>
+
+<div class="card">
+  <div class="row h"><span></span><span>TG no</span><span>Gereksinim</span><span>Tür</span><span>Yöntem</span><span>Test planı</span><span>Test raporu</span><span>Durum</span><span></span></div>
+
+  <div class="grp"><span class="dt" style="width:9px;height:9px;border-radius:50%;background:#9b8cf0"></span>İşlevsel <span class="c">4 madde · 2 geçti · 1 kaldı</span><span class="gbar"><i style="width:50%;background:#6cb33f"></i><i style="width:25%;background:#d65c5c"></i></span></div>
+  <div class="row"><span class="lb" style="background:#6cb33f"></span><span class="tg">TG-1</span><div class="it"><b>Kazanç</b><div class="a">≥ 5 dBi @ 2,4 GHz, ana yönde</div></div><span class="ty">Temel</span><span class="m mt">Test</span><span class="ref">TP-5.1</span><span class="ref">TR-5.1</span><span class="s s-gec">Geçti</span><span class="chev">›</span></div>
+  <div class="row"><span class="lb" style="background:#6cb33f"></span><span class="tg">TG-2</span><div class="it"><b>Yanca hüzme genişliği</b><div class="a">Azimutta −3 dB genişliği 60° ± 5°</div></div><span class="ty">Temel</span><span class="m mt">Test</span><span class="ref">TP-5.1</span><span class="ref">TR-5.1</span><span class="s s-gec">Geçti</span><span class="chev">›</span></div>
+  <div class="row"><span class="lb" style="background:#7d93d6"></span><span class="tg mu">TAS_01</span><div class="it"><b>Yan lob seviyesi</b><div class="a">Ana hüzmeye göre ≤ −15 dB</div></div><span class="ty">Türetilmiş <span class="l">← TG-1</span></span><span class="m mt">Test</span><span class="ref">TP-5.1</span><span class="ref no">—</span><span class="s s-deg">Değerlendiriliyor</span><span class="chev">›</span></div>
+
+  <!-- açık satır -->
+  <div class="row open"><span class="lb" style="background:#d65c5c"></span><span class="tg">TG-4</span><div class="it"><b>Giriş uyumu</b><div class="a">2–18 GHz'de S11 ≤ −10 dB</div></div><span class="ty">Temel</span><span class="m mt">Test</span><span class="ref">TP-5.2</span><span class="ref">TR-5.2</span><span class="s s-kal">Kaldı</span><span class="chev">⌄</span></div>
+  <div class="det">
+    <div class="req">Anten, 2–18 GHz çalışma bandının tamamında, 50 Ω sisteme bağlıyken giriş yansıma katsayısı S11 ≤ −10 dB (VSWR ≤ 1,92) olmalıdır. Ölçüm, radom takılı hâlde ve oda sıcaklığında yapılır; bant kenarlarında 200 MHz'lik geçiş bölgesinde −9 dB'ye kadar izin verilir.
+      <span class="src">AB-7000-0002_TG_AA · madde 3.4.2 · bağlı türetilmiş madde yok</span></div>
+    <div class="mini2">
+      <div class="pane"><div class="t">Test planı <span class="d">TP-5.2</span><span class="go">Plandaki maddeye git →</span></div>
+        <div class="x"><span class="k">Altyapı</span> <span class="chip">VNA</span> Lab-A · <span class="k">Seri no</span> SNP1, SNP2 · 2 port kalibrasyon, kablo <span class="lnk">#JT-0001-0001</span></div></div>
+      <div class="pane"><div class="t">Test raporu <span class="d">TR-5.2</span><span class="go">Rapordaki maddeye git →</span></div>
+        <div class="x">16,8 GHz'de −8,4 dB · SNP1 kaldı, SNP2 geçti · <span class="k">Bildirim</span> <span class="lnk">BN-2026-031</span> · <span class="lnk">Sonuç klasörü</span></div></div>
+    </div>
+  </div>
+
+  <div class="grp"><span class="dt" style="width:9px;height:9px;border-radius:50%;background:#5fd4b0"></span>Özellik <span class="c">2 madde</span><span class="gbar"></span></div>
+  <div class="row"><span class="lb" style="background:#e9cf7a"></span><span class="tg">TG-5</span><div class="it"><b>Ağırlık</b><div class="a">Kablosuz ≤ 1,2 kg</div></div><span class="ty">Temel</span><span class="m mm">Muayene</span><span class="ref">TP-6.1</span><span class="ref no">—</span><span class="s s-haz">Hazırlık yapılıyor</span><span class="chev">›</span></div>
+  <div class="row"><span class="lb" style="background:#5a5a5a"></span><span class="tg mu">TAS_01</span><div class="it"><b>Malzeme uygunluğu</b><div class="a">RoHS uyumlu malzeme</div></div><span class="ty" style="color:#5c5c5c">—</span><span class="m mb">Belge</span><span class="ref no">—</span><span class="ref no">—</span><span class="s s-bek">Bekliyor</span><span class="chev">›</span></div>
+
+  <div class="grp"><span class="dt" style="width:9px;height:9px;border-radius:50%;background:#f0a35c"></span>ÇK/EMC <span class="c">1 madde</span><span class="gbar"></span></div>
+  <div class="row"><span class="lb" style="background:#79c0ff"></span><span class="tg">TG-6</span><div class="it"><b>Işınım emisyonu</b><div class="a">MIL-STD-461G RE102 sınırı içinde</div></div><span class="ty">Temel</span><span class="m mt">Test</span><span class="ref">TP-7.1</span><span class="ref no">—</span><span class="s s-yap">Yapılıyor</span><span class="chev">›</span></div>
+
+  <div class="grp"><span class="dt" style="width:9px;height:9px;border-radius:50%;background:#8a8a8a"></span>Diğer <span class="c">1 madde</span></div>
+  <div class="row" style="border-bottom:0"><span class="lb" style="background:#3a3a3a"></span><span class="tg">TG-7</span><div class="it"><b>Montaj</b><div class="a">Direğe tek kişiyle 10 dk'da takılır</div></div><span class="ty">Temel</span><span class="m mg">Gösterim</span><span class="ref no">—</span><span class="ref no">—</span><span class="s s-kd">Kapsam dışı</span><span class="chev">›</span></div>
+</div>
+
+<!-- Durumlar: soldan sağa akış; sağda yan durumlar -->
+<div class="leg"><div class="h">DURUMLAR</div>
+  <div class="flow">
+    <div class="st"><span class="s s-bek">Bekliyor</span><span class="d">Planda henüz yok</span></div><span class="arr">→</span>
+    <div class="st"><span class="s s-pln">Planlandı</span><span class="d">Test planında maddesi var</span></div><span class="arr">→</span>
+    <div class="st"><span class="s s-haz">Hazırlık yapılıyor</span><span class="d">Jig, kablo, yazılım, altyapı hazırlanıyor <span class="new">yeni</span></span></div><span class="arr">→</span>
+    <div class="st"><span class="s s-yap">Yapılıyor</span><span class="d">Ölçüm sürüyor</span></div><span class="arr">→</span>
+    <div class="st"><span class="s s-deg">Değerlendiriliyor</span><span class="d">Ölçüldü; analiz, rapor yazılıyor</span></div><span class="arr">→</span>
+    <div class="st"><span class="s s-gec">Geçti</span><span class="s s-kal">Kaldı</span><span class="s s-sar">Şartlı kabul</span><span class="d">Rapordan; kaldıysa bildirim no</span></div>
+    <div class="side">
+      <div class="st"><span class="s s-tek">Tekrarlanacak</span><span class="d">Gereksinim ya da ürün değişti</span></div>
+      <div class="st"><span class="s s-kd">Kapsam dışı</span><span class="d">Bu stokta uygulanmaz, sayılmaz</span></div>
+    </div>
+  </div>
+</div>
+
+</div></body></html>
