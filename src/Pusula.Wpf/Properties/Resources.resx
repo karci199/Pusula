@@ -2111,13 +2111,13 @@ Ayrıntı: {1}</value>
     <value>Listeden seçin ya da yeni ad yazın (isteğe bağlı)</value>
   </data>
   <data name="Verify_PlaceholderTgNo" xml:space="preserve">
-    <value>örn. TG-1</value>
+    <value>örn. TG-1 ya da madde no yoksa doküman no (AB-7000-0002_TAS_01)</value>
   </data>
   <data name="Verify_FacilityHint" xml:space="preserve">
     <value>Yeni yazılan altyapı ortak listeye (_TAKIP\Altyapilar.md) eklenir; tüm projelerde görünür.</value>
   </data>
   <data name="Verify_KeepOpen" xml:space="preserve">
-    <value>Ekledikten sonra yenisini aç</value>
+    <value>Ekledikten sonra pencere açık kalsın (sıradaki maddeyi hemen girmek için; grup ve altyapı korunur)</value>
   </data>
   <data name="Verify_TextRequired" xml:space="preserve">
     <value>Doğrulama maddesini yazın.</value>
@@ -2240,7 +2240,7 @@ Satır md tablosundan kaldırılır; diğer maddelerin numaraları değişmez.</
     <value>Maddeler sonra yazılacak</value>
   </data>
   <data name="Verify_TextOrSubGroup" xml:space="preserve">
-    <value>TG no, başlık ya da alt gruptan en az birini yazın.</value>
+    <value>TG no ya da başlıktan en az birini yazın.</value>
   </data>
   <data name="Verify_StatusPreparing" xml:space="preserve">
     <value>Hazırlık yapılıyor</value>
@@ -2375,7 +2375,7 @@ Satır md tablosundan kaldırılır; diğer maddelerin numaraları değişmez.</
     <value>örn. Azimutta −3 dB genişliği 60° ± 5°</value>
   </data>
   <data name="Verify_PlaceholderRequirement" xml:space="preserve">
-    <value>Gereksinimin tam metni (isteğe bağlı; satır açılınca görünür)</value>
+    <value>Gereksinim metni: ilk satırı tabloda başlığın altında, tamamı satır açılınca görünür</value>
   </data>
   <data name="Verify_PlaceholderSource" xml:space="preserve">
     <value>TG no yoksa doküman, örn. AB-7000-0002_TAS_01</value>

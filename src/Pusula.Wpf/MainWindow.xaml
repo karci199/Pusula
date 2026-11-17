@@ -2725,33 +2725,22 @@
                 <StackPanel>
                     <TextBlock Margin="0,0,0,14" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding VerificationFileText}" TextTrimming="CharacterEllipsis" />
                     <controls:FormField Header="{x:Static res:Resources.Verify_FieldTgNo}" LabelWidth="150">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="140" />
-                                <ColumnDefinition Width="8" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <TextBox Text="{Binding NewVerTgNo, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderTgNo}"
-                                     IsVisibleChanged="FocusWhenVisible" />
-                            <TextBox Grid.Column="2" Text="{Binding NewVerSource, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderSource}" />
-                        </Grid>
+                        <TextBox Text="{Binding NewVerTgNo, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderTgNo}"
+                                 IsVisibleChanged="FocusWhenVisible" />
                     </controls:FormField>
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldTitle}" LabelWidth="150" ErrorText="{Binding VerificationError}">
                         <TextBox x:Name="VerificationTextBox" Text="{Binding NewVerText, UpdateSourceTrigger=PropertyChanged}"
                                  controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderTitle}" />
                     </controls:FormField>
-                    <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldDescription}" LabelWidth="150">
-                        <TextBox Text="{Binding NewVerDescription, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderDescription}" />
-                    </controls:FormField>
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldRequirement}" LabelWidth="150">
-                        <TextBox Text="{Binding NewVerRequirement, UpdateSourceTrigger=PropertyChanged}" MinHeight="64" TextWrapping="Wrap" AcceptsReturn="False"
-                                 VerticalContentAlignment="Top" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderRequirement}" />
+                        <TextBox Text="{Binding NewVerRequirement, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="False" MinLines="3" MaxLines="8"
+                                 VerticalScrollBarVisibility="Auto" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderRequirement}" />
                     </controls:FormField>
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldGroup}" IsRequired="True" LabelWidth="150">
-                        <ItemsControl ItemsSource="{Binding VerificationGroupChoices}" Focusable="False">
+                        <ItemsControl ItemsSource="{Binding VerificationGroupChoices}" Focusable="False" VerticalAlignment="Center" Margin="0,7,0,0">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" />
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
@@ -2762,18 +2751,11 @@
                         </ItemsControl>
                     </controls:FormField>
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldKind}" LabelWidth="150">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="160" />
-                                <ColumnDefinition Width="8" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <ComboBox ItemsSource="{Binding VerificationKinds}" SelectedItem="{Binding NewVerKind, Mode=TwoWay}" />
-                            <DockPanel Grid.Column="2" Visibility="{Binding IsNewVerDerived, Converter={StaticResource BoolToVis}}">
-                                <TextBlock DockPanel.Dock="Left" Margin="0,0,8,0" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Verify_FieldParent}" />
-                                <ComboBox ItemsSource="{Binding VerificationParents}" SelectedItem="{Binding NewVerParent, Mode=TwoWay}" />
-                            </DockPanel>
-                        </Grid>
+                        <ComboBox ItemsSource="{Binding VerificationKinds}" SelectedItem="{Binding NewVerKind, Mode=TwoWay}" />
+                    </controls:FormField>
+                    <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldParent}" LabelWidth="150"
+                                        Visibility="{Binding IsNewVerDerived, Converter={StaticResource BoolToVis}}">
+                        <ComboBox ItemsSource="{Binding VerificationParents}" SelectedItem="{Binding NewVerParent, Mode=TwoWay}" />
                     </controls:FormField>
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldMethod}" LabelWidth="150">
                         <ComboBox ItemsSource="{Binding VerificationMethods}" SelectedItem="{Binding NewVerMethod, Mode=TwoWay}" />
@@ -2786,14 +2768,6 @@
                                          controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderFacility}" IsVisibleChanged="FocusWhenVisible" />
                                 <TextBlock Margin="0,4,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_FacilityHint}" />
                             </StackPanel>
-                        </StackPanel>
-                    </controls:FormField>
-                    <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldSubGroup}" LabelWidth="150">
-                        <StackPanel>
-                            <ComboBox ItemsSource="{Binding SubGroupPick.Options}" SelectedItem="{Binding SubGroupPick.Selected, Mode=TwoWay}" />
-                            <TextBox Margin="0,6,0,0" Text="{Binding SubGroupPick.NewText, UpdateSourceTrigger=PropertyChanged}"
-                                     controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderSubGroup}"
-                                     Visibility="{Binding SubGroupPick.IsNew, Converter={StaticResource BoolToVis}}" IsVisibleChanged="FocusWhenVisible" />
                         </StackPanel>
                     </controls:FormField>
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldPlanReport}" LabelWidth="150">

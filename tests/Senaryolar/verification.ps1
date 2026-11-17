@@ -87,12 +87,12 @@ Check 'satır açılır: tam gereksinim ve kaynak satırı' ($row1.IsExpanded -a
 "--- türetilmiş madde ve dokümanlar"
 $vm.AddVerificationCommand.Execute($null); Wait
 Check 'bağlı temel seçenekleri TG no''lardan' (@($vm.VerificationParents) -contains 'TG-013')
-$vm.KeepVerificationOpen = $false; $vm.NewVerSource = 'AB-7000-0002_TAS_01'; $vm.NewVerText = 'Yan lob seviyesi'; $vm.NewVerDescription = 'Ana hüzmeye göre ≤ −15 dB'
+$vm.KeepVerificationOpen = $false; $vm.NewVerTgNo = 'AB-7000-0002_TAS_01'; $vm.NewVerText = 'Yan lob seviyesi'; $vm.NewVerDescription = 'Ana hüzmeye göre ≤ −15 dB'
 $vm.NewVerKind = 'Türetilmiş'; $vm.NewVerParent = 'TG-013'; $vm.NewVerMethod = 'Test'; $vm.NewVerStatus = 'Değerlendiriliyor'
 Check 'türetilmiş madde eklenir' ($vm.IsNewVerDerived -and $vm.ConfirmNewVerification())
 $vm.IsVerificationDialogOpen = $false; Wait
 $der = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows | Where-Object { $_.Text -eq 'Yan lob seviyesi' }
-Check 'türetilmiş: kaynak doküman, bağlı temel, değerlendiriliyor' ($der.IsSourceOnly -and $der.Id -eq 'AB-7000-0002_TAS_01' -and $der.ParentText -eq '← TG-013' -and $der.StatusKind -eq 8) ($der.Id + ' ' + $der.ParentText)
+Check 'türetilmiş: doküman no TG kutusunda, bağlı temel, değerlendiriliyor' ($der.Id -eq 'AB-7000-0002_TAS_01' -and $der.ParentText -eq '← TG-013' -and $der.StatusKind -eq 8) ($der.Id + ' ' + $der.ParentText)
 $row1 = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows[0]
 Check 'temelin kaynak satırında bağlı türetilmiş' ($row1.SourceLine -like '*Yan lob seviyesi*') $row1.SourceLine
 $vm.OpenDocumentsDialog(); Wait

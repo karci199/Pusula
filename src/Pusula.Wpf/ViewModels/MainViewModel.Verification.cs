@@ -134,16 +134,16 @@ namespace Pusula.Wpf.ViewModels
             get { return Item.Text.Length == 0; }
         }
 
-        /// <summary>Kısa not.</summary>
+        /// <summary>Başlığın altındaki tek satır: kısa not, yoksa gereksinim metni (tabloda kırpılır).</summary>
         public string Description
         {
-            get { return Item.Description; }
+            get { return Item.Description.Length > 0 ? Item.Description : Item.Requirement; }
         }
 
-        /// <summary>Kısa not var mı.</summary>
+        /// <summary>Başlığın altında satır var mı.</summary>
         public bool HasDescription
         {
-            get { return Item.Description.Length > 0; }
+            get { return Description.Length > 0; }
         }
 
         /// <summary>Tam gereksinim; yazılmadıysa kısa not.</summary>
@@ -536,7 +536,11 @@ namespace Pusula.Wpf.ViewModels
 
             Options.Add(newLabel);
             NewText = string.Empty;
-            Selected = Resources.Verify_None;
+
+            // Liste temizlenince açılır kutu seçimi kaybeder; aynı değer olsa da yeniden bildirilir ("—" görünsün).
+            selected = Resources.Verify_None;
+            OnPropertyChanged(nameof(Selected));
+            OnPropertyChanged(nameof(IsNew));
         }
     }
     /// <summary>Seçmeli düğme (süzgeç ya da grup seçimi): metin ve işaret.</summary>
@@ -882,15 +886,16 @@ namespace Pusula.Wpf.ViewModels
             editingVerification = item;
             ResetVerificationForm(item.Group.Length > 0 ? item.Group : Resources.Verify_GroupOther);
             NewVerText = item.Text;
-            NewVerSource = item.Source;
-            NewVerDescription = item.Description;
-            NewVerRequirement = item.Requirement;
+            // TG no ve kaynak doküman tek kutuda: TG no yoksa doküman no gösterilir (kaydedince TG no olur).
+            NewVerTgNo = item.TgNo.Length > 0 ? item.TgNo : item.Source;
+            NewVerSource = string.Empty;
+            NewVerRequirement = item.Requirement.Length > 0 ? item.Requirement : item.Description;
+            NewVerDescription = item.Requirement.Length > 0 ? item.Description : string.Empty;
             NewVerKind = item.Kind;
             NewVerParent = item.Parent;
             NewVerMethod = item.Method;
             NewVerSubGroup = item.SubGroup;
             NewVerFacility = item.Facility;
-            NewVerTgNo = item.TgNo;
             NewVerTpNo = item.TpNo;
             NewVerTrNo = item.TrNo;
             NewVerStatus = item.Status.Length > 0 ? item.Status : Resources.Verify_StatusPending;
@@ -1252,7 +1257,7 @@ namespace Pusula.Wpf.ViewModels
 
             var children = item.TgNo.Length == 0 ? new List<string>() : verificationItems
                 .Where(i => string.Equals(i.Parent, item.TgNo, StringComparison.OrdinalIgnoreCase))
-                .Select(i => i.TgNo.Length > 0 ? i.TgNo : i.Text).ToList();
+                .Select(i => i.Text.Length > 0 ? i.Text : i.TgNo).ToList();
             if (children.Count > 0)
             {
                 parts.Add(string.Format(CultureInfo.CurrentCulture, Resources.Verify_Children, string.Join(", ", children)));

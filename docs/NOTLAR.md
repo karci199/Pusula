@@ -127,6 +127,9 @@ AB-7000-0002\
 - Durumlar: Bekliyor · Planlandı · Hazırlık yapılıyor · Yapılıyor · Değerlendiriliyor · Geçti · Kaldı · Şartlı kabul ·
   Tekrarlanacak · Kapsam dışı (ilerlemeye sayılmaz; şartlı kabul geçti sayılır).
 - Arayüz: satır tek tıkla açılır (tam gereksinim, kaynak satırı, plan / rapor özeti), çift tıkla düzenlenir.
+- Madde penceresi (17.11.2026 sadeleşti): TG no tek kutu (madde no yoksa doküman no yazılır), gereksinim ve kısa not tek
+  alan (ilk satırı tabloda, tamamı açılınca), alt grup pencerede yok (md'deki eski değerler korunur), tür / bağlı temel / yöntem /
+  altyapı / TP-TR madde no / durum. "Pencere açık kalsın" sıradaki maddeyi hemen girmek içindir.
 - Sırada: test planı ve test raporu md'de ayrıntılandırılacak (altyapı, dikkat, sonuçlar, bildirim no, sonuç dizini, ekler).
 
 ## Sıradaki adımlar (kullanıcıyla konuşulan sıra)
