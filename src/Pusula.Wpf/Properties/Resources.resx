@@ -2472,4 +2472,25 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Verify_OpenInFile" xml:space="preserve">
     <value>Dosyada aç</value>
   </data>
+  <data name="StatusBar_NoRoot" xml:space="preserve">
+    <value>Kök klasör seçilmedi</value>
+  </data>
+  <data name="StatusBar_UpToDate" xml:space="preserve">
+    <value>güncel</value>
+  </data>
+  <data name="StatusBar_Changed" xml:space="preserve">
+    <value>diskte değişiklik var, yenilemek için tıklayın</value>
+  </data>
+  <data name="StatusBar_Counts" xml:space="preserve">
+    <value>{0} stok · {1} açık iş</value>
+  </data>
+  <data name="StatusBar_Late" xml:space="preserve">
+    <value>{0} geciken</value>
+  </data>
+  <data name="StatusBar_OpenLast" xml:space="preserve">
+    <value>Yazılan dosyayı aç</value>
+  </data>
+  <data name="Timeline_OpenNoteShort" xml:space="preserve">
+    <value>MD</value>
+  </data>
 </root>

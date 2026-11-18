@@ -225,6 +225,12 @@ namespace Pusula.Wpf
             }
         }
 
+        // Durum çubuğunda son iş: yazdığı dosya açılır.
+        private void LastAction_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.OpenLastAction();
+        }
+
         // Kartın "Notta aç" düğmesi: kaydın (ya da işin) yazıldığı not, ayarlardaki not uygulamasında açılır.
         private void TimelineOpenNote_Click(object sender, RoutedEventArgs e)
         {

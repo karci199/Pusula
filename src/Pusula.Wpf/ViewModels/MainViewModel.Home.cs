@@ -99,6 +99,24 @@ namespace Pusula.Wpf.ViewModels
             }
         }
 
+        /// <summary>Durum çubuğunun ortası: stok, açık iş ve geciken sayısı ("5 stok · 8 açık iş · 2 geciken").</summary>
+        public string StatusCounts
+        {
+            get
+            {
+                if (!HasRoot)
+                {
+                    return string.Empty;
+                }
+
+                var culture = System.Globalization.CultureInfo.CurrentCulture;
+                var stocks = Nodes.Where(n => n.Kind == FolderKind.Project).SelectMany(n => n.Children).Count(c => c.Kind == FolderKind.Stock);
+                var text = string.Format(culture, Properties.Resources.StatusBar_Counts, stocks, allHomeTasks.Count);
+                var late = allHomeTasks.Count(t => t.IsLate);
+                return late == 0 ? text : text + " · " + string.Format(culture, Properties.Resources.StatusBar_Late, late);
+            }
+        }
+
         /// <summary>Açık iş sayısı (sekme rozeti).</summary>
         public int HomeOpenCount
         {
@@ -361,6 +379,8 @@ namespace Pusula.Wpf.ViewModels
             FilterHomeTasks();
             OnPropertyChanged(nameof(HomeTaskSummary));
             OnPropertyChanged(nameof(HomeOpenCount));
+            OnPropertyChanged(nameof(StatusCounts));
+            OnPropertyChanged(nameof(WatchText));
             OnPropertyChanged(nameof(HasHomeOpen));
             OnPropertyChanged(nameof(HasHomeLate));
 

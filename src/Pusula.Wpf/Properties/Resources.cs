@@ -2371,6 +2371,27 @@ namespace Pusula.Wpf.Properties
         /// <summary>Seçim listesinde boş seçenek.</summary>
         public static string Verify_None { get { return Get("Verify_None"); } }
 
+        /// <summary>Zaman çizelgesi kartı: notta aç düğmesinin kısa adı.</summary>
+        public static string Timeline_OpenNoteShort { get { return Get("Timeline_OpenNoteShort"); } }
+
+        /// <summary>Durum çubuğu: kök yok.</summary>
+        public static string StatusBar_NoRoot { get { return Get("StatusBar_NoRoot"); } }
+
+        /// <summary>Durum çubuğu: izleme güncel.</summary>
+        public static string StatusBar_UpToDate { get { return Get("StatusBar_UpToDate"); } }
+
+        /// <summary>Durum çubuğu: diskte değişiklik var.</summary>
+        public static string StatusBar_Changed { get { return Get("StatusBar_Changed"); } }
+
+        /// <summary>Durum çubuğu: stok ve açık iş sayısı.</summary>
+        public static string StatusBar_Counts { get { return Get("StatusBar_Counts"); } }
+
+        /// <summary>Durum çubuğu: geciken iş sayısı.</summary>
+        public static string StatusBar_Late { get { return Get("StatusBar_Late"); } }
+
+        /// <summary>Durum çubuğu: son işin dosyasını aç ipucu.</summary>
+        public static string StatusBar_OpenLast { get { return Get("StatusBar_OpenLast"); } }
+
         /// <summary>Zaman çizelgesi kartı: notta aç düğmesinin ipucu.</summary>
         public static string Timeline_OpenNote { get { return Get("Timeline_OpenNote"); } }
 

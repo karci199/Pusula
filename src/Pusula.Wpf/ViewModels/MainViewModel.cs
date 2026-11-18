@@ -282,7 +282,14 @@ namespace Pusula.Wpf.ViewModels
         public string Status
         {
             get { return status; }
-            private set { SetProperty(ref status, value); }
+            private set
+            {
+                if (SetProperty(ref status, value ?? string.Empty))
+                {
+                    OnPropertyChanged(nameof(StatusNote));
+                    OnPropertyChanged(nameof(HasStatusNote));
+                }
+            }
         }
 
         /// <summary>Ağacı yeniden okur.</summary>
@@ -292,7 +299,27 @@ namespace Pusula.Wpf.ViewModels
         public bool IsDiskChanged
         {
             get { return isDiskChanged; }
-            private set { SetProperty(ref isDiskChanged, value); }
+            private set
+            {
+                if (SetProperty(ref isDiskChanged, value))
+                {
+                    OnPropertyChanged(nameof(WatchText));
+                }
+            }
+        }
+
+        /// <summary>Durum çubuğunun solu: kök klasör ve izleme durumu ("C:\…\Projeler · güncel" ya da "diskte değişiklik var").</summary>
+        public string WatchText
+        {
+            get
+            {
+                if (!HasRoot)
+                {
+                    return Resources.StatusBar_NoRoot;
+                }
+
+                return rootPath + " · " + (isDiskChanged ? Resources.StatusBar_Changed : Resources.StatusBar_UpToDate);
+            }
         }
 
         /// <summary>Sayılan son dışarıdan değişikliğin yolu (yoksa boş).</summary>

@@ -238,7 +238,7 @@ namespace Pusula.Wpf.ViewModels
                 return false;
             }
 
-            Done(string.Format(done ? Resources.Task_Closed : Resources.Task_Reopened, row.Text));
+            Done(string.Format(done ? Resources.Task_Closed : Resources.Task_Reopened, row.Text), row.NotePath);
             RefreshShowing(folder);
             return true;
         }

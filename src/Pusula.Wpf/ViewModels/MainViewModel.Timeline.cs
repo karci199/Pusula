@@ -456,7 +456,7 @@ namespace Pusula.Wpf.ViewModels
                 return false;
             }
 
-            Done(string.Format(Resources.Task_Added, title));
+            Done(string.Format(Resources.Task_Added, title), journalNotePath);
             RefreshShowing(journalFolder);
             return true;
         }

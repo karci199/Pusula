@@ -1419,7 +1419,7 @@ namespace Pusula.Wpf.ViewModels
 
             LinkVerificationFromUnitNote();
             LoadVerifications();
-            Done(string.Format(CultureInfo.CurrentCulture, Resources.Verify_Added, item.Number, text.Length > 0 ? text : item.SubGroup));
+            Done(string.Format(CultureInfo.CurrentCulture, Resources.Verify_Added, item.Number, text.Length > 0 ? text : item.SubGroup), VerificationList.PathFor(verificationStock));
             return true;
         }
     }

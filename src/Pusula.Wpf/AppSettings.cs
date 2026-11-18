@@ -58,6 +58,9 @@ namespace Pusula.Wpf
         [DataMember(Name = "lastAction", Order = 7, EmitDefaultValue = false)]
         public string LastAction { get; set; } = string.Empty;
 
+        /// <summary>Son yapılan işin yazdığı dosya (durum çubuğunda tıklanınca açılır); yoksa boş.</summary>
+        public string LastActionPath { get; set; } = string.Empty;
+
         /// <summary>Kullanıcı (ben): ad soyad; talep eden, olay kişisi gibi kutularda varsayılan. Boşsa Windows kullanıcı adı.</summary>
         [DataMember(Name = "user", Order = 8, EmitDefaultValue = false)]
         public string UserName { get; set; } = string.Empty;

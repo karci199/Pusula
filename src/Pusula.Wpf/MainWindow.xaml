@@ -834,9 +834,12 @@
                             MouseLeftButtonDown="TimelineCard_MouseLeftButtonDown">
                         <StackPanel>
                             <DockPanel>
-                                <Button x:Name="OpenNote" DockPanel.Dock="Right" Margin="6,0,0,0" Padding="4,1" VerticalAlignment="Center" Style="{DynamicResource SubtleButtonStyle}"
+                                <Button x:Name="OpenNote" DockPanel.Dock="Right" Margin="8,0,0,0" Padding="9,2" MinWidth="38" VerticalAlignment="Center"
                                         Visibility="Hidden" ToolTip="{x:Static res:Resources.Timeline_OpenNote}" Click="TimelineOpenNote_Click">
-                                    <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="12" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="12" VerticalAlignment="Center" />
+                                        <TextBlock Margin="5,0,0,0" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.Timeline_OpenNoteShort}" />
+                                    </StackPanel>
                                 </Button>
                                 <TextBlock x:Name="When" DockPanel.Dock="Right" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="12"
                                            Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding TimeText}" />
@@ -2713,18 +2716,41 @@
             </Grid>
         </Grid>
 
-        <!-- Durum çubuğu -->
-        <StatusBar Grid.Row="2">
-            <!-- Sağda: son yapılan iş (kalıcı); solda geçici durum mesajı -->
-            <StatusBarItem DockPanel.Dock="Right" Visibility="{Binding HasLastAction, Converter={StaticResource BoolToVis}}"
-                           ToolTip="{x:Static res:Resources.LastAction_Hint}">
-                <StackPanel Orientation="Horizontal">
-                    <local:AppIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="12" Foreground="{DynamicResource SystemFillColorSuccessBrush}" VerticalAlignment="Center" />
-                    <TextBlock x:Name="LastActionText" Margin="6,0,4,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding LastAction}" />
-                </StackPanel>
+        <!-- Durum çubuğu: solda kök ve izleme (değişiklik varsa tıklayınca yenilenir), ortada sayılar, sağda son iş (tıklayınca yazdığı dosya açılır) -->
+        <StatusBar Grid.Row="2" Padding="6,1" TextElement.FontSize="12.5" VerticalContentAlignment="Center">
+            <StatusBarItem DockPanel.Dock="Right" Visibility="{Binding HasLastAction, Converter={StaticResource BoolToVis}}">
+                <Button Padding="8,1" MinHeight="0" Style="{DynamicResource SubtleButtonStyle}" Click="LastAction_Click" IsEnabled="{Binding HasLastActionPath}"
+                        ToolTip="{x:Static res:Resources.StatusBar_OpenLast}" ToolTipService.ShowOnDisabled="False">
+                    <StackPanel Orientation="Horizontal">
+                        <local:AppIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="12" Foreground="{DynamicResource SystemFillColorSuccessBrush}" VerticalAlignment="Center" />
+                        <TextBlock Margin="6,0,0,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding LastAction}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock Text="{Binding Status}" />
+                <Button x:Name="WatchButton" Padding="8,1" MinHeight="0" Style="{DynamicResource SubtleButtonStyle}" Command="{Binding RefreshCommand}" IsHitTestVisible="{Binding IsDiskChanged}">
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse x:Name="WatchDot" Width="8" Height="8" VerticalAlignment="Center">
+                            <Ellipse.Style>
+                                <Style TargetType="Ellipse">
+                                    <Setter Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsDiskChanged}" Value="True">
+                                            <Setter Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Ellipse.Style>
+                        </Ellipse>
+                        <TextBlock Margin="8,0,0,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding WatchText}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </StatusBarItem>
+            <StatusBarItem Margin="12,0,0,0">
+                <TextBlock Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding StatusCounts}" />
+            </StatusBarItem>
+            <StatusBarItem Margin="12,0,0,0" Visibility="{Binding HasStatusNote, Converter={StaticResource BoolToVis}}">
+                <TextBlock Foreground="{DynamicResource SystemFillColorCautionBrush}" Text="{Binding StatusNote}" TextTrimming="CharacterEllipsis" />
             </StatusBarItem>
         </StatusBar>
 

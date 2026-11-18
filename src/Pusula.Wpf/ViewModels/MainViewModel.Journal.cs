@@ -402,7 +402,7 @@ namespace Pusula.Wpf.ViewModels
                 return false;
             }
 
-            Done(string.Format(Resources.Journal_Added, Path.GetFileName(journalNotePath)));
+            Done(string.Format(Resources.Journal_Added, Path.GetFileName(journalNotePath)), journalNotePath);
             RefreshShowing(journalFolder);
             return true;
         }
