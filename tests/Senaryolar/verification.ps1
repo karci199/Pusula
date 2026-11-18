@@ -94,6 +94,13 @@ Check 'türetilmiş: doküman no TG kutusunda, bağlı temel, değerlendiriliyor
 $row1 = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows[0]
 Check 'temelin kaynak satırında bağlı türetilmiş' ($row1.SourceLine -like '*Yan lob seviyesi*') $row1.SourceLine
 $row1 = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows[0]; $row1.IsExpanded = $true; Wait
+"--- sütun genişliği"
+$cols = $vm.VerificationColumns; $before = $cols.Kind.Value
+$cols.Resize('kind', 40); $vm.SaveVerificationColumns()
+Check 'tür sütunu genişledi ve kaydedildi' ($cols.Kind.Value -eq $before + 40 -and (@($vm.Settings.Columns['verification']) | Where-Object { $_.Key -eq 'kind' }).Width -eq $before + 40) ([string]$cols.Kind.Value)
+$cols.Resize('kind', -5000)
+Check 'en dar sınır' ($cols.Kind.Value -eq 56)
+$cols.Reset()
 Snap $win "$Out\verification.png"
 $vm.AddVerificationCommand.Execute($null); Wait
 Check 'yeni madde penceresi düzenleme kipinde değil' (-not $vm.IsEditingVerification -and $vm.NewVerText -eq '' -and $vm.NewVerTpNo -eq '')

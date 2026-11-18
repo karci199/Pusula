@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using Pusula.Core.Testing;
 using Pusula.Core.Tracking;
@@ -113,7 +114,7 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Kimlik sütunu: TG no; yoksa kaynak doküman; o da yoksa "—".</summary>
         public string Id
         {
-            get { return Item.TgNo.Length > 0 ? Item.TgNo : Item.Source.Length > 0 ? Item.Source : Resources.Verify_None; }
+            get { return Item.TgNo.Length > 0 ? Item.TgNo : Item.Source; }
         }
 
         /// <summary>TG no yok (kimlik sütununda soluk doküman adı gösterilir).</summary>
@@ -182,7 +183,7 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Tür: Temel, Türetilmiş ya da "—".</summary>
         public string KindText
         {
-            get { return Item.Kind.Length > 0 ? Item.Kind : Resources.Verify_None; }
+            get { return Item.Kind; }
         }
 
         /// <summary>Türetilmişse bağlı temel madde ("← TG-1"); yoksa boş.</summary>
@@ -230,13 +231,13 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Test planı madde no; yoksa "—".</summary>
         public string TpText
         {
-            get { return Item.TpNo.Length > 0 ? Item.TpNo : Resources.Verify_None; }
+            get { return Item.TpNo; }
         }
 
         /// <summary>Test raporu madde no; yoksa "—".</summary>
         public string TrText
         {
-            get { return Item.TrNo.Length > 0 ? Item.TrNo : Resources.Verify_None; }
+            get { return Item.TrNo; }
         }
 
         /// <summary>Plan madde no yazılı mı.</summary>
@@ -396,6 +397,97 @@ namespace Pusula.Wpf.ViewModels
         }
     }
 
+    /// <summary>
+    /// Doğrulama tablosunun sütun genişlikleri (TG no, tür, yöntem, test planı, test raporu, durum); gereksinim sütunu kalanı
+    /// doldurur. Başlıktaki ayırıcı sürüklenince değişir, ayarlara (<c>columns["verification"]</c>) kaydedilir.
+    /// </summary>
+    public sealed class VerificationColumns : ViewModelBase
+    {
+        /// <summary>Sütun anahtarları (sırasıyla).</summary>
+        public static readonly string[] Keys = { "tg", "kind", "method", "plan", "report", "status" };
+
+        private static readonly double[] Defaults = { 104, 150, 110, 104, 104, 170 };
+        private const double MinWidth = 56;
+        private const double MaxWidth = 600;
+        private readonly double[] widths = (double[])Defaults.Clone();
+
+        /// <summary>TG no sütunu.</summary>
+        public GridLength Tg
+        {
+            get { return new GridLength(widths[0]); }
+        }
+
+        /// <summary>Tür sütunu.</summary>
+        public GridLength Kind
+        {
+            get { return new GridLength(widths[1]); }
+        }
+
+        /// <summary>Yöntem sütunu.</summary>
+        public GridLength Method
+        {
+            get { return new GridLength(widths[2]); }
+        }
+
+        /// <summary>Test planı sütunu.</summary>
+        public GridLength Plan
+        {
+            get { return new GridLength(widths[3]); }
+        }
+
+        /// <summary>Test raporu sütunu.</summary>
+        public GridLength Report
+        {
+            get { return new GridLength(widths[4]); }
+        }
+
+        /// <summary>Durum sütunu.</summary>
+        public GridLength Status
+        {
+            get { return new GridLength(widths[5]); }
+        }
+
+        /// <summary>Sütunu <paramref name="delta"/> kadar genişletir (eksi daraltır); sınırlar içinde kalır.</summary>
+        public void Resize(string key, double delta)
+        {
+            var i = Array.IndexOf(Keys, key);
+            if (i < 0)
+            {
+                return;
+            }
+
+            widths[i] = Math.Max(MinWidth, Math.Min(MaxWidth, widths[i] + delta));
+            OnPropertyChanged(string.Empty);
+        }
+
+        /// <summary>Bütün sütunları varsayılan genişliğe döndürür.</summary>
+        public void Reset()
+        {
+            Array.Copy(Defaults, widths, widths.Length);
+            OnPropertyChanged(string.Empty);
+        }
+
+        /// <summary>Kayıtlı genişlikleri uygular (anahtarı tanınmayanlar atlanır).</summary>
+        public void Load(IEnumerable<ColumnLayout>? saved)
+        {
+            foreach (var column in saved ?? Enumerable.Empty<ColumnLayout>())
+            {
+                var i = Array.IndexOf(Keys, column.Key ?? string.Empty);
+                if (i >= 0 && column.Width > 0)
+                {
+                    widths[i] = Math.Max(MinWidth, Math.Min(MaxWidth, column.Width));
+                }
+            }
+
+            OnPropertyChanged(string.Empty);
+        }
+
+        /// <summary>Kaydedilecek genişlikler.</summary>
+        public List<ColumnLayout> ToLayout()
+        {
+            return Keys.Select((k, i) => new ColumnLayout { Key = k, Index = i, Width = widths[i] }).ToList();
+        }
+    }
     /// <summary>
     /// Listeden seç ya da yeni yaz: seçenekler "—" (boş), var olan adlar ve en sonda "+ Yeni …"; son seçilince
     /// altında yazı kutusu açılır. Değer, seçili ad ya da yazılan yeni addır.
@@ -573,10 +665,39 @@ namespace Pusula.Wpf.ViewModels
         private string newVerStatus = string.Empty;
         private string verificationError = string.Empty;
         private ICommand? addVerificationCommand;
+        private VerificationColumns? verificationColumns;
         private ICommand? openVerificationFileCommand;
         private VerificationItem? editingVerification;
         private VerificationItem? pendingVerificationDelete;
         private bool isVerificationDeleteOpen;
+
+        /// <summary>Tablonun sütun genişlikleri (ilk kullanımda ayarlardan okunur).</summary>
+        public VerificationColumns VerificationColumns
+        {
+            get
+            {
+                if (verificationColumns == null)
+                {
+                    verificationColumns = new VerificationColumns();
+                    List<ColumnLayout>? saved;
+                    if (Settings.Columns.TryGetValue(VerificationColumnsKey, out saved))
+                    {
+                        verificationColumns.Load(saved);
+                    }
+                }
+
+                return verificationColumns;
+            }
+        }
+
+        /// <summary>Sütun genişliklerini ayarlara yazar (sürükleme bitince).</summary>
+        public void SaveVerificationColumns()
+        {
+            Settings.Columns[VerificationColumnsKey] = VerificationColumns.ToLayout();
+            Settings.Save();
+        }
+
+        private const string VerificationColumnsKey = "verification";
 
         /// <summary>Gruplu maddeler (seçili süzgece göre).</summary>
         public ObservableCollection<VerificationGroup> VerificationGroups { get; } = new ObservableCollection<VerificationGroup>();

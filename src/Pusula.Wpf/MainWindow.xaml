@@ -1887,6 +1887,36 @@
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>
+                                    <!-- Sütun ayırıcısı: başlıkta ince çizgi, üstüne gelince vurgulu; sürüklenince sütun genişliği değişir -->
+                                    <Style x:Key="ColumnGrip" TargetType="Thumb">
+                                        <Setter Property="Width" Value="9" />
+                                        <Setter Property="Margin" Value="-4,-4,-4,-4" />
+                                        <Setter Property="Cursor" Value="SizeWE" />
+                                        <Setter Property="Focusable" Value="False" />
+                                        <Setter Property="ToolTip" Value="{x:Static res:Resources.Verify_ColumnGripHint}" />
+                                        <EventSetter Event="DragDelta" Handler="VerificationColumn_DragDelta" />
+                                        <EventSetter Event="DragCompleted" Handler="VerificationColumn_DragCompleted" />
+                                        <EventSetter Event="MouseDoubleClick" Handler="VerificationColumn_MouseDoubleClick" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Thumb">
+                                                    <Grid Background="Transparent">
+                                                        <Rectangle x:Name="Line" Width="1" Margin="0,2" HorizontalAlignment="Center" Fill="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                                                    </Grid>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="Line" Property="Width" Value="2" />
+                                                            <Setter TargetName="Line" Property="Fill" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsDragging" Value="True">
+                                                            <Setter TargetName="Line" Property="Width" Value="2" />
+                                                            <Setter TargetName="Line" Property="Fill" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
                                     <!-- Madde kartı: ince kenarlık, yuvarlak köşe; açılınca kenarlık vurgulanır -->
                                     <Style x:Key="VerificationCard" TargetType="Border">
                                         <Setter Property="Margin" Value="0,0,0,8" />
@@ -1979,28 +2009,36 @@
                                         Background="{DynamicResource LayerBrush}" Padding="16,8,8,10">
                                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,8,0">
                                         <StackPanel>
-                                            <Border Padding="0,6,8,8" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
-                                                <Grid TextElement.Foreground="{DynamicResource TextTertiaryBrush}" TextElement.FontSize="12">
+                                            <!-- Başlık: sütun adları; aradaki ayırıcılar sürüklenince genişlik değişir (çift tık: varsayılan) -->
+                                            <Border Margin="1,0,1,4" Padding="0,8,8,8" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+                                                <Grid TextElement.Foreground="{DynamicResource TextSecondaryBrush}" TextElement.FontSize="12" TextElement.FontWeight="SemiBold">
                                                     <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="4" />
-                                                        <ColumnDefinition Width="96" />
-                                                        <ColumnDefinition Width="*" MinWidth="220" />
-                                                        <ColumnDefinition Width="150" />
-                                                        <ColumnDefinition Width="104" />
-                                                        <ColumnDefinition Width="96" />
-                                                        <ColumnDefinition Width="96" />
-                                                        <ColumnDefinition Width="160" />
-                                                        <ColumnDefinition Width="28" />
+                                                    <ColumnDefinition Width="4" />
+                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.Tg, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                    <ColumnDefinition Width="*" MinWidth="200" />
+                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.Kind, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.Method, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.Plan, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.Report, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.Status, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                    <ColumnDefinition Width="28" />
                                                     </Grid.ColumnDefinitions>
                                                     <TextBlock Grid.Column="1" Margin="12,0,0,0" Text="{x:Static res:Resources.Verify_FieldTgNo}" />
+                                                    <Thumb Grid.Column="1" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Right" Tag="tg" />
                                                     <TextBlock Grid.Column="2" Text="{x:Static res:Resources.Verify_ColRequirement}" />
-                                                    <TextBlock Grid.Column="3" Text="{x:Static res:Resources.Verify_ColKind}" />
-                                                    <TextBlock Grid.Column="4" Text="{x:Static res:Resources.Verify_ColMethod}" />
-                                                    <TextBlock Grid.Column="5" Text="{x:Static res:Resources.Verify_ColPlan}" />
-                                                    <TextBlock Grid.Column="6" Text="{x:Static res:Resources.Verify_ColReport}" />
-                                                    <TextBlock Grid.Column="7" Text="{x:Static res:Resources.Verify_FieldStatus}" />
+                                                    <TextBlock Grid.Column="3" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ColKind}" />
+                                                    <Thumb Grid.Column="3" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="kind" />
+                                                    <TextBlock Grid.Column="4" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ColMethod}" />
+                                                    <Thumb Grid.Column="4" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="method" />
+                                                    <TextBlock Grid.Column="5" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ColPlan}" />
+                                                    <Thumb Grid.Column="5" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="plan" />
+                                                    <TextBlock Grid.Column="6" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ColReport}" />
+                                                    <Thumb Grid.Column="6" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="report" />
+                                                    <TextBlock Grid.Column="7" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_FieldStatus}" />
+                                                    <Thumb Grid.Column="7" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="status" />
                                                 </Grid>
                                             </Border>
+
                                             <ItemsControl ItemsSource="{Binding VerificationGroups}" Focusable="False">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
@@ -2030,15 +2068,16 @@
                                                                             <Grid>
                                                                                 <Grid.ColumnDefinitions>
                                                                                     <ColumnDefinition Width="4" />
-                                                                                    <ColumnDefinition Width="96" />
-                                                                                    <ColumnDefinition Width="*" MinWidth="220" />
-                                                                                    <ColumnDefinition Width="150" />
-                                                                                    <ColumnDefinition Width="104" />
-                                                                                    <ColumnDefinition Width="96" />
-                                                                                    <ColumnDefinition Width="96" />
-                                                                                    <ColumnDefinition Width="160" />
+                                                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.Tg, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                                                    <ColumnDefinition Width="*" MinWidth="200" />
+                                                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.Kind, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.Method, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.Plan, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.Report, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.Status, RelativeSource={RelativeSource AncestorType=Window}}" />
                                                                                     <ColumnDefinition Width="28" />
                                                                                 </Grid.ColumnDefinitions>
+
                                                                                 <Rectangle x:Name="StatusBar" Margin="0,2" RadiusX="2" RadiusY="2" Fill="{DynamicResource DividerStrokeColorDefaultBrush}" />
                                                                                 <TextBlock x:Name="IdText" Grid.Column="1" Margin="12,0,6,0" VerticalAlignment="Center" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
                                                                                            Text="{Binding Id}" ToolTip="{Binding Id}" />
@@ -2047,20 +2086,18 @@
                                                                                     <TextBlock Margin="0,2,0,0" FontSize="12.5" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextTertiaryBrush}"
                                                                                                Text="{Binding Description}" Visibility="{Binding ShowsDescriptionLine, Converter={StaticResource BoolToVis}}" />
                                                                                 </StackPanel>
-                                                                                <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+                                                                                <StackPanel Grid.Column="3" Margin="10,0,6,0" Orientation="Horizontal" VerticalAlignment="Center">
                                                                                     <TextBlock Text="{Binding KindText}" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
                                                                                     <TextBlock Margin="6,0,0,0" FontSize="13" Text="{Binding ParentText}" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                                                                                                Visibility="{Binding HasParent, Converter={StaticResource BoolToVis}}" />
                                                                                 </StackPanel>
-                                                                                <Border x:Name="MethodChip" Grid.Column="4" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="9,2" CornerRadius="6"
+                                                                                <Border x:Name="MethodChip" Grid.Column="4" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="9,2" CornerRadius="6"
                                                                                         Background="{DynamicResource SubtleFillColorSecondaryBrush}" Visibility="{Binding HasMethod, Converter={StaticResource BoolToVis}}">
                                                                                     <TextBlock x:Name="MethodText" Text="{Binding Method}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
                                                                                 </Border>
-                                                                                <TextBlock Grid.Column="4" VerticalAlignment="Center" Text="{x:Static res:Resources.Verify_None}" Foreground="{DynamicResource TextTertiaryBrush}"
-                                                                                           Visibility="{Binding HasMethod, Converter={StaticResource InverseBoolToVis}}" />
-                                                                                <TextBlock x:Name="TpText" Grid.Column="5" VerticalAlignment="Center" FontSize="13" Text="{Binding TpText}" />
-                                                                                <TextBlock x:Name="TrText" Grid.Column="6" VerticalAlignment="Center" FontSize="13" Text="{Binding TrText}" />
-                                                                                <Border x:Name="StatusPill" Grid.Column="7" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="10,3" CornerRadius="11"
+                                                                                <TextBlock x:Name="TpText" Grid.Column="5" Margin="10,0,6,0" VerticalAlignment="Center" FontSize="13" TextTrimming="CharacterEllipsis" Text="{Binding TpText}" />
+                                                                                <TextBlock x:Name="TrText" Grid.Column="6" Margin="10,0,6,0" VerticalAlignment="Center" FontSize="13" TextTrimming="CharacterEllipsis" Text="{Binding TrText}" />
+                                                                                <Border x:Name="StatusPill" Grid.Column="7" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="10,3" CornerRadius="11"
                                                                                         Background="{DynamicResource SubtleFillColorSecondaryBrush}" Cursor="Hand" ToolTip="{x:Static res:Resources.Verify_StatusHint}"
                                                                                         MouseLeftButtonUp="VerificationStatus_MouseLeftButtonUp" MouseLeftButtonDown="VerificationStatus_MouseLeftButtonDown">
                                                                                     <StackPanel Orientation="Horizontal">

@@ -2382,4 +2382,7 @@ Satır md tablosundan kaldırılır; diğer maddelerin numaraları değişmez.</
   <data name="Verify_PlaceholderTr" xml:space="preserve">
     <value>örn. TR-5.1</value>
   </data>
+  <data name="Verify_ColumnGripHint" xml:space="preserve">
+    <value>Sürükleyerek genişliği değiştirin; çift tık: varsayılan genişlik</value>
+  </data>
 </root>

@@ -153,6 +153,28 @@ namespace Pusula.Wpf
             }
         }
 
+        // Doğrulama tablosu: başlıktaki ayırıcı sürüklenince sütun genişliği değişir. TG no ayırıcısı sağ kenarda (sağa çekince
+        // genişler); diğerleri sütunun sol kenarında (sola çekince genişler, gereksinim sütunu daralır).
+        private void VerificationColumn_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is string key)
+            {
+                viewModel.VerificationColumns.Resize(key, key == "tg" ? e.HorizontalChange : -e.HorizontalChange);
+            }
+        }
+
+        private void VerificationColumn_DragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            viewModel.SaveVerificationColumns();
+        }
+
+        // Ayırıcıya çift tık: bütün sütunlar varsayılan genişliğe döner.
+        private void VerificationColumn_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            viewModel.VerificationColumns.Reset();
+            viewModel.SaveVerificationColumns();
+        }
         // Durum etiketine basmak satırı açıp kapamaz (menüsü açılır).
         private void VerificationStatus_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

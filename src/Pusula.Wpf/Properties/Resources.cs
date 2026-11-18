@@ -2371,6 +2371,9 @@ namespace Pusula.Wpf.Properties
         /// <summary>Seçim listesinde boş seçenek.</summary>
         public static string Verify_None { get { return Get("Verify_None"); } }
 
+        /// <summary>Doğrulama tablosu sütun ayırıcısının ipucu.</summary>
+        public static string Verify_ColumnGripHint { get { return Get("Verify_ColumnGripHint"); } }
+
         /// <summary>Doğrulama durumu: hazırlık (jig, kablo, yazılım, altyapı).</summary>
         public static string Verify_StatusPreparing { get { return Get("Verify_StatusPreparing"); } }
 
