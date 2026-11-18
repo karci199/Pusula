@@ -58,7 +58,7 @@ namespace Pusula.Wpf.ViewModels
             var path = settings.LastActionPath ?? string.Empty;
             if (path.Length > 0)
             {
-                OpenNoteOrFolder(path, Path.GetDirectoryName(path) ?? string.Empty);
+                OpenInPusula(path);
             }
         }
 

@@ -2371,6 +2371,9 @@ namespace Pusula.Wpf.Properties
         /// <summary>Seçim listesinde boş seçenek.</summary>
         public static string Verify_None { get { return Get("Verify_None"); } }
 
+        /// <summary>Not Obsidian kasası dışında: Pusula'da açıldı uyarısı.</summary>
+        public static string NoteApp_NotInVault { get { return Get("NoteApp_NotInVault"); } }
+
         /// <summary>Zaman çizelgesi kartı: notta aç düğmesinin kısa adı.</summary>
         public static string Timeline_OpenNoteShort { get { return Get("Timeline_OpenNoteShort"); } }
 

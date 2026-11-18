@@ -2493,4 +2493,7 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Timeline_OpenNoteShort" xml:space="preserve">
     <value>MD</value>
   </data>
+  <data name="NoteApp_NotInVault" xml:space="preserve">
+    <value>Bu not bir Obsidian kasasında değil; Obsidian'da açmak için kök klasörü Obsidian'da kasa olarak açın.</value>
+  </data>
 </root>

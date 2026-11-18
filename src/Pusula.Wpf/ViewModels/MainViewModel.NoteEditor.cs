@@ -34,6 +34,13 @@ namespace Pusula.Wpf.ViewModels
         public void OpenNoteExternally(string path)
         {
             var app = UsesNoteEditor ? NoteOpener.Obsidian : NoteApp.Key;
+            if (app == NoteOpener.Obsidian && !NoteOpener.IsInObsidianVault(path))
+            {
+                // Kasa dışında: Obsidian açamaz, Windows varsayılanıyla açılır.
+                app = NoteOpener.Default;
+                Status = Resources.NoteApp_NotInVault;
+            }
+
             try
             {
                 var missing = NoteOpener.Open(path, app);
@@ -43,6 +50,15 @@ namespace Pusula.Wpf.ViewModels
                 }
             }
             catch (System.ComponentModel.Win32Exception)
+            {
+                OpenPath(Path.GetDirectoryName(path) ?? string.Empty);
+            }
+        }
+
+        /// <summary>MD düğmeleri: not her zaman Pusula'nın not düzenleyicisinde açılır (ayardaki programdan bağımsız); açılamazsa klasör.</summary>
+        public void OpenInPusula(string path)
+        {
+            if (!OpenInNoteEditor(path))
             {
                 OpenPath(Path.GetDirectoryName(path) ?? string.Empty);
             }

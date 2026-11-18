@@ -237,8 +237,15 @@ namespace Pusula.Wpf
             if ((sender as FrameworkElement)?.DataContext is StockTimelineCard card)
             {
                 var path = card.Item?.NotePath ?? card.Task?.NotePath ?? string.Empty;
-                viewModel.OpenNoteOrFolder(path, System.IO.Path.GetDirectoryName(path) ?? string.Empty);
+                viewModel.OpenInPusula(path);
             }
+        }
+
+        // Doğrulama satırının MD düğmesi: test gereksinimleri dosyası Pusula'nın not düzenleyicisinde açılır.
+        private void VerificationOpenNote_Click(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            viewModel.OpenVerificationFileCommand.Execute(null);
         }
         // Yapılacak kartın kutusu: iş kapatılmadan önce sorulur (Yapılacaklar sekmesiyle aynı).
         private void TimelineTask_Click(object sender, RoutedEventArgs e)

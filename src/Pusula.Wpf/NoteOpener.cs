@@ -127,6 +127,45 @@ namespace Pusula.Wpf
             return string.Empty;
         }
 
+        /// <summary>
+        /// Dosya kayıtlı bir Obsidian kasasının içinde mi (<c>%APPDATA%\obsidian\obsidian.json</c> kasa listesi). Obsidian kasa
+        /// dışındaki dosyayı açamaz ("Vault not found"); liste okunamazsa <c>true</c> (Obsidian'a bırakılır).
+        /// </summary>
+        public static bool IsInObsidianVault(string path)
+        {
+            var file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "obsidian", "obsidian.json");
+            string json;
+            try
+            {
+                if (!File.Exists(file))
+                {
+                    return true;
+                }
+
+                json = File.ReadAllText(file);
+            }
+            catch (IOException)
+            {
+                return true;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return true;
+            }
+
+            var full = Path.GetFullPath(path);
+            foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(json, "\"path\"\\s*:\\s*\"((?:[^\"\\\\]|\\\\.)*)\""))
+            {
+                var vault = System.Text.RegularExpressions.Regex.Unescape(m.Groups[1].Value).TrimEnd('\\', '/') + "\\";
+                if (full.StartsWith(vault, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>Kurulu VS Code'un <c>Code.exe</c> yolu (vscode:// kaydının açma komutundan); yoksa boş.</summary>
         public static string VsCodeExe()
         {

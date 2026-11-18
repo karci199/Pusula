@@ -244,6 +244,13 @@ namespace Pusula.Wpf.ViewModels
                     return;
                 }
 
+                // Obsidian kasa dışındaki notu açamaz: Pusula penceresinde açılır, nedeni durum çubuğunda yazar.
+                if (NoteApp.Key == NoteOpener.Obsidian && !NoteOpener.IsInObsidianVault(notePath) && OpenInNoteEditor(notePath))
+                {
+                    Status = Resources.NoteApp_NotInVault;
+                    return;
+                }
+
                 try
                 {
                     var missing = NoteOpener.Open(notePath, NoteApp.Key);

@@ -835,7 +835,7 @@ namespace Pusula.Wpf.ViewModels
                 {
                     if (verificationStock.Length > 0)
                     {
-                        OpenNoteOrFolder(VerificationList.PathFor(verificationStock), Path.Combine(verificationStock, VerificationList.FolderName));
+                        OpenInPusula(VerificationList.PathFor(verificationStock));
                     }
                 }));
             }

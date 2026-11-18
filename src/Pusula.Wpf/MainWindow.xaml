@@ -2200,10 +2200,19 @@
                                                                                         <TextBlock x:Name="StatusLabel" Text="{Binding StatusText}" FontSize="12.5" Foreground="{DynamicResource TextSecondaryBrush}" />
                                                                                     </StackPanel>
                                                                                 </Border>
-                                                                                <Button Grid.Column="8" Padding="4,2" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{DynamicResource SubtleButtonStyle}"
-                                                                                        ToolTip="{x:Static res:Resources.Verify_RowMenuHint}" Click="VerificationRowMenu_Click">
-                                                                                    <local:AppIcon Glyph="{x:Static local:AppIcons.More}" FontSize="13" />
-                                                                                </Button>
+                                                                                <StackPanel Grid.Column="8" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                                                    <Button x:Name="RowMd" Margin="0,0,4,0" Padding="9,2" MinWidth="38" VerticalAlignment="Center" Visibility="Hidden"
+                                                                                            ToolTip="{x:Static res:Resources.Verify_OpenInFile}" Click="VerificationOpenNote_Click">
+                                                                                        <StackPanel Orientation="Horizontal">
+                                                                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="12" VerticalAlignment="Center" />
+                                                                                            <TextBlock Margin="5,0,0,0" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.Timeline_OpenNoteShort}" />
+                                                                                        </StackPanel>
+                                                                                    </Button>
+                                                                                    <Button Padding="4,2" VerticalAlignment="Center" Style="{DynamicResource SubtleButtonStyle}"
+                                                                                            ToolTip="{x:Static res:Resources.Verify_RowMenuHint}" Click="VerificationRowMenu_Click">
+                                                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.More}" FontSize="13" />
+                                                                                    </Button>
+                                                                                </StackPanel>
                                                                             </Grid>
                                                                         </Border>
 
@@ -2241,6 +2250,8 @@
                                                                         </StackPanel>
                                                                         </Border>
                                                                         <DataTemplate.Triggers>
+                                                                            <Trigger SourceName="RowCard" Property="IsMouseOver" Value="True"><Setter TargetName="RowMd" Property="Visibility" Value="Visible" /></Trigger>
+                                                                            <DataTrigger Binding="{Binding IsExpanded}" Value="True"><Setter TargetName="RowMd" Property="Visibility" Value="Visible" /></DataTrigger>
                                                                             <DataTrigger Binding="{Binding IsExpanded}" Value="True">
                                                                                 <Setter TargetName="RowCard" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
                                                                             </DataTrigger>
