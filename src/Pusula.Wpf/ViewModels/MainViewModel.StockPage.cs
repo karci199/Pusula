@@ -46,8 +46,8 @@ namespace Pusula.Wpf.ViewModels
         private int stockVersion;
         private long? stockBytes;
 
-        /// <summary>Zaman çizelgesi: gün gün kartlar (seçili zaman aralığı, geriye doğru).</summary>
-        public ObservableCollection<HomeDay> StockDays { get; } = new ObservableCollection<HomeDay>();
+        /// <summary>Zaman çizelgesi: üstte yapılacaklar, sonra gün gün kartlar (seçili zaman aralığı, geriye doğru).</summary>
+        public ObservableCollection<StockTimelineDay> StockDays { get; } = new ObservableCollection<StockTimelineDay>();
 
         /// <summary>Zaman çizelgesinde gösterilecek olay yok.</summary>
         public bool IsStockTimelineEmpty
@@ -183,32 +183,10 @@ namespace Pusula.Wpf.ViewModels
             }
         }
 
-        // Zaman çizelgesi: Detail'deki kayıtlar gün gün; aralık ana sayfadaki zaman süzgeciyle aynı (geriye doğru).
+        // Zaman çizelgesi: yapılacaklar ve seçili aralıktaki kayıtlar (aralık ana sayfadaki zaman süzgeciyle aynı, geriye doğru).
         private void FilterStockTimeline()
         {
-            var stock = selectedNode != null && selectedNode.Kind == FolderKind.Stock ? selectedNode : null;
-            var color = stock == null ? string.Empty : (ProjectOf(stock.Path + "\\x")?.ProjectColor ?? string.Empty);
-            if (color.Length == 0)
-            {
-                color = ProjectColors.Palette[2];
-            }
-
-            var start = RangeStart();
-            var today = DateTime.Today;
-            StockDays.Clear();
-            var events = Detail.Timeline
-                .Where(t => !start.HasValue || t.SortDate.Date >= start.Value)
-                .OrderByDescending(t => t.SortDate)
-                .Select(t => new HomeEvent(t.SortDate, t.SortDate.TimeOfDay != TimeSpan.Zero, t.Title, string.Empty,
-                    t.Summary.Length > 0 ? t.Summary : t.Detail, color, new string[0]));
-            foreach (var day in events.GroupBy(e => e.When.Date))
-            {
-                var title = day.Key == today ? Resources.Day_Today
-                    : day.Key == today.AddDays(-1) ? Resources.Day_Yesterday
-                    : day.Key.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
-                StockDays.Add(new HomeDay(title, day.ToList()));
-            }
-
+            BuildStockTimeline(RangeStart());
             OnPropertyChanged(nameof(IsStockTimelineEmpty));
         }
 

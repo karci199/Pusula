@@ -328,8 +328,6 @@ namespace Pusula.Wpf.ViewModels
 
             FillHomeCounts();
             var version = ++homeVersion;
-            sampleEvents = null;
-            FilterHomeTimeline();
             var root = rootPath;
             var user = CurrentUser;
             List<OpenTask> tasks;
@@ -400,6 +398,26 @@ namespace Pusula.Wpf.ViewModels
             OnPropertyChanged(nameof(HasHomeMyTasks));
             OnPropertyChanged(nameof(IsHomeEmpty));
             OnPropertyChanged(nameof(HasMyCounts));
+
+            // Günlük sekmesi: kapsamdaki stokların zaman çizelgesi kayıtları (arka planda).
+            var projects = Nodes.Where(n => n.Kind == FolderKind.Project && (scopeProject == null || string.Equals(n.Path, scopeProject, StringComparison.OrdinalIgnoreCase))).ToList();
+            List<StockTimelineCard> events;
+            try
+            {
+                events = await Task.Run(() => ReadHomeEvents(projects)).ConfigureAwait(true);
+            }
+            catch (Exception ex) when (ex is System.IO.IOException || ex is UnauthorizedAccessException)
+            {
+                events = new List<StockTimelineCard>();
+            }
+
+            if (version != homeVersion)
+            {
+                return;
+            }
+
+            homeEvents = events;
+            FilterHomeTimeline();
 
             // Kayıtlar sekmesi: işler okunduktan sonra (açık iş sayıları için).
             await LoadRecordsAsync(version).ConfigureAwait(true);

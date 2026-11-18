@@ -175,6 +175,50 @@ namespace Pusula.Wpf
             viewModel.VerificationColumns.Reset();
             viewModel.SaveVerificationColumns();
         }
+        // Zaman çizelgesi: "+ Kayıt" penceresi (yapıldı ya da yapılacak).
+        private void TimelineAdd_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.OpenJournalHere();
+        }
+
+        // Karta çift tık: günlük olayı düzenleme penceresinde açılır; diğer kayıtlar (koşu, not) kendi notunda.
+        private void TimelineCard_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount != 2 || !((sender as FrameworkElement)?.DataContext is StockTimelineCard card))
+            {
+                return;
+            }
+
+            e.Handled = true;
+            if (card.SourcePath.Length > 0)
+            {
+                // Ana sayfa Günlük: kaydın stoku açılır.
+                viewModel.OpenRecordPath(card.SourcePath);
+            }
+            else if (card.Item?.Journal != null)
+            {
+                viewModel.OpenJournalEdit(card.Item.Journal);
+            }
+            else if (card.Item != null)
+            {
+                viewModel.OpenNoteOrFolder(card.Item.NotePath, card.Item.Folder);
+            }
+            else if (card.Task != null)
+            {
+                viewModel.OpenNoteOrFolder(card.Task.NotePath, System.IO.Path.GetDirectoryName(card.Task.NotePath) ?? string.Empty);
+            }
+        }
+
+        // Yapılacak kartın kutusu: iş kapatılmadan önce sorulur (Yapılacaklar sekmesiyle aynı).
+        private void TimelineTask_Click(object sender, RoutedEventArgs e)
+        {
+            var box = (CheckBox)sender;
+            box.IsChecked = false;
+            if (box.DataContext is StockTimelineCard card && card.Task != null)
+            {
+                viewModel.RequestTaskDone(card.Task, true);
+            }
+        }
         // Durum etiketine basmak satırı açıp kapamaz (menüsü açılır).
         private void VerificationStatus_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

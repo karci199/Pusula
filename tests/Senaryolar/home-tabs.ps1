@@ -1,6 +1,6 @@
 ﻿param([string]$Bin, [string]$Out, [string]$Data, [string]$Sample)
 . (Join-Path $PSScriptRoot '..\_Ortak.ps1')
-# Ana sayfa alt kısmı: Günlük (örnek kartlar), Yapılacaklar (zaman süzgeci), Kayıtlar (tür süzgeci).
+# Ana sayfa alt kısmı: Günlük (stokların gerçek kayıtları), Yapılacaklar (zaman süzgeci), Kayıtlar (tür süzgeci).
 [System.Threading.SynchronizationContext]::SetSynchronizationContext((New-Object System.Windows.Threading.DispatcherSynchronizationContext))
 $app = New-Object Pusula.Wpf.App; $app.InitializeComponent(); $app.ShutdownMode = 'OnExplicitShutdown'
 $win = New-Object Pusula.Wpf.MainWindow
@@ -9,8 +9,19 @@ $win.Show(); Pump
 $vm = $win.DataContext; $vm.RootPath = $Data; Wait; Wait
 
 "--- Günlük"
-$vm.IsRangeAll = $true; Wait
-Check 'günlük: örnek günler var' ($vm.HomeTimeline.Count -ge 3) ([string]$vm.HomeTimeline.Count)
+# Gerçek kayıt: ilk stokun ana notuna bugün bir "Sorun" yazılır, ana sayfa yeniden yüklenir.
+$stock = @{ Path = (Join-Path $Data '7000_MILKON\AB-7000-0002'); Title = 'AB-7000-0002' }
+$entry = New-Object Pusula.Core.Notes.JournalEntry
+$entry.Date = (Get-Date).Date.AddHours(9).AddMinutes(30); $entry.Kind = 'Sorun'; $entry.Title = 'Ana sayfa denemesi'; $entry.Importance = 'Kritik'
+[void]$entry.Tags.Add('VNA')
+$err = [Pusula.Core.Notes.Journal]::Add((Join-Path $stock.Path 'AB-7000-0002.md'), $entry)
+Check 'günlük kaydı yazıldı' ($err -eq '') $err
+$vm.IsRangeAll = $true; $vm.LoadHome(); Wait; Wait
+$cards = @($vm.HomeTimeline | ForEach-Object { $_.Cards })
+Check 'günlük: gerçek kartlar var' ($cards.Count -ge 1) ([string]$cards.Count)
+Check 'günlük: her kartta stok numarası' (@($cards | Where-Object { -not $_.HasSource }).Count -eq 0) ''
+$mine = $cards | Where-Object { $_.Title -eq 'Ana sayfa denemesi' } | Select-Object -First 1
+Check 'günlük: yeni kayıt kartta (stok, proje rengi, Kritik)' ($mine -ne $null -and $mine.Source -eq $stock.Title -and $mine.ProjectColor -ne '' -and $mine.ImportanceRank -eq 2) ([string]$mine.Source)
 $vm.IsRangeToday = $true; Wait
 Check 'bugün: yalnız bugünün günü' ($vm.HomeTimeline.Count -eq 1) ([string]$vm.HomeTimeline.Count)
 $vm.IsRangeWeek = $true; Wait

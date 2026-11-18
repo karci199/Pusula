@@ -101,6 +101,32 @@ namespace Pusula.Wpf.ViewModels
         private OpenTaskRow? pendingTask;
         private bool pendingDone;
         private bool isTaskConfirmOpen;
+        private bool taskConfirmJournal = true;
+
+        /// <summary>Onay penceresindeki işin kartı (işlem çipi, başlık, son tarih, etiketler).</summary>
+        public StockTimelineCard? TaskConfirmCard
+        {
+            get { return pendingTask == null ? null : new StockTimelineCard(pendingTask); }
+        }
+
+        /// <summary>İşin bulunduğu not ("AB-7000-0002").</summary>
+        public string TaskConfirmNote
+        {
+            get { return pendingTask == null ? string.Empty : System.IO.Path.GetFileNameWithoutExtension(pendingTask.NotePath); }
+        }
+
+        /// <summary>Kapatılıyor mu (yeniden açılmıyor); "günlüğe de yazılsın" seçeneği yalnız kapatırken görünür.</summary>
+        public bool IsTaskClosing
+        {
+            get { return pendingDone; }
+        }
+
+        /// <summary>İş bitince zaman çizelgesine (Günlük) de şu anki tarih ve saatle kayıt düşülsün mü (varsayılan evet).</summary>
+        public bool TaskConfirmJournal
+        {
+            get { return taskConfirmJournal; }
+            set { SetProperty(ref taskConfirmJournal, value); }
+        }
 
         /// <summary>İş kapatma / yeniden açma onayı açık mı.</summary>
         public bool IsTaskConfirmOpen
@@ -137,6 +163,10 @@ namespace Pusula.Wpf.ViewModels
 
             pendingTask = row;
             pendingDone = done;
+            TaskConfirmJournal = true;
+            OnPropertyChanged(nameof(TaskConfirmCard));
+            OnPropertyChanged(nameof(TaskConfirmNote));
+            OnPropertyChanged(nameof(IsTaskClosing));
             OnPropertyChanged(nameof(TaskConfirmTitle));
             OnPropertyChanged(nameof(TaskConfirmButton));
             OnPropertyChanged(nameof(TaskConfirmText));
@@ -149,7 +179,40 @@ namespace Pusula.Wpf.ViewModels
             IsTaskConfirmOpen = false;
             var row = pendingTask;
             pendingTask = null;
-            return row != null && SetTaskDone(row, pendingDone);
+            if (row == null || !SetTaskDone(row, pendingDone))
+            {
+                return false;
+            }
+
+            if (pendingDone && taskConfirmJournal)
+            {
+                AddJournalForTask(row);
+            }
+
+            return true;
+        }
+
+        // Biten iş zaman çizelgesine de düşer: şu anki tarih ve saat, işin işlem türü (satırda "Hazırlık: …" yazıyorsa), başlık, etiketler.
+        private void AddJournalForTask(OpenTaskRow row)
+        {
+            var card = new StockTimelineCard(row);
+            var now = DateTime.Now;
+            var entry = new Pusula.Core.Notes.JournalEntry
+            {
+                Date = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0),
+                Kind = EventKinds.Find(card.KindLabel) != null ? card.KindLabel : string.Empty,
+                Title = card.Title.Length > 0 ? card.Title : row.Text,
+                Person = CurrentUser,
+            };
+            entry.Tags.AddRange(card.Tags.Where(t => !t.IsPerson).Select(t => t.Text.TrimStart('#')));
+            var error = Pusula.Core.Notes.Journal.Add(row.NotePath, entry);
+            if (error.Length > 0)
+            {
+                Status = string.Format(Resources.Error_Io, error);
+                return;
+            }
+
+            RefreshShowing(selectedNode?.Path ?? string.Empty);
         }
 
         /// <summary>İşi bitti / açık yapar (yalnız o satırın kutusu değişir). Değiştiyse <c>true</c>.</summary>

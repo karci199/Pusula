@@ -818,7 +818,137 @@
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
-    </controls:ChromeWindow.Resources>
+        <DataTemplate x:Key="TimelineCardTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="22" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <!-- Ray projenin renginde, kesintisiz; nokta işlem renginde (nötr işlemde proje renginde; yapılacakta kesik halka) -->
+                <Rectangle Width="2" HorizontalAlignment="Center" Fill="{Binding ProjectColor}" Opacity="0.45" />
+                <Ellipse x:Name="Dot" Width="12" Height="12" Margin="0,16,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"
+                         Fill="{Binding ProjectColor}" Stroke="{DynamicResource LayerBrush}" StrokeThickness="2" />
+                <Grid Grid.Column="1" Margin="6,0,0,8">
+                    <Border x:Name="Card" CornerRadius="9" BorderThickness="1" Padding="14,9,12,10" Cursor="Hand"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource SubtleFillColorTertiaryBrush}"
+                            MouseLeftButtonDown="TimelineCard_MouseLeftButtonDown">
+                        <StackPanel>
+                            <DockPanel>
+                                <TextBlock x:Name="When" DockPanel.Dock="Right" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="12"
+                                           Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding TimeText}" />
+                                <CheckBox x:Name="Check" DockPanel.Dock="Left" Margin="0,0,8,0" VerticalAlignment="Center" Visibility="Collapsed"
+                                          Click="TimelineTask_Click" ToolTip="{x:Static res:Resources.Task_Hint}" />
+                                <TextBlock DockPanel.Dock="Left" Margin="0,0,8,0" VerticalAlignment="Center" FontSize="12.5" FontWeight="SemiBold" Text="{Binding Source}" Foreground="{Binding ProjectColor}"
+                                           Visibility="{Binding HasSource, Converter={StaticResource BoolToVis}}" />
+                                <Border x:Name="KindChip" DockPanel.Dock="Left" Margin="0,0,8,0" Padding="7,2" CornerRadius="6" VerticalAlignment="Center"
+                                        Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <local:AppIcon x:Name="KindIcon" Glyph="{Binding Glyph}" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                        <TextBlock x:Name="KindText" Margin="5,0,0,0" FontSize="11.5" VerticalAlignment="Center" Text="{Binding KindLabel}" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                    </StackPanel>
+                                </Border>
+                                <Border x:Name="ImpBadge" DockPanel.Dock="Right" Margin="8,0,0,0" Padding="7,1" CornerRadius="9" VerticalAlignment="Center"
+                                        Background="{DynamicResource SystemFillColorCautionBackgroundBrush}" Visibility="{Binding HasImportance, Converter={StaticResource BoolToVis}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <local:AppIcon x:Name="ImpIcon" Glyph="{Binding ImportanceGlyph}" FontSize="10" VerticalAlignment="Center" Foreground="{DynamicResource SystemFillColorCautionBrush}" />
+                                        <TextBlock Margin="4,0,0,0" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding ImportanceText}" />
+                                    </StackPanel>
+                                </Border>
+                                <TextBlock FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Title}" ToolTip="{Binding Title}" />
+                            </DockPanel>
+                            <TextBlock Margin="0,4,0,0" FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Description}"
+                                       Visibility="{Binding HasDescription, Converter={StaticResource BoolToVis}}" />
+                            <ItemsControl Margin="0,7,0,0" ItemsSource="{Binding Tags}" Focusable="False" Visibility="{Binding HasTags, Converter={StaticResource BoolToVis}}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border x:Name="Pill" Margin="0,0,6,4" Padding="8,1" CornerRadius="10" BorderThickness="1"
+                                                BorderBrush="{DynamicResource AccentFillColorTertiaryBrush}" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                            <TextBlock x:Name="PillText" FontSize="11.5" Text="{Binding Text}" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                        </Border>
+                                        <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding IsPerson}" Value="True">
+                                                <Setter TargetName="PillText" Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                                                <Setter TargetName="Pill" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                                            </DataTrigger>
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                    <!-- Önem şeridi (önemli sarı, kritik kırmızı) -->
+                    <Rectangle x:Name="ImpStrip" Width="3" HorizontalAlignment="Left" Margin="0,6" RadiusX="1.5" RadiusY="1.5" Fill="Transparent" />
+                    <!-- Yapılacak: kesik çizgili çerçeve -->
+                    <Rectangle x:Name="Dash" RadiusX="9" RadiusY="9" StrokeThickness="1" StrokeDashArray="4 3" Stroke="{DynamicResource TextTertiaryBrush}"
+                               Visibility="Collapsed" IsHitTestVisible="False" />
+                </Grid>
+            </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Tone}" Value="active">
+                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                    <Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                    <Setter TargetName="KindText" Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Tone}" Value="done">
+                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                    <Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                    <Setter TargetName="KindText" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Tone}" Value="waiting">
+                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                    <Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                    <Setter TargetName="KindText" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Tone}" Value="failed">
+                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                    <Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                    <Setter TargetName="KindText" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ImportanceRank}" Value="1">
+                    <Setter TargetName="ImpStrip" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ImportanceRank}" Value="2">
+                    <Setter TargetName="ImpStrip" Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                    <Setter TargetName="ImpBadge" Property="Background" Value="{DynamicResource SystemFillColorCriticalBackgroundBrush}" />
+                    <Setter TargetName="ImpIcon" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsPlanned}" Value="True">
+                    <Setter TargetName="Check" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="Dash" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="Card" Property="BorderBrush" Value="Transparent" />
+                    <Setter TargetName="Card" Property="Background" Value="Transparent" />
+                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource LayerBrush}" />
+                    <Setter TargetName="Dot" Property="Stroke" Value="{DynamicResource TextTertiaryBrush}" />
+                    <Setter TargetName="Dot" Property="StrokeDashArray" Value="2 1.5" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsLate}" Value="True">
+                    <Setter TargetName="When" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <!-- Zaman çizelgesi günü: başlık (rayın sürdüğü satır) ve kartlar; stok sayfası ve ana sayfa Günlük ortak -->
+        <DataTemplate x:Key="TimelineDayTemplate">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="22" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Rectangle Width="2" HorizontalAlignment="Center" Fill="{Binding RailColor}" Opacity="0.45" />
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="6,10,0,6">
+                        <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding Title}" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Margin="6,0,0,0" FontSize="12" Text="{Binding Subtitle}" Foreground="{DynamicResource TextTertiaryBrush}" />
+                    </StackPanel>
+                </Grid>
+                <ItemsControl ItemsSource="{Binding Cards}" ItemTemplate="{StaticResource TimelineCardTemplate}" Focusable="False" />
+            </StackPanel>
+        </DataTemplate>    </controls:ChromeWindow.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -1148,63 +1278,12 @@
                         </Grid.Resources>
 
                         <TabControl SelectedIndex="{Binding HomeTab, Mode=TwoWay}" Background="Transparent">
-                            <!-- Günlük: olmuş şeyler, en yeni üstte (şimdilik örnek kartlar) -->
+                            <!-- Günlük: bütün stokların zaman çizelgesi kayıtları, en yeni üstte; kartta stok numarası, ray proje renginde -->
                             <TabItem Header="{x:Static res:Resources.Home_TabJournal}">
                                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,14,0">
                                 <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*" MaxWidth="1100" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-                                <StackPanel Margin="0,16,0,0">
-                                    <TextBlock Margin="0,0,0,10" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
-                                               Text="{x:Static res:Resources.Home_JournalSample}" />
-                                    <ItemsControl ItemsSource="{Binding HomeTimeline}" Focusable="False">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Margin="0,0,0,6">
-                                                    <TextBlock Margin="2,6,0,8" FontSize="13" FontWeight="SemiBold" Text="{Binding Title}" Foreground="{DynamicResource TextSecondaryBrush}" />
-                                                    <ItemsControl ItemsSource="{Binding Events}" Focusable="False">
-                                                        <ItemsControl.ItemTemplate>
-                                                            <DataTemplate>
-                                                                <!-- Solda dikey çizgi ve projenin renginde nokta; sağda kart -->
-                                                                <Grid>
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="30" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                </Grid.ColumnDefinitions>
-                                                                <Rectangle Width="2" HorizontalAlignment="Center" Fill="{Binding ProjectColor}" Opacity="0.45" />
-                                                                <Ellipse Width="12" Height="12" Margin="0,16,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"
-                                                                         Fill="{Binding ProjectColor}" Stroke="{DynamicResource SurfaceBaseBrush}" StrokeThickness="2" />
-                                                                <Border Grid.Column="1" Margin="6,0,0,10" Padding="16,12" CornerRadius="8" BorderThickness="1"
-                                                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource LayerBrush}">
-                                                                    <StackPanel>
-                                                                        <Grid>
-                                                                            <Grid.ColumnDefinitions>
-                                                                                <ColumnDefinition Width="Auto" />
-                                                                                <ColumnDefinition Width="Auto" />
-                                                                                <ColumnDefinition Width="*" />
-                                                                                <ColumnDefinition Width="Auto" />
-                                                                            </Grid.ColumnDefinitions>
-                                                                            <StackPanel Orientation="Horizontal">
-                                                                                <TextBlock Text="{Binding Source}" FontSize="13"
-                                                                                           VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
-                                                                            </StackPanel>
-                                                                            <Border Grid.Column="1" Margin="8,0,0,0" Padding="7,1" CornerRadius="5" VerticalAlignment="Center"
-                                                                                    Background="{DynamicResource SubtleFillColorSecondaryBrush}"
-                                                                                    Visibility="{Binding HasSerial, Converter={StaticResource BoolToVis}}">
-                                                                                <TextBlock Text="{Binding Serial}" FontSize="12" />
-                                                                            </Border>
-                                                                            <TextBlock Grid.Column="3" Text="{Binding TimeText}" VerticalAlignment="Center"
-                                                                                       Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" />
-                                                                        </Grid>
-                                                                        <TextBlock Margin="0,6,0,0" Text="{Binding Text}" TextWrapping="Wrap" FontSize="15" />
-                                                                    </StackPanel>
-                                                                </Border>
-                                                                </Grid>
-                                                            </DataTemplate>
-                                                        </ItemsControl.ItemTemplate>
-                                                    </ItemsControl>
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
+                                <StackPanel Margin="0,8,0,0">
+                                    <ItemsControl ItemsSource="{Binding HomeTimeline}" ItemTemplate="{StaticResource TimelineDayTemplate}" Focusable="False" />
                                     <TextBlock Margin="2,4" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Home_NoEvents}"
                                                Visibility="{Binding IsHomeTimelineEmpty, Converter={StaticResource BoolToVis}}" />
                                 </StackPanel>
@@ -1798,15 +1877,17 @@
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
-                                <Grid Margin="0,0,8,6">
+                                <Grid Margin="0,0,8,8">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <TextBlock FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.Stock_Timeline}" />
-                                    <Border Grid.Column="1" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Padding="2">
+                                    <Border Grid.Column="1" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Padding="2" VerticalAlignment="Center">
                                         <StackPanel Orientation="Horizontal">
                                             <RadioButton Style="{StaticResource StockSegment}" GroupName="StockRange" Content="{x:Static res:Resources.Home_RangeToday}" IsChecked="{Binding IsRangeToday, Mode=TwoWay}" />
                                             <RadioButton Style="{StaticResource StockSegment}" GroupName="StockRange" Content="{x:Static res:Resources.Home_RangeWeek}" IsChecked="{Binding IsRangeWeek, Mode=TwoWay}" />
@@ -1814,47 +1895,24 @@
                                             <RadioButton Style="{StaticResource StockSegment}" GroupName="StockRange" Content="{x:Static res:Resources.Home_RangeAll}" IsChecked="{Binding IsRangeAll, Mode=TwoWay}" />
                                         </StackPanel>
                                     </Border>
+                                    <Button Grid.Column="2" Margin="8,0,0,0" Style="{DynamicResource AccentButtonStyle}" Padding="12,5" Click="TimelineAdd_Click" ToolTip="{x:Static res:Resources.Timeline_AddHint}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
+                                            <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Timeline_Add}" />
+                                        </StackPanel>
+                                    </Button>
                                 </Grid>
-                                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,8,0">
+                                <Border Grid.Row="1" Margin="0,0,0,6" HorizontalAlignment="Left" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Padding="2">
+                                    <StackPanel Orientation="Horizontal">
+                                        <RadioButton Style="{StaticResource StockSegment}" GroupName="TimelineFilter" Content="{x:Static res:Resources.Timeline_FilterAll}" IsChecked="{Binding IsTimelineAll, Mode=TwoWay}" />
+                                        <RadioButton Style="{StaticResource StockSegment}" GroupName="TimelineFilter" Content="{x:Static res:Resources.Timeline_FilterDone}" IsChecked="{Binding IsTimelineDone, Mode=TwoWay}" />
+                                        <RadioButton Style="{StaticResource StockSegment}" GroupName="TimelineFilter" Content="{x:Static res:Resources.Timeline_FilterPlanned}" IsChecked="{Binding IsTimelinePlanned, Mode=TwoWay}" />
+                                        <RadioButton Style="{StaticResource StockSegment}" GroupName="TimelineFilter" Content="{x:Static res:Resources.Timeline_FilterImportant}" IsChecked="{Binding IsTimelineImportant, Mode=TwoWay}" />
+                                    </StackPanel>
+                                </Border>
+                                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,8,0">
                                     <StackPanel>
-                                        <ItemsControl ItemsSource="{Binding StockDays}" Focusable="False">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel>
-                                                        <TextBlock Margin="2,4,0,4" FontSize="12" FontWeight="SemiBold" Text="{Binding Title}" Foreground="{DynamicResource TextSecondaryBrush}" />
-                                                        <ItemsControl ItemsSource="{Binding Events}" Focusable="False">
-                                                            <ItemsControl.ItemTemplate>
-                                                                <DataTemplate>
-                                                                    <Grid>
-                                                                        <Grid.ColumnDefinitions>
-                                                                            <ColumnDefinition Width="24" />
-                                                                            <ColumnDefinition Width="*" />
-                                                                        </Grid.ColumnDefinitions>
-                                                                        <Rectangle Width="2" HorizontalAlignment="Center" Fill="{Binding ProjectColor}" Opacity="0.45" />
-                                                                        <Ellipse Width="11" Height="11" Margin="0,13,0,0" HorizontalAlignment="Center" VerticalAlignment="Top"
-                                                                                 Fill="{Binding ProjectColor}" Stroke="{DynamicResource SurfaceBaseBrush}" StrokeThickness="2" />
-                                                                        <Border Grid.Column="1" Margin="4,0,0,6" Padding="12,7" CornerRadius="8" BorderThickness="1"
-                                                                                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource SubtleFillColorTertiaryBrush}">
-                                                                            <StackPanel>
-                                                                                <Grid>
-                                                                                    <Grid.ColumnDefinitions>
-                                                                                        <ColumnDefinition Width="*" />
-                                                                                        <ColumnDefinition Width="Auto" />
-                                                                                    </Grid.ColumnDefinitions>
-                                                                                    <TextBlock Text="{Binding Source}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis" />
-                                                                                    <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="{Binding TimeText}" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" />
-                                                                                </Grid>
-                                                                                <TextBlock Margin="0,2,0,0" Text="{Binding Text}" TextWrapping="Wrap" FontSize="14" />
-                                                                            </StackPanel>
-                                                                        </Border>
-                                                                    </Grid>
-                                                                </DataTemplate>
-                                                            </ItemsControl.ItemTemplate>
-                                                        </ItemsControl>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
+                                        <ItemsControl ItemsSource="{Binding StockDays}" ItemTemplate="{StaticResource TimelineDayTemplate}" Focusable="False" />
                                         <TextBlock Margin="2,6" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Stock_NoEvents}"
                                                    Visibility="{Binding IsStockTimelineEmpty, Converter={StaticResource BoolToVis}}" />
                                     </StackPanel>
@@ -2734,7 +2792,7 @@
                     </controls:FormField>
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldRequirement}" LabelWidth="150">
                         <TextBox Text="{Binding NewVerRequirement, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="False" MinLines="3" MaxLines="8"
-                                 VerticalScrollBarVisibility="Auto" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderRequirement}" />
+                                 VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderRequirement}" />
                     </controls:FormField>
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldGroup}" IsRequired="True" LabelWidth="150">
                         <ItemsControl ItemsSource="{Binding VerificationGroupChoices}" Focusable="False" VerticalAlignment="Center" Margin="0,7,0,0">
@@ -3035,92 +3093,120 @@
                                 Title="{Binding JournalTitle}"
                                 PrimaryButtonText="{Binding JournalPrimaryText}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                DialogWidth="620"
                                 PrimaryButtonClick="Journal_PrimaryButtonClick">
-            <StackPanel Width="460">
-                <TextBlock Margin="0,0,0,14" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" Text="{Binding JournalTarget}" />
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="76" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid.Resources>
-                    <Style TargetType="TextBlock" x:Key="JournalLabel">
-                        <Setter Property="VerticalAlignment" Value="Center" />
-                        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <StackPanel>
+                <StackPanel.Resources>
+                    <!-- Seçilebilen hap (yapıldı / yapılacak, önem) -->
+                    <Style x:Key="ChoicePill" TargetType="RadioButton">
+                        <Setter Property="Margin" Value="0,0,8,0" />
+                        <Setter Property="Focusable" Value="False" />
+                        <Setter Property="Cursor" Value="Hand" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="RadioButton">
+                                    <Border x:Name="Pill" CornerRadius="15" Padding="14,5" BorderThickness="1" MinWidth="76"
+                                            Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}">
+                                        <ContentPresenter HorizontalAlignment="Center" TextElement.Foreground="{DynamicResource TextSecondaryBrush}" />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Pill" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                        </Trigger>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter TargetName="Pill" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                            <Setter TargetName="Pill" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                            <Setter Property="FontWeight" Value="SemiBold" />
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter TargetName="Pill" Property="Opacity" Value="0.4" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
                     </Style>
-                </Grid.Resources>
+                    <!-- İşlem ızgarasında bir tür: ikon (tonunda) ve ad; seçili olan vurgulu -->
+                    <Style x:Key="KindTile" TargetType="ListBoxItem">
+                        <Setter Property="Margin" Value="0,0,6,6" />
+                        <Setter Property="Width" Value="146" />
+                        <Setter Property="Cursor" Value="Hand" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Border x:Name="Tile" CornerRadius="8" Padding="9,6" BorderThickness="1"
+                                            Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}">
+                                        <ContentPresenter />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Tile" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="Tile" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                            <Setter TargetName="Tile" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <DataTemplate x:Key="KindTileTemplate">
+                        <StackPanel Orientation="Horizontal">
+                            <Border x:Name="IconBox" Width="22" Height="22" CornerRadius="6" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                <local:AppIcon x:Name="KindIcon" Glyph="{Binding Glyph}" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+                            </Border>
+                            <TextBlock Margin="8,0,0,0" FontSize="12.5" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Label}" />
+                        </StackPanel>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding Tone}" Value="active"><Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
+                            <DataTrigger Binding="{Binding Tone}" Value="waiting"><Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
+                            <DataTrigger Binding="{Binding Tone}" Value="done"><Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
+                            <DataTrigger Binding="{Binding Tone}" Value="failed"><Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" /></DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </StackPanel.Resources>
 
-                <TextBlock Grid.Row="0" Style="{StaticResource JournalLabel}" Text="{x:Static res:Resources.Journal_Kind}" />
-                <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding JournalKinds}" SelectedItem="{Binding JournalKindOption, Mode=TwoWay}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <local:AppIcon x:Name="KindIcon" Glyph="{Binding Glyph}" FontSize="14" Width="20" Foreground="{DynamicResource TextSecondaryBrush}" />
-                                <TextBlock Margin="8,0,0,0" Text="{Binding Label}" VerticalAlignment="Center" />
-                            </StackPanel>
-                            <DataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding Tone}" Value="active">
-                                    <Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource AccentBrush}" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Tone}" Value="waiting">
-                                    <Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Tone}" Value="done">
-                                    <Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Tone}" Value="failed">
-                                    <Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
-                                </DataTrigger>
-                            </DataTemplate.Triggers>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+                <TextBlock Margin="0,0,0,14" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" Text="{Binding JournalTarget}" />
 
-                <TextBlock Grid.Row="1" Margin="0,10,0,0" Style="{StaticResource JournalLabel}" Text="{x:Static res:Resources.Journal_Date}" />
-                <TextBox Grid.Row="1" Grid.Column="1" Margin="0,10,0,0" Width="160" HorizontalAlignment="Left"
-                         Text="{Binding JournalDateText, UpdateSourceTrigger=PropertyChanged}" ToolTip="{x:Static res:Resources.Journal_DateHint}" />
 
-                <TextBlock Grid.Row="2" Margin="0,10,0,0" Style="{StaticResource JournalLabel}" Text="{x:Static res:Resources.Journal_Heading}" />
-                <TextBox Grid.Row="2" Grid.Column="1" Margin="0,10,0,0" Text="{Binding JournalHeading, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" local:MentionAssist.Mode="link" />
+                <controls:FormField Header="{x:Static res:Resources.Journal_DateTime}" IsRequired="True" LabelWidth="120">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Width="140" Text="{Binding JournalDayText, UpdateSourceTrigger=PropertyChanged}" ToolTip="{x:Static res:Resources.Journal_DateHint}" />
+                            <TextBox Width="90" Margin="8,0,0,0" Text="{Binding JournalTimeText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <TextBlock Margin="0,4,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Journal_DateTimeHint}" />
+                    </StackPanel>
+                </controls:FormField>
 
-                <TextBlock Grid.Row="3" Margin="0,10,0,0" VerticalAlignment="Top" Padding="0,6,0,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Journal_Body}" />
-                <TextBox Grid.Row="3" Grid.Column="1" Margin="0,10,0,0" MinHeight="180" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"
-                         Text="{Binding JournalBody, UpdateSourceTrigger=PropertyChanged}" local:MentionAssist.Mode="link" />
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Journal_Kind}" LabelWidth="120">
+                    <ComboBox Width="260" HorizontalAlignment="Left" ItemsSource="{Binding JournalKinds}" SelectedItem="{Binding JournalKindOption, Mode=TwoWay}"
+                              ItemTemplate="{StaticResource KindTileTemplate}" MaxDropDownHeight="360" />
+                </controls:FormField>
 
-                <TextBlock Grid.Row="4" Margin="0,10,0,0" Style="{StaticResource JournalLabel}" Text="{x:Static res:Resources.Journal_Importance}" />
-                <ComboBox Grid.Row="4" Grid.Column="1" Margin="0,10,0,0" Width="180" HorizontalAlignment="Left"
-                          ItemsSource="{Binding JournalImportances}" SelectedItem="{Binding JournalImportance, Mode=TwoWay}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <Ellipse x:Name="Dot" Width="8" Height="8" Fill="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" />
-                                <TextBlock Margin="10,0,0,0" Text="{Binding}" VerticalAlignment="Center" />
-                            </StackPanel>
-                            <DataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Importance_High}">
-                                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Importance_Normal}">
-                                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentBrush}" />
-                                </DataTrigger>
-                            </DataTemplate.Triggers>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Journal_Importance}" LabelWidth="120"
+                                    Visibility="{Binding JournalDone, Converter={StaticResource BoolToVis}}">
+                    <ComboBox Width="260" HorizontalAlignment="Left" ItemsSource="{Binding JournalImportanceOptions}" SelectedItem="{Binding JournalImportanceOption, Mode=TwoWay}"
+                              ItemTemplate="{StaticResource KindTileTemplate}" />
+                </controls:FormField>
 
-                <TextBlock Grid.Row="5" Margin="0,10,0,0" Style="{StaticResource JournalLabel}" Text="{x:Static res:Resources.Journal_Tags}" />
-                <local:TagBox Grid.Row="5" Grid.Column="1" Margin="0,10,0,0" Tags="{Binding JournalTags, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Tag_Placeholder}" ToolTip="{x:Static res:Resources.Journal_TagsHint}" />
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Journal_Heading}" IsRequired="True" LabelWidth="120">
+                    <TextBox Text="{Binding JournalHeading, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" local:MentionAssist.Mode="link" />
+                </controls:FormField>
 
-            </Grid>
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Journal_Body}" LabelWidth="120"
+                                    Visibility="{Binding JournalDone, Converter={StaticResource BoolToVis}}">
+                    <TextBox MinHeight="110" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"
+                             Text="{Binding JournalBody, UpdateSourceTrigger=PropertyChanged}" local:MentionAssist.Mode="link" />
+                </controls:FormField>
+
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Journal_Tags}" LabelWidth="120">
+                    <StackPanel>
+                        <local:TagBox Tags="{Binding JournalTags, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Tag_Placeholder}" />
+                        <TextBlock Margin="0,4,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Journal_TagsHint}" />
+                    </StackPanel>
+                </controls:FormField>
             </StackPanel>
         </controls:ContentDialog>
 
@@ -3140,8 +3226,43 @@
                                 Title="{Binding TaskConfirmTitle}"
                                 PrimaryButtonText="{Binding TaskConfirmButton}"
                                 CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                DialogWidth="500"
                                 PrimaryButtonClick="TaskConfirm_PrimaryButtonClick">
-            <TextBlock Width="340" TextWrapping="Wrap" Text="{Binding TaskConfirmText}" />
+            <StackPanel>
+                <!-- İş kartı: işlem çipi, başlık, son tarih, etiketler; hangi notta olduğu -->
+                <Border Padding="12,9" CornerRadius="9" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                        Background="{DynamicResource SubtleFillColorTertiaryBrush}" DataContext="{Binding TaskConfirmCard}">
+                    <StackPanel>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding TimeText}" />
+                            <Border DockPanel.Dock="Left" Margin="0,0,8,0" Padding="7,2" CornerRadius="6" VerticalAlignment="Center" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                <StackPanel Orientation="Horizontal">
+                                    <local:AppIcon Glyph="{Binding Glyph}" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                    <TextBlock Margin="5,0,0,0" FontSize="11.5" VerticalAlignment="Center" Text="{Binding KindLabel}" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                </StackPanel>
+                            </Border>
+                            <TextBlock FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding Title}" />
+                        </DockPanel>
+                        <ItemsControl Margin="0,6,0,0" ItemsSource="{Binding Tags}" Focusable="False" Visibility="{Binding HasTags, Converter={StaticResource BoolToVis}}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Margin="0,0,6,0" Padding="8,1" CornerRadius="10" BorderThickness="1" BorderBrush="{DynamicResource AccentFillColorTertiaryBrush}">
+                                        <TextBlock FontSize="11.5" Text="{Binding Text}" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+                <TextBlock Margin="2,6,0,0" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding TaskConfirmNote}" />
+                <CheckBox Margin="0,14,0,0" IsChecked="{Binding TaskConfirmJournal, Mode=TwoWay}" Content="{x:Static res:Resources.Task_AlsoJournal}"
+                          Visibility="{Binding IsTaskClosing, Converter={StaticResource BoolToVis}}" />
+            </StackPanel>
         </controls:ContentDialog>
 
         <!-- Takipten çıkar: dosyalar silinmez -->

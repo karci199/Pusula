@@ -2371,6 +2371,84 @@ namespace Pusula.Wpf.Properties
         /// <summary>Seçim listesinde boş seçenek.</summary>
         public static string Verify_None { get { return Get("Verify_None"); } }
 
+        /// <summary>Kayıt penceresi: olay seçiliyken açıklama.</summary>
+        public static string Journal_RecordHintDone { get { return Get("Journal_RecordHintDone"); } }
+
+        /// <summary>Kayıt penceresi: yapılacak iş seçiliyken açıklama.</summary>
+        public static string Journal_RecordHintPlanned { get { return Get("Journal_RecordHintPlanned"); } }
+
+        /// <summary>İş bitirme onayı: zaman çizelgesine de yaz seçeneği.</summary>
+        public static string Task_AlsoJournal { get { return Get("Task_AlsoJournal"); } }
+
+        /// <summary>İşlem türü.</summary>
+        public static string Event_Preparation { get { return Get("Event_Preparation"); } }
+
+        /// <summary>İşlem türü.</summary>
+        public static string Event_Issue { get { return Get("Event_Issue"); } }
+
+        /// <summary>İşlem türü.</summary>
+        public static string Event_Solution { get { return Get("Event_Solution"); } }
+
+        /// <summary>Önem: kritik.</summary>
+        public static string Importance_Critical { get { return Get("Importance_Critical"); } }
+
+        /// <summary>Eski notlardaki önem (Önemli sayılır).</summary>
+        public static string Importance_Legacy { get { return Get("Importance_Legacy"); } }
+
+        /// <summary>Saatsiz kayıt.</summary>
+        public static string Timeline_AllDay { get { return Get("Timeline_AllDay"); } }
+
+        /// <summary>Yapılacak bölümü / çipi.</summary>
+        public static string Timeline_Planned { get { return Get("Timeline_Planned"); } }
+
+        /// <summary>Yeni işlem türleri dosyasının şablonu.</summary>
+        public static string Timeline_KindsTemplate { get { return Get("Timeline_KindsTemplate"); } }
+
+        /// <summary>Zaman çizelgesi: + Kayıt.</summary>
+        public static string Timeline_Add { get { return Get("Timeline_Add"); } }
+
+        /// <summary>+ Kayıt ipucu.</summary>
+        public static string Timeline_AddHint { get { return Get("Timeline_AddHint"); } }
+
+        /// <summary>Süzgeç.</summary>
+        public static string Timeline_FilterDone { get { return Get("Timeline_FilterDone"); } }
+
+        /// <summary>Süzgeç.</summary>
+        public static string Timeline_FilterPlanned { get { return Get("Timeline_FilterPlanned"); } }
+
+        /// <summary>Süzgeç.</summary>
+        public static string Timeline_FilterImportant { get { return Get("Timeline_FilterImportant"); } }
+
+        /// <summary>Pencere: yapıldı / yapılacak.</summary>
+        public static string Journal_Record { get { return Get("Journal_Record"); } }
+
+        /// <summary>Pencere.</summary>
+        public static string Journal_Done { get { return Get("Journal_Done"); } }
+
+        /// <summary>Pencere.</summary>
+        public static string Journal_PlannedChoice { get { return Get("Journal_PlannedChoice"); } }
+
+        /// <summary>Pencere alanı.</summary>
+        public static string Journal_DateTime { get { return Get("Journal_DateTime"); } }
+
+        /// <summary>Pencere ipucu.</summary>
+        public static string Journal_DateTimeHint { get { return Get("Journal_DateTimeHint"); } }
+
+        /// <summary>Yapılacak seçilince ipucu.</summary>
+        public static string Journal_PlannedHint { get { return Get("Journal_PlannedHint"); } }
+
+        /// <summary>+ Yeni işlem.</summary>
+        public static string Journal_NewKind { get { return Get("Journal_NewKind"); } }
+
+        /// <summary>Yeni işlem adı yer tutucu.</summary>
+        public static string Journal_NewKindName { get { return Get("Journal_NewKindName"); } }
+
+        /// <summary>Yeni işlemi ekle.</summary>
+        public static string Journal_NewKindAdd { get { return Get("Journal_NewKindAdd"); } }
+
+        /// <summary>Yeni işlem açıklaması.</summary>
+        public static string Journal_NewKindHint { get { return Get("Journal_NewKindHint"); } }
+
         /// <summary>Doğrulama tablosu sütun ayırıcısının ipucu.</summary>
         public static string Verify_ColumnGripHint { get { return Get("Verify_ColumnGripHint"); } }
 

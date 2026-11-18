@@ -1345,7 +1345,7 @@
     <value>Teslim alındı</value>
   </data>
   <data name="Importance_High" xml:space="preserve">
-    <value>Yüksek</value>
+    <value>Önemli</value>
   </data>
   <data name="Importance_Normal" xml:space="preserve">
     <value>Normal</value>
@@ -1360,13 +1360,13 @@
     <value>Ana notun en altındaki Günlük bölümüne olay ekler (en yeni en üstte).</value>
   </data>
   <data name="Journal_Title" xml:space="preserve">
-    <value>Günlüğe yaz</value>
+    <value>Zaman çizelgesine kayıt</value>
   </data>
   <data name="Journal_Add" xml:space="preserve">
     <value>Ekle</value>
   </data>
   <data name="Journal_Kind" xml:space="preserve">
-    <value>Tür</value>
+    <value>İşlem</value>
   </data>
   <data name="Journal_Date" xml:space="preserve">
     <value>Tarih</value>
@@ -1384,7 +1384,7 @@
     <value>Etiket</value>
   </data>
   <data name="Journal_TagsHint" xml:space="preserve">
-    <value>Virgülle ayır: SATIMO, SN02</value>
+    <value># altyapı, araç ya da serbest etiket; @ kişi. Yazınca öneri açılır.</value>
   </data>
   <data name="Journal_Related" xml:space="preserve">
     <value>İlgili (seçilenler notta bağlantı olur)</value>
@@ -2008,7 +2008,7 @@
     <value>İş yeniden açılsın mı?</value>
   </data>
   <data name="Task_ConfirmClose" xml:space="preserve">
-    <value>Bitti</value>
+    <value>Bitti olarak işaretle</value>
   </data>
   <data name="Task_ConfirmReopen" xml:space="preserve">
     <value>Yeniden aç</value>
@@ -2384,5 +2384,86 @@ Satır md tablosundan kaldırılır; diğer maddelerin numaraları değişmez.</
   </data>
   <data name="Verify_ColumnGripHint" xml:space="preserve">
     <value>Sürükleyerek genişliği değiştirin; çift tık: varsayılan genişlik</value>
+  </data>
+  <data name="Event_Preparation" xml:space="preserve">
+    <value>Hazırlık</value>
+  </data>
+  <data name="Event_Issue" xml:space="preserve">
+    <value>Sorun</value>
+  </data>
+  <data name="Event_Solution" xml:space="preserve">
+    <value>Çözüm</value>
+  </data>
+  <data name="Importance_Critical" xml:space="preserve">
+    <value>Kritik</value>
+  </data>
+  <data name="Importance_Legacy" xml:space="preserve">
+    <value>Yüksek</value>
+  </data>
+  <data name="Timeline_AllDay" xml:space="preserve">
+    <value>Gün boyu</value>
+  </data>
+  <data name="Timeline_Planned" xml:space="preserve">
+    <value>Yapılacak</value>
+  </data>
+  <data name="Timeline_KindsTemplate" xml:space="preserve">
+    <value># İşlem türleri
+
+Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her satır: ad · ikon kodu · renk.
+</value>
+  </data>
+  <data name="Timeline_Add" xml:space="preserve">
+    <value>Kayıt</value>
+  </data>
+  <data name="Timeline_AddHint" xml:space="preserve">
+    <value>Zaman çizelgesine kayıt ekler (yapıldı ya da yapılacak)</value>
+  </data>
+  <data name="Timeline_FilterDone" xml:space="preserve">
+    <value>Yapılan</value>
+  </data>
+  <data name="Timeline_FilterPlanned" xml:space="preserve">
+    <value>Yapılacak</value>
+  </data>
+  <data name="Timeline_FilterImportant" xml:space="preserve">
+    <value>Önemli</value>
+  </data>
+  <data name="Journal_Record" xml:space="preserve">
+    <value>Kayıt türü</value>
+  </data>
+  <data name="Journal_Done" xml:space="preserve">
+    <value>Olan bir olay</value>
+  </data>
+  <data name="Journal_PlannedChoice" xml:space="preserve">
+    <value>Yapılacak iş</value>
+  </data>
+  <data name="Journal_DateTime" xml:space="preserve">
+    <value>Tarih · saat</value>
+  </data>
+  <data name="Journal_DateTimeHint" xml:space="preserve">
+    <value>Elle yazılır; açılışta şu anki tarih ve saat gelir. Saat boşsa gün boyu.</value>
+  </data>
+  <data name="Journal_PlannedHint" xml:space="preserve">
+    <value>Ana notun Yapılacaklar bölümüne iş olarak yazılır; tarih son tarih olur.</value>
+  </data>
+  <data name="Journal_NewKind" xml:space="preserve">
+    <value>Yeni işlem</value>
+  </data>
+  <data name="Journal_NewKindName" xml:space="preserve">
+    <value>İşlem adı, örn. Kalibrasyon</value>
+  </data>
+  <data name="Journal_NewKindAdd" xml:space="preserve">
+    <value>Ekle</value>
+  </data>
+  <data name="Journal_NewKindHint" xml:space="preserve">
+    <value>İkon ve renk seçin; yeni işlem tüm projelerde ortak listeye (_TAKIP\Islemler.md) eklenir.</value>
+  </data>
+  <data name="Task_AlsoJournal" xml:space="preserve">
+    <value>Zaman çizelgesine de yazılsın (şu anki tarih ve saatle)</value>
+  </data>
+  <data name="Journal_RecordHintDone" xml:space="preserve">
+    <value>Olmuş bir şey: zaman çizelgesine bu tarih ve saatle işlenir.</value>
+  </data>
+  <data name="Journal_RecordHintPlanned" xml:space="preserve">
+    <value>İleride yapılacak: notun Yapılacaklar listesine eklenir, bitince çizelgeye düşer.</value>
   </data>
 </root>

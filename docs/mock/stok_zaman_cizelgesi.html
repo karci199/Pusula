@@ -1,0 +1,184 @@
+﻿<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Zaman çizelgesi</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1f1f1f;font-family:"Segoe UI",Arial,sans-serif;color:#e6e6e6;font-size:14px}
+.page{width:1500px;padding:24px 30px 28px;background:#262626;display:grid;grid-template-columns:640px 1fr;gap:26px}
+h2{margin:0;font-size:16px;font-weight:600}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin:0 0 10px}
+/* zaman çizelgesi paneli */
+.tl{background:#2a2a2a;border:1px solid #373737;border-radius:12px;padding:14px 16px 16px}
+.tlh{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.tlh h2{flex:1}
+.seg{display:flex;border:1px solid #3a3a3a;border-radius:7px;padding:2px;font-size:12.5px}
+.seg span{padding:3px 10px;border-radius:5px;color:#aaa}
+.seg .s{background:#36404a;color:#fff;font-weight:600}
+.btn{border:1px solid #3d3d3d;background:#2e2e2e;border-radius:7px;padding:6px 12px;font-size:13px}
+.acc{background:#4cc2ff;color:#062033;border:0;font-weight:600}
+.day{font-size:12px;color:#9a9a9a;font-weight:600;margin:14px 0 6px 2px;display:flex;gap:8px;align-items:center}
+.day .n{font-weight:400;color:#6f6f6f}
+.ev{display:grid;grid-template-columns:22px 1fr;gap:0}
+.rail{position:relative}
+.rail:before{content:"";position:absolute;left:10px;top:0;bottom:-8px;width:2px;background:#3a3a3a}
+.rail i{position:absolute;left:4px;top:16px;width:14px;height:14px;border-radius:50%;border:3px solid #262626;background:#6f6f6f}
+.card{background:#2f2f2f;border:1px solid #3a3a3a;border-radius:10px;padding:10px 12px 10px 14px;margin:0 0 8px 8px;position:relative;overflow:hidden}
+.card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent}
+.imp2:before{background:#e9b54a}.imp3:before{background:#e06666}
+.row1{display:flex;align-items:center;gap:8px}
+.op{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:2px 8px;border-radius:6px;background:#383838;color:#cfcfcf}
+.op b{font-weight:600}
+.o-start{background:#16384d;color:#8fd0ff}.o-end{background:#25420f;color:#b8da8a}.o-issue{background:#521c1c;color:#f3a9a9}
+.o-recv{background:#2e2a5c;color:#cecbf6}.o-dec{background:#4f3307;color:#f6c46f}.o-note{background:#383838;color:#cfcfcf}
+.t{font-weight:600;font-size:14px}
+.tm{margin-left:auto;font-size:12px;color:#8a8a8a}
+.imp{font-size:11px;padding:1px 7px;border-radius:9px;font-weight:600}
+.i2{background:#4f3a10;color:#f3cf7e}.i3{background:#5c1d1d;color:#f5b5b5}
+.d{font-size:13px;color:#bdbdbd;margin-top:4px;line-height:1.45}
+.refs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.ref{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:2px 8px;border-radius:6px;border:1px solid #3f464d;background:#2a2e33;color:#cbd6e0}
+.ref .k{color:#7d8790;font-size:10.5px}
+.tag{font-size:11.5px;color:#79c0ff}
+.pers{font-size:11.5px;color:#c9a6ff}
+.sn{font-size:11px;padding:1px 6px;border-radius:5px;background:#3a3a3a;color:#ddd}
+.plan .card{border-style:dashed;background:#2b2b2b}
+.plan .rail i{background:transparent;border:2px dashed #7d7d7d;width:12px;height:12px;left:5px;top:17px}
+.due{font-size:11.5px;color:#e9b54a}
+.chk{width:16px;height:16px;border:1.5px solid #8a8a8a;border-radius:4px;display:inline-block;flex:none}
+/* pencere */
+.dlg{background:#2c2c2c;border:1px solid #444;border-radius:12px;padding:20px 24px 18px;box-shadow:0 18px 50px rgba(0,0,0,.45);align-self:start}
+.dlg h1{margin:0 0 4px;font-size:20px;font-weight:600}
+.dlg .sub{font-size:12px;color:#8a8a8a;margin-bottom:14px}
+.f{display:grid;grid-template-columns:130px 1fr;gap:10px;align-items:center;margin:10px 0}
+.f .l{color:#c8c8c8;font-size:13.5px}
+.f .l.req:after{content:" *";color:#e06666}
+.in{background:#333;border:1px solid #444;border-radius:7px;padding:7px 10px;font-size:13.5px;color:#e6e6e6;min-height:34px}
+.in.ph{color:#7d7d7d}
+.in.ta{min-height:84px;line-height:1.5}
+.in.focus{border-bottom:2px solid #4cc2ff}
+.two{display:grid;grid-template-columns:1fr 120px;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ch{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:15px;border:1px solid #444;background:#303030;font-size:12.5px;color:#cfcfcf}
+.ch.on{border-color:#4cc2ff;background:#16384d;color:#fff;font-weight:600}
+.ch .x{color:#888;font-size:11px}
+.ch.addc{border-style:dashed;color:#9a9a9a}
+.opsel{display:flex;flex-wrap:wrap;gap:6px}
+.imps{display:flex;gap:6px}
+.imps .ch{min-width:72px;justify-content:center}
+.imps .on.y{border-color:#e9b54a;background:#4f3a10;color:#f3cf7e}
+.refbox{border:1px solid #3d3d3d;border-radius:8px;padding:8px;background:#2a2a2a}
+.refrow{display:flex;align-items:center;gap:8px;padding:5px 4px;border-bottom:1px solid #353535;font-size:13px}
+.refrow:last-child{border-bottom:0}
+.refrow .k{width:118px;color:#8a8a8a;font-size:12px}
+.refrow .v{flex:1}
+.refrow .x{color:#888}
+.addref{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.o-prep{background:#3a3218;color:#e9cf7a}.o-meet{background:#2a3550;color:#b5c8f4}.o-fix{background:#0b3d36;color:#8fe0c8}.o-other{background:#383838;color:#cfcfcf}
+.ops2{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.opc{display:flex;align-items:center;gap:7px;padding:6px 10px;border-radius:8px;border:1px solid #3d3d3d;background:#2f2f2f;font-size:12.5px;color:#cfcfcf}
+.opc .ic{width:20px;height:20px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.opc.on{border-color:#e06666;background:#3a2222;color:#fff;font-weight:600}
+.opc.add{border-style:dashed;color:#9a9a9a;justify-content:center}
+.tagbox{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:#333;border:1px solid #444;border-radius:8px;padding:6px 8px;min-height:38px}
+.tg2{display:inline-flex;align-items:center;gap:6px;padding:3px 6px 3px 9px;border-radius:14px;font-size:12.5px}
+.tg2 .x{font-size:10px;opacity:.7;padding:0 3px}
+.tg-h{background:#16384d;color:#9fd6ff;border:1px solid #23577a}
+.tg-p{background:#33264d;color:#d6bcff;border:1px solid #4a3770}
+.tginput{color:#7d7d7d;font-size:12.5px;padding:2px 4px}
+.sugg{margin-top:6px;background:#383838;border:1px solid #4a4a4a;border-radius:8px;padding:4px;width:300px}
+.sugg div{display:flex;gap:10px;padding:5px 8px;border-radius:5px;font-size:12.5px}
+.sugg .on{background:#2f4a5c}
+.sugg .k2{color:#8a8a8a;margin-left:auto;font-size:11.5px}
+.tags2{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tc{display:inline-flex;align-items:center;font-size:11.5px;padding:1px 8px;border-radius:11px}
+.foot{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.hint{font-size:11.5px;color:#7d7d7d;margin-top:4px}
+.legend{grid-column:1/3;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px}
+.lg{background:#2a2a2a;border:1px solid #373737;border-radius:10px;padding:10px 14px;font-size:12.5px;color:#bbb;line-height:1.55}
+.lg b{color:#e6e6e6}
+</style></head><body><div class="page">
+
+<!-- SOL: stok sayfasındaki zaman çizelgesi -->
+<div>
+<div class="cap">STOK SAYFASI · ZAMAN ÇİZELGESİ</div>
+<div class="tl">
+  <div class="tlh"><h2>Zaman çizelgesi</h2>
+    <div class="seg"><span>Bugün</span><span class="s">Bu hafta</span><span>Bu ay</span><span>Hepsi</span></div>
+    <span class="btn acc">+ Kayıt</span>
+  </div>
+  <div class="seg" style="display:inline-flex;margin-bottom:2px"><span class="s">Hepsi</span><span>Yapılan</span><span>Yapılacak</span><span>Önemli</span></div>
+
+  <div class="plan">
+    <div class="day">Yapılacak <span class="n">· 2</span></div>
+    <div class="ev"><div class="rail"><i></i></div>
+      <div class="card"><div class="row1"><span class="chk"></span><span class="op o-start"><b>▶</b> Test başlayacak</span><span class="t">SNP2 S11 ölçümü</span><span class="tm due">20.11 Per · 09:30</span></div>
+        <div class="d">Kalibrasyon kiti teslim alınınca. Bant kenarlarına dikkat.</div>
+        <div class="tags2"><span class="tc tg-p">@AliDemirci</span></div></div></div>
+    <div class="ev"><div class="rail"><i></i></div>
+      <div class="card"><div class="row1"><span class="chk"></span><span class="op o-prep"><b>⚙</b> Hazırlık</span><span class="t">Döner tabla jigi gelecek</span><span class="tm due">22.11 Cmt</span></div>
+        <div class="tags2"><span class="tc tg-h">#SATIMO</span></div></div></div>
+  </div>
+
+  <div class="day">Bugün <span class="n">· 18.11 Çar</span></div>
+  <div class="ev"><div class="rail"><i style="background:#e06666"></i></div>
+    <div class="card imp3"><div class="row1"><span class="op o-issue"><b>!</b> Sorun</span><span class="t">S11 sınırı aşıldı</span><span class="imp i3">Kritik</span><span class="tm">14:20</span></div>
+      <div class="d">16,8 GHz'de −8,4 dB ölçüldü (ölçüt −10 dB). SNP1 kaldı, SNP2 geçti. Bildirim açıldı.</div>
+      <div class="tags2"><span class="tc tg-h">#VNA</span><span class="tc tg-p">@AliDemirci</span></div></div></div>
+  <div class="ev"><div class="rail"><i style="background:#5fd4b0"></i></div>
+    <div class="card"><div class="row1"><span class="op o-fix"><b>✔</b> Çözüm</span><span class="t">VNA kablo kaybı yeniden kalibre edildi</span><span class="tm">11:05</span></div>
+      <div class="d">Sabah ölçümlerindeki 0,6 dB fark kablodan çıktı.</div>
+      <div class="tags2"><span class="tc tg-h">#VNA</span><span class="tc tg-h">#JT-0001-0001</span></div></div></div>
+  <div class="ev"><div class="rail"><i style="background:#79c0ff"></i></div>
+    <div class="card"><div class="row1"><span class="op o-start"><b>▶</b> Test başladı</span><span class="t">SATIMO anten örüntü</span><span class="tm">09:10</span></div>
+      <div class="d">2–18 GHz, 1° adım. Radom takılı.</div>
+      <div class="tags2"><span class="tc tg-h">#SATIMO</span></div></div></div>
+
+  <div class="day">Dün <span class="n">· 17.11 Sal</span></div>
+  <div class="ev"><div class="rail"><i style="background:#e9b54a"></i></div>
+    <div class="card imp2"><div class="row1"><span class="op o-meet"><b>◎</b> Toplantı kararı</span><span class="t">Yan lob ölçümü yankısız odada</span><span class="imp i2">Önemli</span><span class="tm">Gün boyu</span></div>
+      <div class="d">SATIMO'da yan lob tekrarlanabilir çıkmadı; ölçüm yankısız odaya alındı.</div>
+      <div class="tags2"><span class="tc tg-h">#Yankısız</span><span class="tc tg-p">@Tasarım</span></div></div></div>
+  <div class="ev"><div class="rail"><i style="background:#97c459"></i></div>
+    <div class="card"><div class="row1"><span class="op o-end"><b>✓</b> Test bitti</span><span class="t">S11 ön ölçüm</span><span class="tm">16:40</span></div>
+      </div></div>
+</div>
+</div>
+
+<!-- SAĞ: kayıt ekleme penceresi -->
+<div>
+<div class="cap">+ KAYIT PENCERESİ</div>
+<div class="dlg">
+  <h1>Zaman çizelgesine kayıt</h1>
+  <div class="sub">AB-7000-0002 · AB-7000-0002.md → ## Günlük (en üste eklenir)</div>
+
+  <div class="f"><span class="l">Kayıt</span><div class="chips"><span class="ch on">Yapıldı</span><span class="ch">Yapılacak</span></div></div>
+  <div class="f"><span class="l req">Tarih · saat</span><div><div class="two" style="grid-template-columns:150px 90px"><div class="in">18.11.2026</div><div class="in">14:20</div></div><div class="hint">Elle yazılır; açılışta şu anki tarih ve saat gelir. Saat boşsa "gün boyu".</div></div></div>
+  <div class="f" style="align-items:start"><span class="l" style="padding-top:8px">İşlem</span><div class="ops2">
+    <span class="opc"><span class="ic o-prep">⚙</span>Hazırlık</span>
+    <span class="opc"><span class="ic o-start">▶</span>Teste başlandı</span>
+    <span class="opc"><span class="ic o-end">✓</span>Test bitti</span>
+    <span class="opc"><span class="ic o-meet">◎</span>Toplantı kararı</span>
+    <span class="opc on"><span class="ic o-issue">!</span>Sorun</span>
+    <span class="opc"><span class="ic o-fix">✔</span>Çözüm</span>
+    <span class="opc"><span class="ic o-recv">⇣</span>Teslim</span>
+    <span class="opc"><span class="ic o-note">✎</span>Not</span>
+    <span class="opc add">+ Yeni işlem</span>
+  </div></div>
+  <div class="f"><span class="l">Önem</span><div class="imps"><span class="ch">Normal</span><span class="ch">Önemli</span><span class="ch on" style="border-color:#e06666;background:#5c1d1d;color:#f5b5b5">Kritik</span></div></div>
+  <div class="f"><span class="l req">Başlık</span><div class="in focus">S11 sınırı aşıldı</div></div>
+  <div class="f" style="align-items:start"><span class="l" style="padding-top:8px">Açıklama</span><div>
+    <div class="in ta">16,8 GHz'de −8,4 dB ölçüldü (ölçüt −10 dB). SNP1 kaldı, SNP2 geçti. Bildirim açıldı. <span class="tc tg-h">#VNA</span> <span class="tc tg-p">@AliDemirci</span></div>
+    <div class="hint">Açıklamada # veya @ yazınca öneri açılır.</div></div></div>
+  <div class="f" style="align-items:start"><span class="l" style="padding-top:9px">Etiketler</span><div>
+    <div class="tagbox"><span class="tg2 tg-h">#VNA<span class="x">✕</span></span><span class="tg2 tg-p">@AliDemirci<span class="x">✕</span></span><span class="tg2 tg-h">#JT-0001-0001<span class="x">✕</span></span><span class="tginput">#sat|</span></div>
+    <div class="sugg"><div class="on"><b>#SATIMO</b><span class="k2">altyapı</span></div><div>#SATIMO_jig<span class="k2">etiket</span></div></div>
+    <div class="hint"># altyapı, araç (#JT-…), stok ya da serbest etiket; @ kişi. Açıklamada geçenler buraya kendiliğinden eklenir.</div>
+  </div></div>
+  <div class="foot"><span class="btn">Vazgeç</span><span class="btn acc">Ekle</span></div>
+</div>
+</div>
+
+<div class="legend">
+  <div class="lg"><b>Tarih · saat:</b> elle yazılır (18.11.2026 · 14:20), açılışta şu an gelir. Yapılacaklar üstte kesik çizgili; kutusu işaretlenince yapıldı olur ve tarihine iner.</div>
+  <div class="lg"><b>İşlem türleri:</b> Hazırlık, Teste başlandı, Test bitti, Toplantı kararı, Sorun, Çözüm, Teslim, Not … her biri ikonlu ve renkli; "+ Yeni işlem" ile ad, ikon ve renk seçilerek eklenir (ortak listede tutulur).</div>
+  <div class="lg"><b>Etiketler:</b> # ile altyapı / araç / stok / serbest etiket, @ ile kişi; öneri listesinden seçilir. Kartın altında renkli hap; tıklayınca o etiketli kayıtlar süzülür (araç ve stok etiketinde kaydı açılır).</div>
+</div></div></body></html>

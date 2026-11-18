@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -145,7 +146,20 @@ namespace Pusula.Wpf.ViewModels
         public string JournalImportance
         {
             get { return journalImportance; }
-            set { SetProperty(ref journalImportance, value ?? string.Empty); }
+            set
+            {
+                if (SetProperty(ref journalImportance, value ?? string.Empty))
+                {
+                    OnPropertyChanged(nameof(JournalImportanceChoices));
+                    OnPropertyChanged(nameof(JournalImportanceOption));
+                }
+            }
+        }
+
+        /// <summary>Önem hapları (Normal · Önemli · Kritik); seçili olan işaretli.</summary>
+        public IList<ChoiceOption> JournalImportanceChoices
+        {
+            get { return JournalImportances.Select(i => new ChoiceOption(i, i, string.Equals(i, journalImportance, StringComparison.CurrentCultureIgnoreCase), o => JournalImportance = o.Key)).ToList(); }
         }
 
         /// <summary>Etiketler (virgül ya da boşlukla).</summary>
@@ -197,8 +211,9 @@ namespace Pusula.Wpf.ViewModels
             JournalDate = ParseDate(JournalDateText);
             JournalHeading = note.Title;
             JournalBody = note.Body;
-            JournalImportance = note.Importance.Length > 0 ? note.Importance : Resources.Importance_Normal;
+            JournalImportance = EventKinds.ImportanceRank(note.Importance) == 2 ? Resources.Importance_Critical : EventKinds.ImportanceRank(note.Importance) == 1 ? Resources.Importance_High : Resources.Importance_Normal;
             JournalTags = Pusula.Core.Markdown.MarkdownEditing.FormatTags(note.Tags.ToList());
+            ResetJournalExtras(note.Date, false);
             OnPropertyChanged(nameof(JournalPrimaryText));
         }
 
@@ -243,7 +258,29 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Önem seçenekleri.</summary>
         public string[] JournalImportances
         {
-            get { return new[] { Resources.Importance_High, Resources.Importance_Normal, Resources.Importance_Low }; }
+            get { return EventKinds.Importances.Select(o => o.Label).ToArray(); }
+        }
+
+        /// <summary>Önem seçenekleri (ikon ve renkle; açılır listede).</summary>
+        public EventKindOption[] JournalImportanceOptions
+        {
+            get { return EventKinds.Importances; }
+        }
+
+        /// <summary>Seçili önem (açılır liste); eski "Yüksek" Önemli sayılır.</summary>
+        public EventKindOption? JournalImportanceOption
+        {
+            get
+            {
+                var rank = EventKinds.ImportanceRank(journalImportance);
+                return rank > 0 ? EventKinds.Importances[rank + 1]
+                    : EventKinds.Importances.FirstOrDefault(o => string.Equals(o.Label, journalImportance, StringComparison.CurrentCultureIgnoreCase)) ?? EventKinds.Importances[1];
+            }
+
+            set
+            {
+                JournalImportance = value?.Label ?? Resources.Importance_Normal;
+            }
         }
 
         /// <summary>İlgili kayıt seçenekleri (stoka bağlı jig / kablolar ve seri numaraları).</summary>
@@ -273,6 +310,7 @@ namespace Pusula.Wpf.ViewModels
 
             journalFolder = folder;
             editing = null;
+            ReloadKinds();
             var name = Path.GetFileName(folder.TrimEnd('\\'));
             JournalRelated.Clear();
             switch (kind.Value)
@@ -313,9 +351,9 @@ namespace Pusula.Wpf.ViewModels
             var shownName = kind.Value == RecordKind.Inventory ? Inventory.Item?.Record.Name ?? string.Empty : Detail.HeaderName;
             JournalTarget = string.Format(Resources.Journal_Target, name + (shownName.Length > 0 ? " · " + shownName : string.Empty));
             JournalKind = string.Empty;
-            JournalDateText = DateTime.Today.ToString("dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture);
-            // Kutudaki metin öncekiyle aynıysa ayarlayıcı tarihi yeniden okumaz; tarih her açılışta metinden kurulur.
-            JournalDate = ParseDate(JournalDateText);
+            // Tarih ve saat elle yazılır; açılışta şu an gelir (dakikaya yuvarlanmış).
+            var now = DateTime.Now;
+            ResetJournalExtras(new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0), false);
             JournalHeading = string.Empty;
             JournalBody = string.Empty;
             JournalImportance = Resources.Importance_Normal;
@@ -332,6 +370,11 @@ namespace Pusula.Wpf.ViewModels
             {
                 Status = Resources.Journal_NoTitle;
                 return false;
+            }
+
+            if (JournalPlanned && editing == null)
+            {
+                return AddPlannedJournal();
             }
 
             var entry = new JournalEntry
