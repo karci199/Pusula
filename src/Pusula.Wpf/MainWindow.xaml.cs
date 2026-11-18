@@ -159,17 +159,6 @@ namespace Pusula.Wpf
             e.Handled = true;
         }
 
-        // Doküman kartına tıklanınca doküman numaraları penceresi.
-        private void VerificationDocument_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            viewModel.OpenDocumentsDialog();
-        }
-
-        private void DocumentsDialog_PrimaryButtonClick(object sender, RoutedEventArgs e)
-        {
-            viewModel.ConfirmDocuments();
-        }
-
         // Satırın sağ tık menüsü: Düzenle · Sil.
         private void VerificationRow_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {

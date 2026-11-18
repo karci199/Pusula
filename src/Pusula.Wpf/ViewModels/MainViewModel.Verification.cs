@@ -161,6 +161,12 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Açılan satırın kaynak satırı: "AB-7000-0002_TG_AA · TG-4 · Anten örüntü" (boş olanlar atlanır).</summary>
         public string SourceLine { get; set; } = string.Empty;
 
+        /// <summary>Kaynak satırı var mı.</summary>
+        public bool HasSourceLine
+        {
+            get { return SourceLine.Length > 0; }
+        }
+
         /// <summary>Tür: Temel, Türetilmiş ya da "—".</summary>
         public string KindText
         {
@@ -378,67 +384,6 @@ namespace Pusula.Wpf.ViewModels
         }
     }
 
-    /// <summary>Doğrulamalar sekmesinin üstündeki doküman kartı: test gereksinimi, tasarımcı dokümanı, test planı, test raporu.</summary>
-    public sealed class VerificationDocument
-    {
-        /// <summary>Kartı kurar.</summary>
-        public VerificationDocument(string mark, string label, string name, int tone)
-        {
-            Mark = mark;
-            Label = label;
-            Name = name.Length > 0 ? name : Resources.Verify_DocNone;
-            Tone = tone;
-            State = name.Length > 0 ? VerificationList.DocumentState(name) : -1;
-        }
-
-        /// <summary>Kısaltma (TG, W, TP, TR).</summary>
-        public string Mark { get; }
-
-        /// <summary>Doküman türü.</summary>
-        public string Label { get; }
-
-        /// <summary>Doküman numarası ya da "belirtilmedi".</summary>
-        public string Name { get; }
-
-        /// <summary>Renk sırası (0 TG, 1 tasarımcı, 2 TP, 3 TR).</summary>
-        public int Tone { get; }
-
-        /// <summary>-1 yazılmadı, 0 bilinmiyor, 1 yayınlandı, 2 hazırlanıyor.</summary>
-        public int State { get; }
-
-        /// <summary>"✓ yayınlandı" / "hazırlanıyor" / boş.</summary>
-        public string StateText
-        {
-            get { return State == 1 ? Resources.Verify_DocPublished : State == 2 ? Resources.Verify_DocDraft : string.Empty; }
-        }
-    }
-
-    /// <summary>Doküman penceresinde bir alan: tür, açıklama, numara.</summary>
-    public sealed class DocumentField : ViewModelBase
-    {
-        private string value;
-
-        /// <summary>Alanı kurar.</summary>
-        public DocumentField(string label, string hint, string value)
-        {
-            Label = label;
-            Hint = hint;
-            this.value = value ?? string.Empty;
-        }
-
-        /// <summary>Doküman türü.</summary>
-        public string Label { get; }
-
-        /// <summary>Örnek / açıklama (yer tutucu).</summary>
-        public string Hint { get; }
-
-        /// <summary>Doküman numarası.</summary>
-        public string Value
-        {
-            get { return value; }
-            set { SetProperty(ref this.value, value ?? string.Empty); }
-        }
-    }
     /// <summary>
     /// Listeden seç ya da yeni yaz: seçenekler "—" (boş), var olan adlar ve en sonda "+ Yeni …"; son seçilince
     /// altında yazı kutusu açılır. Değer, seçili ad ya da yazılan yeni addır.
@@ -602,7 +547,6 @@ namespace Pusula.Wpf.ViewModels
         private List<VerificationItem> verificationItems = new List<VerificationItem>();
         private string verificationFilter = string.Empty;
         private string verificationStock = string.Empty;
-        private string[] verificationDocs = { string.Empty, string.Empty, string.Empty, string.Empty };
         private bool isVerificationDialogOpen;
         private string newVerText = string.Empty;
         private string newVerSource = string.Empty;
@@ -611,14 +555,11 @@ namespace Pusula.Wpf.ViewModels
         private string newVerKind = string.Empty;
         private string newVerParent = string.Empty;
         private string newVerMethod = string.Empty;
-        private bool isDocumentsDialogOpen;
-        private ICommand? editDocumentsCommand;
         private string newVerTgNo = string.Empty;
         private string newVerTpNo = string.Empty;
         private string newVerTrNo = string.Empty;
         private string newVerStatus = string.Empty;
         private string verificationError = string.Empty;
-        private bool keepVerificationOpen;
         private ICommand? addVerificationCommand;
         private ICommand? openVerificationFileCommand;
         private VerificationItem? editingVerification;
@@ -661,78 +602,6 @@ namespace Pusula.Wpf.ViewModels
                 var counted = kinds.Count(k => k != 5);
                 return counted == 0 ? 0 : 100.0 * kinds.Count(VerificationRow.IsPassedKind) / counted;
             }
-        }
-
-        /// <summary>Dokümanlar: test gereksinimi (DOORS), tasarımcı dokümanı, test planı, test raporu (dosyanın YAML başlığından).</summary>
-        public ObservableCollection<VerificationDocument> VerificationDocuments { get; } = new ObservableCollection<VerificationDocument>();
-
-        /// <summary>Doküman şeridi görünür mü (en az biri yazılıysa).</summary>
-        public bool HasVerificationDocuments
-        {
-            get { return VerificationDocuments.Any(d => d.State >= 0); }
-        }
-
-        /// <summary>"Dokümanlar": doküman numaralarını düzenleme penceresini açar.</summary>
-        public ICommand EditDocumentsCommand
-        {
-            get { return editDocumentsCommand ?? (editDocumentsCommand = new RelayCommand(OpenDocumentsDialog)); }
-        }
-
-        /// <summary>Doküman numaraları penceresi açık mı.</summary>
-        public bool IsDocumentsDialogOpen
-        {
-            get { return isDocumentsDialogOpen; }
-            set { SetDialogOpen(ref isDocumentsDialogOpen, value); }
-        }
-
-        /// <summary>Penceredeki doküman numaraları (test gereksinimi, tasarımcı dokümanı, test planı, test raporu).</summary>
-        public ObservableCollection<DocumentField> DocumentFields { get; } = new ObservableCollection<DocumentField>();
-
-        /// <summary>Doküman penceresini doldurup açar.</summary>
-        public void OpenDocumentsDialog()
-        {
-            if (verificationStock.Length == 0)
-            {
-                return;
-            }
-
-            var values = VerificationList.ReadDocuments(verificationStock);
-            var labels = new[] { Resources.Verify_DocRequirement, Resources.Verify_DocDesigner, Resources.Verify_DocPlan, Resources.Verify_DocReport };
-            var hints = new[] { Resources.Verify_DocRequirementHint, Resources.Verify_DocDesignerHint, Resources.Verify_DocPlanHint, Resources.Verify_DocReportHint };
-            DocumentFields.Clear();
-            for (var i = 0; i < labels.Length; i++)
-            {
-                DocumentFields.Add(new DocumentField(labels[i], hints[i], values[i]));
-            }
-
-            IsDocumentsDialogOpen = true;
-        }
-
-        /// <summary>Doküman numaralarını dosyanın YAML başlığına yazar (dosya yoksa önce şablondan açılır).</summary>
-        public void ConfirmDocuments()
-        {
-            IsDocumentsDialogOpen = false;
-            if (verificationStock.Length == 0)
-            {
-                return;
-            }
-
-            var template = string.Format(CultureInfo.CurrentCulture, Resources.Verify_FileTemplate, Path.GetFileName(verificationStock));
-            var error = VerificationList.EnsureFile(verificationStock, template);
-            if (error.Length == 0)
-            {
-                error = VerificationList.WriteDocuments(verificationStock, DocumentFields.Select(f => f.Value).ToList());
-            }
-
-            if (error.Length > 0)
-            {
-                Status = string.Format(CultureInfo.CurrentCulture, Resources.Verify_WriteFailed, error);
-                return;
-            }
-
-            LinkVerificationFromUnitNote();
-            LoadVerifications();
-            Done(Resources.Verify_DocsSaved);
         }
 
         /// <summary>Pencerede: kaynak doküman (TG no yoksa; örn. tasarımcı dokümanı).</summary>
@@ -1107,13 +976,6 @@ namespace Pusula.Wpf.ViewModels
             get { return VerificationRow.Statuses; }
         }
 
-        /// <summary>Ekledikten sonra pencere yeni madde için açık kalsın.</summary>
-        public bool KeepVerificationOpen
-        {
-            get { return keepVerificationOpen; }
-            set { SetProperty(ref keepVerificationOpen, value); }
-        }
-
         /// <summary>Pencerede hata metni.</summary>
         public string VerificationError
         {
@@ -1181,16 +1043,6 @@ namespace Pusula.Wpf.ViewModels
                 });
             }
 
-            // Dokümanlar (YAML): TG, tasarımcı, TP, TR.
-            var docs = stock.Length == 0 ? new string[4] { string.Empty, string.Empty, string.Empty, string.Empty } : VerificationList.ReadDocuments(stock);
-            VerificationDocuments.Clear();
-            VerificationDocuments.Add(new VerificationDocument("TG", Resources.Verify_DocRequirement, docs[0], 0));
-            VerificationDocuments.Add(new VerificationDocument("W", Resources.Verify_DocDesigner, docs[1], 1));
-            VerificationDocuments.Add(new VerificationDocument("TP", Resources.Verify_DocPlan, docs[2], 2));
-            VerificationDocuments.Add(new VerificationDocument("TR", Resources.Verify_DocReport, docs[3], 3));
-            verificationDocs = docs;
-            OnPropertyChanged(nameof(HasVerificationDocuments));
-
             FillVerificationGroups();
             OnPropertyChanged(nameof(VerificationCount));
             OnPropertyChanged(nameof(StockVerificationText));
@@ -1239,15 +1091,13 @@ namespace Pusula.Wpf.ViewModels
         private string SourceLineOf(VerificationItem item)
         {
             var parts = new List<string>();
-            var doc = item.TgNo.Length > 0 ? verificationDocs[0] : item.Source.Length > 0 ? item.Source : verificationDocs[1];
-            if (doc.Length > 0)
-            {
-                parts.Add(doc);
-            }
-
             if (item.TgNo.Length > 0)
             {
                 parts.Add(item.TgNo);
+            }
+            else if (item.Source.Length > 0)
+            {
+                parts.Add(item.Source);
             }
 
             if (item.SubGroup.Length > 0)
@@ -1415,17 +1265,6 @@ namespace Pusula.Wpf.ViewModels
             LinkVerificationFromUnitNote();
             LoadVerifications();
             Done(string.Format(CultureInfo.CurrentCulture, Resources.Verify_Added, item.Number, text.Length > 0 ? text : item.SubGroup));
-            if (KeepVerificationOpen)
-            {
-                // Grup, alt grup ve altyapı bir sonraki madde için kalır.
-                var sub = item.SubGroup;
-                var facility = item.Facility;
-                ResetVerificationForm(group);
-                NewVerSubGroup = sub;
-                NewVerFacility = facility;
-                return false;
-            }
-
             return true;
         }
     }

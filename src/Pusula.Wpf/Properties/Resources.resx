@@ -2135,10 +2135,6 @@ Ayrıntı: {1}</value>
     <value>---
 tur: test-gereksinimleri
 stok: {0}
-test_gereksinimi:
-tasarimci_dokumani:
-test_plani:
-test_raporu:
 ---
 
 # {0} Test Gereksinimleri

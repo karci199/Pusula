@@ -1877,8 +1877,8 @@
                                 <Grid.Resources>
                                     <!-- Satır: ince ayraç, üstüne gelince hafif dolgu; tıklanınca açılır -->
                                     <Style x:Key="VerificationRowBorder" TargetType="Border">
-                                        <Setter Property="Padding" Value="0,10,8,10" />
-                                        <Setter Property="CornerRadius" Value="6" />
+                                        <Setter Property="Padding" Value="0,12,8,12" />
+                                        <Setter Property="CornerRadius" Value="9" />
                                         <Setter Property="Background" Value="Transparent" />
                                         <Setter Property="Cursor" Value="Hand" />
                                         <Style.Triggers>
@@ -1886,6 +1886,14 @@
                                                 <Setter Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
                                             </Trigger>
                                         </Style.Triggers>
+                                    </Style>
+                                    <!-- Madde kartı: ince kenarlık, yuvarlak köşe; açılınca kenarlık vurgulanır -->
+                                    <Style x:Key="VerificationCard" TargetType="Border">
+                                        <Setter Property="Margin" Value="0,0,0,8" />
+                                        <Setter Property="CornerRadius" Value="10" />
+                                        <Setter Property="BorderThickness" Value="1" />
+                                        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+                                        <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
                                     </Style>
                                     <!-- Süzgeç hapı: grup noktası, ad, sayı rozeti; seçili olan vurgulu -->
                                     <Style x:Key="VerificationPill" TargetType="RadioButton">
@@ -1928,53 +1936,11 @@
                                 </Grid.Resources>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
-                                <!-- Dokümanlar: test gereksinimi (DOORS) · tasarımcı dokümanı · test planı · test raporu (dosyanın YAML'ından) -->
-                                <ItemsControl Grid.Row="0" Margin="0,0,0,12" ItemsSource="{Binding VerificationDocuments}" Focusable="False"
-                                              Visibility="{Binding HasVerificationDocuments, Converter={StaticResource BoolToVis}}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <UniformGrid Rows="1" />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Border Margin="0,0,10,0" Padding="12,9" CornerRadius="9" BorderThickness="1" Cursor="Hand"
-                                                    Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                                                    MouseLeftButtonUp="VerificationDocument_MouseLeftButtonUp">
-                                                <DockPanel>
-                                                    <Border x:Name="Mark" DockPanel.Dock="Left" Width="34" Height="34" CornerRadius="8" Margin="0,0,12,0"
-                                                            Background="{DynamicResource SubtleFillColorSecondaryBrush}">
-                                                        <TextBlock x:Name="MarkText" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Text="{Binding Mark}"
-                                                                   Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
-                                                    </Border>
-                                                    <StackPanel VerticalAlignment="Center">
-                                                        <TextBlock FontSize="11.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Label}" />
-                                                        <TextBlock x:Name="DocName" FontWeight="SemiBold" FontSize="13.5" TextTrimming="CharacterEllipsis" Text="{Binding Name}" ToolTip="{Binding Name}" />
-                                                        <TextBlock x:Name="DocState" FontSize="11.5" Text="{Binding StateText}" Foreground="{DynamicResource TextTertiaryBrush}" />
-                                                    </StackPanel>
-                                                </DockPanel>
-                                            </Border>
-                                            <DataTemplate.Triggers>
-                                                <DataTrigger Binding="{Binding Tone}" Value="1"><Setter TargetName="MarkText" Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" /></DataTrigger>
-                                                <DataTrigger Binding="{Binding Tone}" Value="2"><Setter TargetName="MarkText" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
-                                                <DataTrigger Binding="{Binding Tone}" Value="3"><Setter TargetName="MarkText" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
-                                                <DataTrigger Binding="{Binding State}" Value="1"><Setter TargetName="DocState" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
-                                                <DataTrigger Binding="{Binding State}" Value="2"><Setter TargetName="DocState" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
-                                                <DataTrigger Binding="{Binding State}" Value="-1">
-                                                    <Setter TargetName="DocName" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
-                                                    <Setter TargetName="DocName" Property="FontWeight" Value="Normal" />
-                                                </DataTrigger>
-                                            </DataTemplate.Triggers>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-
                                 <!-- Süzgeç hapları + düğmeler -->
-                                <Grid Grid.Row="1" Margin="0,0,0,12">
+                                <Grid Grid.Row="0" Margin="0,0,0,12">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
@@ -1992,12 +1958,6 @@
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
                                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Button Margin="0,0,8,0" Padding="12,6" Command="{Binding EditDocumentsCommand}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <local:AppIcon Glyph="{x:Static local:AppIcons.Edit}" FontSize="13" VerticalAlignment="Center" />
-                                                <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Verify_Documents}" />
-                                            </StackPanel>
-                                        </Button>
                                         <Button Margin="0,0,8,0" Padding="12,6" Command="{Binding OpenVerificationFileCommand}" ToolTip="{x:Static res:Resources.Verify_OpenFileHint}"
                                                 Visibility="{Binding HasVerificationFile, Converter={StaticResource BoolToVis}}">
                                             <StackPanel Orientation="Horizontal">
@@ -2015,7 +1975,7 @@
                                 </Grid>
 
                                 <!-- Tablo kartı -->
-                                <Border Grid.Row="2" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                <Border Grid.Row="1" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                         Background="{DynamicResource LayerBrush}" Padding="16,8,8,10">
                                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,8,0">
                                         <StackPanel>
@@ -2060,10 +2020,10 @@
                                                             <ItemsControl ItemsSource="{Binding Rows}" Focusable="False">
                                                                 <ItemsControl.ItemTemplate>
                                                                     <DataTemplate>
-                                                                        <Border x:Name="RowCard" CornerRadius="10" Margin="0,0,0,2">
+                                                                        <Border x:Name="RowCard" Style="{StaticResource VerificationCard}">
                                                                         <StackPanel>
                                                                         <Border Style="{StaticResource VerificationRowBorder}" MouseLeftButtonDown="VerificationRow_MouseLeftButtonDown"
-                                                                                ContextMenuOpening="VerificationRow_ContextMenuOpening" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+                                                                                ContextMenuOpening="VerificationRow_ContextMenuOpening">
                                                                             <Border.ContextMenu>
                                                                                 <ContextMenu />
                                                                             </Border.ContextMenu>
@@ -2079,7 +2039,7 @@
                                                                                     <ColumnDefinition Width="160" />
                                                                                     <ColumnDefinition Width="28" />
                                                                                 </Grid.ColumnDefinitions>
-                                                                                <Rectangle x:Name="StatusBar" RadiusX="2" RadiusY="2" Fill="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                                                                                <Rectangle x:Name="StatusBar" Margin="0,2" RadiusX="2" RadiusY="2" Fill="{DynamicResource DividerStrokeColorDefaultBrush}" />
                                                                                 <TextBlock x:Name="IdText" Grid.Column="1" Margin="12,0,6,0" VerticalAlignment="Center" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
                                                                                            Text="{Binding Id}" ToolTip="{Binding Id}" />
                                                                                 <StackPanel Grid.Column="2" Margin="0,0,16,0" VerticalAlignment="Center">
@@ -2116,11 +2076,14 @@
                                                                         </Border>
 
                                                                         <!-- Açılan satır: tam gereksinim, kaynak; plan ve rapor tek satırlık özet -->
-                                                                        <StackPanel Margin="112,4,16,14" Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVis}}">
-                                                                            <TextBlock TextWrapping="Wrap" MaxWidth="1000" HorizontalAlignment="Left" LineHeight="21" Text="{Binding Requirement}"
+                                                                        <Border BorderThickness="0,1,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}" Margin="12,0"
+                                                                                Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVis}}" />
+                                                                        <StackPanel Margin="112,12,16,14" Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVis}}">
+                                                                            <TextBlock Margin="0,0,0,4" TextWrapping="Wrap" MaxWidth="900" HorizontalAlignment="Left" LineHeight="21" Text="{Binding Requirement}"
                                                                                        Visibility="{Binding HasRequirement, Converter={StaticResource BoolToVis}}" />
-                                                                            <TextBlock Margin="0,6,0,0" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding SourceLine}" />
-                                                                            <UniformGrid Margin="0,12,0,0" Rows="1" MaxWidth="1000" HorizontalAlignment="Stretch">
+                                                                            <TextBlock Margin="0,0,0,4" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding SourceLine}"
+                                                                                       Visibility="{Binding HasSourceLine, Converter={StaticResource BoolToVis}}" />
+                                                                            <UniformGrid Margin="0,8,0,0" Rows="1" Width="720" HorizontalAlignment="Left">
                                                                                 <Border Margin="0,0,10,0" Padding="12,9" CornerRadius="9" BorderThickness="1"
                                                                                         Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
                                                                                     <StackPanel>
@@ -2147,7 +2110,7 @@
                                                                         </Border>
                                                                         <DataTemplate.Triggers>
                                                                             <DataTrigger Binding="{Binding IsExpanded}" Value="True">
-                                                                                <Setter TargetName="RowCard" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                                                                                <Setter TargetName="RowCard" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
                                                                             </DataTrigger>
                                                                             <DataTrigger Binding="{Binding IsSourceOnly}" Value="True">
                                                                                 <Setter TargetName="IdText" Property="FontWeight" Value="Normal" />
@@ -2784,33 +2747,10 @@
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldStatus}" LabelWidth="150">
                         <ComboBox ItemsSource="{Binding VerificationStatuses}" SelectedItem="{Binding NewVerStatus, Mode=TwoWay}" />
                     </controls:FormField>
-                    <CheckBox Margin="0,16,0,0" Content="{x:Static res:Resources.Verify_KeepOpen}" IsChecked="{Binding KeepVerificationOpen, Mode=TwoWay}"
-                              Visibility="{Binding IsEditingVerification, Converter={StaticResource InverseBoolToVis}}" />
                 </StackPanel>
             </ScrollViewer>
         </controls:ContentDialog>
 
-        <!-- Dokümanlar: test gereksinimi, tasarımcı dokümanı, test planı, test raporu numaraları (dosyanın YAML başlığına) -->
-        <controls:ContentDialog Grid.RowSpan="3"
-                                IsOpen="{Binding IsDocumentsDialogOpen, Mode=TwoWay}"
-                                DialogWidth="600"
-                                Title="{x:Static res:Resources.Verify_Documents}"
-                                PrimaryButtonText="{x:Static res:Resources.Verify_Save}"
-                                CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
-                                PrimaryButtonClick="DocumentsDialog_PrimaryButtonClick">
-            <StackPanel>
-                <TextBlock Margin="0,0,0,10" TextWrapping="Wrap" FontSize="12.5" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Verify_DocsHint}" />
-                <ItemsControl ItemsSource="{Binding DocumentFields}" Focusable="False">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <controls:FormField Margin="0,0,0,10" Header="{Binding Label}" LabelWidth="150">
-                                <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{Binding Hint}" />
-                            </controls:FormField>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
-        </controls:ContentDialog>
         <!-- Doğrulama maddesini sil: satır tablodan kalkar, diğer numaralar değişmez; önce sorulur -->
         <controls:ContentDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsVerificationDeleteOpen, Mode=TwoWay}"

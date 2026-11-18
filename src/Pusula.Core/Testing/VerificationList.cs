@@ -64,8 +64,7 @@ namespace Pusula.Core.Testing
     /// Stokun doğrulama listesi: <c>03_Testler\&lt;stok&gt;_Test_Gereksinimleri.md</c> içindeki ilk tablo.
     /// Sütunlar başlıklarından tanınır: # · TG no · kaynak · başlık · kısa not · gereksinim · grup · alt grup · tür · bağlı ·
     /// yöntem · altyapı · TP no · TR no · durum (sıra serbest, tanınmayan sütunlar korunur). Eski tablolarda eksik sütunlar
-    /// ilk yazımda eklenir. Dokümanların numaraları (test gereksinimi, tasarımcı dokümanı, test planı, test raporu) dosyanın
-    /// YAML başlığındadır. Uygulama tabloya satır
+    /// ilk yazımda eklenir. Uygulama tabloya satır
     /// ekler, satırı değiştirir ya da kaldırır (16.11.2026 kullanıcı kararı); dosyanın geri kalanına dokunmaz.
     /// </summary>
     public static class VerificationList
@@ -99,9 +98,6 @@ namespace Pusula.Core.Testing
 
         /// <summary>Yeni ya da yükseltilen tablonun başlıkları (sırasıyla).</summary>
         public static readonly string[] Headers = { "#", "TG no", "Kaynak", "Başlık", "Kısa not", "Gereksinim", "Grup", "Alt grup", "Tür", "Bağlı", "Yöntem", "Altyapı", "TP no", "TR no", "Durum" };
-
-        /// <summary>YAML başlığındaki doküman alanları (sırasıyla): test gereksinimi, tasarımcı dokümanı, test planı, test raporu.</summary>
-        public static readonly string[] DocumentKeys = { "test_gereksinimi", "tasarimci_dokumani", "test_plani", "test_raporu" };
 
         // Eski (16.11.2026 öncesi) 7 sütunlu tablonun sırası; başlık tanınmazsa kullanılır.
         private static readonly int[] LegacyOrder = { ColNumber, ColText, ColGroup, ColSubGroup, ColFacility, ColTg, ColStatus };
@@ -253,100 +249,6 @@ namespace Pusula.Core.Testing
         public static string Remove(string stockFolder, int number)
         {
             return EditRow(stockFolder, number, null);
-        }
-
-        /// <summary>Doğrulama dosyası yoksa <paramref name="template"/> ile oluşturur (varsa dokunmaz). Hata metni ya da boş.</summary>
-        public static string EnsureFile(string stockFolder, string template)
-        {
-            var path = PathFor(stockFolder);
-            if (File.Exists(path))
-            {
-                return string.Empty;
-            }
-
-            try
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(path) ?? stockFolder);
-                return WriteAtomic(path, (template ?? string.Empty).Replace("\r\n", "\n").Replace("\n", "\r\n"), false);
-            }
-            catch (IOException ex)
-            {
-                return ex.Message;
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return ex.Message;
-            }
-        }
-
-        /// <summary>
-        /// Dosyanın YAML başlığındaki doküman numaraları (<see cref="DocumentKeys"/> sırasıyla; yoksa boş). Dosya yoksa hepsi boş.
-        /// </summary>
-        public static string[] ReadDocuments(string stockFolder)
-        {
-            var result = DocumentKeys.Select(k => string.Empty).ToArray();
-            var path = PathFor(stockFolder);
-            try
-            {
-                if (File.Exists(path))
-                {
-                    string body;
-                    var fields = FrontMatter.Parse(File.ReadAllText(path), out body);
-                    for (var i = 0; i < DocumentKeys.Length; i++)
-                    {
-                        string value;
-                        if (fields.TryGetValue(DocumentKeys[i], out value))
-                        {
-                            result[i] = (value ?? string.Empty).Trim().Trim('"').Replace("[[", string.Empty).Replace("]]", string.Empty).Trim();
-                        }
-                    }
-                }
-            }
-            catch (IOException)
-            {
-            }
-            catch (UnauthorizedAccessException)
-            {
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Doküman numaralarını YAML başlığına yazar (boş değer satırı kaldırır); gövdeye dokunulmaz. Dosya yoksa bir şey yapmaz.
-        /// Hata metni ya da boş döndürür.
-        /// </summary>
-        public static string WriteDocuments(string stockFolder, IList<string> values)
-        {
-            var path = PathFor(stockFolder);
-            if (!File.Exists(path) || values == null)
-            {
-                return string.Empty;
-            }
-
-            var map = new Dictionary<string, string>();
-            for (var i = 0; i < DocumentKeys.Length && i < values.Count; i++)
-            {
-                map[DocumentKeys[i]] = (values[i] ?? string.Empty).Trim();
-            }
-
-            return Journal.SetFrontMatter(path, map);
-        }
-
-        /// <summary>
-        /// Doküman adından yayın durumu (revizyon eki): <c>_AA</c> gibi iki büyük harf yayınlandı (1), <c>_XX</c> ya da
-        /// <c>_BA1</c> gibi sonu rakamlı hazırlanıyor (2), ek yoksa bilinmiyor (0).
-        /// </summary>
-        public static int DocumentState(string name)
-        {
-            var n = System.IO.Path.GetFileNameWithoutExtension((name ?? string.Empty).Trim());
-            var m = System.Text.RegularExpressions.Regex.Match(n, @"_([A-Z]{2})(\d*)$");
-            if (!m.Success)
-            {
-                return 0;
-            }
-
-            return m.Groups[1].Value == "XX" || m.Groups[2].Value.Length > 0 ? 2 : 1;
         }
 
         /// <summary>

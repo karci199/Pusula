@@ -32,17 +32,15 @@ Check 'dosyada Plan ve Sonuç kısımları' ($text -like '*## Plan*' -and $text 
 Check 'altyapı ortak listede' ((Test-Path $facilities) -and ([IO.File]::ReadAllText($facilities) -like '*- SATIMO*'))
 Check 'listede 1 madde' ($vm.VerificationCount -eq 1 -and $vm.VerificationGroups.Count -eq 1)
 
-"--- yenisini aç: grup ÇK/EMC, metinde | var"
+"--- ikinci madde: grup ÇK/EMC, metinde | var"
 $vm.AddVerificationCommand.Execute($null); Wait
 Check 'altyapı önerilerinde SATIMO' ($vm.FacilitySuggestions -contains 'SATIMO')
 Check 'alt grup önerisi' ($vm.SubGroupSuggestions -contains 'Anten örüntü')
 $vm.NewVerFacility = 'satimo'
 Check 'var olan altyapı listeden seçilir' (-not $vm.FacilityPick.IsNew -and $vm.FacilityPick.Selected -eq 'SATIMO')
-$vm.KeepVerificationOpen = $true
 ($vm.VerificationGroupChoices | Where-Object { $_.Key -eq 'ÇK/EMC' }).IsChecked = $true
 $vm.NewVerText = 'RE102 | CE102 sınır içinde'; $vm.NewVerSubGroup = ''; $vm.NewVerFacility = 'EMC lab'; $vm.NewVerStatus = 'Geçti'
-Check 'yenisini aç: pencere açık kalır' (-not $vm.ConfirmNewVerification())
-Check 'metin temizlendi, grup kaldı' ($vm.NewVerText -eq '' -and ($vm.VerificationGroupChoices | Where-Object { $_.IsChecked }).Key -eq 'ÇK/EMC')
+Check 'eklenir, pencere kapanabilir (açık kalma seçeneği yok)' ($vm.ConfirmNewVerification())
 $vm.IsVerificationDialogOpen = $false; Wait
 Check '2 madde, 2 grup' ($vm.VerificationCount -eq 2 -and $vm.VerificationGroups.Count -eq 2) ([string]$vm.VerificationCount)
 $emc = $vm.VerificationGroups | Where-Object { $_.Title -eq 'ÇK/EMC' }
@@ -84,10 +82,10 @@ Check 'satır: TG no, kısa not, tür, yöntem, plan / rapor' ($row1.Id -eq 'TG-
 $vm.ToggleVerification($row1)
 Check 'satır açılır: tam gereksinim ve kaynak satırı' ($row1.IsExpanded -and $row1.Requirement -like 'Anten 2,4 GHz*' -and $row1.SourceLine -like '*TG-013*') $row1.SourceLine
 
-"--- türetilmiş madde ve dokümanlar"
+"--- türetilmiş madde"
 $vm.AddVerificationCommand.Execute($null); Wait
 Check 'bağlı temel seçenekleri TG no''lardan' (@($vm.VerificationParents) -contains 'TG-013')
-$vm.KeepVerificationOpen = $false; $vm.NewVerTgNo = 'AB-7000-0002_TAS_01'; $vm.NewVerText = 'Yan lob seviyesi'; $vm.NewVerDescription = 'Ana hüzmeye göre ≤ −15 dB'
+$vm.NewVerTgNo = 'AB-7000-0002_TAS_01'; $vm.NewVerText = 'Yan lob seviyesi'; $vm.NewVerDescription = 'Ana hüzmeye göre ≤ −15 dB'
 $vm.NewVerKind = 'Türetilmiş'; $vm.NewVerParent = 'TG-013'; $vm.NewVerMethod = 'Test'; $vm.NewVerStatus = 'Değerlendiriliyor'
 Check 'türetilmiş madde eklenir' ($vm.IsNewVerDerived -and $vm.ConfirmNewVerification())
 $vm.IsVerificationDialogOpen = $false; Wait
@@ -95,19 +93,12 @@ $der = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Row
 Check 'türetilmiş: doküman no TG kutusunda, bağlı temel, değerlendiriliyor' ($der.Id -eq 'AB-7000-0002_TAS_01' -and $der.ParentText -eq '← TG-013' -and $der.StatusKind -eq 8) ($der.Id + ' ' + $der.ParentText)
 $row1 = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows[0]
 Check 'temelin kaynak satırında bağlı türetilmiş' ($row1.SourceLine -like '*Yan lob seviyesi*') $row1.SourceLine
-$vm.OpenDocumentsDialog(); Wait
-Check 'doküman penceresi: 4 alan' ($vm.IsDocumentsDialogOpen -and $vm.DocumentFields.Count -eq 4)
-$vm.DocumentFields[0].Value = 'AB-7000-0002_TG_AA'; $vm.DocumentFields[2].Value = 'AB-7000-0002_TP_AA'; $vm.DocumentFields[3].Value = 'AB-7000-0002_TR_XX'
-$vm.ConfirmDocuments(); Wait
-$text = [IO.File]::ReadAllText($file)
-Check 'doküman numaraları YAML''da' ($text -like '*test_gereksinimi: AB-7000-0002_TG_AA*' -and $text -like '*test_raporu: AB-7000-0002_TR_XX*') ($text.Substring(0, [Math]::Min(300, $text.Length)))
-Check 'doküman şeridi: yayınlandı / hazırlanıyor / belirtilmedi' ($vm.HasVerificationDocuments -and $vm.VerificationDocuments[0].State -eq 1 -and $vm.VerificationDocuments[3].State -eq 2 -and $vm.VerificationDocuments[1].State -eq -1) ((@($vm.VerificationDocuments) | % { $_.State }) -join ',')
 $row1 = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows[0]; $row1.IsExpanded = $true; Wait
 Snap $win "$Out\verification.png"
 $vm.AddVerificationCommand.Execute($null); Wait
 Check 'yeni madde penceresi düzenleme kipinde değil' (-not $vm.IsEditingVerification -and $vm.NewVerText -eq '' -and $vm.NewVerTpNo -eq '')
 Check 'metin ve alt grup boşsa eklenmez' (-not $vm.ConfirmNewVerification() -and $vm.VerificationError.Length -gt 0)
-$vm.KeepVerificationOpen = $false; $vm.NewVerSubGroup = 'S11'; $vm.NewVerStatus = 'Planlandı'
+$vm.NewVerSubGroup = 'S11'; $vm.NewVerStatus = 'Planlandı'
 Check 'yalnız alt grupla eklenir (madde sonra)' ($vm.ConfirmNewVerification())
 $vm.IsVerificationDialogOpen = $false; Wait
 $later = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows | Where-Object { $_.SubGroup -eq 'S11' }
@@ -136,7 +127,6 @@ $hand = "# Elle`n`nGiriş metni.`n`n| # | Madde | Grup | Alt | Altyapı | TG | D
 $vm.SelectNodeByPath($other); Wait; Wait; Wait
 Check 'revizyonlu dosya okunur' ($vm.VerificationCount -eq 1) ([string]$vm.VerificationCount)
 $vm.AddVerificationCommand.Execute($null); Wait
-$vm.KeepVerificationOpen = $false
 $vm.NewVerText = 'Boyut 100x50 mm'
 Check 'eklenir' ($vm.ConfirmNewVerification())
 $vm.IsVerificationDialogOpen = $false; Wait
