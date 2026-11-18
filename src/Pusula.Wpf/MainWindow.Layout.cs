@@ -39,12 +39,20 @@ namespace Pusula.Wpf
             };
         }
 
-        // Son yer ve boyut: ekranlardan birinin içinde kalıyorsa uygulanır (çıkarılmış ikinci ekran gibi durumlarda ortada açılır).
+        // Son yer ve boyut: ekranlardan birinin içinde kalıyorsa uygulanır (çıkarılmış ikinci ekran gibi durumlarda ortada açılır);
+        // kayıt yoksa ekranı kaplar.
         private void ApplyWindowBounds()
         {
             var saved = viewModel.Settings.Window;
             if (saved == null || saved.Width < MinWidth || saved.Height < MinHeight)
             {
+                // İlk açılışta (kayıtlı yer yoksa) ekranı kaplar; sonra son hâli (küçültülmüş boyut ya da tam ekran) hatırlanır.
+                // Testlerde (App başlatılmadan) pencere ekran dışında kalsın diye uygulanmaz.
+                if (App.Started)
+                {
+                    WindowState = WindowState.Maximized;
+                }
+
                 return;
             }
 

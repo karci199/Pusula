@@ -83,7 +83,13 @@ namespace Pusula.Wpf.ViewModels
         public bool IsExpanded
         {
             get { return isExpanded; }
-            set { SetProperty(ref isExpanded, value); }
+            set
+            {
+                if (SetProperty(ref isExpanded, value))
+                {
+                    OnPropertyChanged(nameof(ShowsDescriptionLine));
+                }
+            }
         }
 
         /// <summary>İlerlemeye sayılır mı (kapsam dışı sayılmaz).</summary>
@@ -138,6 +144,12 @@ namespace Pusula.Wpf.ViewModels
         public string Description
         {
             get { return Item.Description.Length > 0 ? Item.Description : Item.Requirement; }
+        }
+
+        /// <summary>Başlığın altındaki tek satır görünür mü (satır açıkken gizli: tam metin açılan kısımda).</summary>
+        public bool ShowsDescriptionLine
+        {
+            get { return HasDescription && !isExpanded; }
         }
 
         /// <summary>Başlığın altında satır var mı.</summary>

@@ -2045,7 +2045,7 @@
                                                                                 <StackPanel Grid.Column="2" Margin="0,0,16,0" VerticalAlignment="Center">
                                                                                     <TextBlock x:Name="RowText" FontWeight="SemiBold" TextWrapping="Wrap" Text="{Binding DisplayText}" />
                                                                                     <TextBlock Margin="0,2,0,0" FontSize="12.5" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextTertiaryBrush}"
-                                                                                               Text="{Binding Description}" Visibility="{Binding HasDescription, Converter={StaticResource BoolToVis}}" />
+                                                                                               Text="{Binding Description}" Visibility="{Binding ShowsDescriptionLine, Converter={StaticResource BoolToVis}}" />
                                                                                 </StackPanel>
                                                                                 <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
                                                                                     <TextBlock Text="{Binding KindText}" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
