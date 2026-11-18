@@ -1281,13 +1281,18 @@ namespace Pusula.Wpf.ViewModels
             VerificationGroupChoices.Clear();
             foreach (var name in KnownGroups())
             {
-                VerificationGroupChoices.Add(new ChoiceOption(name, name, string.Equals(name, group, StringComparison.CurrentCultureIgnoreCase), OnVerificationGroupChoice));
+                VerificationGroupChoices.Add(new ChoiceOption(name, name, string.Equals(name, group, StringComparison.CurrentCultureIgnoreCase), OnVerificationGroupChoice)
+                {
+                    Tone = Math.Min(VerificationGroupChoices.Count, 3),
+                });
             }
 
             if (!VerificationGroupChoices.Any(c => c.IsChecked))
             {
                 VerificationGroupChoices[0].IsChecked = true;
             }
+
+            OnPropertyChanged(nameof(NewVerGroupChoice));
 
             // Alt grup: bu stokta kullanılanlar; altyapı: ortak liste + bu stokta kullanılanlar.
             SubGroupPick.SetNames(verificationItems.Select(i => i.SubGroup).Where(s => s.Length > 0).Distinct(StringComparer.CurrentCultureIgnoreCase).OrderBy(s => s, StringComparer.CurrentCulture));
@@ -1308,6 +1313,23 @@ namespace Pusula.Wpf.ViewModels
             foreach (var tg in verificationItems.Where(i => i.TgNo.Length > 0 && !string.Equals(i.Kind, Resources.Verify_KindDerived, StringComparison.CurrentCultureIgnoreCase)).Select(i => i.TgNo).Distinct(StringComparer.OrdinalIgnoreCase))
             {
                 VerificationParents.Add(tg);
+            }
+        }
+
+        /// <summary>Seçili grup (açılır liste; renkli noktayla).</summary>
+        public ChoiceOption? NewVerGroupChoice
+        {
+            get
+            {
+                return VerificationGroupChoices.FirstOrDefault(c => c.IsChecked);
+            }
+
+            set
+            {
+                if (value != null)
+                {
+                    value.IsChecked = true;
+                }
             }
         }
 

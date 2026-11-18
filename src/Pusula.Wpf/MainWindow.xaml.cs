@@ -184,7 +184,23 @@ namespace Pusula.Wpf
         // Karta çift tık: günlük olayı düzenleme penceresinde açılır; diğer kayıtlar (koşu, not) kendi notunda.
         private void TimelineCard_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ClickCount != 2 || !((sender as FrameworkElement)?.DataContext is StockTimelineCard card))
+            if (!((sender as FrameworkElement)?.DataContext is StockTimelineCard card))
+            {
+                return;
+            }
+
+            // Tek tık: açıklama tam açılır / kapanır; çift tık: kayıt düzenlenir ya da açılır.
+            if (e.ClickCount == 1)
+            {
+                if (card.HasDescription)
+                {
+                    card.IsExpanded = !card.IsExpanded;
+                }
+
+                return;
+            }
+
+            if (e.ClickCount != 2)
             {
                 return;
             }
@@ -209,6 +225,15 @@ namespace Pusula.Wpf
             }
         }
 
+        // Kartın "Notta aç" düğmesi: kaydın (ya da işin) yazıldığı not, ayarlardaki not uygulamasında açılır.
+        private void TimelineOpenNote_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is StockTimelineCard card)
+            {
+                var path = card.Item?.NotePath ?? card.Task?.NotePath ?? string.Empty;
+                viewModel.OpenNoteOrFolder(path, System.IO.Path.GetDirectoryName(path) ?? string.Empty);
+            }
+        }
         // Yapılacak kartın kutusu: iş kapatılmadan önce sorulur (Yapılacaklar sekmesiyle aynı).
         private void TimelineTask_Click(object sender, RoutedEventArgs e)
         {
@@ -250,6 +275,9 @@ namespace Pusula.Wpf
         private void FillVerificationRowMenu(ContextMenu menu, VerificationRow row)
         {
             menu.Items.Clear();
+            var open = new MenuItem { Header = Properties.Resources.Verify_OpenInFile, Icon = new AppIcon { Glyph = AppIcons.Note } };
+            open.Click += (s, a) => viewModel.OpenVerificationFileCommand.Execute(null);
+            menu.Items.Add(open);
             var edit = new MenuItem { Header = Properties.Resources.Verify_Edit, Icon = new AppIcon { Glyph = AppIcons.Edit } };
             edit.Click += (s, a) => viewModel.EditVerification(row);
             var delete = new MenuItem { Header = Properties.Resources.Verify_Delete, Icon = new AppIcon { Glyph = AppIcons.Delete } };

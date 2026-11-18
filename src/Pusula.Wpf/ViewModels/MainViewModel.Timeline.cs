@@ -34,8 +34,10 @@ namespace Pusula.Wpf.ViewModels
     /// Stok sayfası zaman çizelgesinde bir kart: işlem (ikon, renk), başlık, saat, açıklama, etiketler ve önem; yapılacak
     /// kartta onay kutusu ve son tarih. Kaynak, günlük olayı / test koşusu / not (<see cref="Item"/>) ya da açık iştir (<see cref="Task"/>).
     /// </summary>
-    public sealed class StockTimelineCard
+    public sealed class StockTimelineCard : ViewModelBase
     {
+        private bool isExpanded;
+
         private static readonly Regex Mention = new Regex(@"(?<![\w@])@([\p{L}][\p{L}\p{N}_\.]*)", RegexOptions.Compiled);
 
         /// <summary>Çizelge kaydından kartı kurar.</summary>
@@ -49,6 +51,7 @@ namespace Pusula.Wpf.ViewModels
             Tone = kind?.Tone ?? item.Result.Tone;
             Title = item.Title;
             Description = item.Summary;
+            FullDescription = (journal != null && journal.Body.Trim().Length > 0 ? journal.Body : item.Summary ?? string.Empty).Trim();
             When = item.SortDate;
             TimeText = item.SortDate.TimeOfDay == TimeSpan.Zero ? Resources.Timeline_AllDay : item.SortDate.ToString("HH:mm", CultureInfo.InvariantCulture);
             ImportanceRank = journal == null ? 0 : EventKinds.ImportanceRank(journal.Importance);
@@ -120,6 +123,16 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Açıklama (kısaltılmış).</summary>
         public string Description { get; }
+
+        /// <summary>Açıklamanın tamamı (kart açılınca görünür).</summary>
+        public string FullDescription { get; } = string.Empty;
+
+        /// <summary>Kart açık mı (tıklayınca): açıklama tek satır yerine tam gösterilir.</summary>
+        public bool IsExpanded
+        {
+            get { return isExpanded; }
+            set { SetProperty(ref isExpanded, value); }
+        }
 
         /// <summary>Açıklama var mı.</summary>
         public bool HasDescription

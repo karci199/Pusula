@@ -208,6 +208,10 @@ namespace Pusula.Wpf
 
             // Proje simgesi: açık temada koyu sarı, koyu temada açık sarı.
             theme["Pusula.ProjectIconBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(p.Dark ? "#E8B04B" : "#B07A12"));
+
+            // Zaman çizelgesi işlem renkleri (DesignKit'te karşılığı yok): mor toplantı / karar, turuncu hazırlık.
+            theme["Pusula.EventPurpleBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(p.Dark ? "#B49CFF" : "#6E4BD8"));
+            theme["Pusula.EventOrangeBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(p.Dark ? "#FF9F5A" : "#C45A10"));
             return theme;
         }
     }

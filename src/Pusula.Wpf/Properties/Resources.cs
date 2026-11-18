@@ -2371,6 +2371,12 @@ namespace Pusula.Wpf.Properties
         /// <summary>Seçim listesinde boş seçenek.</summary>
         public static string Verify_None { get { return Get("Verify_None"); } }
 
+        /// <summary>Zaman çizelgesi kartı: notta aç düğmesinin ipucu.</summary>
+        public static string Timeline_OpenNote { get { return Get("Timeline_OpenNote"); } }
+
+        /// <summary>Doğrulama satırı menüsü: maddenin dosyasını aç.</summary>
+        public static string Verify_OpenInFile { get { return Get("Verify_OpenInFile"); } }
+
         /// <summary>Kayıt penceresi: olay seçiliyken açıklama.</summary>
         public static string Journal_RecordHintDone { get { return Get("Journal_RecordHintDone"); } }
 

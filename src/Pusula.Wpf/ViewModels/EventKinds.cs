@@ -48,7 +48,13 @@ namespace Pusula.Wpf.ViewModels
         public static readonly string[] Glyphs = { "", "", "", "", "", "", "", "", "", "", "", "" };
 
         /// <summary>Yeni türde seçilebilen renk tonları.</summary>
-        public static readonly string[] Tones = { StatusTone.Active, StatusTone.Done, StatusTone.Waiting, StatusTone.Failed, StatusTone.Neutral };
+        public static readonly string[] Tones = { StatusTone.Active, StatusTone.Done, StatusTone.Waiting, StatusTone.Failed, StatusTone.Neutral, Purple, Orange };
+
+        /// <summary>Mor ton (toplantı, karar); yalnız işlem türlerinde.</summary>
+        public const string Purple = "purple";
+
+        /// <summary>Turuncu ton (hazırlık); yalnız işlem türlerinde.</summary>
+        public const string Orange = "orange";
 
         private static EventKindOption[]? all;
         private static EventKindOption[]? builtIn;
@@ -153,11 +159,11 @@ namespace Pusula.Wpf.ViewModels
         {
             return builtIn ?? (builtIn = new[]
             {
-                new EventKindOption(Resources.Event_Preparation, "", StatusTone.Waiting),
+                new EventKindOption(Resources.Event_Preparation, "", Orange),
                 new EventKindOption(Resources.Event_TestStart, "", StatusTone.Active),
                 new EventKindOption(Resources.Event_TestEnd, "", StatusTone.Done),
-                new EventKindOption(Resources.Event_Meeting, "", StatusTone.Active),
-                new EventKindOption(Resources.Event_Decision, "", StatusTone.Waiting),
+                new EventKindOption(Resources.Event_Meeting, "", Purple),
+                new EventKindOption(Resources.Event_Decision, "", Purple),
                 new EventKindOption(Resources.Event_Issue, "", StatusTone.Failed),
                 new EventKindOption(Resources.Event_Solution, "", StatusTone.Done),
                 new EventKindOption(Resources.Event_Delivery, "", StatusTone.Neutral),

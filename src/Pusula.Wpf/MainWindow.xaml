@@ -834,6 +834,10 @@
                             MouseLeftButtonDown="TimelineCard_MouseLeftButtonDown">
                         <StackPanel>
                             <DockPanel>
+                                <Button x:Name="OpenNote" DockPanel.Dock="Right" Margin="6,0,0,0" Padding="4,1" VerticalAlignment="Center" Style="{DynamicResource SubtleButtonStyle}"
+                                        Visibility="Hidden" ToolTip="{x:Static res:Resources.Timeline_OpenNote}" Click="TimelineOpenNote_Click">
+                                    <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="12" />
+                                </Button>
                                 <TextBlock x:Name="When" DockPanel.Dock="Right" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="12"
                                            Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding TimeText}" />
                                 <CheckBox x:Name="Check" DockPanel.Dock="Left" Margin="0,0,8,0" VerticalAlignment="Center" Visibility="Collapsed"
@@ -856,7 +860,7 @@
                                 </Border>
                                 <TextBlock FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Title}" ToolTip="{Binding Title}" />
                             </DockPanel>
-                            <TextBlock Margin="0,4,0,0" FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Description}"
+                            <TextBlock x:Name="Desc" Margin="0,4,0,0" FontSize="13" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Description}"
                                        Visibility="{Binding HasDescription, Converter={StaticResource BoolToVis}}" />
                             <ItemsControl Margin="0,7,0,0" ItemsSource="{Binding Tags}" Focusable="False" Visibility="{Binding HasTags, Converter={StaticResource BoolToVis}}">
                                 <ItemsControl.ItemsPanel>
@@ -909,6 +913,16 @@
                     <Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
                     <Setter TargetName="KindText" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
                 </DataTrigger>
+                <DataTrigger Binding="{Binding Tone}" Value="purple">
+                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource Pusula.EventPurpleBrush}" />
+                    <Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource Pusula.EventPurpleBrush}" />
+                    <Setter TargetName="KindText" Property="Foreground" Value="{DynamicResource Pusula.EventPurpleBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Tone}" Value="orange">
+                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource Pusula.EventOrangeBrush}" />
+                    <Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource Pusula.EventOrangeBrush}" />
+                    <Setter TargetName="KindText" Property="Foreground" Value="{DynamicResource Pusula.EventOrangeBrush}" />
+                </DataTrigger>
                 <DataTrigger Binding="{Binding ImportanceRank}" Value="1">
                     <Setter TargetName="ImpStrip" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" />
                 </DataTrigger>
@@ -925,6 +939,14 @@
                     <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource LayerBrush}" />
                     <Setter TargetName="Dot" Property="Stroke" Value="{DynamicResource TextTertiaryBrush}" />
                     <Setter TargetName="Dot" Property="StrokeDashArray" Value="2 1.5" />
+                </DataTrigger>
+                <Trigger SourceName="Card" Property="IsMouseOver" Value="True">
+                    <Setter TargetName="OpenNote" Property="Visibility" Value="Visible" />
+                </Trigger>
+                <DataTrigger Binding="{Binding IsExpanded}" Value="True">
+                    <Setter TargetName="Desc" Property="Text" Value="{Binding FullDescription}" />
+                    <Setter TargetName="Desc" Property="TextWrapping" Value="Wrap" />
+                    <Setter TargetName="Card" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsLate}" Value="True">
                     <Setter TargetName="When" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
@@ -1791,7 +1813,7 @@
                       Visibility="{Binding Detail.IsStock, Converter={StaticResource BoolToVis}}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="300" />
+                        <RowDefinition Height="440" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Grid.Resources>
@@ -1858,7 +1880,19 @@
                     <!-- Üst: solda TEÜ görünümü, sağda zaman çizelgesi -->
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="330" />
+                            <!-- Fotoğraf yoksa kapak daralır, çizelge genişler -->
+                            <ColumnDefinition>
+                                <ColumnDefinition.Style>
+                                    <Style TargetType="ColumnDefinition">
+                                        <Setter Property="Width" Value="360" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Detail.Cover.HasCover}" Value="False">
+                                                <Setter Property="Width" Value="190" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ColumnDefinition.Style>
+                            </ColumnDefinition>
                             <ColumnDefinition Width="18" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
@@ -2791,22 +2825,41 @@
                                  controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderTitle}" />
                     </controls:FormField>
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldRequirement}" LabelWidth="150">
-                        <TextBox Text="{Binding NewVerRequirement, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="False" MinLines="3" MaxLines="8"
-                                 VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderRequirement}" />
+                        <!-- İpucu DesignKit'te tek satır ve ortada çizilir; çok satırlı kutuda sol üstten, kayarak kendimiz gösteririz -->
+                        <Grid>
+                            <TextBox x:Name="RequirementBox" Text="{Binding NewVerRequirement, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="False" MinLines="3" MaxLines="8"
+                                     VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto" />
+                            <TextBlock Margin="13,7,10,6" VerticalAlignment="Top" TextWrapping="Wrap" IsHitTestVisible="False" Foreground="{DynamicResource TextTertiaryBrush}"
+                                       Text="{x:Static res:Resources.Verify_PlaceholderRequirement}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Text, ElementName=RequirementBox}" Value="">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
                     </controls:FormField>
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldGroup}" IsRequired="True" LabelWidth="150">
-                        <ItemsControl ItemsSource="{Binding VerificationGroupChoices}" Focusable="False" VerticalAlignment="Center" Margin="0,7,0,0">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
+                        <ComboBox ItemsSource="{Binding VerificationGroupChoices}" SelectedItem="{Binding NewVerGroupChoice, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
                                 <DataTemplate>
-                                    <RadioButton Margin="0,0,18,0" GroupName="VerificationGroup" Content="{Binding Text}" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse x:Name="Dot" Width="9" Height="9" Margin="0,0,9,0" VerticalAlignment="Center" Fill="{DynamicResource TextTertiaryBrush}" />
+                                        <TextBlock VerticalAlignment="Center" Text="{Binding Text}" />
+                                    </StackPanel>
+                                    <DataTemplate.Triggers>
+                                        <DataTrigger Binding="{Binding Tone}" Value="0"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
+                                        <DataTrigger Binding="{Binding Tone}" Value="1"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
+                                        <DataTrigger Binding="{Binding Tone}" Value="2"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
+                                    </DataTemplate.Triggers>
                                 </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
                     </controls:FormField>
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldKind}" LabelWidth="150">
                         <ComboBox ItemsSource="{Binding VerificationKinds}" SelectedItem="{Binding NewVerKind, Mode=TwoWay}" />
@@ -3163,6 +3216,8 @@
                             <DataTrigger Binding="{Binding Tone}" Value="waiting"><Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
                             <DataTrigger Binding="{Binding Tone}" Value="done"><Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
                             <DataTrigger Binding="{Binding Tone}" Value="failed"><Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" /></DataTrigger>
+                            <DataTrigger Binding="{Binding Tone}" Value="purple"><Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource Pusula.EventPurpleBrush}" /></DataTrigger>
+                            <DataTrigger Binding="{Binding Tone}" Value="orange"><Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource Pusula.EventOrangeBrush}" /></DataTrigger>
                         </DataTemplate.Triggers>
                     </DataTemplate>
                 </StackPanel.Resources>

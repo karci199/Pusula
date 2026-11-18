@@ -2347,7 +2347,7 @@ Satır md tablosundan kaldırılır; diğer maddelerin numaraları değişmez.</
     <value>Kısa not</value>
   </data>
   <data name="Verify_FieldRequirement" xml:space="preserve">
-    <value>Gereksinim</value>
+    <value>Açıklama</value>
   </data>
   <data name="Verify_FieldSource" xml:space="preserve">
     <value>Kaynak doküman</value>
@@ -2371,7 +2371,7 @@ Satır md tablosundan kaldırılır; diğer maddelerin numaraları değişmez.</
     <value>örn. Azimutta −3 dB genişliği 60° ± 5°</value>
   </data>
   <data name="Verify_PlaceholderRequirement" xml:space="preserve">
-    <value>Gereksinim metni: ilk satırı tabloda başlığın altında, tamamı satır açılınca görünür</value>
+    <value>Gereksinimin kendisi: ilk satırı tabloda başlığın altında, tamamı satır açılınca görünür</value>
   </data>
   <data name="Verify_PlaceholderSource" xml:space="preserve">
     <value>TG no yoksa doküman, örn. AB-7000-0002_TAS_01</value>
@@ -2465,5 +2465,11 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   </data>
   <data name="Journal_RecordHintPlanned" xml:space="preserve">
     <value>İleride yapılacak: notun Yapılacaklar listesine eklenir, bitince çizelgeye düşer.</value>
+  </data>
+  <data name="Timeline_OpenNote" xml:space="preserve">
+    <value>Notta aç: kaydın yazıldığı not açılır, ayrıntıyı altına yazabilirsiniz</value>
+  </data>
+  <data name="Verify_OpenInFile" xml:space="preserve">
+    <value>Dosyada aç</value>
   </data>
 </root>

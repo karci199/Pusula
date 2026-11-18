@@ -8,6 +8,8 @@
                 <!-- Pusula'ya özgü varsayılan renkler; seçilen tema (Themes.cs) bunları ezer. -->
                 <ResourceDictionary>
                     <SolidColorBrush x:Key="Pusula.ProjectIconBrush" Color="#E8B04B" />
+                    <SolidColorBrush x:Key="Pusula.EventPurpleBrush" Color="#B49CFF" />
+                    <SolidColorBrush x:Key="Pusula.EventOrangeBrush" Color="#FF9F5A" />
                 </ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/DesignKit.Wpf;component/DesignKit.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/DesignKit.Wpf;component/Themes/Fluent/Fluent.Dark.xaml" />
