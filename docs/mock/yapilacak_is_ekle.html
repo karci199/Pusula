@@ -1,0 +1,106 @@
+﻿<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Yapılacak iş ekle</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1f1f1f;font-family:"Segoe UI",Arial,sans-serif;color:#e6e6e6;font-size:14px}
+.page{width:1460px;padding:26px 30px 30px;background:#202020;display:grid;grid-template-columns:640px 1fr;gap:34px}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin:0 0 10px}
+.dlg{background:#2b2b2b;border:1px solid #3c3c3c;border-radius:10px;padding:22px 26px 22px}
+.dlg h1{margin:0;font-size:21px;font-weight:600;color:#fff}
+.sub{font-size:12.5px;color:#a8a8a8;margin:6px 0 18px}
+.f{display:grid;grid-template-columns:120px 1fr;align-items:start;margin-bottom:12px}
+.f label{padding-top:7px;color:#d0d0d0}
+.f label i{color:#ff99a4;font-style:normal}
+.box{height:32px;border:1px solid #3c3c3c;background:#333;border-radius:5px;padding:6px 11px;color:#fff;display:flex;align-items:center;gap:8px}
+.ph{color:#8a8a8a}
+.combo{justify-content:space-between}
+.combo:after{content:"⌄";color:#aaa;font-size:14px;margin-top:-6px}
+.ico{width:22px;height:22px;border-radius:6px;background:#3a3a3a;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+.hint{font-size:12px;color:#8a8a8a;margin-top:5px}
+.chips{display:flex;gap:6px;margin-top:7px}
+.chip{font-size:12px;padding:3px 11px;border-radius:13px;border:1px solid #3c3c3c;background:#303030;color:#bdbdbd}
+.chip.s{border-color:#4cc2ff;color:#fff;background:#36404a;font-weight:600}
+.tag{font-size:12px;padding:1px 9px;border-radius:10px;border:1px solid #2f6b8c;color:#8fd0ff}
+.btns{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+.b{min-width:92px;text-align:center;padding:7px 14px;border-radius:5px;background:#3a3a3a}
+.b.a{background:#4cc2ff;color:#062033;font-weight:600}
+.right{display:flex;flex-direction:column;gap:22px}
+.panel{background:#272727;border:1px solid #363636;border-radius:12px;padding:14px 16px}
+.panel h2{margin:0 0 10px;font-size:15px;font-weight:600}
+.ev{display:grid;grid-template-columns:22px 1fr}
+.rail{position:relative}
+.rail:before{content:"";position:absolute;left:10px;top:0;bottom:-8px;width:2px;background:#4f8a3c;opacity:.6}
+.rail i{position:absolute;left:5px;top:16px;width:12px;height:12px;border-radius:50%;border:1.5px dashed #9a9a9a;background:#272727}
+.card{border:1px dashed #6a6a6a;border-radius:10px;padding:9px 12px;margin:0 0 8px 8px}
+.row{display:flex;align-items:center;gap:8px}
+.cb{width:17px;height:17px;border:1.5px solid #9a9a9a;border-radius:4px}
+.op{font-size:11.5px;padding:2px 8px;border-radius:6px;background:#3d2c1c;color:#ffb07a}
+.t{font-weight:600}
+.tm{margin-left:auto;font-size:12px;color:#8a8a8a}
+.late{color:#f6c46f}
+.who{font-size:12px;padding:1px 9px;border-radius:10px;border:1px solid #555;color:#ddd}
+.link{font-size:12px;padding:1px 9px;border-radius:10px;background:#2b3b2b;color:#b8da8a}
+.day{font-size:12px;color:#9a9a9a;font-weight:600;margin:4px 0 6px 30px}
+.md{font-family:Consolas,monospace;font-size:12.5px;background:#1b1b1b;border:1px solid #333;border-radius:8px;padding:12px 14px;color:#cfcfcf;line-height:1.6}
+.md .h{color:#8fd0ff}
+.note{font-size:12.5px;color:#9a9a9a;line-height:1.55}
+.note b{color:#ddd}
+</style></head><body>
+<div class="page">
+  <div>
+    <div class="cap">YAPILACAK İŞ EKLE · DOLU HÂLİ</div>
+    <div class="dlg">
+      <h1>Yapılacak iş ekle</h1>
+      <div class="sub">AB-7000-0001 · TAKIM ANTEN BOYNUZ · ana notun Yapılacaklar bölümüne</div>
+      <div class="f"><label>İş <i>*</i></label><div class="box">Raporu tasarımcıya gönder</div></div>
+      <div class="f"><label>İşlem</label><div>
+        <div class="box combo" style="width:260px"><span style="display:flex;gap:8px;align-items:center"><span class="ico" style="color:#ffb07a">⚙</span>Hazırlık</span></div>
+        <div class="hint">İsteğe bağlı; iş bitince zaman çizelgesine bu türle düşer.</div></div></div>
+      <div class="f"><label>Açıklama</label><div>
+        <div class="box" style="height:74px;align-items:flex-start">SATIMO ölçüm sonuçlarıyla birlikte; geçti-kaldı tablosu ekli olsun.</div>
+        <div class="hint">İsteğe bağlı; notta işin altına girintili satır olarak yazılır, kart açılınca görünür.</div></div></div>
+      <div class="f"><label>Kişi</label><div>
+        <div class="box"><span class="who">@katan</span><span class="who">@Ali_Demirci</span><span class="ph">@ ile kişi ekle</span></div>
+        <div class="hint">Açılışta siz eklisiniz; @ yazınca kişi önerisi açılır. İlk kişi sorumlu sayılır.</div></div></div>
+      <div class="f"><label>Son tarih</label><div>
+        <div class="box" style="width:150px">25.11.2026</div>
+        <div class="chips"><span class="chip">Bugün</span><span class="chip">Yarın</span><span class="chip">Bu hafta</span><span class="chip s">Gelecek hafta</span><span class="chip">Yok</span></div>
+        <div class="hint">Elle yazılır; boş bırakılabilir. Geçerse iş gecikmiş görünür.</div></div></div>
+      <div class="f"><label>İlgili madde</label><div>
+        <div class="box combo" style="width:360px"><span class="ph">— Yok</span></div>
+        <div class="hint">İsteğe bağlı; seçilirse kartta ve doğrulama satırında bağ görünür.</div></div></div>
+      <div class="f"><label>Etiket</label><div class="box"><span class="tag">#SATIMO</span><span class="ph"># ile etiket ekle</span></div></div>
+      <div class="btns"><span class="b">Vazgeç</span><span class="b a">Ekle</span></div>
+    </div>
+  </div>
+  <div class="right">
+    <div>
+      <div class="cap">SONUÇ · STOK SAYFASI, ZAMAN ÇİZELGESİNİN ÜSTÜ</div>
+      <div class="panel">
+        <h2>Zaman çizelgesi</h2>
+        <div class="day">Yapılacak · 2</div>
+        <div class="ev"><div class="rail"><i></i></div><div class="card">
+          <div class="row"><span class="cb"></span><span class="op">⚙ Hazırlık</span><span class="t">Raporu tasarımcıya gönder</span><span class="tm">25.11</span></div>
+          <div style="margin-top:5px;font-size:13px;color:#b5b5b5">SATIMO ölçüm sonuçlarıyla birlikte; geçti-kaldı tablosu ekli olsun.</div>
+          <div class="row" style="margin-top:7px;gap:6px"><span class="who">@katan</span><span class="who">@Ali_Demirci</span><span class="tag">#SATIMO</span></div>
+        </div></div>
+        <div class="ev"><div class="rail"><i></i></div><div class="card">
+          <div class="row"><span class="cb"></span><span class="op" style="background:#383838;color:#cfcfcf">◷ Yapılacak</span><span class="t">VNA kalibrasyonunu yaptır</span><span class="tm late">17.11 · gecikti</span></div>
+        </div></div>
+      </div>
+    </div>
+    <div>
+      <div class="cap">NOTA YAZILAN (AB-7000-0001.md)</div>
+      <div class="md"><span class="h">## Yapılacaklar</span><br>
+- [ ] Hazırlık: Raporu tasarımcıya gönder @katan @Ali_Demirci 📅 2026-11-25 #SATIMO<br>
+&nbsp;&nbsp;&nbsp;&nbsp;SATIMO ölçüm sonuçlarıyla birlikte; geçti-kaldı tablosu ekli olsun.<br>
+- [ ] VNA kalibrasyonunu yaptır 📅 2026-11-17</div>
+    </div>
+    <div class="note">
+      <b>Kutu işaretlenince:</b> satır <code>[x] ✅ tarih</code> olur, Yapılacak'tan düşer; isteğe bağlı çizelgeye "Hazırlık · Raporu tasarımcıya gönder" olarak yazılır.<br>
+      <b>Açıldığı yerler:</b> stok sayfası Yapılacaklar sekmesi "+ İş", çizelgedeki Yapılacak bölümü, ana sayfa Yapılacaklar (önce stok seçilir).<br>
+      <b>Yok:</b> önem (olay için). Açıklama notta işin altına girintili yazılır.
+    </div>
+  </div>
+</div>
+</body></html>

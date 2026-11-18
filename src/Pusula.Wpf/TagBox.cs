@@ -22,6 +22,10 @@ namespace Pusula.Wpf
             nameof(Tags), typeof(string), typeof(TagBox),
             new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, (d, e) => ((TagBox)d).ShowTags()));
 
+        /// <summary>Rozetin öneki: <c>#</c> etiket (varsayılan), <c>@</c> kişi (öneri kişi ve kayıtları gösterir).</summary>
+        public static readonly DependencyProperty PrefixProperty = DependencyProperty.Register(
+            nameof(Prefix), typeof(string), typeof(TagBox), new PropertyMetadata("#", (d, e) => ((TagBox)d).PrefixChanged()));
+
         /// <summary>Kutu boşken görünen ipucu.</summary>
         public static readonly DependencyProperty PlaceholderProperty = DependencyProperty.Register(
             nameof(Placeholder), typeof(string), typeof(TagBox), new PropertyMetadata(string.Empty, (d, e) => TextBoxHelper.SetPlaceholderText(((TagBox)d).input, (string)e.NewValue)));
@@ -71,6 +75,13 @@ namespace Pusula.Wpf
             set { SetValue(TagsProperty, value); }
         }
 
+        /// <summary>Rozetin öneki (<c>#</c> ya da <c>@</c>).</summary>
+        public string Prefix
+        {
+            get { return (string)GetValue(PrefixProperty); }
+            set { SetValue(PrefixProperty, value); }
+        }
+
         /// <summary>Kutu boşken görünen ipucu.</summary>
         public string Placeholder
         {
@@ -114,7 +125,7 @@ namespace Pusula.Wpf
             }
             else if (e.Key == Key.Back && input.Text.Length == 0)
             {
-                var tags = MarkdownEditing.ParseTags(Tags);
+                var tags = Parse(Tags);
                 if (tags.Count > 0)
                 {
                     tags.RemoveAt(tags.Count - 1);
@@ -128,7 +139,7 @@ namespace Pusula.Wpf
         // Yazılanları (bir ya da birkaç etiket) rozete çevirir.
         private void Commit(string text)
         {
-            var added = MarkdownEditing.ParseTags(text);
+            var added = Parse(text);
             if (added.Count == 0)
             {
                 if (text.Length > 0 && text.Trim().Length == 0)
@@ -139,7 +150,7 @@ namespace Pusula.Wpf
                 return;
             }
 
-            var tags = MarkdownEditing.ParseTags(Tags);
+            var tags = Parse(Tags);
             foreach (var tag in added.Where(a => !tags.Contains(a, StringComparer.OrdinalIgnoreCase)))
             {
                 tags.Add(tag);
@@ -154,7 +165,7 @@ namespace Pusula.Wpf
             writing = true;
             try
             {
-                Tags = MarkdownEditing.FormatTags(tags);
+                Tags = string.Join(" ", tags.Select(t => Prefix + t));
                 GetBindingExpression(TagsProperty)?.UpdateSource();
             }
             finally
@@ -172,7 +183,7 @@ namespace Pusula.Wpf
                 panel.Children.RemoveAt(0);
             }
 
-            var tags = MarkdownEditing.ParseTags(Tags);
+            var tags = Parse(Tags);
             for (var i = 0; i < tags.Count; i++)
             {
                 panel.Children.Insert(i, Chip(tags[i]));
@@ -184,16 +195,29 @@ namespace Pusula.Wpf
             }
         }
 
+        // Kişi kutusunda öneri @ ile kişileri getirir (seçilince "@Ad_Soyad").
+        private void PrefixChanged()
+        {
+            MentionAssist.SetMode(input, Prefix == "@" ? "link" : "tag");
+            ShowTags();
+        }
+
+        // Metindeki rozetler: boşlukla ayrılır, önek (# ya da @) atılır, tekrarlar bir kez.
+        private static System.Collections.Generic.List<string> Parse(string text)
+        {
+            return MarkdownEditing.ParseTags(text).Select(t => t.TrimStart('@', '#')).Where(t => t.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
         // Renkli rozet: "#ad" ve × düğmesi.
         private UIElement Chip(string tag)
         {
-            var text = new TextBlock { Text = "#" + tag, VerticalAlignment = VerticalAlignment.Center };
+            var text = new TextBlock { Text = Prefix + tag, VerticalAlignment = VerticalAlignment.Center };
             text.SetResourceReference(TextBlock.ForegroundProperty, "AccentTextFillColorPrimaryBrush");
             var remove = new Button { Content = new AppIcon { Glyph = "", FontSize = 9 }, Padding = new Thickness(3), Margin = new Thickness(4, 0, 0, 0), MinWidth = 0, MinHeight = 0, Focusable = false, Cursor = Cursors.Hand };
             remove.SetResourceReference(StyleProperty, "SubtleButtonStyle");
             remove.Click += (s, e) =>
             {
-                var tags = MarkdownEditing.ParseTags(Tags).Where(t => !string.Equals(t, tag, StringComparison.OrdinalIgnoreCase)).ToList();
+                var tags = Parse(Tags).Where(t => !string.Equals(t, tag, StringComparison.OrdinalIgnoreCase)).ToList();
                 Write(tags);
             };
             var row = new StackPanel { Orientation = Orientation.Horizontal };

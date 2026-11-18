@@ -85,16 +85,19 @@ namespace Pusula.Wpf.ViewModels
             // Etiketler satırın kendisinden (iş metni ayrıştırılırken etiketler atılmış olabilir).
             var tags = Regex.Matches(task.Task.RawLine + " " + text, @"(?<![\w#&])#([\p{L}][\p{L}\p{N}_/\-]*)").Cast<Match>().Select(m => "#" + m.Groups[1].Value).Distinct(StringComparer.CurrentCultureIgnoreCase).ToList();
             Title = Regex.Replace(text, @"\s*(?<![\w#])#[\p{L}\p{N}_/\-]+", string.Empty).Trim();
-            Description = string.Empty;
+            Description = task.Task.Description.Replace(Environment.NewLine, " ");
+            FullDescription = task.Task.Description;
             When = task.Task.Due ?? DateTime.MaxValue;
             TimeText = task.DueText;
             IsLate = task.IsLate;
-            if (task.PersonName.Length > 0)
+            var people = task.Task.People.Count > 0 ? task.Task.People : (task.PersonName.Length > 0 ? new List<string> { task.PersonName } : new List<string>());
+            var all = people.Select(p => "@" + p.Replace(' ', '_')).Concat(tags).ToList();
+            if (task.Task.LinkTarget.Length > 0)
             {
-                tags.Add("@" + task.PersonName.Replace(' ', '_'));
+                all.Add("↳ " + task.Task.LinkTarget);
             }
 
-            Tags = tags.Select(t => new TimelineTag(t)).ToList();
+            Tags = all.Select(t => new TimelineTag(t)).ToList();
         }
 
         /// <summary>Çizelge kaydı (yapılacakta <c>null</c>).</summary>

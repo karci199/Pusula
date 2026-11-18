@@ -2496,4 +2496,64 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="NoteApp_NotInVault" xml:space="preserve">
     <value>Bu not bir Obsidian kasasında değil; Obsidian'da açmak için kök klasörü Obsidian'da kasa olarak açın.</value>
   </data>
+  <data name="TaskDialog_Title" xml:space="preserve">
+    <value>Yapılacak iş ekle</value>
+  </data>
+  <data name="TaskDialog_Target" xml:space="preserve">
+    <value>{0} · ana notun Yapılacaklar bölümüne</value>
+  </data>
+  <data name="Task_FieldTitle" xml:space="preserve">
+    <value>İş</value>
+  </data>
+  <data name="Task_KindHint" xml:space="preserve">
+    <value>İsteğe bağlı; iş bitince zaman çizelgesine bu türle düşer.</value>
+  </data>
+  <data name="Task_BodyHint" xml:space="preserve">
+    <value>İsteğe bağlı; notta işin altına girintili yazılır, kartta görünür.</value>
+  </data>
+  <data name="Task_FieldPeople" xml:space="preserve">
+    <value>Kişi</value>
+  </data>
+  <data name="Task_PeoplePlaceholder" xml:space="preserve">
+    <value>@ ile kişi ekle</value>
+  </data>
+  <data name="Task_PeopleHint" xml:space="preserve">
+    <value>Açılışta siz eklisiniz; @ yazınca kişi önerisi açılır. İlk kişi sorumlu sayılır.</value>
+  </data>
+  <data name="Task_FieldDue" xml:space="preserve">
+    <value>Son tarih</value>
+  </data>
+  <data name="Task_DueHint" xml:space="preserve">
+    <value>Elle yazılır (gg.aa.yyyy); boş bırakılabilir. Geçerse iş gecikmiş görünür.</value>
+  </data>
+  <data name="Task_DueToday" xml:space="preserve">
+    <value>Bugün</value>
+  </data>
+  <data name="Task_DueTomorrow" xml:space="preserve">
+    <value>Yarın</value>
+  </data>
+  <data name="Task_DueWeek" xml:space="preserve">
+    <value>Bu hafta</value>
+  </data>
+  <data name="Task_DueNext" xml:space="preserve">
+    <value>Gelecek hafta</value>
+  </data>
+  <data name="Task_DueNone" xml:space="preserve">
+    <value>Yok</value>
+  </data>
+  <data name="Task_FieldItem" xml:space="preserve">
+    <value>İlgili madde</value>
+  </data>
+  <data name="Task_ItemHint" xml:space="preserve">
+    <value>İsteğe bağlı; seçilirse kartta bağ görünür.</value>
+  </data>
+  <data name="Task_NoItem" xml:space="preserve">
+    <value>— Yok</value>
+  </data>
+  <data name="Timeline_AddTask" xml:space="preserve">
+    <value>İş</value>
+  </data>
+  <data name="Timeline_AddTaskHint" xml:space="preserve">
+    <value>Yapılacak iş ekle: kaydın notunun Yapılacaklar bölümüne yazılır</value>
+  </data>
 </root>

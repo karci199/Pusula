@@ -42,6 +42,15 @@ namespace Pusula.Core.Notes
         /// <summary>İşi notun Yapılacaklar bölümünün sonuna ekler; not yoksa açılır. Hata metni; başarıda boş.</summary>
         public static string Add(string notePath, string text, string person, DateTime? due)
         {
+            return Add(notePath, text, person, due, string.Empty);
+        }
+
+        /// <summary>
+        /// İşi ve açıklamasını ekler: açıklamanın her satırı işin altına dört boşluk girintili yazılır (Obsidian'da işin
+        /// devamı görünür). Hata metni; başarıda boş.
+        /// </summary>
+        public static string Add(string notePath, string text, string person, DateTime? due, string description)
+        {
             if ((text ?? string.Empty).Trim().Length == 0)
             {
                 return "text";
@@ -63,6 +72,8 @@ namespace Pusula.Core.Notes
 
             var newline = content.Contains("\r\n") || content.Length == 0 ? "\r\n" : "\n";
             var line = FormatLine(text!, person, due);
+            var block = new List<string> { line };
+            block.AddRange((description ?? string.Empty).Replace("\r\n", "\n").Split('\n').Select(l => l.Trim()).Where(l => l.Length > 0).Select(l => "    " + l));
             var lines = content.Replace("\r\n", "\n").Split('\n').ToList();
             var heading = lines.FindIndex(l => string.Equals(l.Trim(), Heading, StringComparison.OrdinalIgnoreCase));
             if (heading >= 0)
@@ -75,7 +86,7 @@ namespace Pusula.Core.Notes
                 }
 
                 var hasItems = false;
-                while (at < lines.Count && OpenTask.TaskLine.IsMatch(lines[at]))
+                while (at < lines.Count && (OpenTask.TaskLine.IsMatch(lines[at]) || (hasItems && OpenTask.IsContinuation(lines[at]))))
                 {
                     at++;
                     hasItems = true;
@@ -86,10 +97,11 @@ namespace Pusula.Core.Notes
                     lines.Insert(at++, string.Empty);
                 }
 
-                lines.Insert(at, line);
-                if (at + 1 < lines.Count && lines[at + 1].Trim().Length > 0 && !OpenTask.TaskLine.IsMatch(lines[at + 1]))
+                lines.InsertRange(at, block);
+                var after = at + block.Count;
+                if (after < lines.Count && lines[after].Trim().Length > 0 && !OpenTask.TaskLine.IsMatch(lines[after]))
                 {
-                    lines.Insert(at + 1, string.Empty);
+                    lines.Insert(after, string.Empty);
                 }
             }
             else
@@ -110,7 +122,7 @@ namespace Pusula.Core.Notes
                         at = above;
                     }
 
-                    lines.InsertRange(at, new[] { Heading, string.Empty, line, string.Empty });
+                    lines.InsertRange(at, new[] { Heading, string.Empty }.Concat(block).Concat(new[] { string.Empty }));
                 }
                 else
                 {
@@ -124,7 +136,7 @@ namespace Pusula.Core.Notes
                         lines.Add(string.Empty);
                     }
 
-                    lines.AddRange(new[] { Heading, string.Empty, line });
+                    lines.AddRange(new[] { Heading, string.Empty }.Concat(block));
                 }
             }
 

@@ -2371,6 +2371,66 @@ namespace Pusula.Wpf.Properties
         /// <summary>Seçim listesinde boş seçenek.</summary>
         public static string Verify_None { get { return Get("Verify_None"); } }
 
+        /// <summary>Yapılacak iş penceresi: başlık.</summary>
+        public static string TaskDialog_Title { get { return Get("TaskDialog_Title"); } }
+
+        /// <summary>Yapılacak iş penceresi: hangi nota yazıldığı.</summary>
+        public static string TaskDialog_Target { get { return Get("TaskDialog_Target"); } }
+
+        /// <summary>Yapılacak iş penceresi: iş alanı.</summary>
+        public static string Task_FieldTitle { get { return Get("Task_FieldTitle"); } }
+
+        /// <summary>Yapılacak iş penceresi: işlem ipucu.</summary>
+        public static string Task_KindHint { get { return Get("Task_KindHint"); } }
+
+        /// <summary>Yapılacak iş penceresi: açıklama ipucu.</summary>
+        public static string Task_BodyHint { get { return Get("Task_BodyHint"); } }
+
+        /// <summary>Yapılacak iş penceresi: kişi alanı.</summary>
+        public static string Task_FieldPeople { get { return Get("Task_FieldPeople"); } }
+
+        /// <summary>Yapılacak iş penceresi: kişi kutusu ipucu.</summary>
+        public static string Task_PeoplePlaceholder { get { return Get("Task_PeoplePlaceholder"); } }
+
+        /// <summary>Yapılacak iş penceresi: kişi açıklaması.</summary>
+        public static string Task_PeopleHint { get { return Get("Task_PeopleHint"); } }
+
+        /// <summary>Yapılacak iş penceresi: son tarih alanı.</summary>
+        public static string Task_FieldDue { get { return Get("Task_FieldDue"); } }
+
+        /// <summary>Yapılacak iş penceresi: son tarih ipucu.</summary>
+        public static string Task_DueHint { get { return Get("Task_DueHint"); } }
+
+        /// <summary>Son tarih kısayolu: bugün.</summary>
+        public static string Task_DueToday { get { return Get("Task_DueToday"); } }
+
+        /// <summary>Son tarih kısayolu: yarın.</summary>
+        public static string Task_DueTomorrow { get { return Get("Task_DueTomorrow"); } }
+
+        /// <summary>Son tarih kısayolu: bu cuma.</summary>
+        public static string Task_DueWeek { get { return Get("Task_DueWeek"); } }
+
+        /// <summary>Son tarih kısayolu: bir hafta sonra.</summary>
+        public static string Task_DueNext { get { return Get("Task_DueNext"); } }
+
+        /// <summary>Son tarih kısayolu: tarihsiz.</summary>
+        public static string Task_DueNone { get { return Get("Task_DueNone"); } }
+
+        /// <summary>Yapılacak iş penceresi: ilgili doğrulama maddesi.</summary>
+        public static string Task_FieldItem { get { return Get("Task_FieldItem"); } }
+
+        /// <summary>Yapılacak iş penceresi: ilgili madde ipucu.</summary>
+        public static string Task_ItemHint { get { return Get("Task_ItemHint"); } }
+
+        /// <summary>İlgili madde: seçilmedi.</summary>
+        public static string Task_NoItem { get { return Get("Task_NoItem"); } }
+
+        /// <summary>Zaman çizelgesi: yapılacak iş ekle düğmesi.</summary>
+        public static string Timeline_AddTask { get { return Get("Timeline_AddTask"); } }
+
+        /// <summary>Zaman çizelgesi: iş ekle düğmesi ipucu.</summary>
+        public static string Timeline_AddTaskHint { get { return Get("Timeline_AddTaskHint"); } }
+
         /// <summary>Not Obsidian kasası dışında: Pusula'da açıldı uyarısı.</summary>
         public static string NoteApp_NotInVault { get { return Get("NoteApp_NotInVault"); } }
 

@@ -69,20 +69,7 @@ namespace Pusula.Wpf.ViewModels
                 }
             }
 
-            var name2 = Path.GetFileName(folder.TrimEnd('\\'));
-            string notePath;
-            if (kind.Value == RecordKind.Inventory)
-            {
-                var record = JsonFile.TryRead<InventoryRecord>(InventoryService.RecordFile(folder));
-                var number = record?.Number ?? name2;
-                var found = NoteFile.Find(folder, number);
-                notePath = found.Length > 0 ? found : RecordContents.NotePath(folder, number);
-            }
-            else
-            {
-                var found = NoteFile.Find(folder, name2);
-                notePath = found.Length > 0 ? found : Path.Combine(folder, name2 + ".md");
-            }
+            var notePath = TaskNotePath(folder);
 
             var error = TaskList.Add(notePath, text, person, due);
             if (error.Length > 0)
@@ -93,7 +80,7 @@ namespace Pusula.Wpf.ViewModels
 
             NewTaskText = string.Empty;
             NewTaskDueText = string.Empty;
-            Done(string.Format(Resources.Task_Added, text));
+            Done(string.Format(Resources.Task_Added, text), notePath);
             RefreshShowing(folder);
             return true;
         }
@@ -204,7 +191,7 @@ namespace Pusula.Wpf.ViewModels
                 Title = card.Title.Length > 0 ? card.Title : row.Text,
                 Person = CurrentUser,
             };
-            entry.Tags.AddRange(card.Tags.Where(t => !t.IsPerson).Select(t => t.Text.TrimStart('#')));
+            entry.Tags.AddRange(card.Tags.Where(t => t.Text.StartsWith("#", StringComparison.Ordinal)).Select(t => t.Text.TrimStart('#')));
             var error = Pusula.Core.Notes.Journal.Add(row.NotePath, entry);
             if (error.Length > 0)
             {

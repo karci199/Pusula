@@ -23,6 +23,8 @@ namespace Pusula.Core.Notes
 
         private static readonly Regex DueDate = new Regex("\uD83D\uDCC5\\s*(?<date>\\d{4}-\\d{2}-\\d{2})", RegexOptions.Compiled);
 
+        private static readonly Regex Link = new Regex(@"\[\[(?<target>[^\]\|]+)(\|[^\]]*)?\]\]", RegexOptions.Compiled);
+
         private static readonly Regex DoneDateMark = new Regex("\u2705\\s*(?<date>\\d{4}-\\d{2}-\\d{2})", RegexOptions.Compiled);
 
         /// <summary>Görev metni (etiket, kişi ve tarihler atılmış).</summary>
@@ -36,6 +38,22 @@ namespace Pusula.Core.Notes
 
         /// <summary>Bitti mi (<c>[x]</c>).</summary>
         public bool IsDone { get; private set; }
+
+        /// <summary>İşin altındaki girintili satırlar (açıklama); yoksa boş.</summary>
+        public string Description { get; private set; } = string.Empty;
+
+        /// <summary>Bütün kişiler (<c>@Ad_Soyad</c> → "Ad Soyad"), yazılış sırasıyla; ilki sorumludur.</summary>
+        public List<string> People { get; private set; } = new List<string>();
+
+        /// <summary>İşin bağlı olduğu kayıt ya da madde (<c>[[DGÖ-1]]</c> → "DGÖ-1"); yoksa boş.</summary>
+        public string LinkTarget { get; private set; } = string.Empty;
+
+        /// <summary>Satır, üstündeki işin devamı mı (girintili, boş değil, kendisi iş değil).</summary>
+        public static bool IsContinuation(string line)
+        {
+            var value = line ?? string.Empty;
+            return value.Trim().Length > 0 && (value.StartsWith("  ", StringComparison.Ordinal) || value.StartsWith("\t", StringComparison.Ordinal)) && !TaskLine.IsMatch(value);
+        }
 
         /// <summary>Kişi (<c>@Ad_Soyad</c> → "Ad Soyad"); yoksa boş.</summary>
         public string PersonName { get; private set; } = string.Empty;
@@ -118,6 +136,13 @@ namespace Pusula.Core.Notes
 
                 task.Line = i;
                 task.NotePath = path;
+                var description = new List<string>();
+                for (var j = i + 1; j < lines.Length && IsContinuation(lines[j]); j++)
+                {
+                    description.Add(lines[j].Trim());
+                }
+
+                task.Description = string.Join(Environment.NewLine, description);
                 result.Add(task);
             }
 
@@ -147,15 +172,27 @@ namespace Pusula.Core.Notes
                 task.DoneDate = ParseDate(done.Groups["date"].Value);
             }
 
-            var person = Person.Match(body);
-            if (person.Success)
+            foreach (Match person in Person.Matches(body))
             {
-                task.PersonName = person.Groups["name"].Value.Replace('_', ' ');
+                task.People.Add(person.Groups["name"].Value.Replace('_', ' '));
             }
 
+            task.PersonName = task.People.Count > 0 ? task.People[0] : string.Empty;
             var text = DoneDateMark.Replace(DueDate.Replace(body, string.Empty), string.Empty);
             text = Person.Replace(Tag.Replace(text, " "), " ");
             task.Text = string.Join(" ", text.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries));
+            // Satırın sonundaki tek bağ işin bağlı olduğu madde / kayıttır ("… [[DGÖ-1]]"); metnin içindeki bağlar metinde kalır.
+            var trailing = Link.Match(task.Text);
+            while (trailing.Success && trailing.Index + trailing.Length < task.Text.Length)
+            {
+                trailing = trailing.NextMatch();
+            }
+
+            if (trailing.Success && trailing.Index > 0)
+            {
+                task.LinkTarget = trailing.Groups["target"].Value.Trim();
+                task.Text = task.Text.Substring(0, trailing.Index).TrimEnd();
+            }
             return task.Text.Length == 0 ? null : task;
         }
 

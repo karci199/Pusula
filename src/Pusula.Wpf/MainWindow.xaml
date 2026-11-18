@@ -1922,6 +1922,7 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <TextBlock FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.Stock_Timeline}" />
                                     <Border Grid.Column="1" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Padding="2" VerticalAlignment="Center">
@@ -1932,7 +1933,13 @@
                                             <RadioButton Style="{StaticResource StockSegment}" GroupName="StockRange" Content="{x:Static res:Resources.Home_RangeAll}" IsChecked="{Binding IsRangeAll, Mode=TwoWay}" />
                                         </StackPanel>
                                     </Border>
-                                    <Button Grid.Column="2" Margin="8,0,0,0" Style="{DynamicResource AccentButtonStyle}" Padding="12,5" Click="TimelineAdd_Click" ToolTip="{x:Static res:Resources.Timeline_AddHint}">
+                                    <Button Grid.Column="2" Margin="8,0,0,0" Padding="12,5" HorizontalAlignment="Left" Click="TaskDialogOpen_Click" ToolTip="{x:Static res:Resources.Timeline_AddTaskHint}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
+                                            <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Timeline_AddTask}" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Grid.Column="3" Margin="8,0,0,0" Style="{DynamicResource AccentButtonStyle}" Padding="12,5" Click="TimelineAdd_Click" ToolTip="{x:Static res:Resources.Timeline_AddHint}">
                                         <StackPanel Orientation="Horizontal">
                                             <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
                                             <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Timeline_Add}" />
@@ -2369,6 +2376,12 @@
                             </TabItem.Header>
                             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,0">
                                 <StackPanel Margin="0,10,0,0" MaxWidth="1100" HorizontalAlignment="Left" MinWidth="600">
+                                    <Button HorizontalAlignment="Right" Margin="0,0,0,4" Style="{DynamicResource AccentButtonStyle}" Padding="14,6" Click="TaskDialogOpen_Click" ToolTip="{x:Static res:Resources.Timeline_AddTaskHint}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" VerticalAlignment="Center" />
+                                            <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Timeline_AddTask}" />
+                                        </StackPanel>
+                                    </Button>
                                     <ItemsControl ItemsSource="{Binding StockTaskGroups}" Focusable="False">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
@@ -3298,6 +3311,148 @@
                         <local:TagBox Tags="{Binding JournalTags, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Tag_Placeholder}" />
                         <TextBlock Margin="0,4,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Journal_TagsHint}" />
                     </StackPanel>
+                </controls:FormField>
+            </StackPanel>
+        </controls:ContentDialog>
+        <!-- Yapılacak iş ekle: iş, işlem, açıklama, kişiler, son tarih, ilgili madde, etiketler; kaydın ana notunun Yapılacaklar bölümüne -->
+        <controls:ContentDialog Grid.RowSpan="3"
+                                IsOpen="{Binding IsTaskDialogOpen, Mode=TwoWay}"
+                                Title="{x:Static res:Resources.TaskDialog_Title}"
+                                PrimaryButtonText="{Binding TaskPrimaryText}"
+                                CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                DialogWidth="620"
+                                PrimaryButtonClick="TaskDialog_PrimaryButtonClick">
+            <StackPanel>
+                <StackPanel.Resources>
+                    <!-- Seçilebilen hap (yapıldı / yapılacak, önem) -->
+                    <Style x:Key="ChoicePill" TargetType="RadioButton">
+                        <Setter Property="Margin" Value="0,0,8,0" />
+                        <Setter Property="Focusable" Value="False" />
+                        <Setter Property="Cursor" Value="Hand" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="RadioButton">
+                                    <Border x:Name="Pill" CornerRadius="15" Padding="14,5" BorderThickness="1" MinWidth="76"
+                                            Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}">
+                                        <ContentPresenter HorizontalAlignment="Center" TextElement.Foreground="{DynamicResource TextSecondaryBrush}" />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Pill" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                        </Trigger>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter TargetName="Pill" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                            <Setter TargetName="Pill" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                            <Setter Property="FontWeight" Value="SemiBold" />
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter TargetName="Pill" Property="Opacity" Value="0.4" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <!-- İşlem ızgarasında bir tür: ikon (tonunda) ve ad; seçili olan vurgulu -->
+                    <Style x:Key="KindTile" TargetType="ListBoxItem">
+                        <Setter Property="Margin" Value="0,0,6,6" />
+                        <Setter Property="Width" Value="146" />
+                        <Setter Property="Cursor" Value="Hand" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Border x:Name="Tile" CornerRadius="8" Padding="9,6" BorderThickness="1"
+                                            Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}">
+                                        <ContentPresenter />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Tile" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="Tile" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                            <Setter TargetName="Tile" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <DataTemplate x:Key="KindTileTemplate">
+                        <StackPanel Orientation="Horizontal">
+                            <Border x:Name="IconBox" Width="22" Height="22" CornerRadius="6" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                <local:AppIcon x:Name="KindIcon" Glyph="{Binding Glyph}" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+                            </Border>
+                            <TextBlock Margin="8,0,0,0" FontSize="12.5" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Label}" />
+                        </StackPanel>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding Tone}" Value="active"><Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
+                            <DataTrigger Binding="{Binding Tone}" Value="waiting"><Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
+                            <DataTrigger Binding="{Binding Tone}" Value="done"><Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
+                            <DataTrigger Binding="{Binding Tone}" Value="failed"><Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" /></DataTrigger>
+                            <DataTrigger Binding="{Binding Tone}" Value="purple"><Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource Pusula.EventPurpleBrush}" /></DataTrigger>
+                            <DataTrigger Binding="{Binding Tone}" Value="orange"><Setter TargetName="KindIcon" Property="Foreground" Value="{DynamicResource Pusula.EventOrangeBrush}" /></DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </StackPanel.Resources>
+
+                <TextBlock Margin="0,0,0,14" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" Text="{Binding TaskTarget}" />
+
+                <controls:FormField Header="{x:Static res:Resources.Task_FieldTitle}" IsRequired="True" LabelWidth="120">
+                    <TextBox Text="{Binding TaskTitle, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" local:MentionAssist.Mode="link" />
+                </controls:FormField>
+
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Journal_Kind}" LabelWidth="120">
+                    <StackPanel>
+                        <ComboBox Width="260" HorizontalAlignment="Left" ItemsSource="{Binding JournalKinds}" SelectedItem="{Binding TaskKindOption, Mode=TwoWay}"
+                                  ItemTemplate="{StaticResource KindTileTemplate}" MaxDropDownHeight="360" />
+                        <TextBlock Margin="0,4,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Task_KindHint}" />
+                    </StackPanel>
+                </controls:FormField>
+
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Journal_Body}" LabelWidth="120">
+                    <StackPanel>
+                        <TextBox MinHeight="72" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"
+                                 Text="{Binding TaskBody, UpdateSourceTrigger=PropertyChanged}" local:MentionAssist.Mode="link" />
+                        <TextBlock Margin="0,4,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Task_BodyHint}" />
+                    </StackPanel>
+                </controls:FormField>
+
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Task_FieldPeople}" LabelWidth="120">
+                    <StackPanel>
+                        <local:TagBox Prefix="@" Tags="{Binding TaskPeople, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Task_PeoplePlaceholder}" />
+                        <TextBlock Margin="0,4,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Task_PeopleHint}" />
+                    </StackPanel>
+                </controls:FormField>
+
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Task_FieldDue}" LabelWidth="120">
+                    <StackPanel>
+                        <TextBox Width="150" HorizontalAlignment="Left" Text="{Binding TaskDueText, UpdateSourceTrigger=PropertyChanged}" />
+                        <ItemsControl Margin="0,7,0,0" ItemsSource="{Binding TaskDueChoices}" Focusable="False">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <RadioButton Style="{StaticResource ChoicePill}" GroupName="TaskDue" Content="{Binding Text}" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Margin="0,5,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Task_DueHint}" />
+                    </StackPanel>
+                </controls:FormField>
+
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Task_FieldItem}" LabelWidth="120">
+                    <StackPanel>
+                        <ComboBox Width="360" HorizontalAlignment="Left" ItemsSource="{Binding TaskItemOptions}" SelectedItem="{Binding TaskItemOption, Mode=TwoWay}" DisplayMemberPath="Text" />
+                        <TextBlock Margin="0,4,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Task_ItemHint}" />
+                    </StackPanel>
+                </controls:FormField>
+
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Journal_Tags}" LabelWidth="120">
+                    <local:TagBox Tags="{Binding TaskTags, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Tag_Placeholder}" />
                 </controls:FormField>
             </StackPanel>
         </controls:ContentDialog>

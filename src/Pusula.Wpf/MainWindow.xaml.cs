@@ -176,6 +176,19 @@ namespace Pusula.Wpf
             viewModel.SaveVerificationColumns();
         }
         // Zaman çizelgesi: "+ Kayıt" penceresi (yapıldı ya da yapılacak).
+        // "+ İş": gösterilen kaydın notuna yapılacak iş ekleme penceresi.
+        private void TaskDialogOpen_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.OpenTaskDialogHere();
+        }
+
+        private void TaskDialog_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (!viewModel.ConfirmTaskDialog())
+            {
+                Dispatcher.BeginInvoke(new Action(() => viewModel.IsTaskDialogOpen = true));
+            }
+        }
         private void TimelineAdd_Click(object sender, RoutedEventArgs e)
         {
             viewModel.OpenJournalHere();
