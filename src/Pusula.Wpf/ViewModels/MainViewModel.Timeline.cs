@@ -52,6 +52,13 @@ namespace Pusula.Wpf.ViewModels
             Title = item.Title;
             Description = item.Summary;
             FullDescription = (journal != null && journal.Body.Trim().Length > 0 ? journal.Body : item.Summary ?? string.Empty).Trim();
+
+            // Günlük kaydında kartta "#### Ayrıntı" başlığından öncesi görünür; ayrıntı MD düğmesiyle notta okunur.
+            if (journal != null && journal.Body.Trim().Length > 0)
+            {
+                FullDescription = Journal.SummaryOf(journal.Body);
+                Description = Regex.Replace(FullDescription, @"\s+", " ");
+            }
             When = item.SortDate;
             TimeText = item.SortDate.TimeOfDay == TimeSpan.Zero ? Resources.Timeline_AllDay : item.SortDate.ToString("HH:mm", CultureInfo.InvariantCulture);
             ImportanceRank = journal == null ? 0 : EventKinds.ImportanceRank(journal.Importance);
@@ -64,6 +71,51 @@ namespace Pusula.Wpf.ViewModels
             }
 
             Tags = tags.Distinct(StringComparer.CurrentCultureIgnoreCase).Select(t => new TimelineTag(t)).ToList();
+
+            // Ölçüm: bağlı madde ve sonuç tek rozette ("↳ TG-1 · Kaldı", madde yoksa "Bilgi").
+            var result = journal?.Result.Trim() ?? string.Empty;
+            var linked = journal?.Item.Trim() ?? string.Empty;
+            ResultKind = result.Length == 0 && linked.Length == 0 ? 0
+                : string.Equals(result, Resources.Verify_StatusPassed, StringComparison.CurrentCultureIgnoreCase) ? 1
+                : string.Equals(result, Resources.Verify_StatusFailed, StringComparison.CurrentCultureIgnoreCase) ? 2 : 3;
+            ResultText = linked.Length > 0 ? "↳ " + linked + (result.Length > 0 ? " · " + result : string.Empty) : result;
+
+            // Ölçüm klasörü: kartta "📁 sayı" düğmesi.
+            if (journal != null && journal.Folder.Trim().Length > 0)
+            {
+                FolderPath = MeasurementFiles.Resolve(System.IO.Path.GetDirectoryName(journal.Path) ?? string.Empty, journal.Folder);
+                FileCount = MeasurementFiles.CountFiles(FolderPath);
+            }
+        }
+
+        /// <summary>Ölçüm dosyalarının klasörü (tam yol); yoksa boş.</summary>
+        public string FolderPath { get; } = string.Empty;
+
+        /// <summary>Ölçüm klasöründeki dosya sayısı.</summary>
+        public int FileCount { get; }
+
+        /// <summary>Klasör düğmesi görünür mü.</summary>
+        public bool HasFolder
+        {
+            get { return FolderPath.Length > 0; }
+        }
+
+        /// <summary>Günlük kaydı mı (dosya eklenebilir, düzenlenebilir).</summary>
+        public bool IsJournal
+        {
+            get { return Item?.Journal != null; }
+        }
+
+        /// <summary>Ölçüm rozeti: 0 yok, 1 geçti, 2 kaldı, 3 bilgi / sonuçsuz.</summary>
+        public int ResultKind { get; }
+
+        /// <summary>Ölçüm rozetinin metni ("↳ TG-1 · Kaldı", "Bilgi"); yoksa boş.</summary>
+        public string ResultText { get; } = string.Empty;
+
+        /// <summary>Ölçüm rozeti görünür mü.</summary>
+        public bool HasResult
+        {
+            get { return ResultKind > 0; }
         }
 
         /// <summary>Açık işten (yapılacak) kartı kurar; metin "İşlem: başlık" ise işlem çipi olur.</summary>
@@ -277,6 +329,8 @@ namespace Pusula.Wpf.ViewModels
                     OnPropertyChanged(nameof(JournalDone));
                     OnPropertyChanged(nameof(JournalPrimaryText));
                     OnPropertyChanged(nameof(JournalRecordHint));
+                    OnPropertyChanged(nameof(IsJournalMeasurement));
+                    OnPropertyChanged(nameof(IsJournalNewItem));
                 }
             }
         }

@@ -160,6 +160,7 @@ namespace Pusula.Wpf.ViewModels
             return builtIn ?? (builtIn = new[]
             {
                 new EventKindOption(Resources.Event_Preparation, "", Orange),
+                new EventKindOption(Resources.Event_Measurement, "\uE9D9", StatusTone.Active),
                 new EventKindOption(Resources.Event_TestStart, "", StatusTone.Active),
                 new EventKindOption(Resources.Event_TestEnd, "", StatusTone.Done),
                 new EventKindOption(Resources.Event_Meeting, "", Purple),

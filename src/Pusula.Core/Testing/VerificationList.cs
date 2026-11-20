@@ -124,6 +124,41 @@ namespace Pusula.Core.Testing
             return Path.Combine(folder, Path.GetFileName(stockFolder.TrimEnd('\\', '/')) + FileSuffix + ".md");
         }
 
+        /// <summary>Resmî olmayan (tasarımcı dokümanı, sözlü istek) maddelerin TG no öneki: <c>EK-1</c>, <c>EK-2</c> …</summary>
+        public const string ExtraPrefix = "EK-";
+
+        /// <summary>
+        /// Maddenin kayıtlarda kullanılan anahtarı: TG no; yoksa <c>No 5</c> (sıra numarasıyla). Günlükte
+        /// <c>madde: TG-1</c> olarak yazılır.
+        /// </summary>
+        public static string KeyOf(VerificationItem item)
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            return item.TgNo.Trim().Length > 0 ? item.TgNo.Trim() : "No " + item.Number.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>Sıradaki ek madde numarası (<c>EK-</c> ile başlayan en büyük numara + 1).</summary>
+        public static string NextExtraNo(IEnumerable<VerificationItem> items)
+        {
+            var max = 0;
+            foreach (var item in items ?? Enumerable.Empty<VerificationItem>())
+            {
+                int n;
+                var tg = item.TgNo.Trim();
+                if (tg.StartsWith(ExtraPrefix, StringComparison.OrdinalIgnoreCase)
+                    && int.TryParse(tg.Substring(ExtraPrefix.Length), System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out n) && n > max)
+                {
+                    max = n;
+                }
+            }
+
+            return ExtraPrefix + (max + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
+
         /// <summary>Maddeleri okur; dosya ya da tablo yoksa boş liste. Metni de alt grubu da boş satırlar atlanır.</summary>
         public static IList<VerificationItem> Read(string stockFolder)
         {

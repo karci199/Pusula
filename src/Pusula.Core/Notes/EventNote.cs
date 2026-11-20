@@ -61,11 +61,23 @@ namespace Pusula.Core.Notes
         /// <summary>Günlük girdisinin notta yazılan tür adı ("Karar").</summary>
         public string KindLabel { get; private set; } = string.Empty;
 
+        /// <summary>Günlük girdisinin bağlı olduğu doğrulama maddesi (<c>madde: TG-1</c>); yoksa boş.</summary>
+        public string Item { get; private set; } = string.Empty;
+
+        /// <summary>Günlük girdisinin ölçüm sonucu (<c>Geçti</c>, <c>Kaldı</c>, <c>Bilgi</c>); yoksa boş.</summary>
+        public string Result { get; private set; } = string.Empty;
+
         /// <summary>Günlük bölümündeki bir girdiden olay kurar (bkz. <see cref="Journal"/>).</summary>
-        internal static EventNote FromJournal(string path, string kind, DateTime date, string title, string body, string person, string importance, List<string> related, List<string> tags, string sourceLine, string fullBody, string kindLabel)
+        /// <summary>Günlük girdisinin ölçüm klasörü (<c>klasör:</c>, kayıt klasörüne göre); yoksa boş.</summary>
+        public string Folder { get; private set; } = string.Empty;
+
+        internal static EventNote FromJournal(string path, string kind, DateTime date, string title, string body, string person, string importance, List<string> related, List<string> tags, string sourceLine, string fullBody, string kindLabel, string item, string result, string folder)
         {
             return new EventNote
             {
+                Folder = folder,
+                Item = item,
+                Result = result,
                 SourceLine = sourceLine,
                 Body = fullBody,
                 KindLabel = kindLabel,

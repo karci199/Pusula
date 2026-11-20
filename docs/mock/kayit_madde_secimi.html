@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Madde ve sonuç seçimi</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1f1f1f;font-family:"Segoe UI",Arial,sans-serif;color:#e6e6e6;font-size:14px}
+.page{width:1460px;padding:26px 30px 30px;background:#202020;display:grid;grid-template-columns:1fr 1fr;gap:26px 30px}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin:0 0 10px}
+.cap b{color:#4cc2ff;font-weight:700;margin-right:6px}
+.mut{color:#9a9a9a;font-size:12.5px}
+.row{display:flex;align-items:center;gap:8px}
+.zone{background:#2b2b2b;border:1px solid #3c3c3c;border-radius:10px;padding:16px 18px 6px}
+.f{display:grid;grid-template-columns:90px 1fr;align-items:start;margin-bottom:12px}
+.f label{padding-top:7px;color:#d0d0d0}
+.f label i{color:#ff99a4;font-style:normal}
+.box{height:32px;border:1px solid #3c3c3c;background:#333;border-radius:5px;padding:6px 11px;color:#fff;display:flex;align-items:center;gap:8px;min-width:0}
+.combo{justify-content:space-between}
+.combo:after{content:"⌄";color:#aaa;font-size:14px;margin-top:-6px}
+.focus{border-color:#4cc2ff;box-shadow:inset 0 -2px 0 #4cc2ff}
+.ph{color:#8a8a8a}
+.hint{font-size:12px;color:#8a8a8a;margin-top:5px}
+.hint b{color:#ddd;font-weight:600}
+.list{margin-top:4px;background:#2c2c2c;border:1px solid #474747;border-radius:8px;box-shadow:0 8px 24px #0008;padding:5px}
+.search{margin:2px 2px 6px;height:30px;border:1px solid #3c3c3c;border-radius:5px;background:#333;padding:5px 10px;font-size:13px;color:#8a8a8a}
+.grp{font-size:11px;color:#8a8a8a;font-weight:600;letter-spacing:.3px;padding:6px 10px 3px}
+.it{display:grid;grid-template-columns:62px 1fr 70px;align-items:center;gap:8px;padding:6px 10px;border-radius:5px;font-size:13px}
+.it.sel{background:#36404a}
+.it .no{font-weight:600;color:#8fd0ff}
+.it .ek{font-weight:600;color:#c8b6ff}
+.st{font-size:11px;font-weight:600;padding:1px 7px;border-radius:5px;text-align:center}
+.s-p{background:#1f3d26;color:#8fdc9b}
+.s-f{background:#4a2326;color:#ff99a4}
+.s-w{background:#3d3420;color:#f6c46f}
+.s-n{background:#2a3644;color:#9cc7ef}
+.sep{height:1px;background:#3c3c3c;margin:5px 4px}
+.new{padding:7px 10px;color:#8fd0ff;font-size:13px}
+.seg{display:flex;gap:6px}
+.seg span{font-size:13.5px;padding:6px 16px;border-radius:6px;border:1px solid #444;background:#303030;color:#bdbdbd}
+.seg .on-f{background:#4a2326;border-color:#e05561;color:#ff99a4;font-weight:600}
+.seg .on-i{background:#2a3644;border-color:#4c8bc4;color:#9cc7ef;font-weight:600}
+.seg .dis{opacity:.35}
+.chg{display:flex;align-items:center;gap:8px;font-size:12.5px;margin-top:7px;color:#bdbdbd}
+.inl{border:1px solid #c8b6ff55;background:#c8b6ff0c;border-radius:8px;padding:10px 12px 2px;margin:2px 0 12px 90px}
+.inl .f{grid-template-columns:70px 1fr;margin-bottom:9px}
+.inl .f label{font-size:13px}
+.inl .box{height:30px;font-size:13px}
+.icap{font-size:11px;color:#c8b6ff;font-weight:600;letter-spacing:.3px;margin-bottom:8px}
+.lnk{font-size:12.5px;color:#8fd0ff}
+.note{grid-column:1 / span 2;font-size:12.5px;color:#9a9a9a;line-height:1.65;background:#262626;border:1px solid #333;border-radius:10px;padding:12px 16px}
+.note b{color:#ddd}
+</style></head><body>
+<div class="page">
+
+  <div>
+    <div class="cap"><b>1</b>MADDE LİSTESİ AÇIK · DURUMLARIYLA</div>
+    <div class="zone">
+      <div class="f"><label>Madde</label><div>
+        <div class="box combo focus"><span class="ph">— Yok (bilgi amaçlı)</span></div>
+        <div class="list">
+          <div class="search">🔍 Ara: no ya da metin</div>
+          <div class="it"><span class="mut">—</span><span>Yok · bilgi amaçlı ölçüm</span><span></span></div>
+          <div class="grp">DOĞRULAMA (DGÖ)</div>
+          <div class="it sel"><span class="no">DGÖ-1</span><span>Çalışma bandında VSWR ≤ 1,5</span><span class="st s-p">Geçti</span></div>
+          <div class="it"><span class="no">DGÖ-2</span><span>10 GHz kazanç ≥ 15 dBi</span><span class="st s-p">Geçti</span></div>
+          <div class="it"><span class="no">DGÖ-8</span><span>Sıcaklıkta kazanç değişimi ≤ 1 dB</span><span class="st s-f">Kaldı</span></div>
+          <div class="it"><span class="no">DGÖ-10</span><span>50 W CW güç dayanımı</span><span class="st s-w">Planlandı</span></div>
+          <div class="grp">EK (RESMÎ OLMAYAN)</div>
+          <div class="it"><span class="ek">EK-1</span><span>Hüzme 25–35° · ANT-TSR-012 §4.2</span><span class="st s-p">Geçti</span></div>
+          <div class="it"><span class="ek">EK-2</span><span>Konnektör torku · @Ali sözlü</span><span class="st s-n">Deneme yok</span></div>
+          <div class="sep"></div>
+          <div class="new">+ Yeni ek madde…</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="cap"><b>2</b>MADDE SEÇİLİ · SONUÇ ZORUNLU, ELLE</div>
+    <div class="zone">
+      <div class="f"><label>Madde</label><div class="box combo"><span><b style="color:#8fd0ff">DGÖ-1</b> · Çalışma bandında VSWR ≤ 1,5</span></div></div>
+      <div class="f"><label>Sonuç <i>*</i></label><div>
+        <div class="seg"><span>✓ Geçti</span><span class="on-f">✕ Kaldı</span><span class="dis">ⓘ Bilgi</span></div>
+        <div class="chg">Maddenin durumu: <span class="st s-p">Geçti</span> → <span class="st s-f">Kaldı</span> <span class="mut">(son sonuç geçerli)</span></div>
+        <div class="hint">Seçilmeden <b>Ekle</b> açılmaz. Ölçüt madde metninde yazılıdır; karar sizin.</div>
+      </div></div>
+    </div>
+
+    <div class="cap" style="margin-top:22px"><b>3</b>MADDE YOK · SONUÇ KENDİLİĞİNDEN BİLGİ</div>
+    <div class="zone">
+      <div class="f"><label>Madde</label><div class="box combo"><span class="ph">— Yok (bilgi amaçlı)</span></div></div>
+      <div class="f"><label>Sonuç</label><div>
+        <div class="seg"><span class="dis">✓ Geçti</span><span class="dis">✕ Kaldı</span><span class="on-i">ⓘ Bilgi</span></div>
+        <div class="hint">Karakterizasyon / keşif ölçümü; hiçbir maddenin durumunu değiştirmez.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div style="grid-column:1 / span 2">
+    <div class="cap"><b>4</b>"+ YENİ EK MADDE" · PENCERE İÇİNDE AÇILIR, NUMARA KENDİLİĞİNDEN</div>
+    <div class="zone" style="display:grid;grid-template-columns:1fr 1fr;gap:0 30px">
+      <div>
+        <div class="f"><label>Madde</label><div class="box combo"><span><b style="color:#c8b6ff">EK-3</b> · <span class="ph">yeni</span></span></div></div>
+        <div class="inl">
+          <div class="icap">YENİ EK MADDE · EK-3</div>
+          <div class="f"><label>Madde <i>*</i></label><div class="box">Ön-arka oranı ≥ 20 dB</div></div>
+          <div class="f"><label>Kaynak</label><div class="box"><span class="ph">Doküman §, ya da @kişi sözlü</span></div></div>
+        </div>
+        <div class="f"><label>Sonuç <i>*</i></label><div class="seg"><span style="background:#1f3d26;border-color:#5cb85c;color:#8fdc9b;font-weight:600">✓ Geçti</span><span>✕ Kaldı</span><span class="dis">ⓘ Bilgi</span></div></div>
+      </div>
+      <div class="mut" style="line-height:1.7;padding-top:4px">
+        <b style="color:#ddd">Ekle'ye basınca:</b><br>
+        1. Doğrulama dosyasına <b style="color:#c8b6ff">EK-3</b> satırı eklenir (grup: Ek).<br>
+        2. Bu ölçüm EK-3'e bağlanır, durumu Geçti olur.<br>
+        3. Sonraki ölçümlerde EK-3 listede çıkar.<br><br>
+        <b style="color:#ddd">Sonra:</b> Doğrulama sekmesinde EK-3 satırında <span class="lnk">DGÖ'ye çevir</span> → DGÖ-11 olur; bağlı ölçümler de taşınır.
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Dayanak alanı yok.</b> Tek soru: hangi maddeye? Resmî madde (DGÖ), resmî olmayan madde (EK, numarası kendiliğinden) ya da hiçbiri (bilgi amaçlı).<br>
+    <b>Sonuç elle seçilir:</b> madde varsa Geçti / Kaldı zorunlu; madde yoksa Bilgi. Maddenin durumu son sonuçtan gelir.<br>
+    <b>Doğrulama satırından "+ Deneme"</b> açılırsa madde zaten seçili gelir; yalnız sonuç seçilir.
+  </div>
+</div>
+</body></html>

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Kayıt · genel alanlar</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1f1f1f;font-family:"Segoe UI",Arial,sans-serif;color:#e6e6e6;font-size:14px}
+.page{width:1300px;padding:26px 30px 30px;background:#202020;display:grid;grid-template-columns:620px 1fr;gap:34px}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin:0 0 10px}
+.mut{color:#9a9a9a;font-size:12.5px}
+.row{display:flex;align-items:center;gap:8px}
+.dlg{background:#2b2b2b;border:1px solid #3c3c3c;border-radius:10px;padding:22px 26px}
+.dlg h1{margin:0;font-size:21px;font-weight:600;color:#fff}
+.sub{font-size:12.5px;color:#a8a8a8;margin:6px 0 18px}
+.f{display:grid;grid-template-columns:100px 1fr;align-items:start;margin-bottom:12px}
+.f label{padding-top:7px;color:#d0d0d0}
+.f label i{color:#ff99a4;font-style:normal}
+.box{height:32px;border:1px solid #3c3c3c;background:#333;border-radius:5px;padding:6px 11px;color:#fff;display:flex;align-items:center;gap:8px}
+.combo{justify-content:space-between}
+.combo:after{content:"⌄";color:#aaa;font-size:14px;margin-top:-6px}
+.ph{color:#8a8a8a}
+.ico{width:22px;height:22px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+.hint{font-size:12px;color:#8a8a8a;margin-top:5px}
+.slot{border:1.5px dashed #4a4a4a;border-radius:8px;padding:12px;margin:2px 0 12px 100px;color:#8a8a8a;font-size:12.5px;text-align:center}
+.tag{font-size:12px;padding:1px 9px;border-radius:10px;border:1px solid #2f6b8c;color:#8fd0ff}
+.btns{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.b{min-width:92px;text-align:center;padding:7px 14px;border-radius:5px;background:#3a3a3a}
+.b.a{background:#4cc2ff;color:#062033;font-weight:600}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;color:#8a8a8a;font-weight:600;font-size:11.5px;letter-spacing:.3px;padding:7px 10px;border-bottom:1px solid #3a3a3a}
+.tbl td{padding:9px 10px;border-bottom:1px solid #303030;vertical-align:top}
+.tbl td:first-child{font-weight:600;color:#fff;white-space:nowrap}
+.req{color:#ff99a4;font-size:12px}
+.opt{color:#8a8a8a;font-size:12px}
+.panel{background:#272727;border:1px solid #363636;border-radius:12px;padding:6px 8px}
+.ev{display:grid;grid-template-columns:22px 1fr;margin-top:6px}
+.rail{position:relative}
+.rail:before{content:"";position:absolute;left:10px;top:0;bottom:0;width:2px;background:#4f8a3c;opacity:.6}
+.rail i{position:absolute;left:5px;top:14px;width:12px;height:12px;border-radius:50%;background:#4f8a3c}
+.card{border:1px solid #3c3c3c;background:#2b2b2b;border-radius:10px;padding:9px 12px;margin:0 0 8px 8px}
+.op{font-size:11.5px;padding:2px 8px;border-radius:6px;background:#3d2c1c;color:#ffb07a}
+.md{font-family:Consolas,monospace;font-size:12px;background:#1b1b1b;border:1px solid #333;border-radius:8px;padding:12px 14px;color:#cfcfcf;line-height:1.6;white-space:pre;overflow:hidden}
+.md .k{color:#8fd0ff}
+</style></head><body>
+<div class="page">
+  <div>
+    <div class="cap">ZAMAN ÇİZELGESİNE KAYIT · GENEL ALANLAR · AÇILIŞTAKİ (BOŞ) HÂLİ</div>
+    <div class="dlg">
+      <h1>Zaman çizelgesine kayıt</h1>
+      <div class="sub">AB-7000-0001 · TAKIM ANTEN BOYNUZ · ana notun Günlük bölümüne</div>
+      <div class="f"><label>Tarih <i>*</i></label><div>
+        <div class="row"><div class="box" style="width:140px">20.11.2026</div><div class="box" style="width:80px">09:42</div></div>
+        <div class="hint">Kendiliğinden bugün ve şimdiki saat; geçmiş bir iş için değiştirilir.</div></div></div>
+      <div class="f"><label>İşlem <i>*</i></label><div>
+        <div class="box combo" style="width:240px"><span class="row"><span class="ico" style="background:#3d2c1c;color:#ffb07a">⚙</span>Hazırlık</span></div>
+        <div class="hint">Ne yapıldı: Ölçüm, Toplantı, Karar, Hazırlık, Teslim…</div></div></div>
+      <div class="slot">İşleme göre ek alanlar burada açılır (sonraki adım)</div>
+      <div class="f"><label>Başlık <i>*</i></label><div class="box"><span class="ph">Ne yapıldı? Örn. SN-001 tezgâha kuruldu</span></div></div>
+      <div class="f"><label>Açıklama</label><div>
+        <div class="box" style="height:74px;align-items:flex-start"><span class="ph">Ayrıntı, gözlem, sonraki adım… (isteğe bağlı ama genelde yazılır)</span></div>
+        <div class="hint">Kart tıklanınca tamamı görünür; birden çok satır olabilir.</div></div></div>
+      <div class="f"><label>Önem</label><div class="box combo" style="width:180px"><span>Normal</span></div></div>
+      <div class="f"><label>Etiket</label><div class="box"><span class="ph"># ile etiket ekle: #SN-001 #VNA</span></div></div>
+      <div class="btns"><span class="b">Vazgeç</span><span class="b a">Ekle</span></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="cap">GENEL ALANLAR</div>
+    <table class="tbl">
+      <tr><th>ALAN</th><th>DURUM</th><th>NE İÇİN</th></tr>
+      <tr><td>Tarih · saat</td><td class="req">zorunlu</td><td>Ne zaman oldu; çizelgedeki yeri.</td></tr>
+      <tr><td>İşlem</td><td class="req">zorunlu</td><td>Ne tür iş; kartın rengi ve ikonu, ek alanları belirler.</td></tr>
+      <tr><td>Başlık</td><td class="req">zorunlu</td><td>Kartta görünen tek satır.</td></tr>
+      <tr><td>Açıklama</td><td class="opt">isteğe bağlı</td><td>Ayrıntı; notta başlığın altına girintili yazılır.</td></tr>
+      <tr><td>Önem</td><td class="opt">isteğe bağlı</td><td>Düşük · Normal · Önemli · Kritik (varsayılan Normal).</td></tr>
+      <tr><td>Etiket</td><td class="opt">isteğe bağlı</td><td>Birim, cihaz, konu: #SN-001 #VNA. Aramada ve süzgeçte.</td></tr>
+    </table>
+
+    <div class="cap" style="margin-top:22px">ÇİZELGEDE</div>
+    <div class="panel">
+      <div class="ev"><div class="rail"><i></i></div><div class="card">
+        <div class="row"><span class="op">⚙ Hazırlık</span><b>SN-001 tezgâha kuruldu</b><span class="mut" style="margin-left:auto">14:30</span></div>
+        <div class="mut" style="margin-top:5px">K-01 düzeneği; VNA-03 ile, jig rev A.</div>
+        <div class="row" style="margin-top:6px"><span class="tag">#SN-001</span></div>
+      </div></div>
+    </div>
+
+    <div class="cap" style="margin-top:22px">NOTA YAZILAN · AB-7000-0001.md</div>
+    <div class="md"><span class="k">## Günlük</span>
+- 19.11.2026 14:30 · Hazırlık · SN-001 tezgâha kuruldu #SN-001
+    K-01 düzeneği; VNA-03 ile, jig rev A.</div>
+  </div>
+</div>
+</body></html>

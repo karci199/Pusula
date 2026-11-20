@@ -2556,4 +2556,85 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Timeline_AddTaskHint" xml:space="preserve">
     <value>Yapılacak iş ekle: kaydın notunun Yapılacaklar bölümüne yazılır</value>
   </data>
+  <data name="Event_Measurement" xml:space="preserve">
+    <value>Ölçüm</value>
+  </data>
+  <data name="Journal_Item" xml:space="preserve">
+    <value>Madde</value>
+  </data>
+  <data name="Journal_ItemNone" xml:space="preserve">
+    <value>— Yok (bilgi amaçlı)</value>
+  </data>
+  <data name="Journal_ItemNew" xml:space="preserve">
+    <value>+ Yeni ek madde…</value>
+  </data>
+  <data name="Journal_ItemHint" xml:space="preserve">
+    <value>İsteğe bağlı. Seçilirse kayıt doğrulama satırında deneme olarak görünür.</value>
+  </data>
+  <data name="Journal_Result" xml:space="preserve">
+    <value>Sonuç</value>
+  </data>
+  <data name="Journal_ResultInfo" xml:space="preserve">
+    <value>Bilgi</value>
+  </data>
+  <data name="Journal_ResultChange" xml:space="preserve">
+    <value>Maddenin durumu: {0} → {1}</value>
+  </data>
+  <data name="Journal_ResultNoItem" xml:space="preserve">
+    <value>Karakterizasyon / keşif ölçümü; hiçbir maddenin durumunu değiştirmez.</value>
+  </data>
+  <data name="Journal_ResultHint" xml:space="preserve">
+    <value>Elle seçilir; seçilmeden Ekle açılmaz. Maddenin durumu son sonuçtan gelir.</value>
+  </data>
+  <data name="Journal_NewItemCaption" xml:space="preserve">
+    <value>YENİ EK MADDE · {0}</value>
+  </data>
+  <data name="Journal_NewItemText" xml:space="preserve">
+    <value>Madde</value>
+  </data>
+  <data name="Journal_NewItemSource" xml:space="preserve">
+    <value>Kaynak</value>
+  </data>
+  <data name="Journal_NewItemSourceHint" xml:space="preserve">
+    <value>Doküman §, ya da @kişi sözlü</value>
+  </data>
+  <data name="Journal_NewItemPlaceholder" xml:space="preserve">
+    <value>Örn. Ön-arka oranı ≥ 20 dB</value>
+  </data>
+  <data name="Verify_AddAttempt" xml:space="preserve">
+    <value>+ Deneme</value>
+  </data>
+  <data name="Verify_AddAttemptHint" xml:space="preserve">
+    <value>Bu madde için ölçüm kaydı ekle (zaman çizelgesine yazılır)</value>
+  </data>
+  <data name="Verify_Attempts" xml:space="preserve">
+    <value>Denemeler</value>
+  </data>
+  <data name="Verify_NoAttempts" xml:space="preserve">
+    <value>Henüz deneme yok.</value>
+  </data>
+  <data name="Verify_AttemptCount" xml:space="preserve">
+    <value>{0} deneme</value>
+  </data>
+  <data name="Timeline_Edit" xml:space="preserve">
+    <value>Düzenle</value>
+  </data>
+  <data name="Timeline_OpenFolder" xml:space="preserve">
+    <value>Ölçüm klasörünü aç</value>
+  </data>
+  <data name="Journal_FolderLabel" xml:space="preserve">
+    <value>Klasör</value>
+  </data>
+  <data name="Journal_CreateFolder" xml:space="preserve">
+    <value>Ölçüm klasörü oluştur ve Gezgini&apos;nde aç</value>
+  </data>
+  <data name="Journal_FolderHint" xml:space="preserve">
+    <value>Dosyaları içine siz koyarsınız; içi serbest. Klasör: {0}</value>
+  </data>
+  <data name="Journal_FolderCreated" xml:space="preserve">
+    <value>Ölçüm klasörü açıldı: {0}</value>
+  </data>
+  <data name="Timeline_CreateFolder" xml:space="preserve">
+    <value>Ölçüm klasörü oluştur ve aç</value>
+  </data>
 </root>

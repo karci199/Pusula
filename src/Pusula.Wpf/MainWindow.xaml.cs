@@ -260,6 +260,55 @@ namespace Pusula.Wpf
             e.Handled = true;
             viewModel.OpenVerificationFileCommand.Execute(null);
         }
+
+        // Kart: ölçüm klasörünü aç; sonradan dosya / klasör ekle (menü ya da sürükle-bırak).
+        private void TimelineOpenFolder_Click(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (((FrameworkElement)sender).DataContext is StockTimelineCard card)
+            {
+                viewModel.OpenPath(card.FolderPath);
+            }
+        }
+
+        private void AttemptFolder_Click(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (((FrameworkElement)sender).DataContext is VerificationAttempt attempt)
+            {
+                viewModel.OpenPath(attempt.FolderPath);
+            }
+        }
+
+        private void TimelineCard_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            var element = (FrameworkElement)sender;
+            if (!(element.DataContext is StockTimelineCard card) || card.Item?.Journal == null || element.ContextMenu == null)
+            {
+                e.Handled = true;
+                return;
+            }
+
+            var note = card.Item.Journal;
+            var menu = element.ContextMenu;
+            menu.Items.Clear();
+            var edit = new MenuItem { Header = Properties.Resources.Timeline_Edit };
+            edit.Click += (s, a) => viewModel.OpenJournalEdit(note);
+            var folder = new MenuItem { Header = card.HasFolder ? Properties.Resources.Timeline_OpenFolder : Properties.Resources.Timeline_CreateFolder };
+            folder.Click += (s, a) => viewModel.CreateEntryFolder(note);
+            menu.Items.Add(edit);
+            menu.Items.Add(folder);
+        }
+
+        // Doğrulama satırında "+ Deneme": kayıt penceresi Ölçüm ve bu madde seçili açılır.
+        private void VerificationAttempt_Click(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (((FrameworkElement)sender).DataContext is VerificationRow row)
+            {
+                viewModel.OpenMeasurementFor(row);
+            }
+        }
         // Yapılacak kartın kutusu: iş kapatılmadan önce sorulur (Yapılacaklar sekmesiyle aynı).
         private void TimelineTask_Click(object sender, RoutedEventArgs e)
         {

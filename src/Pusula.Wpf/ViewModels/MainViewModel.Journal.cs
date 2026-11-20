@@ -49,6 +49,7 @@ namespace Pusula.Wpf.ViewModels
         private string journalTags = string.Empty;
         private string journalNotePath = string.Empty;
         private string journalFolder = string.Empty;
+        private string journalDetails = string.Empty;
 
         /// <summary>Olay penceresi açık mı.</summary>
         public bool IsJournalOpen
@@ -73,6 +74,7 @@ namespace Pusula.Wpf.ViewModels
                 if (SetProperty(ref journalKind, value ?? string.Empty))
                 {
                     OnPropertyChanged(nameof(JournalKindOption));
+                    OnMeasurementChanged();
                 }
             }
         }
@@ -131,6 +133,7 @@ namespace Pusula.Wpf.ViewModels
                 if (SetProperty(ref journalHeading, value ?? string.Empty))
                 {
                     OnPropertyChanged(nameof(JournalPrimaryText));
+                    OnPropertyChanged(nameof(JournalFolderText));
                 }
             }
         }
@@ -172,7 +175,7 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Ekle düğmesinin yazısı: başlık yazılmadan boş (düğme görünmez).</summary>
         public string JournalPrimaryText
         {
-            get { return journalHeading.Trim().Length > 0 && JournalDate.HasValue ? (editing != null ? Resources.Edit_Save : Resources.Journal_Add) : string.Empty; }
+            get { return journalHeading.Trim().Length > 0 && JournalDate.HasValue && JournalMeasurementReady ? (editing != null ? Resources.Edit_Save : Resources.Journal_Add) : string.Empty; }
         }
 
         private EventNote? editing;
@@ -210,10 +213,13 @@ namespace Pusula.Wpf.ViewModels
             // Kutudaki metin öncekiyle aynıysa ayarlayıcı tarihi yeniden okumaz; tarih her açılışta metinden kurulur.
             JournalDate = ParseDate(JournalDateText);
             JournalHeading = note.Title;
-            JournalBody = note.Body;
+            // Pencerede yalnız açıklama; "#### Ayrıntı" altındaki metin saklanır, kaydederken geri yazılır.
+            JournalBody = Journal.SummaryOf(note.Body);
+            journalDetails = Journal.DetailsOf(note.Body);
             JournalImportance = EventKinds.ImportanceRank(note.Importance) == 2 ? Resources.Importance_Critical : EventKinds.ImportanceRank(note.Importance) == 1 ? Resources.Importance_High : Resources.Importance_Normal;
             JournalTags = Pusula.Core.Markdown.MarkdownEditing.FormatTags(note.Tags.ToList());
             ResetJournalExtras(note.Date, false);
+            ResetJournalMeasurement(journalFolder, note);
             OnPropertyChanged(nameof(JournalPrimaryText));
         }
 
@@ -356,8 +362,10 @@ namespace Pusula.Wpf.ViewModels
             ResetJournalExtras(new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0), false);
             JournalHeading = string.Empty;
             JournalBody = string.Empty;
+            journalDetails = string.Empty;
             JournalImportance = Resources.Importance_Normal;
             JournalTags = string.Empty;
+            ResetJournalMeasurement(folder, null);
             IsJournalOpen = true;
             return true;
         }
@@ -385,6 +393,7 @@ namespace Pusula.Wpf.ViewModels
                 Body = JournalBody,
                 Importance = JournalImportance,
                 Person = CurrentUser,
+                Details = editing != null ? journalDetails : string.Empty,
             };
             entry.Related.AddRange(JournalRelated.Where(r => r.IsChecked).Select(r => r.Number));
             entry.Tags.AddRange(JournalTags.Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(t => t.TrimStart('#')).Where(t => t.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase));
@@ -395,11 +404,22 @@ namespace Pusula.Wpf.ViewModels
                 entry.Related.AddRange(edited.Related);
             }
 
+            if (!PrepareJournalMeasurement(entry) || !CreateJournalFolder(entry))
+            {
+                return false;
+            }
+
             var error = edited != null ? Journal.Replace(edited.Path, edited.SourceLine, entry) : Journal.Add(journalNotePath, entry);
             if (error.Length > 0)
             {
                 Status = string.Format(Resources.Error_Io, error);
                 return false;
+            }
+
+            ApplyJournalMeasurement(entry);
+            if (entry.Item.Length > 0 && string.Equals(journalItemStock, verificationStock, StringComparison.OrdinalIgnoreCase))
+            {
+                LoadVerifications();
             }
 
             Done(string.Format(Resources.Journal_Added, Path.GetFileName(journalNotePath)), journalNotePath);

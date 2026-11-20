@@ -2371,6 +2371,87 @@ namespace Pusula.Wpf.Properties
         /// <summary>Seçim listesinde boş seçenek.</summary>
         public static string Verify_None { get { return Get("Verify_None"); } }
 
+        /// <summary>Ölçüm kutusu: klasör alanı.</summary>
+        public static string Journal_FolderLabel { get { return Get("Journal_FolderLabel"); } }
+
+        /// <summary>Ölçüm klasörü kutusu.</summary>
+        public static string Journal_CreateFolder { get { return Get("Journal_CreateFolder"); } }
+
+        /// <summary>Ölçüm klasörünün yolu.</summary>
+        public static string Journal_FolderHint { get { return Get("Journal_FolderHint"); } }
+
+        /// <summary>Klasör açılınca durum mesajı.</summary>
+        public static string Journal_FolderCreated { get { return Get("Journal_FolderCreated"); } }
+
+        /// <summary>Kart menüsü: ölçüm klasörü oluştur.</summary>
+        public static string Timeline_CreateFolder { get { return Get("Timeline_CreateFolder"); } }
+
+        /// <summary>Kart menüsü: kaydı düzenle.</summary>
+        public static string Timeline_Edit { get { return Get("Timeline_Edit"); } }
+
+        /// <summary>Kartın klasör düğmesinin ipucu.</summary>
+        public static string Timeline_OpenFolder { get { return Get("Timeline_OpenFolder"); } }
+
+        /// <summary>Doğrulama satırında deneme sayısı.</summary>
+        public static string Verify_AttemptCount { get { return Get("Verify_AttemptCount"); } }
+
+        /// <summary>&quot;Ölçüm&quot; işlemi.</summary>
+        public static string Event_Measurement { get { return Get("Event_Measurement"); } }
+
+        /// <summary>Kayıt penceresi: bağlı doğrulama maddesi alanı.</summary>
+        public static string Journal_Item { get { return Get("Journal_Item"); } }
+
+        /// <summary>Madde listesi: maddeye bağlı olmayan ölçüm.</summary>
+        public static string Journal_ItemNone { get { return Get("Journal_ItemNone"); } }
+
+        /// <summary>Madde listesi: yeni ek madde açma seçeneği.</summary>
+        public static string Journal_ItemNew { get { return Get("Journal_ItemNew"); } }
+
+        /// <summary>Madde alanının açıklaması.</summary>
+        public static string Journal_ItemHint { get { return Get("Journal_ItemHint"); } }
+
+        /// <summary>Kayıt penceresi: ölçüm sonucu alanı.</summary>
+        public static string Journal_Result { get { return Get("Journal_Result"); } }
+
+        /// <summary>Ölçüm sonucu: bilgi amaçlı.</summary>
+        public static string Journal_ResultInfo { get { return Get("Journal_ResultInfo"); } }
+
+        /// <summary>Sonuç seçilince maddenin durum değişimi.</summary>
+        public static string Journal_ResultChange { get { return Get("Journal_ResultChange"); } }
+
+        /// <summary>Madde yokken sonuç açıklaması.</summary>
+        public static string Journal_ResultNoItem { get { return Get("Journal_ResultNoItem"); } }
+
+        /// <summary>Madde seçiliyken sonuç açıklaması.</summary>
+        public static string Journal_ResultHint { get { return Get("Journal_ResultHint"); } }
+
+        /// <summary>Yeni ek madde kutusunun başlığı.</summary>
+        public static string Journal_NewItemCaption { get { return Get("Journal_NewItemCaption"); } }
+
+        /// <summary>Yeni ek madde: metin alanı.</summary>
+        public static string Journal_NewItemText { get { return Get("Journal_NewItemText"); } }
+
+        /// <summary>Yeni ek madde: kaynak alanı.</summary>
+        public static string Journal_NewItemSource { get { return Get("Journal_NewItemSource"); } }
+
+        /// <summary>Yeni ek madde: kaynak ipucu.</summary>
+        public static string Journal_NewItemSourceHint { get { return Get("Journal_NewItemSourceHint"); } }
+
+        /// <summary>Yeni ek madde: metin ipucu.</summary>
+        public static string Journal_NewItemPlaceholder { get { return Get("Journal_NewItemPlaceholder"); } }
+
+        /// <summary>Doğrulama satırı: ölçüm kaydı ekleme düğmesi.</summary>
+        public static string Verify_AddAttempt { get { return Get("Verify_AddAttempt"); } }
+
+        /// <summary>Deneme düğmesinin ipucu.</summary>
+        public static string Verify_AddAttemptHint { get { return Get("Verify_AddAttemptHint"); } }
+
+        /// <summary>Açık satırda deneme listesi başlığı.</summary>
+        public static string Verify_Attempts { get { return Get("Verify_Attempts"); } }
+
+        /// <summary>Açık satırda deneme yoksa.</summary>
+        public static string Verify_NoAttempts { get { return Get("Verify_NoAttempts"); } }
+
         /// <summary>Yapılacak iş penceresi: başlık.</summary>
         public static string TaskDialog_Title { get { return Get("TaskDialog_Title"); } }
 

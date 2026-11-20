@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using Pusula.Core.Notes;
 using Pusula.Core.Testing;
 using Pusula.Core.Tracking;
 using Pusula.Wpf.Mvvm;
@@ -79,6 +80,21 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Md'deki madde.</summary>
         public VerificationItem Item { get; }
+
+        /// <summary>Maddeye bağlı ölçüm kayıtları (Günlük'te <c>madde:</c> bu madde), yeniden eskiye.</summary>
+        public IList<VerificationAttempt> Attempts { get; set; } = new List<VerificationAttempt>();
+
+        /// <summary>Deneme var mı.</summary>
+        public bool HasAttempts
+        {
+            get { return Attempts.Count > 0; }
+        }
+
+        /// <summary>Deneme sayısı metni ("3 deneme"); yoksa boş.</summary>
+        public string AttemptCountText
+        {
+            get { return Attempts.Count > 0 ? string.Format(CultureInfo.CurrentCulture, Resources.Verify_AttemptCount, Attempts.Count) : string.Empty; }
+        }
 
         /// <summary>Açık mı (tam gereksinim ve plan / rapor özeti görünür).</summary>
         public bool IsExpanded
@@ -319,6 +335,50 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Durum türü (bkz. <see cref="KindOf"/>).</summary>
         public int StatusKind { get; }
+    }
+
+    /// <summary>Doğrulama satırı açılınca görünen bir deneme: maddeye bağlı Günlük kaydı (tarih, sonuç, başlık, etiketler).</summary>
+    public sealed class VerificationAttempt
+    {
+        /// <summary>Günlük kaydından denemeyi kurar.</summary>
+        public VerificationAttempt(EventNote note)
+        {
+            Note = note;
+            DateText = note.Date.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
+            Result = note.Result.Trim().Length > 0 ? note.Result.Trim() : Resources.Journal_ResultInfo;
+            ResultKind = string.Equals(Result, Resources.Verify_StatusPassed, StringComparison.CurrentCultureIgnoreCase) ? 1
+                : string.Equals(Result, Resources.Verify_StatusFailed, StringComparison.CurrentCultureIgnoreCase) ? 2 : 3;
+            Title = note.Title;
+            TagText = string.Join(" ", note.Tags.Select(t => "#" + t));
+            FolderPath = MeasurementFiles.Resolve(Path.GetDirectoryName(note.Path) ?? string.Empty, note.Folder);
+        }
+
+        /// <summary>Ölçüm dosyalarının klasörü; yoksa boş.</summary>
+        public string FolderPath { get; }
+
+        /// <summary>Klasör düğmesi görünür mü.</summary>
+        public bool HasFolder
+        {
+            get { return FolderPath.Length > 0; }
+        }
+
+        /// <summary>Günlük kaydı.</summary>
+        public EventNote Note { get; }
+
+        /// <summary>Tarih (gg.aa.yyyy).</summary>
+        public string DateText { get; }
+
+        /// <summary>Sonuç metni (Geçti, Kaldı, Bilgi).</summary>
+        public string Result { get; }
+
+        /// <summary>Sonucun rengi: 1 geçti, 2 kaldı, 3 bilgi.</summary>
+        public int ResultKind { get; }
+
+        /// <summary>Kaydın başlığı.</summary>
+        public string Title { get; }
+
+        /// <summary>Etiketler ("#SN-003 #VNA").</summary>
+        public string TagText { get; }
     }
 
     /// <summary>Doğrulamalar sekmesinde bir grup (İşlevsel, Özellik, ÇK/EMC, Diğer) ve maddeleri.</summary>
@@ -649,6 +709,7 @@ namespace Pusula.Wpf.ViewModels
     public sealed partial class MainViewModel
     {
         private List<VerificationItem> verificationItems = new List<VerificationItem>();
+        private List<EventNote> verificationAttempts = new List<EventNote>();
         private string verificationFilter = string.Empty;
         private string verificationStock = string.Empty;
         private bool isVerificationDialogOpen;
@@ -1147,6 +1208,7 @@ namespace Pusula.Wpf.ViewModels
 
             verificationStock = stock;
             verificationItems = stock.Length == 0 ? new List<VerificationItem>() : VerificationList.Read(stock).ToList();
+            verificationAttempts = stock.Length == 0 ? new List<EventNote>() : Journal.Read(TaskNotePath(stock)).Where(e => e.Item.Trim().Length > 0).OrderByDescending(e => e.Date).ToList();
 
             // Süzgeç: Hepsi + dört grup (+ dosyada başka grup adı varsa o da).
             var groups = KnownGroups().ToList();
@@ -1212,12 +1274,19 @@ namespace Pusula.Wpf.ViewModels
                     continue;
                 }
 
-                var rows = verificationItems.Where(i => SameGroup(i, option.Key)).OrderBy(i => i.Number).Select(i => new VerificationRow(i) { SourceLine = SourceLineOf(i) }).ToList();
+                var rows = verificationItems.Where(i => SameGroup(i, option.Key)).OrderBy(i => i.Number).Select(i => new VerificationRow(i) { SourceLine = SourceLineOf(i), Attempts = AttemptsOf(i) }).ToList();
                 if (rows.Count > 0)
                 {
                     VerificationGroups.Add(new VerificationGroup(option.Key, Math.Max(0, option.Tone), rows));
                 }
             }
+        }
+
+        // Maddeye bağlı ölçüm kayıtları (Günlük'te madde: anahtarı), yeniden eskiye.
+        private IList<VerificationAttempt> AttemptsOf(VerificationItem item)
+        {
+            var key = VerificationList.KeyOf(item);
+            return verificationAttempts.Where(e => string.Equals(e.Item.Trim(), key, StringComparison.OrdinalIgnoreCase)).Select(e => new VerificationAttempt(e)).ToList();
         }
 
         // Açılan satırın kaynak satırı: doküman · TG no · alt grup · bağlı türetilmiş maddeler.

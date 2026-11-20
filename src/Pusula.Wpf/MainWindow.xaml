@@ -831,7 +831,11 @@
                 <Grid Grid.Column="1" Margin="6,0,0,8">
                     <Border x:Name="Card" CornerRadius="9" BorderThickness="1" Padding="14,9,12,10" Cursor="Hand"
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource SubtleFillColorTertiaryBrush}"
-                            MouseLeftButtonDown="TimelineCard_MouseLeftButtonDown">
+                            MouseLeftButtonDown="TimelineCard_MouseLeftButtonDown"
+                            ContextMenuOpening="TimelineCard_ContextMenuOpening">
+                        <Border.ContextMenu>
+                            <ContextMenu />
+                        </Border.ContextMenu>
                         <StackPanel>
                             <DockPanel>
                                 <Button x:Name="OpenNote" DockPanel.Dock="Right" Margin="8,0,0,0" Padding="9,2" MinWidth="38" VerticalAlignment="Center"
@@ -843,6 +847,13 @@
                                 </Button>
                                 <TextBlock x:Name="When" DockPanel.Dock="Right" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="12"
                                            Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding TimeText}" />
+                                <Button DockPanel.Dock="Right" Margin="8,0,0,0" Padding="8,2" VerticalAlignment="Center" ToolTip="{x:Static res:Resources.Timeline_OpenFolder}"
+                                        Visibility="{Binding HasFolder, Converter={StaticResource BoolToVis}}" Click="TimelineOpenFolder_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="12" VerticalAlignment="Center" Foreground="{DynamicResource SystemFillColorCautionBrush}" />
+                                        <TextBlock Margin="5,0,0,0" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding FileCount}" />
+                                    </StackPanel>
+                                </Button>
                                 <CheckBox x:Name="Check" DockPanel.Dock="Left" Margin="0,0,8,0" VerticalAlignment="Center" Visibility="Collapsed"
                                           Click="TimelineTask_Click" ToolTip="{x:Static res:Resources.Task_Hint}" />
                                 <TextBlock DockPanel.Dock="Left" Margin="0,0,8,0" VerticalAlignment="Center" FontSize="12.5" FontWeight="SemiBold" Text="{Binding Source}" Foreground="{Binding ProjectColor}"
@@ -853,6 +864,10 @@
                                         <local:AppIcon x:Name="KindIcon" Glyph="{Binding Glyph}" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
                                         <TextBlock x:Name="KindText" Margin="5,0,0,0" FontSize="11.5" VerticalAlignment="Center" Text="{Binding KindLabel}" Foreground="{DynamicResource TextSecondaryBrush}" />
                                     </StackPanel>
+                                </Border>
+                                <Border x:Name="ResultBadge" DockPanel.Dock="Right" Margin="8,0,0,0" Padding="8,1" CornerRadius="6" VerticalAlignment="Center"
+                                        Background="{DynamicResource SubtleFillColorSecondaryBrush}" Visibility="{Binding HasResult, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock x:Name="ResultLabel" FontSize="11.5" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding ResultText}" Foreground="{DynamicResource TextSecondaryBrush}" />
                                 </Border>
                                 <Border x:Name="ImpBadge" DockPanel.Dock="Right" Margin="8,0,0,0" Padding="7,1" CornerRadius="9" VerticalAlignment="Center"
                                         Background="{DynamicResource SystemFillColorCautionBackgroundBrush}" Visibility="{Binding HasImportance, Converter={StaticResource BoolToVis}}">
@@ -953,6 +968,14 @@
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsLate}" Value="True">
                     <Setter TargetName="When" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ResultKind}" Value="1">
+                    <Setter TargetName="ResultBadge" Property="Background" Value="{DynamicResource SystemFillColorSuccessBackgroundBrush}" />
+                    <Setter TargetName="ResultLabel" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ResultKind}" Value="2">
+                    <Setter TargetName="ResultBadge" Property="Background" Value="{DynamicResource SystemFillColorCriticalBackgroundBrush}" />
+                    <Setter TargetName="ResultLabel" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
@@ -2208,6 +2231,10 @@
                                                                                     </StackPanel>
                                                                                 </Border>
                                                                                 <StackPanel Grid.Column="8" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                                                    <Button x:Name="RowAttempt" Margin="0,0,4,0" Padding="9,2" VerticalAlignment="Center" Visibility="Hidden"
+                                                                                            ToolTip="{x:Static res:Resources.Verify_AddAttemptHint}" Click="VerificationAttempt_Click">
+                                                                                        <TextBlock FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.Verify_AddAttempt}" />
+                                                                                    </Button>
                                                                                     <Button x:Name="RowMd" Margin="0,0,4,0" Padding="9,2" MinWidth="38" VerticalAlignment="Center" Visibility="Hidden"
                                                                                             ToolTip="{x:Static res:Resources.Verify_OpenInFile}" Click="VerificationOpenNote_Click">
                                                                                         <StackPanel Orientation="Horizontal">
@@ -2231,6 +2258,49 @@
                                                                                        Visibility="{Binding HasRequirement, Converter={StaticResource BoolToVis}}" />
                                                                             <TextBlock Margin="0,0,0,4" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding SourceLine}"
                                                                                        Visibility="{Binding HasSourceLine, Converter={StaticResource BoolToVis}}" />
+                                                                            <!-- Denemeler: maddeye bağlı ölçüm kayıtları (zaman çizelgesinden), yeniden eskiye -->
+                                                                            <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
+                                                                                <TextBlock FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center" Text="{x:Static res:Resources.Verify_Attempts}" />
+                                                                                <TextBlock Margin="8,0,0,0" FontSize="12.5" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding AttemptCountText}" />
+                                                                            </StackPanel>
+                                                                            <TextBlock Margin="0,4,0,0" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_NoAttempts}"
+                                                                                       Visibility="{Binding HasAttempts, Converter={StaticResource InverseBoolToVis}}" />
+                                                                            <ItemsControl Margin="0,4,0,0" ItemsSource="{Binding Attempts}" Focusable="False">
+                                                                                <ItemsControl.ItemTemplate>
+                                                                                    <DataTemplate>
+                                                                                        <Grid Margin="0,2">
+                                                                                            <Grid.ColumnDefinitions>
+                                                                                                <ColumnDefinition Width="92" />
+                                                                                                <ColumnDefinition Width="72" />
+                                                                                                <ColumnDefinition Width="*" />
+                                                                                            </Grid.ColumnDefinitions>
+                                                                                            <TextBlock FontSize="12.5" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding DateText}" />
+                                                                                            <Border x:Name="AttemptPill" Grid.Column="1" Padding="8,1" CornerRadius="5" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                                                                    Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                                                                                <TextBlock x:Name="AttemptText" FontSize="11.5" FontWeight="SemiBold" Text="{Binding Result}" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                                                                            </Border>
+                                                                                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                                                                                <TextBlock FontSize="12.5" TextTrimming="CharacterEllipsis" Text="{Binding Title}" />
+                                                                                                <TextBlock Margin="8,0,0,0" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding TagText}" />
+                                                                                                <Button Margin="8,0,0,0" Padding="6,0" Style="{DynamicResource SubtleButtonStyle}" ToolTip="{x:Static res:Resources.Timeline_OpenFolder}"
+                                                                                                        Visibility="{Binding HasFolder, Converter={StaticResource BoolToVis}}" Click="AttemptFolder_Click">
+                                                                                                    <local:AppIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="12" Foreground="{DynamicResource SystemFillColorCautionBrush}" />
+                                                                                                </Button>
+                                                                                            </StackPanel>
+                                                                                        </Grid>
+                                                                                        <DataTemplate.Triggers>
+                                                                                            <DataTrigger Binding="{Binding ResultKind}" Value="1">
+                                                                                                <Setter TargetName="AttemptPill" Property="Background" Value="{DynamicResource SystemFillColorSuccessBackgroundBrush}" />
+                                                                                                <Setter TargetName="AttemptText" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                                                                                            </DataTrigger>
+                                                                                            <DataTrigger Binding="{Binding ResultKind}" Value="2">
+                                                                                                <Setter TargetName="AttemptPill" Property="Background" Value="{DynamicResource SystemFillColorCriticalBackgroundBrush}" />
+                                                                                                <Setter TargetName="AttemptText" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                                                                                            </DataTrigger>
+                                                                                        </DataTemplate.Triggers>
+                                                                                    </DataTemplate>
+                                                                                </ItemsControl.ItemTemplate>
+                                                                            </ItemsControl>
                                                                             <UniformGrid Margin="0,8,0,0" Rows="1" Width="720" HorizontalAlignment="Left">
                                                                                 <Border Margin="0,0,10,0" Padding="12,9" CornerRadius="9" BorderThickness="1"
                                                                                         Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
@@ -2257,8 +2327,8 @@
                                                                         </StackPanel>
                                                                         </Border>
                                                                         <DataTemplate.Triggers>
-                                                                            <Trigger SourceName="RowCard" Property="IsMouseOver" Value="True"><Setter TargetName="RowMd" Property="Visibility" Value="Visible" /></Trigger>
-                                                                            <DataTrigger Binding="{Binding IsExpanded}" Value="True"><Setter TargetName="RowMd" Property="Visibility" Value="Visible" /></DataTrigger>
+                                                                            <Trigger SourceName="RowCard" Property="IsMouseOver" Value="True"><Setter TargetName="RowMd" Property="Visibility" Value="Visible" /><Setter TargetName="RowAttempt" Property="Visibility" Value="Visible" /></Trigger>
+                                                                            <DataTrigger Binding="{Binding IsExpanded}" Value="True"><Setter TargetName="RowMd" Property="Visibility" Value="Visible" /><Setter TargetName="RowAttempt" Property="Visibility" Value="Visible" /></DataTrigger>
                                                                             <DataTrigger Binding="{Binding IsExpanded}" Value="True">
                                                                                 <Setter TargetName="RowCard" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
                                                                             </DataTrigger>
@@ -3289,6 +3359,84 @@
                     <ComboBox Width="260" HorizontalAlignment="Left" ItemsSource="{Binding JournalKinds}" SelectedItem="{Binding JournalKindOption, Mode=TwoWay}"
                               ItemTemplate="{StaticResource KindTileTemplate}" MaxDropDownHeight="360" />
                 </controls:FormField>
+
+                <!-- Ölçüm: madde (— Yok · doğrulama maddeleri · + Yeni ek madde) ve elle seçilen sonuç -->
+                <Border Margin="0,12,0,0" Padding="12,10,12,2" CornerRadius="8" BorderThickness="1"
+                        BorderBrush="{DynamicResource AccentFillColorTertiaryBrush}" Background="{DynamicResource SubtleFillColorTertiaryBrush}"
+                        Visibility="{Binding IsJournalMeasurement, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <controls:FormField Header="{x:Static res:Resources.Journal_Item}" LabelWidth="108">
+                            <StackPanel>
+                                <ComboBox x:Name="JournalItemBox" ItemsSource="{Binding JournalItemOptions}" SelectedItem="{Binding JournalItemOption, Mode=TwoWay}" MaxDropDownHeight="380">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <DockPanel>
+                                                <Border x:Name="ItemBadge" DockPanel.Dock="Right" Margin="10,0,0,0" Padding="7,1" CornerRadius="5" VerticalAlignment="Center"
+                                                        Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                                    <TextBlock x:Name="ItemBadgeText" FontSize="11" FontWeight="SemiBold" Text="{Binding Badge}" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                                </Border>
+                                                <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Text}" />
+                                            </DockPanel>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding Badge}" Value=""><Setter TargetName="ItemBadge" Property="Visibility" Value="Collapsed" /></DataTrigger>
+                                                <DataTrigger Binding="{Binding Badge}" Value="{x:Static res:Resources.Verify_StatusPassed}">
+                                                    <Setter TargetName="ItemBadge" Property="Background" Value="{DynamicResource SystemFillColorSuccessBackgroundBrush}" />
+                                                    <Setter TargetName="ItemBadgeText" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Badge}" Value="{x:Static res:Resources.Verify_StatusFailed}">
+                                                    <Setter TargetName="ItemBadge" Property="Background" Value="{DynamicResource SystemFillColorCriticalBackgroundBrush}" />
+                                                    <Setter TargetName="ItemBadgeText" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <TextBlock Margin="0,4,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Journal_ItemHint}" />
+                            </StackPanel>
+                        </controls:FormField>
+
+                        <!-- Yeni ek madde: numara kendiliğinden (EK-n); metin zorunlu, kaynak isteğe bağlı -->
+                        <Border Margin="108,10,0,0" Padding="10,8,10,0" CornerRadius="8" BorderThickness="1"
+                                BorderBrush="{DynamicResource Pusula.EventPurpleBrush}" Visibility="{Binding IsJournalNewItem, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <TextBlock Margin="0,0,0,8" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource Pusula.EventPurpleBrush}" Text="{Binding JournalNewItemCaption}" />
+                                <controls:FormField Header="{x:Static res:Resources.Journal_NewItemText}" IsRequired="True" LabelWidth="70">
+                                    <TextBox Text="{Binding JournalNewItemText, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Journal_NewItemPlaceholder}" />
+                                </controls:FormField>
+                                <controls:FormField Margin="0,8,0,8" Header="{x:Static res:Resources.Journal_NewItemSource}" LabelWidth="70">
+                                    <TextBox Text="{Binding JournalNewItemSource, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Journal_NewItemSourceHint}" />
+                                </controls:FormField>
+                            </StackPanel>
+                        </Border>
+
+                        <controls:FormField Margin="0,12,0,10" Header="{x:Static res:Resources.Journal_Result}" LabelWidth="108">
+                            <StackPanel>
+                                <ItemsControl ItemsSource="{Binding JournalResultChoices}" Focusable="False">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <RadioButton Style="{StaticResource ChoicePill}" GroupName="JournalResult" Content="{Binding Text}" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock Margin="0,5,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding JournalResultHint}" />
+                            </StackPanel>
+                        </controls:FormField>
+
+                        <!-- Ölçüm klasörü: kayıtla birlikte boş klasör açılır ve Gezgini'nde gösterilir; dosyaları kullanıcı koyar -->
+                        <controls:FormField Margin="0,0,0,10" Header="{x:Static res:Resources.Journal_FolderLabel}" LabelWidth="108">
+                            <StackPanel>
+                                <CheckBox Content="{x:Static res:Resources.Journal_CreateFolder}" IsChecked="{Binding JournalCreateFolder, Mode=TwoWay}"
+                                          Visibility="{Binding HasJournalFolder, Converter={StaticResource InverseBoolToVis}}" />
+                                <TextBlock Margin="0,4,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding JournalFolderText}" />
+                            </StackPanel>
+                        </controls:FormField>
+                    </StackPanel>
+                </Border>
 
                 <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Journal_Importance}" LabelWidth="120"
                                     Visibility="{Binding JournalDone, Converter={StaticResource BoolToVis}}">
