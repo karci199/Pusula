@@ -47,6 +47,27 @@ try {
     Check 'kişi: ad soyad ve baş harfler' ($ali.Name -eq 'Ali Demirci' -and $ali.Initials -eq 'AD' -and $ali.AvatarColor.StartsWith('#')) ($ali.Name + ' / ' + $ali.Initials)
     Check 'kart: ortam çipi, kararlar, katılımcılar, notlar özette' ($card.HasSetting -and $card.SettingIcon -eq 'teams' -and $card.HasDecisions -and ($tags -contains '@Ali_Demirci') -and $card.Description -eq 'Tasarımcıyla ölçütler konuşuldu.') ($tags -join ',')
 
+    "--- Karar"
+    [void]$vm.OpenJournalHere(); $vm.JournalKind = 'Karar'
+    Check 'Karar: karar alanları, toplantı alanı yok' ($vm.IsJournalDecision -and -not $vm.IsJournalMeeting -and -not $vm.IsJournalMeasurement -and $vm.JournalDecidedBy -eq '')
+    $vm.JournalDecidedBy = '@Ayşe_Kaya'; $vm.JournalHeading = 'Rapor biçimi değişti'
+    Check 'maddesiz karar eklenir' ($vm.JournalPrimaryText -ne '' -and $vm.ConfirmJournal()); Wait
+    $txt = [IO.File]::ReadAllText($note)
+    Check 'karar veren yazılır, madde yok' ($txt -match 'Rapor biçimi değişti\r?\n[^\n]*karar veren: @Ayşe_Kaya' -and -not ($txt -match 'Rapor biçimi değişti\r?\n[^\n]*madde:'))
+    $it = New-Object Pusula.Core.Testing.VerificationItem; $it.TgNo = 'DGÖ-1'; $it.Text = 'VSWR'; $it.Group = 'İşlevsel'; $it.Status = 'Geçti'
+    [void][Pusula.Core.Testing.VerificationList]::Add($stock, $it, ''); $vm.RefreshCommand.Execute($null); Wait; Wait
+    [void]$vm.OpenJournalHere(); $vm.JournalKind = 'Karar'; $vm.JournalDecidedBy = '@Ayşe_Kaya'; $vm.JournalHeading = 'VSWR sınırı gevşetildi'
+    $vm.JournalItemOption = ($vm.JournalItemOptions | Where-Object { $_.Key -eq 'DGÖ-1' })
+    Check 'maddeli karar eklenir' ($vm.JournalPrimaryText -ne '' -and $vm.ConfirmJournal()); Wait; Wait
+    $txt = [IO.File]::ReadAllText($note)
+    $kl = [regex]::Match($txt, 'VSWR sınırı gevşetildi\r?\n([^\r\n]*)').Groups[1].Value
+    Check 'madde ve karar veren yazılır, sonuç yok' ($kl.Contains('karar veren: @Ayşe_Kaya') -and $kl.Contains('madde: DGÖ-1') -and -not $kl.Contains('sonuç:')) $kl
+    Check 'madde durumu değişmez' ((([Pusula.Core.Testing.VerificationList]::Read($stock)) | Where-Object { $_.TgNo -eq 'DGÖ-1' }).Status -eq 'Geçti')
+    $vm.IsRangeAll = $true; Wait
+    $kc = @($vm.StockDays | ForEach-Object { $_.Cards }) | Where-Object { $_.Title -eq 'VSWR sınırı gevşetildi' } | Select-Object -First 1
+    Check 'kart: karar veren ve madde bağı' (($kc.Tags | ForEach-Object Text) -contains '@Ayşe_Kaya' -and $kc.ResultText -eq '↳ DGÖ-1') $kc.ResultText
+    $vr = @($vm.VerificationGroups | ForEach-Object { $_.Rows }) | Where-Object { $_.TgNo -eq 'DGÖ-1' } | Select-Object -First 1
+    Check 'doğrulama satırında Karar olarak' ($vr.Attempts.Count -eq 1 -and $vr.Attempts[0].Result -eq 'Karar')
     "--- Düzenleme"
     # MD'de ayrıntı yazılmış gibi: kartta ve düzenleme penceresinde görünmemeli
     $txt = [IO.File]::ReadAllText($note)
@@ -79,6 +100,16 @@ try {
     Check 'kararlar güncellendi, başlık tek, ayrıntı korunur' ($txt.Contains('Uzun tutanak') -and $txt.Contains("#### Kararlar") -and ([regex]::Matches($txt, '#### Kararlar')).Count -eq 1 -and $txt -match '#### Kararlar\r?\nÖlçütler kabul edildi\.\r?\n' -and -not $txt.Contains('Geri yansıma en fazla -7 dB.'))
     $vm.IsTimelineDone = $true; $win.Width = 1500; Wait
     $c2 = @($vm.StockDays | ForEach-Object { $_.Cards }) | Where-Object { $_.Title -eq 'Ölçüt toplantısı' } | Select-Object -First 1; if ($c2) { $c2.IsExpanded = $true }
+    $kn = [Pusula.Core.Notes.Journal]::Read($note) | Where-Object { $_.Title -eq 'VSWR sınırı gevşetildi' } | Select-Object -First 1
+    $vm.OpenJournalEdit($kn); for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 }
+    $dlg = Find-Open $win
+    if ($dlg) {
+        $pop = Find-Popup $dlg; if ($pop -and $pop.Child) { $dlg = $pop.Child; $sz = New-Object System.Windows.Size($win.ActualWidth, $win.ActualHeight); $dlg.Measure($sz); $dlg.Arrange((New-Object System.Windows.Rect($sz))); $dlg.UpdateLayout(); for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 } }
+        $bmp = New-Object System.Windows.Media.Imaging.RenderTargetBitmap([int]$dlg.ActualWidth, [int]$dlg.ActualHeight, 96, 96, [System.Windows.Media.PixelFormats]::Pbgra32)
+        $bmp.Render($dlg); $enc = New-Object System.Windows.Media.Imaging.PngBitmapEncoder; $enc.Frames.Add([System.Windows.Media.Imaging.BitmapFrame]::Create($bmp))
+        $fs = [IO.File]::Create("$Out\decision-edit.png"); $enc.Save($fs); $fs.Close()
+    }
+    $vm.IsJournalOpen = $false; Pump
     Snap $win "$Out\meeting.png"
 } finally {
     if ($savedSettings -ne $null) { [IO.File]::WriteAllText($settingsFile, $savedSettings) }

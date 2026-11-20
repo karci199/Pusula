@@ -71,6 +71,9 @@ namespace Pusula.Core.Notes
         /// <summary>Günlük girdisinin ölçüm klasörü (<c>klasör:</c>, kayıt klasörüne göre); yoksa boş.</summary>
         public string Folder { get; private set; } = string.Empty;
 
+        /// <summary>Kararı verenler (@ işaretsiz).</summary>
+        public List<string> DecidedBy { get; private set; } = new List<string>();
+
         /// <summary>Toplantı katılımcıları (@ işaretsiz).</summary>
         public List<string> Participants { get; private set; } = new List<string>();
 
@@ -80,10 +83,11 @@ namespace Pusula.Core.Notes
         /// <summary>Toplantı kararları (<c>#### Kararlar</c> altındaki metin); yoksa boş.</summary>
         public string Decisions { get; private set; } = string.Empty;
 
-        internal static EventNote FromJournal(string path, string kind, DateTime date, string title, string body, string person, string importance, List<string> related, List<string> tags, string sourceLine, string fullBody, string kindLabel, string item, string result, string folder, List<string> participants, string setting, string decisions)
+        internal static EventNote FromJournal(string path, string kind, DateTime date, string title, string body, string person, string importance, List<string> related, List<string> tags, string sourceLine, string fullBody, string kindLabel, string item, string result, string folder, List<string> participants, string setting, string decisions, List<string> decidedBy)
         {
             return new EventNote
             {
+                DecidedBy = decidedBy,
                 Participants = participants,
                 Setting = setting,
                 Decisions = decisions,

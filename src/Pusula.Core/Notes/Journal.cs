@@ -59,6 +59,9 @@ namespace Pusula.Core.Notes
 
         /// <summary>Toplantıda alınan kararlar (serbest metin); notta <c>#### Kararlar</c> başlığının altına yazılır.</summary>
         public string Decisions { get; set; } = string.Empty;
+
+        /// <summary>Kararı veren kişiler (@ işaretsiz); boşsa yazılmaz.</summary>
+        public List<string> DecidedBy { get; set; } = new List<string>();
     }
 
     /// <summary>
@@ -131,6 +134,9 @@ namespace Pusula.Core.Notes
         /// <summary>Bilgi satırında toplantı ortamının öneki (<c>ortam: Teams</c>).</summary>
         public const string SettingKey = "ortam:";
 
+        /// <summary>Bilgi satırında kararı verenlerin öneki (<c>karar veren: @Ayşe_Kaya</c>).</summary>
+        public const string DecidedByKey = "karar veren:";
+
         /// <summary>Kaydın içinde kararlar başlığı.</summary>
         public const string DecisionsHeading = "#### Kararlar";
 
@@ -157,6 +163,7 @@ namespace Pusula.Core.Notes
                 Decisions = note.Decisions,
             };
             entry.Participants.AddRange(note.Participants);
+            entry.DecidedBy.AddRange(note.DecidedBy);
             entry.Related.AddRange(note.Related);
             entry.Tags.AddRange(note.Tags);
             return entry;
@@ -554,6 +561,12 @@ namespace Pusula.Core.Notes
                 meta.Add(ParticipantsKey + " " + string.Join(" ", people.Select(p => "@" + p)));
             }
 
+            var deciders = entry.DecidedBy.Select(p => p.Trim().TrimStart('@').Replace(' ', '_')).Where(p => p.Length > 0).Distinct(StringComparer.CurrentCultureIgnoreCase).ToList();
+            if (deciders.Count > 0)
+            {
+                meta.Add(DecidedByKey + " " + string.Join(" ", deciders.Select(p => "@" + p)));
+            }
+
             if (entry.Setting.Trim().Length > 0)
             {
                 meta.Add(SettingKey + " " + entry.Setting.Trim());
@@ -631,6 +644,7 @@ namespace Pusula.Core.Notes
             var folder = string.Empty;
             var setting = string.Empty;
             var participants = new List<string>();
+            var deciders = new List<string>();
             var related = new List<string>();
             var tags = new List<string>();
             var text = new List<string>();
@@ -667,6 +681,10 @@ namespace Pusula.Core.Notes
                         {
                             participants.AddRange(segment.Substring(ParticipantsKey.Length).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(p => p.TrimStart('@')).Where(p => p.Length > 0));
                         }
+                        else if (lower.StartsWith(DecidedByKey, StringComparison.Ordinal))
+                        {
+                            deciders.AddRange(segment.Substring(DecidedByKey.Length).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(p => p.TrimStart('@')).Where(p => p.Length > 0));
+                        }
                         else if (lower.StartsWith(SettingKey, StringComparison.Ordinal))
                         {
                             setting = segment.Substring(SettingKey.Length).Trim();
@@ -698,7 +716,7 @@ namespace Pusula.Core.Notes
             return EventNote.FromJournal(path, kind.Length > 0 ? KindKey(kind) : "not", date, title.Length > 0 ? title : kind, excerpt, person,
                 string.Equals(importance, NormalImportance, StringComparison.OrdinalIgnoreCase) ? string.Empty : importance,
                 related.Distinct(StringComparer.OrdinalIgnoreCase).ToList(), tags.Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
-                sourceLine, bodyText, kind, item, result, folder, participants, setting, DecisionsOf(bodyText));
+                sourceLine, bodyText, kind, item, result, folder, participants, setting, DecisionsOf(bodyText), deciders);
         }
 
         private static bool IsMetaLine(string line)
@@ -706,7 +724,7 @@ namespace Pusula.Core.Notes
             var lower = line.ToLower(CultureInfo.GetCultureInfo("tr-TR"));
             return lower.StartsWith("önem:", StringComparison.Ordinal) || lower.StartsWith("kişi:", StringComparison.Ordinal)
                 || lower.StartsWith(ItemKey, StringComparison.Ordinal) || lower.StartsWith(ResultKey, StringComparison.Ordinal) || lower.StartsWith(FolderKey, StringComparison.Ordinal)
-                || lower.StartsWith(ParticipantsKey, StringComparison.Ordinal) || lower.StartsWith(SettingKey, StringComparison.Ordinal)
+                || lower.StartsWith(ParticipantsKey, StringComparison.Ordinal) || lower.StartsWith(DecidedByKey, StringComparison.Ordinal) || lower.StartsWith(SettingKey, StringComparison.Ordinal)
                 || lower.StartsWith("ilgili:", StringComparison.Ordinal) || (line.StartsWith("#", StringComparison.Ordinal) && !line.StartsWith("# ", StringComparison.Ordinal));
         }
     }

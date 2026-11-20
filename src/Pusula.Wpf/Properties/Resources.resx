@@ -2679,4 +2679,16 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Setting_Email" xml:space="preserve">
     <value>Outlook</value>
   </data>
+  <data name="Journal_DecidedBy" xml:space="preserve">
+    <value>Karar veren</value>
+  </data>
+  <data name="Journal_DecidedByHint" xml:space="preserve">
+    <value>Kimin onayıyla alındı; birden çok kişi olabilir.</value>
+  </data>
+  <data name="Journal_DecisionItemHint" xml:space="preserve">
+    <value>İsteğe bağlı; seçilirse karar doğrulama satırında da görünür.</value>
+  </data>
+  <data name="Journal_DecisionItem" xml:space="preserve">
+    <value>İlgili madde</value>
+  </data>
 </root>

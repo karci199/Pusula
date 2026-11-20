@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Kayıt · karar</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1f1f1f;font-family:"Segoe UI",Arial,sans-serif;color:#e6e6e6;font-size:14px}
+.page{width:1460px;padding:26px 30px 30px;background:#202020;display:grid;grid-template-columns:640px 1fr;gap:34px}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin:0 0 10px}
+.mut{color:#9a9a9a;font-size:12.5px}
+.row{display:flex;align-items:center;gap:8px}
+.dlg{background:#2b2b2b;border:1px solid #3c3c3c;border-radius:10px;padding:22px 26px}
+.dlg h1{margin:0;font-size:21px;font-weight:600;color:#fff}
+.sub{font-size:12.5px;color:#a8a8a8;margin:6px 0 16px}
+.f{display:grid;grid-template-columns:120px 1fr;align-items:start;margin-bottom:11px}
+.f label{padding-top:7px;color:#d0d0d0}
+.f label i{color:#ff99a4;font-style:normal}
+.box{min-height:32px;border:1px solid #3c3c3c;background:#333;border-radius:5px;padding:6px 11px;color:#fff;display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
+.combo{justify-content:space-between}
+.combo:after{content:"⌄";color:#aaa;font-size:14px;margin-top:-6px}
+.ph{color:#8a8a8a}
+.ico{width:22px;height:22px;border-radius:6px;background:#2e2547;display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:#c8b6ff}
+.hint{font-size:12px;color:#8a8a8a;margin-top:5px}
+.var{border:1px solid #b49cff88;background:#b49cff0d;border-radius:8px;padding:12px 12px 2px;margin:2px -12px 12px -12px}
+.who{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:1px 9px 1px 2px;border-radius:11px;border:1px solid #555;background:#333;color:#ddd}
+.av{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:700;color:#fff}
+.tag{font-size:12px;padding:1px 9px;border-radius:10px;border:1px solid #2f6b8c;color:#8fd0ff}
+.st{font-size:11px;font-weight:600;padding:1px 7px;border-radius:5px;background:#1f3d26;color:#8fdc9b}
+.btns{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.b{min-width:92px;text-align:center;padding:7px 14px;border-radius:5px;background:#3a3a3a}
+.b.a{background:#4cc2ff;color:#062033;font-weight:600}
+.right{min-width:0;display:flex;flex-direction:column;gap:20px}
+.panel{background:#272727;border:1px solid #363636;border-radius:12px;padding:12px 14px}
+.card{border:1px solid #3c3c3c;background:#353535;border-radius:10px;padding:10px 12px}
+.op{font-size:11.5px;padding:2px 8px;border-radius:6px;background:#2e2547;color:#c8b6ff}
+.link{font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:6px;background:#2b3b2b;color:#b8da8a}
+.day{font-size:12px;color:#9a9a9a;font-weight:600;margin:2px 0 8px}
+.by{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#c8b6ff}
+.md{font-family:Consolas,monospace;font-size:12px;background:#1b1b1b;border:1px solid #333;border-radius:8px;padding:12px 14px;color:#cfcfcf;line-height:1.6;white-space:pre;overflow:hidden}
+.md .k{color:#8fd0ff}
+.md .y{color:#f6c46f}
+.vrow{display:grid;grid-template-columns:62px 1fr 80px;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:#2f2f2f}
+.hist{margin:8px 0 4px 72px;border-left:2px solid #3c3c3c;padding-left:14px;font-size:12.5px}
+.hist div{padding:3px 0;display:flex;gap:10px;align-items:center}
+.note{font-size:12.5px;color:#9a9a9a;line-height:1.6}
+.note b{color:#ddd}
+</style></head><body>
+<div class="page">
+  <div>
+    <div class="cap">İŞLEM = KARAR SEÇİLİNCE</div>
+    <div class="dlg">
+      <h1>Zaman çizelgesine kayıt</h1>
+      <div class="sub">AB-7000-0001 · TAKIM ANTEN BOYNUZ</div>
+      <div class="f"><label>Tarih <i>*</i></label><div class="row"><div class="box" style="width:140px">21.11.2026</div><div class="box" style="width:80px">10:05</div></div></div>
+      <div class="f"><label>İşlem</label><div class="box combo"><span class="row"><span class="ico">⚑</span>Karar</span></div></div>
+      <div class="var">
+        <div class="f"><label>Karar veren</label><div>
+          <div class="box"><span class="who"><span class="av" style="background:#c2410c">AK</span>Ayşe Kaya</span><span class="ph">@ ile ekle</span></div>
+          <div class="hint">Kimin onayıyla alındı; birden çok kişi olabilir.</div></div></div>
+        <div class="f"><label>İlgili madde</label><div>
+          <div class="box combo"><span><b style="color:#8fd0ff">DGÖ-1</b> · Çalışma bandında VSWR ≤ 1,5</span><span class="st">Geçti</span></div>
+          <div class="hint">İsteğe bağlı; seçilirse karar doğrulama satırında da görünür.</div></div></div>
+      </div>
+      <div class="f"><label>Önem</label><div class="box combo"><span>Önemli</span></div></div>
+      <div class="f"><label>Başlık <i>*</i></label><div class="box">VSWR sınırı 1,6'ya gevşetildi</div></div>
+      <div class="f"><label>Açıklama</label><div class="box" style="min-height:64px;align-items:flex-start">8,2 GHz'deki tepe tasarım sınırı; tasarımcı onayıyla bant kenarında 1,6 kabul.</div></div>
+      <div class="f"><label>Etiket</label><div class="box"><span class="ph"># ile etiket ekle</span></div></div>
+      <div class="btns"><span class="b">Vazgeç</span><span class="b a">Ekle</span></div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div>
+      <div class="cap">ÇİZELGEDE</div>
+      <div class="panel">
+        <div class="day">Bugün · 21.11 Cmt</div>
+        <div class="card" style="border-left:4px solid #e0b030">
+          <div class="row"><span class="op">⚑ Karar</span><b>VSWR sınırı 1,6'ya gevşetildi</b><span class="link">↳ DGÖ-1</span><span class="mut" style="margin-left:auto">10:05</span></div>
+          <div class="mut" style="margin-top:5px">8,2 GHz'deki tepe tasarım sınırı; tasarımcı onayıyla bant kenarında 1,6 kabul.</div>
+          <div class="row" style="margin-top:7px"><span class="by">Karar veren:</span><span class="who"><span class="av" style="background:#c2410c">AK</span>Ayşe Kaya</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cap">DOĞRULAMADA · DGÖ-1 SATIRI AÇIK</div>
+      <div class="panel">
+        <div class="vrow"><b style="color:#8fd0ff">DGÖ-1</b><span>Çalışma bandında VSWR ≤ 1,5</span><span class="st" style="text-align:center">Geçti</span></div>
+        <div class="hist">
+          <div><span class="mut">21.11.2026</span><span class="op">⚑ Karar</span><span>VSWR sınırı 1,6'ya gevşetildi</span></div>
+          <div><span class="mut">19.11.2026</span><span class="st" style="background:#4a2326;color:#ff99a4">Kaldı</span><span>İlk VSWR ölçümü</span></div>
+        </div>
+        <div class="mut" style="margin:4px 0 0 72px">Karar maddenin durumunu değiştirmez; ölçütü değiştirmek için madde düzenlenir.</div>
+      </div>
+    </div>
+    <div>
+      <div class="cap">NOTA YAZILAN · AB-7000-0001.md</div>
+      <div class="md"><span class="k">### 21.11.2026 10:05 · Karar · VSWR sınırı 1,6'ya gevşetildi</span>
+önem: Önemli · kişi: katan · <span class="y">karar veren: @Ayşe_Kaya · madde: DGÖ-1</span>
+
+8,2 GHz'deki tepe tasarım sınırı; tasarımcı onayıyla bant kenarında 1,6 kabul.
+
+#### Ayrıntı</div>
+    </div>
+    <div class="note">
+      <b>İki ek alan:</b> karar veren (@) ve ilgili madde (isteğe bağlı, Ölçüm'deki listenin aynısı).<br>
+      Toplantıda alınan kararlar toplantı kaydının "Kararlar" alanına yazılır; bu tür toplantısız kararlar için.
+    </div>
+  </div>
+</div>
+</body></html>

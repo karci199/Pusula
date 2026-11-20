@@ -169,6 +169,15 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 
 ## Bekleyen işler
 
+- **Outlook'tan veri çekme (21.11.2026, sonraya bırakıldı; kullanıcı kararı):** klasik Outlook'a COM ile bağlanılır,
+  Pusula ağa çıkmaz (Exchange'e Outlook gider). (1) Kayıt penceresinde Ortam = Outlook iken "Outlook'ta seçili maili al":
+  konu → başlık, tarih, gönderen + alıcılar → katılımcı, gövde başı → notlar; mail `.msg` ve seçilen ekler
+  `03_Testler\Yazismalar\tarih_konu\` klasörüne; diskteki `.msg` de seçilebilir. (2) Adres defterinden kişi ekleme
+  (ad, e-posta, unvan, birim, ofis, telefon, yönetici) ve dağıtım listesinden ekip (üyeleriyle); otomatik eşitleme yok.
+  Yalnız klasik Outlook (yeni Outlook COM desteklemez); şirket ayarına göre Outlook güvenlik uyarısı çıkabilir
+  (kullanıcı soracak). Deneme betiği: `tools\OutlookDeneme.ps1` (yalnız okur). Mock: `docs/mock/outlook.png`.
+  Teams elle girilir; takvim bağlama yok (bulut gerektirir).
+
 - **İnceleme sonrası kalanlar (08.11.2026):** stok seçilince 5 okuma artık aynı anda yapılıyor; tek taramada birleştirmek ileride. Kısa not / bağ / not oluşturma UI thread'inde eşzamanlı dosya yazıyor. JSON oku-değiştir-yaz kalıbı 4 yerde
   tekrar (`JsonFile.Update<T>` yapılmalı). Süzgeç kutularının "Tümü" düzeltmesi geçici çözüm.
 

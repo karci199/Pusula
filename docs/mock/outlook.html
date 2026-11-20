@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Outlook</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1f1f1f;font-family:"Segoe UI",Arial,sans-serif;color:#e6e6e6;font-size:14px}
+.page{width:1500px;padding:26px 30px 30px;background:#202020;display:grid;grid-template-columns:640px 1fr;gap:34px}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin:0 0 10px}
+.cap b{color:#4cc2ff;margin-right:6px}
+.mut{color:#9a9a9a;font-size:12.5px}
+.row{display:flex;align-items:center;gap:8px}
+.dlg{background:#2b2b2b;border:1px solid #3c3c3c;border-radius:10px;padding:22px 26px}
+.dlg h1{margin:0;font-size:21px;font-weight:600;color:#fff}
+.sub{font-size:12.5px;color:#a8a8a8;margin:6px 0 16px}
+.f{display:grid;grid-template-columns:120px 1fr;align-items:start;margin-bottom:11px}
+.f label{padding-top:7px;color:#d0d0d0}
+.f label i{color:#ff99a4;font-style:normal}
+.box{min-height:32px;border:1px solid #3c3c3c;background:#333;border-radius:5px;padding:6px 11px;color:#fff;display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
+.combo{justify-content:space-between}
+.combo:after{content:"⌄";color:#aaa;font-size:14px;margin-top:-6px}
+.ph{color:#8a8a8a}
+.hint{font-size:12px;color:#8a8a8a;margin-top:5px}
+.var{border:1px solid #b49cff88;background:#b49cff0d;border-radius:8px;padding:12px 12px 2px;margin:2px -12px 12px -12px}
+.env{display:flex;gap:6px}
+.e{display:flex;flex-direction:column;align-items:center;gap:5px;width:68px;padding:8px 2px 6px;border-radius:9px;border:1px solid #444;background:#303030;font-size:12px;color:#cfcfcf}
+.e.on{border-color:#4cc2ff;background:#36404a;color:#fff;font-weight:600}
+.e svg{width:28px;height:28px}
+.pull{display:flex;align-items:center;gap:10px;margin:2px 0 12px 120px;padding:9px 12px;border:1px solid #0f6cbd;background:#0f6cbd22;border-radius:8px}
+.pull .btn{background:#0f6cbd;color:#fff;font-weight:600;font-size:13px;padding:6px 12px;border-radius:5px;display:flex;align-items:center;gap:7px}
+.pull svg{width:18px;height:18px}
+.who{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:1px 9px 1px 2px;border-radius:11px;border:1px solid #555;background:#333;color:#ddd}
+.av{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:700;color:#fff}
+.tag{font-size:12px;padding:1px 9px;border-radius:10px;border:1px solid #2f6b8c;color:#8fd0ff}
+.file{display:flex;align-items:center;gap:8px;font-size:13px;padding:3px 0}
+.file input{accent-color:#4cc2ff}
+.btns{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.b{min-width:92px;text-align:center;padding:7px 14px;border-radius:5px;background:#3a3a3a}
+.b.a{background:#4cc2ff;color:#062033;font-weight:600}
+.right{min-width:0;display:flex;flex-direction:column;gap:20px}
+.panel{background:#2b2b2b;border:1px solid #3c3c3c;border-radius:10px;padding:16px 18px}
+.panel h2{margin:0 0 4px;font-size:17px;font-weight:600;display:flex;align-items:center;gap:8px}
+.panel h2 svg{width:22px;height:22px}
+.search{height:32px;border:1px solid #3c3c3c;background:#333;border-radius:5px;padding:6px 11px;margin:10px 0;color:#fff}
+.tabs{display:flex;gap:6px;margin:6px 0 10px}
+.tabs span{font-size:12.5px;padding:4px 12px;border-radius:14px;border:1px solid #444;color:#bdbdbd}
+.tabs .on{border-color:#4cc2ff;color:#fff;font-weight:600;background:#36404a}
+.p{display:grid;grid-template-columns:24px 30px 1fr 170px 90px;gap:8px;align-items:center;padding:7px 6px;border-radius:6px;font-size:13px}
+.p.sel{background:#36404a}
+.p .av{width:28px;height:28px;font-size:11px}
+.p .n b{display:block;font-weight:600;color:#fff}
+.p .n span{font-size:12px;color:#9a9a9a}
+.st{font-size:11.5px;padding:2px 8px;border-radius:6px;text-align:center}
+.st.new{background:#1f3d26;color:#8fdc9b}
+.st.has{background:#383838;color:#bdbdbd}
+.team{display:grid;grid-template-columns:24px 30px 1fr 90px;gap:8px;align-items:center;padding:7px 6px;border-radius:6px;font-size:13px}
+.ti{width:28px;height:28px;border-radius:6px;background:#2e2547;color:#c8b6ff;display:flex;align-items:center;justify-content:center;font-size:13px}
+.md{font-family:Consolas,monospace;font-size:12px;background:#1b1b1b;border:1px solid #333;border-radius:8px;padding:12px 14px;color:#cfcfcf;line-height:1.6;white-space:pre;overflow:hidden}
+.md .k{color:#8fd0ff}
+.md .y{color:#f6c46f}
+.note{font-size:12.5px;color:#9a9a9a;line-height:1.6}
+.note b{color:#ddd}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <symbol id="i-face" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#E8833A"/><circle cx="12" cy="12.5" r="4" fill="#fff"/><circle cx="21.5" cy="13.5" r="3.2" fill="#fff" opacity=".85"/><path d="M5.5 25c.6-4.4 3.3-6.8 6.5-6.8s5.9 2.4 6.5 6.8z" fill="#fff"/><path d="M17.5 25c.3-2.6 1.6-5.6 4-5.6s3.9 2.2 4.5 5.6z" fill="#fff" opacity=".85"/></symbol>
+  <symbol id="i-teams" viewBox="0 0 32 32"><circle cx="24" cy="8" r="3.4" fill="#7B83EB"/><rect x="19" y="12.5" width="11" height="12.5" rx="4" fill="#7B83EB"/><circle cx="16.3" cy="6.9" r="4.3" fill="#5059C9"/><rect x="9.5" y="12.5" width="14.5" height="16.5" rx="5" fill="#5059C9"/><rect x="1.5" y="8.5" width="15" height="15" rx="2" fill="#4B53BC"/><path d="M5 11.8h8v2.1h-2.9v6.7H7.9v-6.7H5z" fill="#fff"/></symbol>
+  <symbol id="i-skype" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#0099E5"/><circle cx="16" cy="16" r="9.5" fill="#fff"/><path d="M19.6 18.5c0 2.1-1.8 3.3-4.1 3.3-2.1 0-3.5-.9-3.9-2.3l1.8-.6c.3.8 1 1.2 2.1 1.2 1.2 0 1.9-.5 1.9-1.3 0-.7-.6-1-2.1-1.4-2.2-.5-3.2-1.3-3.2-2.9 0-1.8 1.6-3 3.8-3 1.8 0 3.1.8 3.5 2.1l-1.7.6c-.3-.7-.9-1-1.8-1-1 0-1.6.4-1.6 1.1 0 .6.5.9 1.9 1.2 2.3.6 3.4 1.4 3.4 3z" fill="#0099E5"/></symbol>
+  <symbol id="i-zoom" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#2D8CFF"/><rect x="6" y="10.5" width="14" height="11" rx="3" fill="#fff"/><path d="M21 14.3l5-3.3v10l-5-3.3z" fill="#fff"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#2E9E5B"/><path d="M11.2 7.5c.7-.2 1.4.1 1.7.8l1.5 3.4c.3.6.1 1.3-.4 1.7l-1.7 1.3c1 2.2 2.7 3.9 4.9 4.9l1.3-1.7c.4-.5 1.1-.7 1.7-.4l3.4 1.5c.7.3 1 1 .8 1.7l-.6 2.4c-.2.7-.8 1.2-1.5 1.2C14.1 24.3 7.7 17.9 7.6 9.9c0-.7.5-1.3 1.2-1.5z" fill="#fff"/></symbol>
+  <symbol id="i-outlook" viewBox="0 0 32 32"><rect x="9" y="6" width="21" height="11" rx="1.5" fill="#0364B8"/><rect x="9" y="6" width="10.5" height="5.5" fill="#0078D4"/><rect x="19.5" y="6" width="10.5" height="5.5" fill="#28A8EA"/><path d="M9 14h21v12.5a1.5 1.5 0 0 1-1.5 1.5h-18A1.5 1.5 0 0 1 9 26.5z" fill="#35B8F1"/><path d="M9 14l10.5 7L30 14" stroke="#1490DF" stroke-width="1.4" fill="none"/><rect x="1.5" y="9" width="15" height="15" rx="2" fill="#0F6CBD"/><ellipse cx="9" cy="16.5" rx="3.6" ry="4.1" stroke="#fff" stroke-width="2" fill="none"/></symbol>
+</defs></svg>
+<div class="page">
+  <div>
+    <div class="cap"><b>1</b>KAYIT · ORTAM OUTLOOK · SEÇİLİ MAİLDEN DOLDUR</div>
+    <div class="dlg">
+      <h1>Zaman çizelgesine kayıt</h1>
+      <div class="sub">AB-7000-0001 · TAKIM ANTEN BOYNUZ</div>
+      <div class="f"><label>Tarih <i>*</i></label><div class="row"><div class="box" style="width:140px">20.11.2026</div><div class="box" style="width:80px">14:12</div></div></div>
+      <div class="f"><label>İşlem</label><div class="box combo"><span>◆ Toplantı</span></div></div>
+      <div class="var">
+        <div class="f"><label>Ortam</label><div class="env">
+          <div class="e"><svg><use href="#i-face"/></svg>Yüz yüze</div>
+          <div class="e"><svg><use href="#i-teams"/></svg>Teams</div>
+          <div class="e"><svg><use href="#i-skype"/></svg>Skype</div>
+          <div class="e"><svg><use href="#i-zoom"/></svg>Zoom</div>
+          <div class="e"><svg><use href="#i-phone"/></svg>Telefon</div>
+          <div class="e on"><svg><use href="#i-outlook"/></svg>Outlook</div>
+        </div></div>
+        <div class="pull"><span class="btn"><svg><use href="#i-outlook"/></svg>Outlook'ta seçili maili al</span><span class="mut">ya da .msg dosyası seç…</span></div>
+        <div class="f"><label>Katılımcı</label><div class="box">
+          <span class="who"><span class="av" style="background:#c2410c">AK</span>Ayşe Kaya</span>
+          <span class="who"><span class="av" style="background:#0e7490">AD</span>Ali Demirci</span>
+          <span class="who"><span class="av" style="background:#7c3aed">K</span>katan</span></div>
+          <div class="hint">Gönderen ve alıcılar; adlar Exchange adres defterinden.</div></div>
+        <div class="f"><label>Ekler</label><div>
+          <div class="file"><input type="checkbox" checked> 📄 mail.msg <span class="mut">· her zaman</span></div>
+          <div class="file"><input type="checkbox" checked> 📊 Olcut_tablosu.xlsx <span class="mut">· 48 KB</span></div>
+          <div class="file"><input type="checkbox"> 🖼 image001.png <span class="mut">· imza resmi</span></div>
+          <div class="hint">03_Testler\Yazismalar\2026-11-20_Boynuz_anten_olcutleri\</div></div></div>
+        <div class="f"><label>Kararlar</label><div class="box" style="min-height:44px;align-items:flex-start"><span class="ph">Mailde varılan karar…</span></div></div>
+      </div>
+      <div class="f"><label>Başlık <i>*</i></label><div class="box">RE: Boynuz anten geçti-kaldı ölçütleri</div></div>
+      <div class="f"><label>Notlar</label><div class="box" style="min-height:64px;align-items:flex-start">Merhaba, ekteki tabloya göre geri yansıma için −7 dB sınırında anlaştık; yükseliş hüzmesi için limit koymuyoruz…</div></div>
+      <div class="btns"><span class="b">Vazgeç</span><span class="b a">Ekle</span></div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div>
+      <div class="cap"><b>2</b>KİŞİLER · OUTLOOK ADRES DEFTERİNDEN EKLE</div>
+      <div class="panel">
+        <h2><svg><use href="#i-outlook"/></svg>Outlook'tan kişi ekle</h2>
+        <div class="mut">Şirket adres defteri (Exchange) · Pusula yalnız bilgisayardaki Outlook'u kullanır, ağa çıkmaz.</div>
+        <div class="tabs"><span class="on">Kişiler</span><span>Ekipler (dağıtım listeleri)</span></div>
+        <div class="search">🔍 demirci</div>
+        <div class="p sel"><input type="checkbox" checked><span class="av" style="background:#0e7490">AD</span><span class="n"><b>Ali Demirci</b><span>ali.demirci@firma.com.tr</span></span><span class="mut">Test Mühendisi · Anten Test</span><span class="st new">Eklenecek</span></div>
+        <div class="p"><input type="checkbox"><span class="av" style="background:#4d7c0f">AD</span><span class="n"><b>Ahmet Demirci</b><span>ahmet.demirci@firma.com.tr</span></span><span class="mut">Mekanik Tasarım</span><span class="st new">Eklenecek</span></div>
+        <div class="p"><input type="checkbox" disabled><span class="av" style="background:#be185d">ED</span><span class="n"><b>Elif Demirci</b><span>elif.demirci@firma.com.tr</span></span><span class="mut">Kalite</span><span class="st has">Zaten var</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="cap"><b>3</b>EKİPLER · DAĞITIM LİSTESİ ÜYELERİYLE</div>
+      <div class="panel" style="padding-top:12px">
+        <div class="team sel" style="background:#36404a"><input type="checkbox" checked><span class="ti">◆</span><span><b>ANTEN-TEST</b> <span class="mut">· anten-test@firma.com.tr · 6 üye</span></span><span class="st new">Eklenecek</span></div>
+        <div class="team"><input type="checkbox"><span class="ti">◆</span><span><b>MEKANIK-TASARIM</b> <span class="mut">· 11 üye</span></span><span class="st new">Eklenecek</span></div>
+        <div class="mut" style="margin:8px 0 0 6px">Ekip eklenince üyeleri de kişi olarak gelir; katılımcıya <b style="color:#ddd">@ANTEN-TEST</b> yazınca ekip açılır.</div>
+      </div>
+    </div>
+    <div>
+      <div class="cap"><b>4</b>NEREYE YAZILIR · _TAKIP\Kisiler\Ali_Demirci.md</div>
+      <div class="md"><span class="k">---</span>
+ad: Ali Demirci
+<span class="y">eposta: ali.demirci@firma.com.tr
+unvan: Test Mühendisi
+birim: Anten Test
+ekip: [ANTEN-TEST]
+kaynak: Outlook</span>
+<span class="k">---</span></div>
+    </div>
+    <div class="note">
+      <b>Mailden kayıt:</b> konu → başlık, tarih → tarih, gönderen + alıcılar → katılımcı, gövde başı → notlar; mail .msg olarak, ekler seçilerek yazışma klasörüne.<br>
+      <b>Yalnız klasik Outlook</b> (COM). Teams manuel kalır.
+    </div>
+  </div>
+</div>
+</body></html>

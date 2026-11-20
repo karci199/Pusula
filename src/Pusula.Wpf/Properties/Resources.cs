@@ -2371,6 +2371,18 @@ namespace Pusula.Wpf.Properties
         /// <summary>Seçim listesinde boş seçenek.</summary>
         public static string Verify_None { get { return Get("Verify_None"); } }
 
+        /// <summary>Karar: karar veren alanı.</summary>
+        public static string Journal_DecidedBy { get { return Get("Journal_DecidedBy"); } }
+
+        /// <summary>Karar veren alanının açıklaması.</summary>
+        public static string Journal_DecidedByHint { get { return Get("Journal_DecidedByHint"); } }
+
+        /// <summary>Kararda ilgili madde açıklaması.</summary>
+        public static string Journal_DecisionItemHint { get { return Get("Journal_DecisionItemHint"); } }
+
+        /// <summary>Karar: ilgili madde alanı.</summary>
+        public static string Journal_DecisionItem { get { return Get("Journal_DecisionItem"); } }
+
         /// <summary>Ortam: Outlook (e-postayla yazışma).</summary>
         public static string Setting_Email { get { return Get("Setting_Email"); } }
 

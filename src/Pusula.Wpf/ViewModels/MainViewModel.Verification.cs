@@ -345,7 +345,8 @@ namespace Pusula.Wpf.ViewModels
         {
             Note = note;
             DateText = note.Date.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
-            Result = note.Result.Trim().Length > 0 ? note.Result.Trim() : Resources.Journal_ResultInfo;
+            // Sonucu olmayan kayıt (karar gibi) işlem adıyla görünür.
+            Result = note.Result.Trim().Length > 0 ? note.Result.Trim() : (note.KindLabel.Trim().Length > 0 ? note.KindLabel.Trim() : Resources.Journal_ResultInfo);
             ResultKind = string.Equals(Result, Resources.Verify_StatusPassed, StringComparison.CurrentCultureIgnoreCase) ? 1
                 : string.Equals(Result, Resources.Verify_StatusFailed, StringComparison.CurrentCultureIgnoreCase) ? 2 : 3;
             Title = note.Title;

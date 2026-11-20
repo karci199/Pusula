@@ -96,7 +96,7 @@ namespace Pusula.Wpf.ViewModels
             if (journal != null)
             {
                 // Toplantı: katılımcılar kişi hapı, ortam ikonlu çip, kararlar ayrı kutu.
-                tags.InsertRange(0, journal.Participants.Select(p => "@" + p));
+                tags.InsertRange(0, journal.Participants.Concat(journal.DecidedBy).Select(p => "@" + p));
                 Setting = journal.Setting;
                 SettingIcon = MainViewModel.SettingIconKey(journal.Setting);
                 Decisions = journal.Decisions;
@@ -385,6 +385,7 @@ namespace Pusula.Wpf.ViewModels
                     OnPropertyChanged(nameof(IsJournalMeasurement));
                     OnPropertyChanged(nameof(IsJournalNewItem));
                     OnMeetingChanged();
+                    OnDecisionChanged();
                 }
             }
         }
