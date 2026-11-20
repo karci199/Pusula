@@ -2677,6 +2677,6 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
     <value>Kararlar</value>
   </data>
   <data name="Setting_Email" xml:space="preserve">
-    <value>E-posta</value>
+    <value>Outlook</value>
   </data>
 </root>

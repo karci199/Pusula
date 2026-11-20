@@ -2371,7 +2371,7 @@ namespace Pusula.Wpf.Properties
         /// <summary>Seçim listesinde boş seçenek.</summary>
         public static string Verify_None { get { return Get("Verify_None"); } }
 
-        /// <summary>Ortam: e-posta (Outlook'ta yazışma).</summary>
+        /// <summary>Ortam: Outlook (e-postayla yazışma).</summary>
         public static string Setting_Email { get { return Get("Setting_Email"); } }
 
         /// <summary>Toplantıda açıklama alanının adı.</summary>
