@@ -75,6 +75,7 @@ namespace Pusula.Wpf.ViewModels
                 {
                     OnPropertyChanged(nameof(JournalKindOption));
                     OnMeasurementChanged();
+                    OnMeetingChanged();
                 }
             }
         }
@@ -220,7 +221,15 @@ namespace Pusula.Wpf.ViewModels
             JournalTags = Pusula.Core.Markdown.MarkdownEditing.FormatTags(note.Tags.ToList());
             ResetJournalExtras(note.Date, false);
             ResetJournalMeasurement(journalFolder, note);
+            ResetJournalMeeting(note);
+            OnPropertyChanged(nameof(IsJournalEditing));
             OnPropertyChanged(nameof(JournalPrimaryText));
+        }
+
+        /// <summary>Düzenleme mi (var olan kayıt açık).</summary>
+        public bool IsJournalEditing
+        {
+            get { return editing != null; }
         }
 
         /// <summary>Günlükteki olayı silme onayını açar.</summary>
@@ -366,6 +375,8 @@ namespace Pusula.Wpf.ViewModels
             JournalImportance = Resources.Importance_Normal;
             JournalTags = string.Empty;
             ResetJournalMeasurement(folder, null);
+            ResetJournalMeeting(null);
+            OnPropertyChanged(nameof(IsJournalEditing));
             IsJournalOpen = true;
             return true;
         }
@@ -404,6 +415,7 @@ namespace Pusula.Wpf.ViewModels
                 entry.Related.AddRange(edited.Related);
             }
 
+            ApplyJournalMeeting(entry);
             if (!PrepareJournalMeasurement(entry) || !CreateJournalFolder(entry))
             {
                 return false;

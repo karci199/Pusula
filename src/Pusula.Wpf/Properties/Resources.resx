@@ -2637,4 +2637,43 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Timeline_CreateFolder" xml:space="preserve">
     <value>Ölçüm klasörü oluştur ve aç</value>
   </data>
+  <data name="Journal_Notes" xml:space="preserve">
+    <value>Notlar</value>
+  </data>
+  <data name="Journal_Participants" xml:space="preserve">
+    <value>Katılımcı</value>
+  </data>
+  <data name="Journal_Setting" xml:space="preserve">
+    <value>Ortam</value>
+  </data>
+  <data name="Journal_SettingHint" xml:space="preserve">
+    <value>Tek seçim; boş bırakılabilir.</value>
+  </data>
+  <data name="Journal_Decisions" xml:space="preserve">
+    <value>Kararlar</value>
+  </data>
+  <data name="Journal_DecisionsHint" xml:space="preserve">
+    <value>Toplantıda alınan kararlar; kartta ayrı kutuda görünür.</value>
+  </data>
+  <data name="Setting_FaceToFace" xml:space="preserve">
+    <value>Yüz yüze</value>
+  </data>
+  <data name="Setting_Teams" xml:space="preserve">
+    <value>Teams</value>
+  </data>
+  <data name="Setting_Skype" xml:space="preserve">
+    <value>Skype</value>
+  </data>
+  <data name="Setting_Zoom" xml:space="preserve">
+    <value>Zoom</value>
+  </data>
+  <data name="Setting_Phone" xml:space="preserve">
+    <value>Telefon</value>
+  </data>
+  <data name="Timeline_Decisions" xml:space="preserve">
+    <value>KARARLAR</value>
+  </data>
+  <data name="Timeline_HasDecisions" xml:space="preserve">
+    <value>Kararlar</value>
+  </data>
 </root>

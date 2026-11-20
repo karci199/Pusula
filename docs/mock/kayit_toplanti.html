@@ -1,0 +1,128 @@
+﻿<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Kayıt · toplantı</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1f1f1f;font-family:"Segoe UI",Arial,sans-serif;color:#e6e6e6;font-size:14px}
+.page{width:1480px;padding:26px 30px 30px;background:#202020;display:grid;grid-template-columns:660px 1fr;gap:34px}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin:0 0 10px}
+.mut{color:#9a9a9a;font-size:12.5px}
+.row{display:flex;align-items:center;gap:8px}
+.dlg{background:#2b2b2b;border:1px solid #3c3c3c;border-radius:10px;padding:22px 26px}
+.dlg h1{margin:0;font-size:21px;font-weight:600;color:#fff}
+.sub{font-size:12.5px;color:#a8a8a8;margin:6px 0 16px}
+.f{display:grid;grid-template-columns:100px 1fr;align-items:start;margin-bottom:11px}
+.f label{padding-top:7px;color:#d0d0d0}
+.f label i{color:#ff99a4;font-style:normal}
+.box{min-height:32px;border:1px solid #3c3c3c;background:#333;border-radius:5px;padding:6px 11px;color:#fff;display:flex;align-items:center;gap:8px;min-width:0}
+.combo{justify-content:space-between}
+.combo:after{content:"⌄";color:#aaa;font-size:14px;margin-top:-6px}
+.ph{color:#8a8a8a}
+.ico{width:22px;height:22px;border-radius:6px;background:#2e2547;display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:#c8b6ff}
+.hint{font-size:12px;color:#8a8a8a;margin-top:5px}
+.var{border:1px solid #b49cff55;background:#b49cff0d;border-radius:8px;padding:12px 12px 2px;margin:2px 0 12px -12px}
+.zcap{font-size:11px;font-weight:600;letter-spacing:.3px;margin:-4px 0 9px;color:#c8b6ff}
+.env{display:flex;gap:8px}
+.e{display:flex;flex-direction:column;align-items:center;gap:6px;width:86px;padding:9px 4px 7px;border-radius:9px;border:1px solid #444;background:#303030;font-size:12.5px;color:#cfcfcf}
+.e.on{border-color:#4cc2ff;background:#36404a;color:#fff;font-weight:600}
+.e svg{width:30px;height:30px}
+.who{font-size:12px;padding:1px 9px;border-radius:10px;border:1px solid #555;color:#ddd}
+.tag{font-size:12px;padding:1px 9px;border-radius:10px;border:1px solid #2f6b8c;color:#8fd0ff}
+.dec{display:grid;grid-template-columns:16px 1fr 18px;gap:8px;align-items:center;margin-bottom:6px}
+.dec .box{min-height:30px;font-size:13px}
+.dot{width:16px;height:16px;border-radius:4px;background:#2e2547;color:#c8b6ff;font-size:10px;display:flex;align-items:center;justify-content:center}
+.x{color:#8a8a8a;text-align:center}
+.btns{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.b{min-width:92px;text-align:center;padding:7px 14px;border-radius:5px;background:#3a3a3a}
+.b.a{background:#4cc2ff;color:#062033;font-weight:600}
+.right{min-width:0;display:flex;flex-direction:column;gap:20px}
+.panel{background:#272727;border:1px solid #363636;border-radius:12px;padding:12px 14px}
+.card{border:1px solid #3c3c3c;background:#353535;border-radius:10px;padding:10px 12px}
+.op{font-size:11.5px;padding:2px 8px;border-radius:6px;background:#2e2547;color:#c8b6ff}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:2px 8px 2px 4px;border-radius:6px;background:#2f2f2f;color:#ddd}
+.chip svg{width:16px;height:16px}
+.day{font-size:12px;color:#9a9a9a;font-weight:600;margin:2px 0 8px}
+.decs{margin:8px 0 0;padding:8px 10px;border-left:3px solid #b49cff;background:#2e2a38;border-radius:0 6px 6px 0}
+.decs .t{font-size:11px;color:#c8b6ff;font-weight:600;letter-spacing:.3px;margin-bottom:4px}
+.decs div{font-size:13px;color:#e0e0e0;line-height:1.55}
+.md{font-family:Consolas,monospace;font-size:12px;background:#1b1b1b;border:1px solid #333;border-radius:8px;padding:12px 14px;color:#cfcfcf;line-height:1.6;white-space:pre;overflow:hidden}
+.md .k{color:#8fd0ff}
+.md .y{color:#f6c46f}
+.note{font-size:12.5px;color:#9a9a9a;line-height:1.6}
+.note b{color:#ddd}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="i-face" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#E8833A"/><circle cx="12" cy="12.5" r="4" fill="#fff"/><circle cx="21.5" cy="13.5" r="3.2" fill="#fff" opacity=".85"/><path d="M5.5 25c.6-4.4 3.3-6.8 6.5-6.8s5.9 2.4 6.5 6.8z" fill="#fff"/><path d="M17.5 25c.3-2.6 1.6-5.6 4-5.6s3.9 2.2 4.5 5.6z" fill="#fff" opacity=".85"/></symbol>
+    <symbol id="i-teams" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#5B5FC7"/><circle cx="23" cy="9.5" r="3" fill="#C5C7F5"/><rect x="19.5" y="13.5" width="8" height="10" rx="3" fill="#9EA2F0"/><rect x="5" y="9" width="15" height="15" rx="2.5" fill="#fff"/><path d="M8.5 12.5h8v2.2h-2.9V21h-2.2v-6.3H8.5z" fill="#5B5FC7"/></symbol>
+    <symbol id="i-skype" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#0099E5"/><circle cx="16" cy="16" r="9.5" fill="#fff"/><path d="M19.6 18.5c0 2.1-1.8 3.3-4.1 3.3-2.1 0-3.5-.9-3.9-2.3l1.8-.6c.3.8 1 1.2 2.1 1.2 1.2 0 1.9-.5 1.9-1.3 0-.7-.6-1-2.1-1.4-2.2-.5-3.2-1.3-3.2-2.9 0-1.8 1.6-3 3.8-3 1.8 0 3.1.8 3.5 2.1l-1.7.6c-.3-.7-.9-1-1.8-1-1 0-1.6.4-1.6 1.1 0 .6.5.9 1.9 1.2 2.3.6 3.4 1.4 3.4 3z" fill="#0099E5"/></symbol>
+    <symbol id="i-zoom" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#2D8CFF"/><rect x="6" y="10.5" width="14" height="11" rx="3" fill="#fff"/><path d="M21 14.3l5-3.3v10l-5-3.3z" fill="#fff"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#2E9E5B"/><path d="M11.2 7.5c.7-.2 1.4.1 1.7.8l1.5 3.4c.3.6.1 1.3-.4 1.7l-1.7 1.3c1 2.2 2.7 3.9 4.9 4.9l1.3-1.7c.4-.5 1.1-.7 1.7-.4l3.4 1.5c.7.3 1 1 .8 1.7l-.6 2.4c-.2.7-.8 1.2-1.5 1.2C14.1 24.3 7.7 17.9 7.6 9.9c0-.7.5-1.3 1.2-1.5z" fill="#fff"/></symbol>
+  </defs>
+</svg>
+<div class="page">
+  <div>
+    <div class="cap">İŞLEM = TOPLANTI SEÇİLİNCE</div>
+    <div class="dlg">
+      <h1>Zaman çizelgesine kayıt</h1>
+      <div class="sub">AB-7000-0001 · TAKIM ANTEN BOYNUZ</div>
+      <div class="f"><label>Tarih <i>*</i></label><div class="row"><div class="box" style="width:140px">18.11.2026</div><div class="box" style="width:80px">20:38</div></div></div>
+      <div class="f"><label>İşlem</label><div class="box combo" style="width:240px"><span class="row"><span class="ico">◆</span>Toplantı</span></div></div>
+      <div class="var">
+        <div class="zcap">TOPLANTI ALANLARI</div>
+        <div class="f"><label>Katılımcı</label><div>
+          <div class="box"><span class="who">@katan</span><span class="who">@Ali_Demirci</span><span class="who">@Tasarımcı_Ayşe</span><span class="ph">@ ile ekle</span></div></div></div>
+        <div class="f"><label>Ortam</label><div class="env">
+          <div class="e"><svg><use href="#i-face"/></svg>Yüz yüze</div>
+          <div class="e on"><svg><use href="#i-teams"/></svg>Teams</div>
+          <div class="e"><svg><use href="#i-skype"/></svg>Skype</div>
+          <div class="e"><svg><use href="#i-zoom"/></svg>Zoom</div>
+          <div class="e"><svg><use href="#i-phone"/></svg>Telefon</div>
+        </div></div>
+        <div class="f"><label>Kararlar</label><div>
+          <div class="dec"><span class="dot">1</span><div class="box">Geri yansıma en fazla −7 dB</div><span class="x">✕</span></div>
+          <div class="dec"><span class="dot">2</span><div class="box">3 dB yanca hüzme en az 20°</div><span class="x">✕</span></div>
+          <div class="dec"><span class="dot">3</span><div class="box"><span class="ph">Karar yazın; Enter ile yeni satır</span></div><span class="x"></span></div>
+          <div class="hint" style="margin-left:24px">Her karar ayrı satır; kartta ayrı kutuda görünür.</div></div></div>
+      </div>
+      <div class="f"><label>Önem</label><div class="box combo" style="width:180px"><span>Normal</span></div></div>
+      <div class="f"><label>Başlık <i>*</i></label><div class="box">Test dokümanı geçti-kaldı ölçütleri</div></div>
+      <div class="f"><label>Notlar</label><div class="box" style="min-height:74px;align-items:flex-start">Tasarımcıyla ölçütler konuşuldu. Yükseliş hüzmesi incelenecek ama limit konmayacak; SATIMO takvimi teyit edilecek.</div></div>
+      <div class="f"><label>Etiket</label><div class="box"><span class="tag">#SATIMO</span><span class="ph"># ile ekle</span></div></div>
+      <div class="btns"><span class="b">Vazgeç</span><span class="b a">Ekle</span></div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div>
+      <div class="cap">ÇİZELGEDE · KART AÇIK</div>
+      <div class="panel">
+        <div class="day">18.11.2026 · Çar</div>
+        <div class="card">
+          <div class="row"><span class="op">◆ Toplantı</span><b>Test dokümanı geçti-kaldı ölçütleri</b><span class="chip"><svg><use href="#i-teams"/></svg>Teams</span><span class="mut" style="margin-left:auto">20:38</span></div>
+          <div style="margin-top:6px;font-size:13px;color:#cfcfcf">Tasarımcıyla ölçütler konuşuldu. Yükseliş hüzmesi incelenecek ama limit konmayacak; SATIMO takvimi teyit edilecek.</div>
+          <div class="decs"><div class="t">KARARLAR · 2</div><div>✓ Geri yansıma en fazla −7 dB</div><div>✓ 3 dB yanca hüzme en az 20°</div></div>
+          <div class="row" style="margin-top:8px;gap:6px"><span class="who">@katan</span><span class="who">@Ali_Demirci</span><span class="who">@Tasarımcı_Ayşe</span><span class="tag">#SATIMO</span></div>
+        </div>
+        <div class="mut" style="margin-top:8px">Kart kapalıyken: notların ilk satırı ve "2 karar" rozeti.</div>
+      </div>
+    </div>
+    <div>
+      <div class="cap">NOTA YAZILAN · AB-7000-0001.md</div>
+      <div class="md"><span class="k">### 18.11.2026 20:38 · Toplantı · Test dokümanı geçti-kaldı ölçütleri</span>
+kişi: katan · <span class="y">katılımcı: @katan @Ali_Demirci @Tasarımcı_Ayşe · ortam: Teams</span> · #SATIMO
+
+Tasarımcıyla ölçütler konuşuldu. Yükseliş hüzmesi incelenecek …
+
+<span class="y">#### Kararlar
+- Geri yansıma en fazla −7 dB
+- 3 dB yanca hüzme en az 20°</span>
+
+#### Ayrıntı</div>
+    </div>
+    <div class="note">
+      <b>Notlar</b> = toplantıda konuşulanlar (açıklama alanı, Toplantı'da adı değişir). <b>Kararlar</b> ayrı liste.<br>
+      İkonlar Pusula'da çizilir (marka renklerinde sade simgeler), dosya ya da logo eklenmez.
+    </div>
+  </div>
+</div>
+</body></html>

@@ -21,7 +21,30 @@ namespace Pusula.Wpf.ViewModels
         {
             Text = text;
             IsPerson = text.StartsWith("@", StringComparison.Ordinal);
+            if (IsPerson)
+            {
+                // "@Ali_Demirci" → "Ali Demirci", baş harfler "AD", renk isme göre sabit.
+                Name = text.Substring(1).Replace('_', ' ').Trim();
+                var words = Name.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                Initials = words.Length == 0 ? "?" : (words.Length == 1 ? words[0].Substring(0, 1) : words[0].Substring(0, 1) + words[words.Length - 1].Substring(0, 1)).ToUpper(CultureInfo.GetCultureInfo("tr-TR"));
+                var hash = 0;
+                foreach (var ch in Name.ToLower(CultureInfo.GetCultureInfo("tr-TR")))
+                {
+                    hash = unchecked((hash * 31) + ch);
+                }
+
+                AvatarColor = ProjectColors.Palette[Math.Abs(hash % ProjectColors.Palette.Length)];
+            }
         }
+
+        /// <summary>Kişide görünen ad ("Ali Demirci"); etikette boş.</summary>
+        public string Name { get; } = string.Empty;
+
+        /// <summary>Kişinin baş harfleri ("AD").</summary>
+        public string Initials { get; } = string.Empty;
+
+        /// <summary>Kişi yuvarlağının rengi (isme göre sabit).</summary>
+        public string AvatarColor { get; } = string.Empty;
 
         /// <summary>Görünen metin (# ya da @ ile).</summary>
         public string Text { get; }
@@ -70,6 +93,15 @@ namespace Pusula.Wpf.ViewModels
                 tags.Add("@" + m.Groups[1].Value);
             }
 
+            if (journal != null)
+            {
+                // Toplantı: katılımcılar kişi hapı, ortam ikonlu çip, kararlar ayrı kutu.
+                tags.InsertRange(0, journal.Participants.Select(p => "@" + p));
+                Setting = journal.Setting;
+                SettingIcon = MainViewModel.SettingIconKey(journal.Setting);
+                Decisions = journal.Decisions;
+            }
+
             Tags = tags.Distinct(StringComparer.CurrentCultureIgnoreCase).Select(t => new TimelineTag(t)).ToList();
 
             // Ölçüm: bağlı madde ve sonuç tek rozette ("↳ TG-1 · Kaldı", madde yoksa "Bilgi").
@@ -86,6 +118,27 @@ namespace Pusula.Wpf.ViewModels
                 FolderPath = MeasurementFiles.Resolve(System.IO.Path.GetDirectoryName(journal.Path) ?? string.Empty, journal.Folder);
                 FileCount = MeasurementFiles.CountFiles(FolderPath);
             }
+        }
+
+        /// <summary>Toplantı ortamı ("Teams"); yoksa boş.</summary>
+        public string Setting { get; } = string.Empty;
+
+        /// <summary>Ortamın ikon anahtarı (<c>teams</c>, <c>face</c> …); tanınmazsa boş.</summary>
+        public string SettingIcon { get; } = string.Empty;
+
+        /// <summary>Ortam çipi görünür mü.</summary>
+        public bool HasSetting
+        {
+            get { return Setting.Length > 0; }
+        }
+
+        /// <summary>Toplantı kararları; yoksa boş.</summary>
+        public string Decisions { get; } = string.Empty;
+
+        /// <summary>Karar var mı.</summary>
+        public bool HasDecisions
+        {
+            get { return Decisions.Length > 0; }
         }
 
         /// <summary>Ölçüm dosyalarının klasörü (tam yol); yoksa boş.</summary>
@@ -331,6 +384,7 @@ namespace Pusula.Wpf.ViewModels
                     OnPropertyChanged(nameof(JournalRecordHint));
                     OnPropertyChanged(nameof(IsJournalMeasurement));
                     OnPropertyChanged(nameof(IsJournalNewItem));
+                    OnMeetingChanged();
                 }
             }
         }

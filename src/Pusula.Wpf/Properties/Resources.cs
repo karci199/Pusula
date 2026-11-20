@@ -2371,6 +2371,45 @@ namespace Pusula.Wpf.Properties
         /// <summary>Seçim listesinde boş seçenek.</summary>
         public static string Verify_None { get { return Get("Verify_None"); } }
 
+        /// <summary>Toplantıda açıklama alanının adı.</summary>
+        public static string Journal_Notes { get { return Get("Journal_Notes"); } }
+
+        /// <summary>Toplantı: katılımcılar alanı.</summary>
+        public static string Journal_Participants { get { return Get("Journal_Participants"); } }
+
+        /// <summary>Toplantı: ortam alanı.</summary>
+        public static string Journal_Setting { get { return Get("Journal_Setting"); } }
+
+        /// <summary>Ortam alanının açıklaması.</summary>
+        public static string Journal_SettingHint { get { return Get("Journal_SettingHint"); } }
+
+        /// <summary>Toplantı: kararlar alanı.</summary>
+        public static string Journal_Decisions { get { return Get("Journal_Decisions"); } }
+
+        /// <summary>Kararlar alanının açıklaması.</summary>
+        public static string Journal_DecisionsHint { get { return Get("Journal_DecisionsHint"); } }
+
+        /// <summary>Ortam: yüz yüze.</summary>
+        public static string Setting_FaceToFace { get { return Get("Setting_FaceToFace"); } }
+
+        /// <summary>Ortam: Teams.</summary>
+        public static string Setting_Teams { get { return Get("Setting_Teams"); } }
+
+        /// <summary>Ortam: Skype.</summary>
+        public static string Setting_Skype { get { return Get("Setting_Skype"); } }
+
+        /// <summary>Ortam: Zoom.</summary>
+        public static string Setting_Zoom { get { return Get("Setting_Zoom"); } }
+
+        /// <summary>Ortam: telefon.</summary>
+        public static string Setting_Phone { get { return Get("Setting_Phone"); } }
+
+        /// <summary>Kartta kararlar kutusunun başlığı.</summary>
+        public static string Timeline_Decisions { get { return Get("Timeline_Decisions"); } }
+
+        /// <summary>Kart kapalıyken kararlar rozeti.</summary>
+        public static string Timeline_HasDecisions { get { return Get("Timeline_HasDecisions"); } }
+
         /// <summary>Ölçüm kutusu: klasör alanı.</summary>
         public static string Journal_FolderLabel { get { return Get("Journal_FolderLabel"); } }
 

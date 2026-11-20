@@ -50,6 +50,15 @@ namespace Pusula.Core.Notes
 
         /// <summary>Ölçüm dosyalarının klasörü, kayıt klasörüne göre <c>/</c> ile (<c>03_Testler/Olcumler/…</c>); boşsa yazılmaz.</summary>
         public string Folder { get; set; } = string.Empty;
+
+        /// <summary>Toplantı katılımcıları (@ işaretsiz); boşsa yazılmaz.</summary>
+        public List<string> Participants { get; set; } = new List<string>();
+
+        /// <summary>Toplantı ortamı (Yüz yüze, Teams, Skype, Zoom, Telefon); boşsa yazılmaz.</summary>
+        public string Setting { get; set; } = string.Empty;
+
+        /// <summary>Toplantıda alınan kararlar (serbest metin); notta <c>#### Kararlar</c> başlığının altına yazılır.</summary>
+        public string Decisions { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -68,14 +77,35 @@ namespace Pusula.Core.Notes
         /// <summary>Kaydın içinde ayrıntı başlığı: bundan sonrası kartta görünmez (MD'de okunur).</summary>
         public const string DetailsHeading = "#### Ayrıntı";
 
+        private static readonly Regex SectionLine = new Regex(@"^[ \t]*####[ \t]+(Ayr[ıi]nt[ıi]|Kararlar)[ \t]*$", RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase);
+
+        private static readonly Regex DecisionsLine = new Regex(@"^[ \t]*####[ \t]+Kararlar[ \t]*$", RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase);
+
+        private static readonly Regex AnyHeading = new Regex(@"^[ \t]*####[ \t]", RegexOptions.Compiled | RegexOptions.Multiline);
+
         private static readonly Regex DetailsLine = new Regex(@"^[ \t]*####[ \t]+Ayr[ıi]nt[ıi][ \t]*$", RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
         /// <summary>Açıklamanın kartta görünen kısmı: <c>#### Ayrıntı</c> başlığından öncesi (başlık yoksa tamamı).</summary>
         public static string SummaryOf(string body)
         {
             var text = (body ?? string.Empty).Replace("\r\n", "\n");
-            var match = DetailsLine.Match(text);
+            var match = SectionLine.Match(text);
             return (match.Success ? text.Substring(0, match.Index) : text).Trim();
+        }
+
+        /// <summary>Açıklamanın <c>#### Kararlar</c> başlığının altındaki metin (sonraki <c>####</c> başlığına kadar); yoksa boş.</summary>
+        public static string DecisionsOf(string body)
+        {
+            var text = (body ?? string.Empty).Replace("\r\n", "\n");
+            var match = DecisionsLine.Match(text);
+            if (!match.Success)
+            {
+                return string.Empty;
+            }
+
+            var rest = text.Substring(match.Index + match.Length);
+            var next = AnyHeading.Match(rest);
+            return (next.Success ? rest.Substring(0, next.Index) : rest).Trim('\n', ' ', '\t');
         }
 
         /// <summary>Açıklamanın <c>#### Ayrıntı</c> başlığından sonraki kısmı (başlık satırı hariç); başlık yoksa boş.</summary>
@@ -94,6 +124,15 @@ namespace Pusula.Core.Notes
 
         /// <summary>Bilgi satırında ölçüm klasörünün öneki (<c>klasör: 03_Testler/Olcumler/…</c>).</summary>
         public const string FolderKey = "klasör:";
+
+        /// <summary>Bilgi satırında toplantı katılımcılarının öneki (<c>katılımcı: @katan @Ali</c>).</summary>
+        public const string ParticipantsKey = "katılımcı:";
+
+        /// <summary>Bilgi satırında toplantı ortamının öneki (<c>ortam: Teams</c>).</summary>
+        public const string SettingKey = "ortam:";
+
+        /// <summary>Kaydın içinde kararlar başlığı.</summary>
+        public const string DecisionsHeading = "#### Kararlar";
 
         /// <summary>Okunan kayıttan yeniden yazılabilir girdi kurar (tüm alanlar, ayrıntı dahil).</summary>
         public static JournalEntry EntryOf(EventNote note)
@@ -114,7 +153,10 @@ namespace Pusula.Core.Notes
                 Item = note.Item,
                 Result = note.Result,
                 Folder = note.Folder,
+                Setting = note.Setting,
+                Decisions = note.Decisions,
             };
+            entry.Participants.AddRange(note.Participants);
             entry.Related.AddRange(note.Related);
             entry.Tags.AddRange(note.Tags);
             return entry;
@@ -506,6 +548,17 @@ namespace Pusula.Core.Notes
                 meta.Add(FolderKey + " " + entry.Folder.Trim().Replace('\\', '/'));
             }
 
+            var people = entry.Participants.Select(p => p.Trim().TrimStart('@').Replace(' ', '_')).Where(p => p.Length > 0).Distinct(StringComparer.CurrentCultureIgnoreCase).ToList();
+            if (people.Count > 0)
+            {
+                meta.Add(ParticipantsKey + " " + string.Join(" ", people.Select(p => "@" + p)));
+            }
+
+            if (entry.Setting.Trim().Length > 0)
+            {
+                meta.Add(SettingKey + " " + entry.Setting.Trim());
+            }
+
             var related = entry.Related.Select(r => r.Trim()).Where(r => r.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
             if (related.Count > 0)
             {
@@ -529,6 +582,12 @@ namespace Pusula.Core.Notes
             if (body.Length > 0)
             {
                 sb.Append('\n').Append(body).Append('\n');
+            }
+
+            var decisions = (entry.Decisions.Length > 0 ? entry.Decisions : DecisionsOf(entry.Body)).Replace("\r\n", "\n").Trim('\n', ' ', '\t');
+            if (decisions.Length > 0)
+            {
+                sb.Append('\n').Append(DecisionsHeading).Append('\n').Append(decisions).Append('\n');
             }
 
             sb.Append('\n').Append(DetailsHeading).Append('\n');
@@ -570,6 +629,8 @@ namespace Pusula.Core.Notes
             var item = string.Empty;
             var result = string.Empty;
             var folder = string.Empty;
+            var setting = string.Empty;
+            var participants = new List<string>();
             var related = new List<string>();
             var tags = new List<string>();
             var text = new List<string>();
@@ -602,6 +663,14 @@ namespace Pusula.Core.Notes
                         {
                             folder = segment.Substring(FolderKey.Length).Trim();
                         }
+                        else if (lower.StartsWith(ParticipantsKey, StringComparison.Ordinal))
+                        {
+                            participants.AddRange(segment.Substring(ParticipantsKey.Length).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(p => p.TrimStart('@')).Where(p => p.Length > 0));
+                        }
+                        else if (lower.StartsWith(SettingKey, StringComparison.Ordinal))
+                        {
+                            setting = segment.Substring(SettingKey.Length).Trim();
+                        }
                     }
 
                     related.AddRange(Link.Matches(line).Cast<Match>().Select(m => m.Groups[1].Value.Trim()));
@@ -629,7 +698,7 @@ namespace Pusula.Core.Notes
             return EventNote.FromJournal(path, kind.Length > 0 ? KindKey(kind) : "not", date, title.Length > 0 ? title : kind, excerpt, person,
                 string.Equals(importance, NormalImportance, StringComparison.OrdinalIgnoreCase) ? string.Empty : importance,
                 related.Distinct(StringComparer.OrdinalIgnoreCase).ToList(), tags.Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
-                sourceLine, bodyText, kind, item, result, folder);
+                sourceLine, bodyText, kind, item, result, folder, participants, setting, DecisionsOf(bodyText));
         }
 
         private static bool IsMetaLine(string line)
@@ -637,6 +706,7 @@ namespace Pusula.Core.Notes
             var lower = line.ToLower(CultureInfo.GetCultureInfo("tr-TR"));
             return lower.StartsWith("önem:", StringComparison.Ordinal) || lower.StartsWith("kişi:", StringComparison.Ordinal)
                 || lower.StartsWith(ItemKey, StringComparison.Ordinal) || lower.StartsWith(ResultKey, StringComparison.Ordinal) || lower.StartsWith(FolderKey, StringComparison.Ordinal)
+                || lower.StartsWith(ParticipantsKey, StringComparison.Ordinal) || lower.StartsWith(SettingKey, StringComparison.Ordinal)
                 || lower.StartsWith("ilgili:", StringComparison.Ordinal) || (line.StartsWith("#", StringComparison.Ordinal) && !line.StartsWith("# ", StringComparison.Ordinal));
         }
     }

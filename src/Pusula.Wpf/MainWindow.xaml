@@ -818,6 +818,48 @@
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
+        <!-- ToplantÄ± ortamÄ± ikonu (iÃ§erik: face, teams, skype, zoom, phone); marka renginde sade Ã§izim, dosya yok -->
+        <DataTemplate x:Key="SettingIconTemplate">
+            <Viewbox Stretch="Uniform">
+                <Grid Width="32" Height="32">
+                    <Canvas x:Name="Face" Visibility="Collapsed">
+                        <Rectangle Width="32" Height="32" RadiusX="8" RadiusY="8" Fill="#E8833A" />
+                        <Ellipse Canvas.Left="8" Canvas.Top="8.5" Width="8" Height="8" Fill="White" />
+                        <Ellipse Canvas.Left="18.3" Canvas.Top="10.3" Width="6.4" Height="6.4" Fill="White" Opacity="0.85" />
+                        <Path Data="M5.5,25 C6.1,20.6 8.8,18.2 12,18.2 S17.9,20.6 18.5,25 Z" Fill="White" />
+                        <Path Data="M17.5,25 C17.8,22.4 19.1,19.4 21.5,19.4 S25.4,21.6 26,25 Z" Fill="White" Opacity="0.85" />
+                    </Canvas>
+                    <Canvas x:Name="Teams" Visibility="Collapsed">
+                        <Rectangle Width="32" Height="32" RadiusX="8" RadiusY="8" Fill="#5B5FC7" />
+                        <Ellipse Canvas.Left="20" Canvas.Top="6.5" Width="6" Height="6" Fill="#C5C7F5" />
+                        <Rectangle Canvas.Left="19.5" Canvas.Top="13.5" Width="8" Height="10" RadiusX="3" RadiusY="3" Fill="#9EA2F0" />
+                        <Rectangle Canvas.Left="5" Canvas.Top="9" Width="15" Height="15" RadiusX="2.5" RadiusY="2.5" Fill="White" />
+                        <Path Data="M8.5,12.5 H16.5 V14.7 H13.6 V21 H11.4 V14.7 H8.5 Z" Fill="#5B5FC7" />
+                    </Canvas>
+                    <Canvas x:Name="Skype" Visibility="Collapsed">
+                        <Rectangle Width="32" Height="32" RadiusX="8" RadiusY="8" Fill="#0099E5" />
+                        <Ellipse Canvas.Left="6.5" Canvas.Top="6.5" Width="19" Height="19" Fill="White" />
+                        <Path Fill="#0099E5" Data="M19.6,18.5 c0,2.1 -1.8,3.3 -4.1,3.3 c-2.1,0 -3.5,-0.9 -3.9,-2.3 l1.8,-0.6 c0.3,0.8 1,1.2 2.1,1.2 c1.2,0 1.9,-0.5 1.9,-1.3 c0,-0.7 -0.6,-1 -2.1,-1.4 c-2.2,-0.5 -3.2,-1.3 -3.2,-2.9 c0,-1.8 1.6,-3 3.8,-3 c1.8,0 3.1,0.8 3.5,2.1 l-1.7,0.6 c-0.3,-0.7 -0.9,-1 -1.8,-1 c-1,0 -1.6,0.4 -1.6,1.1 c0,0.6 0.5,0.9 1.9,1.2 c2.3,0.6 3.4,1.4 3.4,3 z" />
+                    </Canvas>
+                    <Canvas x:Name="Zoom" Visibility="Collapsed">
+                        <Rectangle Width="32" Height="32" RadiusX="8" RadiusY="8" Fill="#2D8CFF" />
+                        <Rectangle Canvas.Left="6" Canvas.Top="10.5" Width="14" Height="11" RadiusX="3" RadiusY="3" Fill="White" />
+                        <Path Data="M21,14.3 L26,11 V21 L21,17.7 Z" Fill="White" />
+                    </Canvas>
+                    <Canvas x:Name="Phone" Visibility="Collapsed">
+                        <Rectangle Width="32" Height="32" RadiusX="8" RadiusY="8" Fill="#2E9E5B" />
+                        <Path Fill="White" Data="M11.2,7.5 c0.7,-0.2 1.4,0.1 1.7,0.8 l1.5,3.4 c0.3,0.6 0.1,1.3 -0.4,1.7 l-1.7,1.3 c1,2.2 2.7,3.9 4.9,4.9 l1.3,-1.7 c0.4,-0.5 1.1,-0.7 1.7,-0.4 l3.4,1.5 c0.7,0.3 1,1 0.8,1.7 l-0.6,2.4 c-0.2,0.7 -0.8,1.2 -1.5,1.2 C14.1,24.3 7.7,17.9 7.6,9.9 c0,-0.7 0.5,-1.3 1.2,-1.5 z" />
+                    </Canvas>
+                </Grid>
+            </Viewbox>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding}" Value="face"><Setter TargetName="Face" Property="Visibility" Value="Visible" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="teams"><Setter TargetName="Teams" Property="Visibility" Value="Visible" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="skype"><Setter TargetName="Skype" Property="Visibility" Value="Visible" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="zoom"><Setter TargetName="Zoom" Property="Visibility" Value="Visible" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="phone"><Setter TargetName="Phone" Property="Visibility" Value="Visible" /></DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
         <DataTemplate x:Key="TimelineCardTemplate">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -865,6 +907,13 @@
                                         <TextBlock x:Name="KindText" Margin="5,0,0,0" FontSize="11.5" VerticalAlignment="Center" Text="{Binding KindLabel}" Foreground="{DynamicResource TextSecondaryBrush}" />
                                     </StackPanel>
                                 </Border>
+                                <Border DockPanel.Dock="Left" Margin="0,0,8,0" Padding="3,2,8,2" CornerRadius="6" VerticalAlignment="Center"
+                                        Background="{DynamicResource SubtleFillColorSecondaryBrush}" Visibility="{Binding HasSetting, Converter={StaticResource BoolToVis}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ContentControl Width="16" Height="16" Focusable="False" Content="{Binding SettingIcon}" ContentTemplate="{StaticResource SettingIconTemplate}" />
+                                        <TextBlock Margin="5,0,0,0" FontSize="11.5" VerticalAlignment="Center" Text="{Binding Setting}" />
+                                    </StackPanel>
+                                </Border>
                                 <Border x:Name="ResultBadge" DockPanel.Dock="Right" Margin="8,0,0,0" Padding="8,1" CornerRadius="6" VerticalAlignment="Center"
                                         Background="{DynamicResource SubtleFillColorSecondaryBrush}" Visibility="{Binding HasResult, Converter={StaticResource BoolToVis}}">
                                     <TextBlock x:Name="ResultLabel" FontSize="11.5" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding ResultText}" Foreground="{DynamicResource TextSecondaryBrush}" />
@@ -880,6 +929,13 @@
                             </DockPanel>
                             <TextBlock x:Name="Desc" Margin="0,4,0,0" FontSize="13" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Description}"
                                        Visibility="{Binding HasDescription, Converter={StaticResource BoolToVis}}" />
+                            <Border Margin="0,8,0,0" Padding="10,6" CornerRadius="0,6,6,0" BorderThickness="3,0,0,0" BorderBrush="{DynamicResource Pusula.EventPurpleBrush}"
+                                    Background="{DynamicResource SubtleFillColorSecondaryBrush}" Visibility="{Binding HasDecisions, Converter={StaticResource BoolToVis}}">
+                                <StackPanel>
+                                    <TextBlock FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource Pusula.EventPurpleBrush}" Text="{x:Static res:Resources.Timeline_Decisions}" />
+                                    <TextBlock x:Name="DecText" Margin="0,3,0,0" FontSize="13" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Decisions}" />
+                                </StackPanel>
+                            </Border>
                             <ItemsControl Margin="0,7,0,0" ItemsSource="{Binding Tags}" Focusable="False" Visibility="{Binding HasTags, Converter={StaticResource BoolToVis}}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
@@ -890,12 +946,23 @@
                                     <DataTemplate>
                                         <Border x:Name="Pill" Margin="0,0,6,4" Padding="8,1" CornerRadius="10" BorderThickness="1"
                                                 BorderBrush="{DynamicResource AccentFillColorTertiaryBrush}" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
-                                            <TextBlock x:Name="PillText" FontSize="11.5" Text="{Binding Text}" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                            <StackPanel Orientation="Horizontal">
+                                                <!-- Kişi: baş harfli yuvarlak (isme göre renk) ve ad soyad -->
+                                                <Grid x:Name="Avatar" Width="18" Height="18" Margin="-5,0,6,0" VerticalAlignment="Center" Visibility="Collapsed">
+                                                    <Ellipse Fill="{Binding AvatarColor}" />
+                                                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="8.5" FontWeight="Bold" Foreground="White" Text="{Binding Initials}" />
+                                                </Grid>
+                                                <TextBlock x:Name="PillText" FontSize="11.5" VerticalAlignment="Center" Text="{Binding Text}" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                            </StackPanel>
                                         </Border>
                                         <DataTemplate.Triggers>
                                             <DataTrigger Binding="{Binding IsPerson}" Value="True">
+                                                <Setter TargetName="PillText" Property="Text" Value="{Binding Name}" />
                                                 <Setter TargetName="PillText" Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-                                                <Setter TargetName="Pill" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                                                <Setter TargetName="Pill" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorSecondaryBrush}" />
+                                                <Setter TargetName="Pill" Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+                                                <Setter TargetName="Pill" Property="Padding" Value="8,2,10,2" />
+                                                <Setter TargetName="Avatar" Property="Visibility" Value="Visible" />
                                             </DataTrigger>
                                         </DataTemplate.Triggers>
                                     </DataTemplate>
@@ -964,6 +1031,7 @@
                 <DataTrigger Binding="{Binding IsExpanded}" Value="True">
                     <Setter TargetName="Desc" Property="Text" Value="{Binding FullDescription}" />
                     <Setter TargetName="Desc" Property="TextWrapping" Value="Wrap" />
+                    <Setter TargetName="DecText" Property="TextWrapping" Value="Wrap" />
                     <Setter TargetName="Card" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsLate}" Value="True">
@@ -3356,16 +3424,16 @@
                 </controls:FormField>
 
                 <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Journal_Kind}" LabelWidth="120">
-                    <ComboBox Width="260" HorizontalAlignment="Left" ItemsSource="{Binding JournalKinds}" SelectedItem="{Binding JournalKindOption, Mode=TwoWay}"
+                    <ComboBox ItemsSource="{Binding JournalKinds}" SelectedItem="{Binding JournalKindOption, Mode=TwoWay}"
                               ItemTemplate="{StaticResource KindTileTemplate}" MaxDropDownHeight="360" />
                 </controls:FormField>
 
                 <!-- Ölçüm: madde (— Yok · doğrulama maddeleri · + Yeni ek madde) ve elle seçilen sonuç -->
-                <Border Margin="0,12,0,0" Padding="12,10,12,2" CornerRadius="8" BorderThickness="1"
+                <Border Margin="-12,12,-12,0" Padding="12,10,12,2" CornerRadius="8" BorderThickness="1"
                         BorderBrush="{DynamicResource AccentFillColorTertiaryBrush}" Background="{DynamicResource SubtleFillColorTertiaryBrush}"
                         Visibility="{Binding IsJournalMeasurement, Converter={StaticResource BoolToVis}}">
                     <StackPanel>
-                        <controls:FormField Header="{x:Static res:Resources.Journal_Item}" LabelWidth="108">
+                        <controls:FormField Header="{x:Static res:Resources.Journal_Item}" LabelWidth="120">
                             <StackPanel>
                                 <ComboBox x:Name="JournalItemBox" ItemsSource="{Binding JournalItemOptions}" SelectedItem="{Binding JournalItemOption, Mode=TwoWay}" MaxDropDownHeight="380">
                                     <ComboBox.ItemTemplate>
@@ -3396,7 +3464,7 @@
                         </controls:FormField>
 
                         <!-- Yeni ek madde: numara kendiliğinden (EK-n); metin zorunlu, kaynak isteğe bağlı -->
-                        <Border Margin="108,10,0,0" Padding="10,8,10,0" CornerRadius="8" BorderThickness="1"
+                        <Border Margin="120,10,0,0" Padding="10,8,10,0" CornerRadius="8" BorderThickness="1"
                                 BorderBrush="{DynamicResource Pusula.EventPurpleBrush}" Visibility="{Binding IsJournalNewItem, Converter={StaticResource BoolToVis}}">
                             <StackPanel>
                                 <TextBlock Margin="0,0,0,8" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource Pusula.EventPurpleBrush}" Text="{Binding JournalNewItemCaption}" />
@@ -3409,7 +3477,7 @@
                             </StackPanel>
                         </Border>
 
-                        <controls:FormField Margin="0,12,0,10" Header="{x:Static res:Resources.Journal_Result}" LabelWidth="108">
+                        <controls:FormField Margin="0,12,0,10" Header="{x:Static res:Resources.Journal_Result}" LabelWidth="120">
                             <StackPanel>
                                 <ItemsControl ItemsSource="{Binding JournalResultChoices}" Focusable="False">
                                     <ItemsControl.ItemsPanel>
@@ -3428,7 +3496,7 @@
                         </controls:FormField>
 
                         <!-- Ölçüm klasörü: kayıtla birlikte boş klasör açılır ve Gezgini'nde gösterilir; dosyaları kullanıcı koyar -->
-                        <controls:FormField Margin="0,0,0,10" Header="{x:Static res:Resources.Journal_FolderLabel}" LabelWidth="108">
+                        <controls:FormField Margin="0,0,0,10" Header="{x:Static res:Resources.Journal_FolderLabel}" LabelWidth="120">
                             <StackPanel>
                                 <CheckBox Content="{x:Static res:Resources.Journal_CreateFolder}" IsChecked="{Binding JournalCreateFolder, Mode=TwoWay}"
                                           Visibility="{Binding HasJournalFolder, Converter={StaticResource InverseBoolToVis}}" />
@@ -3438,9 +3506,66 @@
                     </StackPanel>
                 </Border>
 
+                <!-- ToplantÄ±: katÄ±lÄ±mcÄ± (@), ortam (ikonlu), kararlar; aÃ§Ä±klama "Notlar" olur -->
+                <Border Margin="-12,12,-12,0" Padding="12,10,12,2" CornerRadius="8" BorderThickness="1"
+                        BorderBrush="{DynamicResource Pusula.EventPurpleBrush}" Background="{DynamicResource SubtleFillColorTertiaryBrush}"
+                        Visibility="{Binding IsJournalMeeting, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <controls:FormField Header="{x:Static res:Resources.Journal_Participants}" LabelWidth="120">
+                            <local:TagBox Prefix="@" Tags="{Binding JournalParticipants, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Task_PeoplePlaceholder}" />
+                        </controls:FormField>
+                        <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Journal_Setting}" LabelWidth="120">
+                            <StackPanel>
+                                <ItemsControl ItemsSource="{Binding JournalSettingChoices}" Focusable="False">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <RadioButton GroupName="JournalSetting" IsChecked="{Binding IsChecked, Mode=TwoWay}" Margin="0,0,8,0" Cursor="Hand" Focusable="False">
+                                                <RadioButton.Template>
+                                                    <ControlTemplate TargetType="RadioButton">
+                                                        <Border x:Name="Tile" Width="78" Padding="4,8,4,6" CornerRadius="9" BorderThickness="1"
+                                                                Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}">
+                                                            <StackPanel HorizontalAlignment="Center">
+                                                                <ContentControl Width="28" Height="28" Focusable="False" Content="{Binding Badge}"
+                                                                                ContentTemplate="{StaticResource SettingIconTemplate}" />
+                                                                <TextBlock x:Name="Label" Margin="0,5,0,0" HorizontalAlignment="Center" FontSize="12.5" Text="{Binding Text}" />
+                                                            </StackPanel>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="Tile" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                                            </Trigger>
+                                                            <Trigger Property="IsChecked" Value="True">
+                                                                <Setter TargetName="Tile" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                                                <Setter TargetName="Tile" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                                                <Setter TargetName="Label" Property="FontWeight" Value="SemiBold" />
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </RadioButton.Template>
+                                            </RadioButton>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock Margin="0,5,0,0" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Journal_SettingHint}" />
+                            </StackPanel>
+                        </controls:FormField>
+                        <controls:FormField Margin="0,12,0,10" Header="{x:Static res:Resources.Journal_Decisions}" LabelWidth="120">
+                            <StackPanel>
+                                <TextBox MinHeight="64" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"
+                                         Text="{Binding JournalDecisions, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Margin="0,4,0,0" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Journal_DecisionsHint}" />
+                            </StackPanel>
+                        </controls:FormField>
+                    </StackPanel>
+                </Border>
                 <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Journal_Importance}" LabelWidth="120"
                                     Visibility="{Binding JournalDone, Converter={StaticResource BoolToVis}}">
-                    <ComboBox Width="260" HorizontalAlignment="Left" ItemsSource="{Binding JournalImportanceOptions}" SelectedItem="{Binding JournalImportanceOption, Mode=TwoWay}"
+                    <ComboBox ItemsSource="{Binding JournalImportanceOptions}" SelectedItem="{Binding JournalImportanceOption, Mode=TwoWay}"
                               ItemTemplate="{StaticResource KindTileTemplate}" />
                 </controls:FormField>
 
@@ -3448,10 +3573,12 @@
                     <TextBox Text="{Binding JournalHeading, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" local:MentionAssist.Mode="link" />
                 </controls:FormField>
 
-                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Journal_Body}" LabelWidth="120"
+                <controls:FormField Margin="0,12,0,0" Header="{Binding JournalBodyLabel}" LabelWidth="120"
                                     Visibility="{Binding JournalDone, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
                     <TextBox MinHeight="110" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"
                              Text="{Binding JournalBody, UpdateSourceTrigger=PropertyChanged}" local:MentionAssist.Mode="link" />
+                    </StackPanel>
                 </controls:FormField>
 
                 <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Journal_Tags}" LabelWidth="120">
