@@ -2691,4 +2691,103 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Journal_DecisionItem" xml:space="preserve">
     <value>İlgili madde</value>
   </data>
+  <data name="Event_Request" xml:space="preserve">
+    <value>Talep</value>
+  </data>
+  <data name="Request_Mechanic" xml:space="preserve">
+    <value>Mekanik</value>
+  </data>
+  <data name="Request_Cable" xml:space="preserve">
+    <value>Kablaj</value>
+  </data>
+  <data name="Request_Device" xml:space="preserve">
+    <value>Cihaz</value>
+  </data>
+  <data name="Request_Material" xml:space="preserve">
+    <value>Malzeme</value>
+  </data>
+  <data name="Request_Infra" xml:space="preserve">
+    <value>Test altyapı</value>
+  </data>
+  <data name="Request_Support" xml:space="preserve">
+    <value>Test destek</value>
+  </data>
+  <data name="Request_Other" xml:space="preserve">
+    <value>Diğer</value>
+  </data>
+  <data name="Request_StatusOpen" xml:space="preserve">
+    <value>Açık</value>
+  </data>
+  <data name="Request_StatusDelivered" xml:space="preserve">
+    <value>Teslim alındı</value>
+  </data>
+  <data name="Request_StatusCancelled" xml:space="preserve">
+    <value>İptal</value>
+  </data>
+  <data name="Request_DueLate" xml:space="preserve">
+    <value>gecikti</value>
+  </data>
+  <data name="Request_DeliveredBody" xml:space="preserve">
+    <value>{0} talebi teslim alındı (talep {1})</value>
+  </data>
+  <data name="Request_Delivered" xml:space="preserve">
+    <value>Talep teslim alındı: {0}</value>
+  </data>
+  <data name="Request_Type" xml:space="preserve">
+    <value>Talep türü</value>
+  </data>
+  <data name="Request_No" xml:space="preserve">
+    <value>Talep no</value>
+  </data>
+  <data name="Request_NoHint" xml:space="preserve">
+    <value>İsteğe bağlı: ambar fişi, iş emri, lab talep no.</value>
+  </data>
+  <data name="Request_From" xml:space="preserve">
+    <value>Kimden</value>
+  </data>
+  <data name="Request_FromHint" xml:space="preserve">
+    <value>Talebin istendiği yer ya da kişi: @Ambar, @Mekanik_Atölye.</value>
+  </data>
+  <data name="Request_Due" xml:space="preserve">
+    <value>İstenen tarih</value>
+  </data>
+  <data name="Request_Record" xml:space="preserve">
+    <value>İlgili kayıt</value>
+  </data>
+  <data name="Request_RecordHint" xml:space="preserve">
+    <value>JIG-…, KBL-…, cihaz no; isteğe bağlı.</value>
+  </data>
+  <data name="Request_Items" xml:space="preserve">
+    <value>Kalemler</value>
+  </data>
+  <data name="Request_ItemsHint" xml:space="preserve">
+    <value>Stok no isteğe bağlı; yazdıkça yeni satır açılır.</value>
+  </data>
+  <data name="Request_ItemStock" xml:space="preserve">
+    <value>Stok no</value>
+  </data>
+  <data name="Request_ItemName" xml:space="preserve">
+    <value>Tanım</value>
+  </data>
+  <data name="Request_ItemQty" xml:space="preserve">
+    <value>Adet</value>
+  </data>
+  <data name="Request_Detail" xml:space="preserve">
+    <value>İstenen</value>
+  </data>
+  <data name="Request_InfraHint" xml:space="preserve">
+    <value>Hangi test ya da altyapı: CE102, RE102, SATIMO …</value>
+  </data>
+  <data name="Request_SupportHint" xml:space="preserve">
+    <value>Kaç kişi, hangi günler.</value>
+  </data>
+  <data name="Request_DeliverButton" xml:space="preserve">
+    <value>Teslim alındı</value>
+  </data>
+  <data name="Request_OpenTitle" xml:space="preserve">
+    <value>Bekleyen talepler</value>
+  </data>
+  <data name="Request_AddItem" xml:space="preserve">
+    <value>Kalem ekle</value>
+  </data>
 </root>

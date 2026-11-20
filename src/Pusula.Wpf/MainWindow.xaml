@@ -883,6 +883,22 @@
                 <DataTrigger Binding="{Binding}" Value="phone"><Setter TargetName="Phone" Property="Visibility" Value="Visible" /></DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
+        <!-- Talep türü ikonu: renkli kutu ve beyaz simge -->
+        <DataTemplate x:Key="RequestIconTemplate">
+            <Viewbox Stretch="Uniform">
+                <Border x:Name="Box" Width="24" Height="24" CornerRadius="6" Background="#525252">
+                    <local:AppIcon x:Name="Glyph" Glyph="{x:Static local:AppIcons.More}" FontSize="13" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+            </Viewbox>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding}" Value="mechanic"><Setter TargetName="Box" Property="Background" Value="#B45309" /><Setter TargetName="Glyph" Property="Glyph" Value="&#xE90F;" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="cable"><Setter TargetName="Box" Property="Background" Value="#0E7490" /><Setter TargetName="Glyph" Property="Glyph" Value="&#xE71B;" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="device"><Setter TargetName="Box" Property="Background" Value="#4338CA" /><Setter TargetName="Glyph" Property="Glyph" Value="&#xE7F4;" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="material"><Setter TargetName="Box" Property="Background" Value="#15803D" /><Setter TargetName="Glyph" Property="Glyph" Value="&#xE8F1;" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="infra"><Setter TargetName="Box" Property="Background" Value="#BE123C" /><Setter TargetName="Glyph" Property="Glyph" Value="&#xE945;" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="support"><Setter TargetName="Box" Property="Background" Value="#7C3AED" /><Setter TargetName="Glyph" Property="Glyph" Value="&#xE77B;" /></DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
         <DataTemplate x:Key="TimelineCardTemplate">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -937,6 +953,24 @@
                                         <TextBlock Margin="5,0,0,0" FontSize="11.5" VerticalAlignment="Center" Text="{Binding Setting}" />
                                     </StackPanel>
                                 </Border>
+                                <Border DockPanel.Dock="Left" Margin="0,0,8,0" Padding="3,2,8,2" CornerRadius="6" VerticalAlignment="Center"
+                                        Background="{DynamicResource SubtleFillColorSecondaryBrush}" Visibility="{Binding IsRequest, Converter={StaticResource BoolToVis}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ContentControl Width="16" Height="16" Focusable="False" Content="{Binding RequestIcon}" ContentTemplate="{StaticResource RequestIconTemplate}" />
+                                        <TextBlock Margin="5,0,0,0" FontSize="11.5" VerticalAlignment="Center" Text="{Binding RequestType}" />
+                                    </StackPanel>
+                                </Border>
+                                <Button DockPanel.Dock="Right" Margin="8,0,0,0" Padding="9,2" VerticalAlignment="Center" Click="TimelineDeliver_Click"
+                                        Visibility="{Binding IsRequestOpen, Converter={StaticResource BoolToVis}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource SystemFillColorSuccessBrush}" />
+                                        <TextBlock Margin="5,0,0,0" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Text="{x:Static res:Resources.Request_DeliverButton}" />
+                                    </StackPanel>
+                                </Button>
+                                <Border x:Name="ReqStatus" DockPanel.Dock="Right" Margin="8,0,0,0" Padding="8,1" CornerRadius="6" VerticalAlignment="Center"
+                                        Background="{DynamicResource SystemFillColorCautionBackgroundBrush}" Visibility="{Binding IsRequest, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock x:Name="ReqStatusText" FontSize="11.5" FontWeight="SemiBold" Text="{Binding RequestStatusText}" Foreground="{DynamicResource SystemFillColorCautionBrush}" />
+                                </Border>
                                 <Border x:Name="ResultBadge" DockPanel.Dock="Right" Margin="8,0,0,0" Padding="8,1" CornerRadius="6" VerticalAlignment="Center"
                                         Background="{DynamicResource SubtleFillColorSecondaryBrush}" Visibility="{Binding HasResult, Converter={StaticResource BoolToVis}}">
                                     <TextBlock x:Name="ResultLabel" FontSize="11.5" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding ResultText}" Foreground="{DynamicResource TextSecondaryBrush}" />
@@ -952,6 +986,12 @@
                             </DockPanel>
                             <TextBlock x:Name="Desc" Margin="0,4,0,0" FontSize="13" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Description}"
                                        Visibility="{Binding HasDescription, Converter={StaticResource BoolToVis}}" />
+                            <TextBlock Margin="0,4,0,0" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding RequestMeta}"
+                                       Visibility="{Binding HasRequestMeta, Converter={StaticResource BoolToVis}}" />
+                            <Border Margin="0,6,0,0" Padding="10,5" CornerRadius="6" Background="{DynamicResource SubtleFillColorSecondaryBrush}"
+                                    Visibility="{Binding HasRequestLines, Converter={StaticResource BoolToVis}}">
+                                <TextBlock FontSize="12.5" TextWrapping="Wrap" LineHeight="19" Text="{Binding RequestLines}" />
+                            </Border>
                             <Border Margin="0,8,0,0" Padding="10,6" CornerRadius="0,6,6,0" BorderThickness="3,0,0,0" BorderBrush="{DynamicResource Pusula.EventPurpleBrush}"
                                     Background="{DynamicResource SubtleFillColorSecondaryBrush}" Visibility="{Binding HasDecisions, Converter={StaticResource BoolToVis}}">
                                 <StackPanel>
@@ -1059,6 +1099,14 @@
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsLate}" Value="True">
                     <Setter TargetName="When" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RequestStatusKind}" Value="2">
+                    <Setter TargetName="ReqStatus" Property="Background" Value="{DynamicResource SystemFillColorCriticalBackgroundBrush}" />
+                    <Setter TargetName="ReqStatusText" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RequestStatusKind}" Value="3">
+                    <Setter TargetName="ReqStatus" Property="Background" Value="{DynamicResource SystemFillColorSuccessBackgroundBrush}" />
+                    <Setter TargetName="ReqStatusText" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ResultKind}" Value="1">
                     <Setter TargetName="ResultBadge" Property="Background" Value="{DynamicResource SystemFillColorSuccessBackgroundBrush}" />
@@ -2543,6 +2591,10 @@
                                             <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Timeline_AddTask}" />
                                         </StackPanel>
                                     </Button>
+                                    <StackPanel Margin="0,4,0,12" Visibility="{Binding HasOpenRequests, Converter={StaticResource BoolToVis}}">
+                                        <TextBlock Margin="0,0,0,8" FontSize="14" FontWeight="SemiBold" Text="{x:Static res:Resources.Request_OpenTitle}" />
+                                        <ItemsControl ItemsSource="{Binding OpenRequests}" ItemTemplate="{StaticResource TimelineCardTemplate}" Focusable="False" />
+                                    </StackPanel>
                                     <ItemsControl ItemsSource="{Binding StockTaskGroups}" Focusable="False">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
@@ -3529,6 +3581,136 @@
                     </StackPanel>
                 </Border>
 
+                <!-- Talep: tür, talep no, kimden, istenen tarih; türe göre ilgili kayıt, kalemler ya da istenen -->
+                <Border Margin="-12,12,-12,0" Padding="12,10,12,2" CornerRadius="8" BorderThickness="1"
+                        BorderBrush="{DynamicResource SystemFillColorSuccessBrush}" Background="{DynamicResource SubtleFillColorTertiaryBrush}"
+                        Visibility="{Binding IsJournalRequest, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <controls:FormField Header="{x:Static res:Resources.Request_Type}" LabelWidth="120">
+                            <ItemsControl ItemsSource="{Binding JournalRequestTypeChoices}" Focusable="False">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="4" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <RadioButton GroupName="RequestType" IsChecked="{Binding IsChecked, Mode=TwoWay}" Margin="0,0,6,6" Cursor="Hand" Focusable="False">
+                                            <RadioButton.Template>
+                                                <ControlTemplate TargetType="RadioButton">
+                                                    <Border x:Name="Tile" Padding="6,5" CornerRadius="8" BorderThickness="1"
+                                                            Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <ContentControl Width="22" Height="22" Focusable="False" Content="{Binding Badge}" ContentTemplate="{StaticResource RequestIconTemplate}" />
+                                                            <TextBlock x:Name="Label" Margin="7,0,0,0" FontSize="12.5" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Text}" />
+                                                        </StackPanel>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="Tile" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsChecked" Value="True">
+                                                            <Setter TargetName="Tile" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                                            <Setter TargetName="Tile" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                                            <Setter TargetName="Label" Property="FontWeight" Value="SemiBold" />
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </RadioButton.Template>
+                                        </RadioButton>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </controls:FormField>
+                        <controls:FormField Margin="0,8,0,0" Header="{x:Static res:Resources.Request_No}" LabelWidth="120">
+                            <StackPanel>
+                                <TextBox Width="220" HorizontalAlignment="Left" Text="{Binding JournalRequestNo, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Margin="0,4,0,0" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Request_NoHint}" />
+                            </StackPanel>
+                        </controls:FormField>
+                        <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Request_From}" LabelWidth="120">
+                            <StackPanel>
+                                <local:TagBox Prefix="@" Tags="{Binding JournalRequestFrom, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Task_PeoplePlaceholder}" />
+                                <TextBlock Margin="0,4,0,0" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Request_FromHint}" />
+                            </StackPanel>
+                        </controls:FormField>
+                        <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Request_Due}" LabelWidth="120">
+                            <StackPanel>
+                                <TextBox Width="140" HorizontalAlignment="Left" Text="{Binding JournalRequestDueText, UpdateSourceTrigger=PropertyChanged}" />
+                                <ItemsControl Margin="0,7,0,0" ItemsSource="{Binding JournalRequestDueChoices}" Focusable="False">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <RadioButton Style="{StaticResource ChoicePill}" GroupName="RequestDue" Content="{Binding Text}" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </controls:FormField>
+                        <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Request_Record}" LabelWidth="120"
+                                            Visibility="{Binding ShowsRequestRecord, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <TextBox Text="{Binding JournalRequestRecord, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Margin="0,4,0,0" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Request_RecordHint}" />
+                            </StackPanel>
+                        </controls:FormField>
+                        <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Request_Items}" LabelWidth="120"
+                                            Visibility="{Binding ShowsRequestItems, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="140" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="70" />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock FontSize="11.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Request_ItemStock}" />
+                                    <TextBlock Grid.Column="1" Margin="6,0,0,0" FontSize="11.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Request_ItemName}" />
+                                    <TextBlock Grid.Column="2" Margin="6,0,0,0" FontSize="11.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Request_ItemQty}" />
+                                </Grid>
+                                <ItemsControl ItemsSource="{Binding JournalRequestItems}" Focusable="False">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,0,0,6">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="140" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="70" />
+                                                    <ColumnDefinition Width="30" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBox Text="{Binding StockNo, UpdateSourceTrigger=PropertyChanged}" />
+                                                <TextBox Grid.Column="1" Margin="6,0,0,0" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                                                <TextBox Grid.Column="2" Margin="6,0,0,0" Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" />
+                                                <Button Grid.Column="3" Margin="4,0,0,0" Padding="4,1" Style="{DynamicResource SubtleButtonStyle}" Click="RequestItemRemove_Click">
+                                                    <local:AppIcon Glyph="{x:Static local:AppIcons.Remove}" FontSize="10" />
+                                                </Button>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <Button HorizontalAlignment="Left" Padding="10,3" Click="RequestItemAdd_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="11" VerticalAlignment="Center" />
+                                        <TextBlock Margin="6,0,0,0" FontSize="12.5" VerticalAlignment="Center" Text="{x:Static res:Resources.Request_AddItem}" />
+                                    </StackPanel>
+                                </Button>
+                                <TextBlock Margin="0,4,0,0" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Request_ItemsHint}" />
+                            </StackPanel>
+                        </controls:FormField>
+                        <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Request_Detail}" LabelWidth="120"
+                                            Visibility="{Binding ShowsRequestDetail, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <TextBox MinHeight="56" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Text="{Binding JournalRequestDetail, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Margin="0,4,0,0" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding JournalRequestDetailHint}" />
+                            </StackPanel>
+                        </controls:FormField>
+                        <Border Height="10" />
+                    </StackPanel>
+                </Border>
                 <!-- Karar: karar veren (@) ve isteğe bağlı ilgili madde -->
                 <Border Margin="-12,12,-12,0" Padding="12,10,12,2" CornerRadius="8" BorderThickness="1"
                         BorderBrush="{DynamicResource Pusula.EventPurpleBrush}" Background="{DynamicResource SubtleFillColorTertiaryBrush}"

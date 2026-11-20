@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Kayıt · talep</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1f1f1f;font-family:"Segoe UI",Arial,sans-serif;color:#e6e6e6;font-size:14px}
+.page{width:1500px;padding:26px 30px 30px;background:#202020;display:grid;grid-template-columns:660px 1fr;gap:34px}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin:0 0 10px}
+.mut{color:#9a9a9a;font-size:12.5px}
+.row{display:flex;align-items:center;gap:8px}
+.dlg{background:#2b2b2b;border:1px solid #3c3c3c;border-radius:10px;padding:22px 26px}
+.dlg h1{margin:0;font-size:21px;font-weight:600;color:#fff}
+.sub{font-size:12.5px;color:#a8a8a8;margin:6px 0 16px}
+.f{display:grid;grid-template-columns:120px 1fr;align-items:start;margin-bottom:11px}
+.f label{padding-top:7px;color:#d0d0d0}
+.f label i{color:#ff99a4;font-style:normal}
+.box{min-height:32px;border:1px solid #3c3c3c;background:#333;border-radius:5px;padding:6px 11px;color:#fff;display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
+.combo{justify-content:space-between}
+.combo:after{content:"⌄";color:#aaa;font-size:14px;margin-top:-6px}
+.ph{color:#8a8a8a}
+.ico{width:22px;height:22px;border-radius:6px;background:#1f3a2a;display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:#8fdc9b}
+.hint{font-size:12px;color:#8a8a8a;margin-top:5px}
+.var{border:1px solid #5cb85c88;background:#5cb85c0d;border-radius:8px;padding:12px 12px 2px;margin:2px -12px 12px -12px}
+.types{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.t{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:8px;border:1px solid #444;background:#303030;font-size:12.5px;color:#cfcfcf}
+.t.on{border-color:#4cc2ff;background:#36404a;color:#fff;font-weight:600}
+.ti{width:24px;height:24px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;color:#fff;flex:none}
+.who{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:1px 9px 1px 2px;border-radius:11px;border:1px solid #555;background:#333;color:#ddd}
+.av{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:700;color:#fff}
+.chips{display:flex;gap:6px;margin-top:6px}
+.chip{font-size:12px;padding:3px 11px;border-radius:13px;border:1px solid #3c3c3c;background:#303030;color:#bdbdbd}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-size:11px;color:#8a8a8a;font-weight:600;padding:4px 6px}
+.tbl td{padding:3px 4px}
+.cell{border:1px solid #3c3c3c;background:#333;border-radius:4px;padding:5px 8px;min-height:30px}
+.add{font-size:12.5px;color:#8fd0ff;margin:4px 0 2px 4px}
+.btns{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.b{min-width:92px;text-align:center;padding:7px 14px;border-radius:5px;background:#3a3a3a}
+.b.a{background:#4cc2ff;color:#062033;font-weight:600}
+.right{min-width:0;display:flex;flex-direction:column;gap:18px}
+.panel{background:#272727;border:1px solid #363636;border-radius:12px;padding:12px 14px}
+.card{border:1px solid #3c3c3c;background:#353535;border-radius:10px;padding:10px 12px}
+.op{font-size:11.5px;padding:2px 8px;border-radius:6px;background:#1f3a2a;color:#8fdc9b}
+.ty{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:2px 8px 2px 3px;border-radius:6px;background:#2f2f2f;color:#ddd}
+.ty .ti{width:16px;height:16px;font-size:9px;border-radius:4px}
+.stt{font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:6px;background:#3d3420;color:#f6c46f}
+.stt.ok{background:#1f3d26;color:#8fdc9b}
+.day{font-size:12px;color:#9a9a9a;font-weight:600;margin:2px 0 8px}
+.items{margin-top:8px;font-size:12.5px;color:#cfcfcf;background:#2e2e2e;border-radius:6px;padding:6px 10px}
+.items div{display:grid;grid-template-columns:120px 1fr 60px;gap:8px;padding:2px 0}
+.btn2{font-size:12px;padding:3px 10px;border-radius:5px;background:#1f3d26;color:#8fdc9b;border:1px solid #2f6b3c}
+.pend{display:grid;grid-template-columns:26px 1fr 90px 90px 110px;gap:8px;align-items:center;padding:6px 4px;font-size:13px;border-bottom:1px solid #333}
+.late{color:#f6c46f}
+.md{font-family:Consolas,monospace;font-size:12px;background:#1b1b1b;border:1px solid #333;border-radius:8px;padding:12px 14px;color:#cfcfcf;line-height:1.6;white-space:pre;overflow:hidden}
+.md .k{color:#8fd0ff}
+.md .y{color:#f6c46f}
+</style></head><body>
+<div class="page">
+  <div>
+    <div class="cap">İŞLEM = TALEP SEÇİLİNCE · ÖRNEK: MALZEME</div>
+    <div class="dlg">
+      <h1>Zaman çizelgesine kayıt</h1>
+      <div class="sub">AB-7000-0001 · TAKIM ANTEN BOYNUZ</div>
+      <div class="f"><label>Tarih <i>*</i></label><div class="row"><div class="box" style="width:140px">21.11.2026</div><div class="box" style="width:80px">09:30</div></div></div>
+      <div class="f"><label>İşlem</label><div class="box combo"><span class="row"><span class="ico">⇄</span>Talep</span></div></div>
+      <div class="var">
+        <div class="f"><label>Talep türü</label><div class="types">
+          <div class="t"><span class="ti" style="background:#b45309">⚙</span>Mekanik</div>
+          <div class="t"><span class="ti" style="background:#0e7490">〰</span>Kablaj</div>
+          <div class="t"><span class="ti" style="background:#4338ca">◉</span>Cihaz</div>
+          <div class="t on"><span class="ti" style="background:#15803d">▦</span>Malzeme</div>
+          <div class="t"><span class="ti" style="background:#be123c">⚡</span>Test (ÇK/EMC)</div>
+          <div class="t"><span class="ti" style="background:#7c3aed">👤</span>Test destek</div>
+          <div class="t"><span class="ti" style="background:#525252">…</span>Diğer</div>
+        </div></div>
+        <div class="f"><label>Talep no</label><div>
+          <div class="box" style="width:220px">AMB-2026-1182</div>
+          <div class="hint">İsteğe bağlı: ambar fişi, iş emri, lab talep no.</div></div></div>
+        <div class="f"><label>Kime</label><div class="box"><span class="who"><span class="av" style="background:#0f766e">A</span>Ambar</span><span class="ph">@ ile ekle</span></div></div>
+        <div class="f"><label>İstenen tarih</label><div>
+          <div class="box" style="width:140px">25.11.2026</div>
+          <div class="chips"><span class="chip">Bugün</span><span class="chip">Yarın</span><span class="chip">Bu hafta</span><span class="chip">Gelecek hafta</span></div></div></div>
+        <div class="f"><label>Kalemler</label><div>
+          <table class="tbl">
+            <tr><th style="width:150px">Stok no</th><th>Tanım</th><th style="width:70px">Adet</th><th style="width:20px"></th></tr>
+            <tr><td><div class="cell">KN-0412-0007</div></td><td><div class="cell">SMA erkek konnektör</div></td><td><div class="cell">10</div></td><td class="mut">✕</td></tr>
+            <tr><td><div class="cell">ZY-0100-0020</div></td><td><div class="cell">20 dB zayıflatıcı</div></td><td><div class="cell">2</div></td><td class="mut">✕</td></tr>
+            <tr><td><div class="cell ph">stok no</div></td><td><div class="cell ph">tanım</div></td><td><div class="cell ph">adet</div></td><td></td></tr>
+          </table>
+          <div class="hint">Yalnız Malzeme talebinde; stok no isteğe bağlı.</div></div></div>
+      </div>
+      <div class="f"><label>Başlık <i>*</i></label><div class="box">Ölçüm düzeneği için konnektör ve zayıflatıcı</div></div>
+      <div class="f"><label>Açıklama</label><div class="box" style="min-height:52px;align-items:flex-start"><span class="ph">Neden, nereye teslim…</span></div></div>
+      <div class="btns"><span class="b">Vazgeç</span><span class="b a">Ekle</span></div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div>
+      <div class="cap">TÜRE GÖRE EK ALAN</div>
+      <div class="panel" style="font-size:13px;line-height:1.75">
+        <span class="ty"><span class="ti" style="background:#b45309">⚙</span>Mekanik</span> <span class="ty"><span class="ti" style="background:#0e7490">〰</span>Kablaj</span> <span class="ty"><span class="ti" style="background:#4338ca">◉</span>Cihaz</span> → <b>İlgili kayıt</b> (JIG-…, KBL-…, cihaz; isteğe bağlı)<br>
+        <span class="ty"><span class="ti" style="background:#15803d">▦</span>Malzeme</span> → <b>Kalemler</b>: stok no · tanım · adet<br>
+        <span class="ty"><span class="ti" style="background:#be123c">⚡</span>Test (ÇK/EMC)</span> → <b>Testler</b>: CE102, RE102, RS103 … (serbest metin)<br>
+        <span class="ty"><span class="ti" style="background:#7c3aed">👤</span>Test destek</span> → <b>Kaç kişi · hangi günler</b><br>
+        <span class="ty"><span class="ti" style="background:#525252">…</span>Diğer</span> → ek alan yok
+      </div>
+    </div>
+    <div>
+      <div class="cap">ÇİZELGEDE · AÇIK TALEP</div>
+      <div class="panel">
+        <div class="day">Bugün · 21.11 Cmt</div>
+        <div class="card" style="border-left:4px solid #e0b030">
+          <div class="row"><span class="op">⇄ Talep</span><span class="ty"><span class="ti" style="background:#15803d">▦</span>Malzeme</span><b>Konnektör ve zayıflatıcı</b><span class="stt">Açık · 25.11'e</span><span style="flex:1"></span><span class="btn2">✓ Teslim alındı</span></div>
+          <div class="row mut" style="margin-top:6px">AMB-2026-1182 · <span class="who"><span class="av" style="background:#0f766e">A</span>Ambar</span></div>
+          <div class="items"><div><span>KN-0412-0007</span><span>SMA erkek konnektör</span><b>10 ad</b></div><div><span>ZY-0100-0020</span><span>20 dB zayıflatıcı</span><b>2 ad</b></div></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cap">STOK SAYFASI · BEKLEYEN TALEPLER</div>
+      <div class="panel" style="padding-top:4px">
+        <div class="pend"><span class="ti" style="background:#15803d;width:22px;height:22px">▦</span><span>Konnektör ve zayıflatıcı <span class="mut">· AMB-2026-1182</span></span><span class="mut">Ambar</span><span>25.11</span><span class="stt">Açık</span></div>
+        <div class="pend"><span class="ti" style="background:#b45309;width:22px;height:22px">⚙</span><span>Boynuz test jigi rev B <span class="mut">· İE-5521 · JIG-0012</span></span><span class="mut">Mekanik atölye</span><span class="late">18.11 · gecikti</span><span class="stt">Açık</span></div>
+        <div class="pend" style="border:0"><span class="ti" style="background:#be123c;width:22px;height:22px">⚡</span><span>CE102 / RE102 ölçümü <span class="mut">· LAB-0931</span></span><span class="mut">EMC lab</span><span>02.12</span><span class="stt">Açık</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="cap">NOTA YAZILAN</div>
+      <div class="md"><span class="k">### 21.11.2026 09:30 · Talep · Konnektör ve zayıflatıcı</span>
+kişi: katan · <span class="y">talep: Malzeme · no: AMB-2026-1182 · kime: @Ambar · istenen: 25.11.2026 · durum: Açık</span>
+
+<span class="y">#### Kalemler
+- KN-0412-0007 · SMA erkek konnektör · 10
+- ZY-0100-0020 · 20 dB zayıflatıcı · 2</span>
+
+#### Ayrıntı</div>
+    </div>
+  </div>
+</div>
+</body></html>

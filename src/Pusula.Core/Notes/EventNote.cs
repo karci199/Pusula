@@ -71,6 +71,27 @@ namespace Pusula.Core.Notes
         /// <summary>Günlük girdisinin ölçüm klasörü (<c>klasör:</c>, kayıt klasörüne göre); yoksa boş.</summary>
         public string Folder { get; private set; } = string.Empty;
 
+        /// <summary>Talep türü; talep değilse boş.</summary>
+        public string RequestType { get; private set; } = string.Empty;
+
+        /// <summary>Talep numarası; yoksa boş.</summary>
+        public string RequestNo { get; private set; } = string.Empty;
+
+        /// <summary>Talebin istendiği yer ya da kişiler (@ işaretsiz).</summary>
+        public List<string> RequestFrom { get; private set; } = new List<string>();
+
+        /// <summary>İstenen tarih; yoksa boş.</summary>
+        public DateTime? RequestDue { get; private set; }
+
+        /// <summary>Talep durumu (Açık, Teslim alındı, İptal); yoksa boş.</summary>
+        public string RequestStatus { get; private set; } = string.Empty;
+
+        /// <summary>Malzeme kalemleri.</summary>
+        public List<RequestItem> RequestItems { get; private set; } = new List<RequestItem>();
+
+        /// <summary>İstenenin anlatımı.</summary>
+        public string RequestDetail { get; private set; } = string.Empty;
+
         /// <summary>Kararı verenler (@ işaretsiz).</summary>
         public List<string> DecidedBy { get; private set; } = new List<string>();
 
@@ -83,10 +104,17 @@ namespace Pusula.Core.Notes
         /// <summary>Toplantı kararları (<c>#### Kararlar</c> altındaki metin); yoksa boş.</summary>
         public string Decisions { get; private set; } = string.Empty;
 
-        internal static EventNote FromJournal(string path, string kind, DateTime date, string title, string body, string person, string importance, List<string> related, List<string> tags, string sourceLine, string fullBody, string kindLabel, string item, string result, string folder, List<string> participants, string setting, string decisions, List<string> decidedBy)
+        internal static EventNote FromJournal(string path, string kind, DateTime date, string title, string body, string person, string importance, List<string> related, List<string> tags, string sourceLine, string fullBody, string kindLabel, string item, string result, string folder, List<string> participants, string setting, string decisions, List<string> decidedBy, RequestInfo request)
         {
             return new EventNote
             {
+                RequestType = request.Type,
+                RequestNo = request.No,
+                RequestFrom = request.From,
+                RequestDue = request.Due,
+                RequestStatus = request.Status,
+                RequestItems = request.Items,
+                RequestDetail = request.Detail,
                 DecidedBy = decidedBy,
                 Participants = participants,
                 Setting = setting,

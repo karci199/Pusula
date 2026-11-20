@@ -2371,6 +2371,105 @@ namespace Pusula.Wpf.Properties
         /// <summary>Seçim listesinde boş seçenek.</summary>
         public static string Verify_None { get { return Get("Verify_None"); } }
 
+        /// <summary>Malzeme talebinde kalem ekleme düğmesi.</summary>
+        public static string Request_AddItem { get { return Get("Request_AddItem"); } }
+
+        /// <summary>&quot;Talep&quot; işlemi.</summary>
+        public static string Event_Request { get { return Get("Event_Request"); } }
+
+        /// <summary>Talep türü: mekanik jig.</summary>
+        public static string Request_Mechanic { get { return Get("Request_Mechanic"); } }
+
+        /// <summary>Talep türü: kablaj.</summary>
+        public static string Request_Cable { get { return Get("Request_Cable"); } }
+
+        /// <summary>Talep türü: cihaz.</summary>
+        public static string Request_Device { get { return Get("Request_Device"); } }
+
+        /// <summary>Talep türü: malzeme (ambar).</summary>
+        public static string Request_Material { get { return Get("Request_Material"); } }
+
+        /// <summary>Talep türü: test altyapısı.</summary>
+        public static string Request_Infra { get { return Get("Request_Infra"); } }
+
+        /// <summary>Talep türü: test destek.</summary>
+        public static string Request_Support { get { return Get("Request_Support"); } }
+
+        /// <summary>Talep türü: diğer.</summary>
+        public static string Request_Other { get { return Get("Request_Other"); } }
+
+        /// <summary>Talep durumu: açık.</summary>
+        public static string Request_StatusOpen { get { return Get("Request_StatusOpen"); } }
+
+        /// <summary>Talep durumu: teslim alındı.</summary>
+        public static string Request_StatusDelivered { get { return Get("Request_StatusDelivered"); } }
+
+        /// <summary>Talep durumu: iptal.</summary>
+        public static string Request_StatusCancelled { get { return Get("Request_StatusCancelled"); } }
+
+        /// <summary>Talep: istenen tarih geçti.</summary>
+        public static string Request_DueLate { get { return Get("Request_DueLate"); } }
+
+        /// <summary>Teslim kaydının açıklaması.</summary>
+        public static string Request_DeliveredBody { get { return Get("Request_DeliveredBody"); } }
+
+        /// <summary>Teslim alınınca durum mesajı.</summary>
+        public static string Request_Delivered { get { return Get("Request_Delivered"); } }
+
+        /// <summary>Talep: tür alanı.</summary>
+        public static string Request_Type { get { return Get("Request_Type"); } }
+
+        /// <summary>Talep: numara alanı.</summary>
+        public static string Request_No { get { return Get("Request_No"); } }
+
+        /// <summary>Talep no açıklaması.</summary>
+        public static string Request_NoHint { get { return Get("Request_NoHint"); } }
+
+        /// <summary>Talep: istendiği yer alanı.</summary>
+        public static string Request_From { get { return Get("Request_From"); } }
+
+        /// <summary>Kimden açıklaması.</summary>
+        public static string Request_FromHint { get { return Get("Request_FromHint"); } }
+
+        /// <summary>Talep: istenen tarih alanı.</summary>
+        public static string Request_Due { get { return Get("Request_Due"); } }
+
+        /// <summary>Talep: ilgili envanter kaydı alanı.</summary>
+        public static string Request_Record { get { return Get("Request_Record"); } }
+
+        /// <summary>İlgili kayıt açıklaması.</summary>
+        public static string Request_RecordHint { get { return Get("Request_RecordHint"); } }
+
+        /// <summary>Talep: malzeme kalemleri alanı.</summary>
+        public static string Request_Items { get { return Get("Request_Items"); } }
+
+        /// <summary>Kalemler açıklaması.</summary>
+        public static string Request_ItemsHint { get { return Get("Request_ItemsHint"); } }
+
+        /// <summary>Kalem: stok no sütunu.</summary>
+        public static string Request_ItemStock { get { return Get("Request_ItemStock"); } }
+
+        /// <summary>Kalem: tanım sütunu.</summary>
+        public static string Request_ItemName { get { return Get("Request_ItemName"); } }
+
+        /// <summary>Kalem: adet sütunu.</summary>
+        public static string Request_ItemQty { get { return Get("Request_ItemQty"); } }
+
+        /// <summary>Talep: istenen anlatımı alanı.</summary>
+        public static string Request_Detail { get { return Get("Request_Detail"); } }
+
+        /// <summary>Test altyapı talebinde istenen ipucu.</summary>
+        public static string Request_InfraHint { get { return Get("Request_InfraHint"); } }
+
+        /// <summary>Test destek talebinde istenen ipucu.</summary>
+        public static string Request_SupportHint { get { return Get("Request_SupportHint"); } }
+
+        /// <summary>Kartta talebi kapatan düğme.</summary>
+        public static string Request_DeliverButton { get { return Get("Request_DeliverButton"); } }
+
+        /// <summary>Yapılacaklar sekmesinde açık talepler başlığı.</summary>
+        public static string Request_OpenTitle { get { return Get("Request_OpenTitle"); } }
+
         /// <summary>Karar: karar veren alanı.</summary>
         public static string Journal_DecidedBy { get { return Get("Journal_DecidedBy"); } }
 

@@ -62,6 +62,110 @@ namespace Pusula.Core.Notes
 
         /// <summary>Kararı veren kişiler (@ işaretsiz); boşsa yazılmaz.</summary>
         public List<string> DecidedBy { get; set; } = new List<string>();
+
+        /// <summary>Talep türü (Mekanik, Kablaj, Cihaz, Malzeme, Test altyapı, Test destek, Diğer); boşsa talep değil.</summary>
+        public string RequestType { get; set; } = string.Empty;
+
+        /// <summary>Talep numarası (ambar fişi, iş emri, lab talep no); isteğe bağlı.</summary>
+        public string RequestNo { get; set; } = string.Empty;
+
+        /// <summary>Talebin istendiği yer ya da kişiler (@ işaretsiz: Ambar, Mekanik_Atölye).</summary>
+        public List<string> RequestFrom { get; set; } = new List<string>();
+
+        /// <summary>İstenen tarih; isteğe bağlı.</summary>
+        public DateTime? RequestDue { get; set; }
+
+        /// <summary>Talebin durumu: <c>Açık</c>, <c>Teslim alındı</c>, <c>İptal</c>.</summary>
+        public string RequestStatus { get; set; } = string.Empty;
+
+        /// <summary>Malzeme talebinin kalemleri (stok no · tanım · adet); notta <c>#### Kalemler</c> altında.</summary>
+        public List<RequestItem> RequestItems { get; set; } = new List<RequestItem>();
+
+        /// <summary>İstenenin serbest anlatımı (test altyapı, test destek); notta <c>#### İstenen</c> altında.</summary>
+        public string RequestDetail { get; set; } = string.Empty;
+    }
+
+    /// <summary>Okunan talep bilgisi (Günlük girdisinden <see cref="EventNote"/>'a taşınır).</summary>
+    public sealed class RequestInfo
+    {
+        /// <summary>Talep bilgisini kurar.</summary>
+        public RequestInfo(string type, string no, List<string> from, DateTime? due, string status, List<RequestItem> items, string detail)
+        {
+            Type = type;
+            No = no;
+            From = from;
+            Due = due;
+            Status = status;
+            Items = items;
+            Detail = detail;
+        }
+
+        /// <summary>Talep türü.</summary>
+        public string Type { get; }
+
+        /// <summary>Talep numarası.</summary>
+        public string No { get; }
+
+        /// <summary>İstendiği yer ya da kişiler.</summary>
+        public List<string> From { get; }
+
+        /// <summary>İstenen tarih.</summary>
+        public DateTime? Due { get; }
+
+        /// <summary>Durum.</summary>
+        public string Status { get; }
+
+        /// <summary>Malzeme kalemleri.</summary>
+        public List<RequestItem> Items { get; }
+
+        /// <summary>İstenenin anlatımı.</summary>
+        public string Detail { get; }
+    }
+
+    /// <summary>Malzeme talebinde bir kalem.</summary>
+    public sealed class RequestItem
+    {
+        /// <summary>Stok numarası; isteğe bağlı.</summary>
+        public string StockNo { get; set; } = string.Empty;
+
+        /// <summary>Tanım.</summary>
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>Adet (metin; "10", "2 m" gibi).</summary>
+        public string Quantity { get; set; } = string.Empty;
+
+        /// <summary>Notta yazıldığı satır: <c>- KN-0412-0007 · SMA konnektör · 10</c>.</summary>
+        public string ToLine()
+        {
+            // Stok no yoksa "—" yazılır (sütunlar kaymasın).
+            return "- " + string.Join(" · ", new[] { StockNo.Trim().Length > 0 ? StockNo.Trim() : NoStock, Name.Trim(), Quantity.Trim() });
+        }
+
+        /// <summary>Stok numarası olmayan kalemde yazılan işaret.</summary>
+        public const string NoStock = "—";
+
+        /// <summary>Satırdan kalem okur (<c>- stok · tanım · adet</c>); uymazsa <c>null</c>.</summary>
+        public static RequestItem? Parse(string line)
+        {
+            var text = (line ?? string.Empty).Trim();
+            if (!text.StartsWith("- ", StringComparison.Ordinal))
+            {
+                return null;
+            }
+
+            var parts = text.Substring(2).Split(new[] { " · " }, StringSplitOptions.None);
+            if (parts.Length == 1)
+            {
+                return new RequestItem { Name = parts[0].Trim() };
+            }
+
+            return new RequestItem
+            {
+                StockNo = parts[0].Trim() == NoStock ? string.Empty : parts[0].Trim(),
+                Name = parts.Length > 1 ? parts[1].Trim() : string.Empty,
+                Quantity = parts.Length > 2 ? parts[2].Trim() : string.Empty,
+            };
+        }
     }
 
     /// <summary>
@@ -80,9 +184,8 @@ namespace Pusula.Core.Notes
         /// <summary>Kaydın içinde ayrıntı başlığı: bundan sonrası kartta görünmez (MD'de okunur).</summary>
         public const string DetailsHeading = "#### Ayrıntı";
 
-        private static readonly Regex SectionLine = new Regex(@"^[ \t]*####[ \t]+(Ayr[ıi]nt[ıi]|Kararlar)[ \t]*$", RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        private static readonly Regex SectionLine = new Regex(@"^[ \t]*####[ \t]+(Ayr[ıi]nt[ıi]|Kararlar|Kalemler|[İI]stenen)[ \t]*$", RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
-        private static readonly Regex DecisionsLine = new Regex(@"^[ \t]*####[ \t]+Kararlar[ \t]*$", RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
         private static readonly Regex AnyHeading = new Regex(@"^[ \t]*####[ \t]", RegexOptions.Compiled | RegexOptions.Multiline);
 
@@ -99,8 +202,26 @@ namespace Pusula.Core.Notes
         /// <summary>Açıklamanın <c>#### Kararlar</c> başlığının altındaki metin (sonraki <c>####</c> başlığına kadar); yoksa boş.</summary>
         public static string DecisionsOf(string body)
         {
+            return SectionOf(body, "Kararlar");
+        }
+
+        /// <summary>Açıklamanın <c>#### İstenen</c> başlığının altındaki metin (talep); yoksa boş.</summary>
+        public static string RequestDetailOf(string body)
+        {
+            return SectionOf(body, "[İI]stenen");
+        }
+
+        /// <summary>Açıklamanın <c>#### Kalemler</c> başlığının altındaki kalemler (malzeme talebi).</summary>
+        public static List<RequestItem> ItemsOf(string body)
+        {
+            return SectionOf(body, "Kalemler").Split('\n').Select(RequestItem.Parse).Where(i => i != null).Select(i => i!).ToList();
+        }
+
+        // "#### ad" başlığının altındaki metin (sonraki #### başlığına kadar); yoksa boş.
+        private static string SectionOf(string body, string namePattern)
+        {
             var text = (body ?? string.Empty).Replace("\r\n", "\n");
-            var match = DecisionsLine.Match(text);
+            var match = new Regex(@"^[ \t]*####[ \t]+" + namePattern + @"[ \t]*$", RegexOptions.Multiline | RegexOptions.IgnoreCase).Match(text);
             if (!match.Success)
             {
                 return string.Empty;
@@ -137,6 +258,27 @@ namespace Pusula.Core.Notes
         /// <summary>Bilgi satırında kararı verenlerin öneki (<c>karar veren: @Ayşe_Kaya</c>).</summary>
         public const string DecidedByKey = "karar veren:";
 
+        /// <summary>Bilgi satırında talep türünün öneki (<c>talep: Malzeme</c>).</summary>
+        public const string RequestKey = "talep:";
+
+        /// <summary>Bilgi satırında talep numarasının öneki.</summary>
+        public const string RequestNoKey = "talep no:";
+
+        /// <summary>Bilgi satırında talebin istendiği yerin öneki (<c>kimden: @Ambar</c>).</summary>
+        public const string RequestFromKey = "kimden:";
+
+        /// <summary>Bilgi satırında istenen tarihin öneki.</summary>
+        public const string RequestDueKey = "istenen:";
+
+        /// <summary>Bilgi satırında talep durumunun öneki (<c>durum: Açık</c>).</summary>
+        public const string RequestStatusKey = "durum:";
+
+        /// <summary>Malzeme kalemleri başlığı.</summary>
+        public const string ItemsHeading = "#### Kalemler";
+
+        /// <summary>İstenenin anlatımı başlığı.</summary>
+        public const string RequestDetailHeading = "#### İstenen";
+
         /// <summary>Kaydın içinde kararlar başlığı.</summary>
         public const string DecisionsHeading = "#### Kararlar";
 
@@ -164,6 +306,13 @@ namespace Pusula.Core.Notes
             };
             entry.Participants.AddRange(note.Participants);
             entry.DecidedBy.AddRange(note.DecidedBy);
+            entry.RequestType = note.RequestType;
+            entry.RequestNo = note.RequestNo;
+            entry.RequestFrom.AddRange(note.RequestFrom);
+            entry.RequestDue = note.RequestDue;
+            entry.RequestStatus = note.RequestStatus;
+            entry.RequestItems.AddRange(note.RequestItems);
+            entry.RequestDetail = note.RequestDetail;
             entry.Related.AddRange(note.Related);
             entry.Tags.AddRange(note.Tags);
             return entry;
@@ -567,6 +716,31 @@ namespace Pusula.Core.Notes
                 meta.Add(DecidedByKey + " " + string.Join(" ", deciders.Select(p => "@" + p)));
             }
 
+            if (entry.RequestType.Trim().Length > 0)
+            {
+                meta.Add(RequestKey + " " + entry.RequestType.Trim());
+                if (entry.RequestNo.Trim().Length > 0)
+                {
+                    meta.Add(RequestNoKey + " " + entry.RequestNo.Trim());
+                }
+
+                var from = entry.RequestFrom.Select(p => p.Trim().TrimStart('@').Replace(' ', '_')).Where(p => p.Length > 0).Distinct(StringComparer.CurrentCultureIgnoreCase).ToList();
+                if (from.Count > 0)
+                {
+                    meta.Add(RequestFromKey + " " + string.Join(" ", from.Select(p => "@" + p)));
+                }
+
+                if (entry.RequestDue.HasValue)
+                {
+                    meta.Add(RequestDueKey + " " + entry.RequestDue.Value.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture));
+                }
+
+                if (entry.RequestStatus.Trim().Length > 0)
+                {
+                    meta.Add(RequestStatusKey + " " + entry.RequestStatus.Trim());
+                }
+            }
+
             if (entry.Setting.Trim().Length > 0)
             {
                 meta.Add(SettingKey + " " + entry.Setting.Trim());
@@ -595,6 +769,23 @@ namespace Pusula.Core.Notes
             if (body.Length > 0)
             {
                 sb.Append('\n').Append(body).Append('\n');
+            }
+
+            var items = entry.RequestItems.Count > 0 ? entry.RequestItems : ItemsOf(entry.Body);
+            items = items.Where(i => (i.StockNo + i.Name + i.Quantity).Trim().Length > 0).ToList();
+            if (items.Count > 0)
+            {
+                sb.Append('\n').Append(ItemsHeading).Append('\n');
+                foreach (var it in items)
+                {
+                    sb.Append(it.ToLine()).Append('\n');
+                }
+            }
+
+            var wanted = (entry.RequestDetail.Length > 0 ? entry.RequestDetail : RequestDetailOf(entry.Body)).Replace("\r\n", "\n").Trim('\n', ' ', '\t');
+            if (wanted.Length > 0)
+            {
+                sb.Append('\n').Append(RequestDetailHeading).Append('\n').Append(wanted).Append('\n');
             }
 
             var decisions = (entry.Decisions.Length > 0 ? entry.Decisions : DecisionsOf(entry.Body)).Replace("\r\n", "\n").Trim('\n', ' ', '\t');
@@ -645,6 +836,11 @@ namespace Pusula.Core.Notes
             var setting = string.Empty;
             var participants = new List<string>();
             var deciders = new List<string>();
+            var requestType = string.Empty;
+            var requestNo = string.Empty;
+            var requestFrom = new List<string>();
+            DateTime? requestDue = null;
+            var requestStatus = string.Empty;
             var related = new List<string>();
             var tags = new List<string>();
             var text = new List<string>();
@@ -681,6 +877,30 @@ namespace Pusula.Core.Notes
                         {
                             participants.AddRange(segment.Substring(ParticipantsKey.Length).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(p => p.TrimStart('@')).Where(p => p.Length > 0));
                         }
+                        else if (lower.StartsWith(RequestNoKey, StringComparison.Ordinal))
+                        {
+                            requestNo = segment.Substring(RequestNoKey.Length).Trim();
+                        }
+                        else if (lower.StartsWith(RequestKey, StringComparison.Ordinal))
+                        {
+                            requestType = segment.Substring(RequestKey.Length).Trim();
+                        }
+                        else if (lower.StartsWith(RequestFromKey, StringComparison.Ordinal))
+                        {
+                            requestFrom.AddRange(segment.Substring(RequestFromKey.Length).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(p => p.TrimStart('@')).Where(p => p.Length > 0));
+                        }
+                        else if (lower.StartsWith(RequestDueKey, StringComparison.Ordinal))
+                        {
+                            DateTime due;
+                            if (DateTime.TryParseExact(segment.Substring(RequestDueKey.Length).Trim(), DateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out due))
+                            {
+                                requestDue = due;
+                            }
+                        }
+                        else if (lower.StartsWith(RequestStatusKey, StringComparison.Ordinal))
+                        {
+                            requestStatus = segment.Substring(RequestStatusKey.Length).Trim();
+                        }
                         else if (lower.StartsWith(DecidedByKey, StringComparison.Ordinal))
                         {
                             deciders.AddRange(segment.Substring(DecidedByKey.Length).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(p => p.TrimStart('@')).Where(p => p.Length > 0));
@@ -716,7 +936,8 @@ namespace Pusula.Core.Notes
             return EventNote.FromJournal(path, kind.Length > 0 ? KindKey(kind) : "not", date, title.Length > 0 ? title : kind, excerpt, person,
                 string.Equals(importance, NormalImportance, StringComparison.OrdinalIgnoreCase) ? string.Empty : importance,
                 related.Distinct(StringComparer.OrdinalIgnoreCase).ToList(), tags.Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
-                sourceLine, bodyText, kind, item, result, folder, participants, setting, DecisionsOf(bodyText), deciders);
+                sourceLine, bodyText, kind, item, result, folder, participants, setting, DecisionsOf(bodyText), deciders,
+                new RequestInfo(requestType, requestNo, requestFrom, requestDue, requestStatus, ItemsOf(bodyText), RequestDetailOf(bodyText)));
         }
 
         private static bool IsMetaLine(string line)
@@ -725,6 +946,8 @@ namespace Pusula.Core.Notes
             return lower.StartsWith("önem:", StringComparison.Ordinal) || lower.StartsWith("kişi:", StringComparison.Ordinal)
                 || lower.StartsWith(ItemKey, StringComparison.Ordinal) || lower.StartsWith(ResultKey, StringComparison.Ordinal) || lower.StartsWith(FolderKey, StringComparison.Ordinal)
                 || lower.StartsWith(ParticipantsKey, StringComparison.Ordinal) || lower.StartsWith(DecidedByKey, StringComparison.Ordinal) || lower.StartsWith(SettingKey, StringComparison.Ordinal)
+                || lower.StartsWith(RequestKey, StringComparison.Ordinal) || lower.StartsWith(RequestNoKey, StringComparison.Ordinal) || lower.StartsWith(RequestFromKey, StringComparison.Ordinal)
+                || lower.StartsWith(RequestDueKey, StringComparison.Ordinal) || lower.StartsWith(RequestStatusKey, StringComparison.Ordinal)
                 || lower.StartsWith("ilgili:", StringComparison.Ordinal) || (line.StartsWith("#", StringComparison.Ordinal) && !line.StartsWith("# ", StringComparison.Ordinal));
         }
     }

@@ -112,12 +112,75 @@ namespace Pusula.Wpf.ViewModels
                 : string.Equals(result, Resources.Verify_StatusFailed, StringComparison.CurrentCultureIgnoreCase) ? 2 : 3;
             ResultText = linked.Length > 0 ? "↳ " + linked + (result.Length > 0 ? " · " + result : string.Empty) : result;
 
+            // Talep: tür çipi, durum (açık · istenen tarih / gecikti / teslim alındı), kalemler ya da istenen.
+            if (journal != null && journal.RequestType.Length > 0)
+            {
+                RequestType = journal.RequestType;
+                RequestIcon = MainViewModel.RequestIconKey(journal.RequestType);
+                var closed = MainViewModel.IsRequestClosed(journal.RequestStatus);
+                var late = !closed && journal.RequestDue.HasValue && journal.RequestDue.Value.Date < DateTime.Today;
+                RequestStatusKind = closed ? 3 : late ? 2 : 1;
+                var status = journal.RequestStatus.Length > 0 ? journal.RequestStatus : Resources.Request_StatusOpen;
+                RequestStatusText = closed || !journal.RequestDue.HasValue ? status
+                    : status + " · " + journal.RequestDue.Value.ToString("dd.MM", CultureInfo.InvariantCulture) + (late ? " · " + Resources.Request_DueLate : string.Empty);
+                var lines = journal.RequestItems.Select(i => string.Join(" · ", new[] { i.StockNo, i.Name, i.Quantity }.Where(s => s.Trim().Length > 0))).ToList();
+                if (journal.RequestDetail.Length > 0)
+                {
+                    lines.Add(journal.RequestDetail);
+                }
+
+                RequestLines = string.Join(Environment.NewLine, lines);
+                RequestMeta = string.Join(" · ", new[] { journal.RequestNo, string.Join(" ", journal.RequestFrom.Select(p => p.Replace('_', ' '))) }.Where(s => s.Length > 0));
+            }
+
             // Ölçüm klasörü: kartta "📁 sayı" düğmesi.
             if (journal != null && journal.Folder.Trim().Length > 0)
             {
                 FolderPath = MeasurementFiles.Resolve(System.IO.Path.GetDirectoryName(journal.Path) ?? string.Empty, journal.Folder);
                 FileCount = MeasurementFiles.CountFiles(FolderPath);
             }
+        }
+
+        /// <summary>Talep türü ("Malzeme"); talep değilse boş.</summary>
+        public string RequestType { get; } = string.Empty;
+
+        /// <summary>Talep türünün ikon anahtarı.</summary>
+        public string RequestIcon { get; } = string.Empty;
+
+        /// <summary>Talep mi.</summary>
+        public bool IsRequest
+        {
+            get { return RequestType.Length > 0; }
+        }
+
+        /// <summary>Talep durumu metni ("Açık · 25.11", "Açık · 18.11 · gecikti", "Teslim alındı").</summary>
+        public string RequestStatusText { get; } = string.Empty;
+
+        /// <summary>Talep durumu: 0 talep değil, 1 açık, 2 gecikmiş, 3 kapalı.</summary>
+        public int RequestStatusKind { get; }
+
+        /// <summary>Açık (ya da gecikmiş) talep mi: "Teslim alındı" düğmesi görünür.</summary>
+        public bool IsRequestOpen
+        {
+            get { return RequestStatusKind == 1 || RequestStatusKind == 2; }
+        }
+
+        /// <summary>Kalemler ya da istenen (satır satır).</summary>
+        public string RequestLines { get; } = string.Empty;
+
+        /// <summary>Kalem ya da istenen var mı.</summary>
+        public bool HasRequestLines
+        {
+            get { return RequestLines.Length > 0; }
+        }
+
+        /// <summary>Talep no ve kimden ("AMB-2026-1182 · Ambar").</summary>
+        public string RequestMeta { get; } = string.Empty;
+
+        /// <summary>Talep no / kimden var mı.</summary>
+        public bool HasRequestMeta
+        {
+            get { return RequestMeta.Length > 0; }
         }
 
         /// <summary>Toplantı ortamı ("Teams"); yoksa boş.</summary>
@@ -386,6 +449,7 @@ namespace Pusula.Wpf.ViewModels
                     OnPropertyChanged(nameof(IsJournalNewItem));
                     OnMeetingChanged();
                     OnDecisionChanged();
+                    OnRequestChanged();
                 }
             }
         }
@@ -581,6 +645,16 @@ namespace Pusula.Wpf.ViewModels
             var project = selectedNode == null ? null : ProjectOf(selectedNode.Path);
             var color = string.IsNullOrEmpty(project?.ProjectColor) ? ProjectColors.Palette[2] : project!.ProjectColor;
             StockDays.Clear();
+
+            // Bekleyen talepler (Yapılacaklar sekmesinde): açık ya da gecikmiş talepler, istenen tarihe göre.
+            OpenRequests.Clear();
+            foreach (var card in Detail.Timeline.Where(t => t.Journal != null && t.Journal.RequestType.Length > 0 && !IsRequestClosed(t.Journal.RequestStatus))
+                .OrderBy(t => t.Journal!.RequestDue ?? DateTime.MaxValue).Select(t => new StockTimelineCard(t) { ProjectColor = color }))
+            {
+                OpenRequests.Add(card);
+            }
+
+            OnPropertyChanged(nameof(HasOpenRequests));
             if (timelineFilter == "all" || timelineFilter == "planned")
             {
                 var planned = Detail.OpenTasks.Where(t => !t.IsDone).OrderBy(t => t.Task.Due ?? DateTime.MaxValue).Select(t => new StockTimelineCard(t) { ProjectColor = color }).ToList();

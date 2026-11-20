@@ -271,6 +271,30 @@ namespace Pusula.Wpf
             }
         }
 
+        // Talep kartında "Teslim alındı": talep kapanır, çizelgeye teslim kaydı düşer.
+        private void TimelineDeliver_Click(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (((FrameworkElement)sender).DataContext is StockTimelineCard card && card.Item?.Journal != null)
+            {
+                viewModel.MarkRequestDelivered(card.Item.Journal);
+            }
+        }
+
+        // Malzeme talebi: kalem satırı ekle / çıkar.
+        private void RequestItemAdd_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.AddRequestItemRow();
+        }
+
+        private void RequestItemRemove_Click(object sender, RoutedEventArgs e)
+        {
+            if (((FrameworkElement)sender).DataContext is RequestItemRow row)
+            {
+                viewModel.RemoveRequestItemRow(row);
+            }
+        }
+
         private void AttemptFolder_Click(object sender, RoutedEventArgs e)
         {
             e.Handled = true;
