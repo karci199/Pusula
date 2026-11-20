@@ -24,7 +24,7 @@ try {
     $me = $vm.JournalParticipants
     Check 'katılımcı: kullanıcı ekli' ($me -like '@*' -and -not $me.Trim().Contains(' ')) $me
     $choices = @($vm.JournalSettingChoices)
-    Check 'ortamlar ikonlu: Yüz yüze, Teams, Skype, Zoom, Telefon' (($choices | ForEach-Object Key) -join ',' -eq 'Yüz yüze,Teams,Skype,Zoom,Telefon' -and ($choices | ForEach-Object Badge) -join ',' -eq 'face,teams,skype,zoom,phone')
+    Check 'ortamlar ikonlu: Yüz yüze, Teams, Skype, Zoom, Telefon' (($choices | ForEach-Object Key) -join ',' -eq 'Yüz yüze,Teams,Skype,Zoom,Telefon,E-posta' -and ($choices | ForEach-Object Badge) -join ',' -eq 'face,teams,skype,zoom,phone,mail')
 
     "--- Kayıt"
     $vm.JournalParticipants = $me + ' @Ali_Demirci'

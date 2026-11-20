@@ -2371,6 +2371,9 @@ namespace Pusula.Wpf.Properties
         /// <summary>Seçim listesinde boş seçenek.</summary>
         public static string Verify_None { get { return Get("Verify_None"); } }
 
+        /// <summary>Ortam: e-posta (Outlook'ta yazışma).</summary>
+        public static string Setting_Email { get { return Get("Setting_Email"); } }
+
         /// <summary>Toplantıda açıklama alanının adı.</summary>
         public static string Journal_Notes { get { return Get("Journal_Notes"); } }
 

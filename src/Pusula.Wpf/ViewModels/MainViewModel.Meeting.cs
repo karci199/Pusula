@@ -65,16 +65,16 @@ namespace Pusula.Wpf.ViewModels
             set { SetProperty(ref journalDecisions, value ?? string.Empty); }
         }
 
-        /// <summary>Ortam adları sırasıyla: Yüz yüze, Teams, Skype, Zoom, Telefon.</summary>
+        /// <summary>Ortam adları sırasıyla: Yüz yüze, Teams, Skype, Zoom, Telefon, E-posta.</summary>
         public static string[] MeetingSettings
         {
-            get { return new[] { Resources.Setting_FaceToFace, Resources.Setting_Teams, Resources.Setting_Skype, Resources.Setting_Zoom, Resources.Setting_Phone }; }
+            get { return new[] { Resources.Setting_FaceToFace, Resources.Setting_Teams, Resources.Setting_Skype, Resources.Setting_Zoom, Resources.Setting_Phone, Resources.Setting_Email }; }
         }
 
         /// <summary>Ortamın ikon anahtarı: <c>face</c>, <c>teams</c>, <c>skype</c>, <c>zoom</c>, <c>phone</c>; tanınmazsa boş.</summary>
         public static string SettingIconKey(string setting)
         {
-            var keys = new[] { "face", "teams", "skype", "zoom", "phone" };
+            var keys = new[] { "face", "teams", "skype", "zoom", "phone", "mail" };
             var names = MeetingSettings;
             for (var i = 0; i < names.Length; i++)
             {

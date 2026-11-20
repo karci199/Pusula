@@ -850,9 +850,15 @@
                         <Rectangle Width="32" Height="32" RadiusX="8" RadiusY="8" Fill="#2E9E5B" />
                         <Path Fill="White" Data="M11.2,7.5 c0.7,-0.2 1.4,0.1 1.7,0.8 l1.5,3.4 c0.3,0.6 0.1,1.3 -0.4,1.7 l-1.7,1.3 c1,2.2 2.7,3.9 4.9,4.9 l1.3,-1.7 c0.4,-0.5 1.1,-0.7 1.7,-0.4 l3.4,1.5 c0.7,0.3 1,1 0.8,1.7 l-0.6,2.4 c-0.2,0.7 -0.8,1.2 -1.5,1.2 C14.1,24.3 7.7,17.9 7.6,9.9 c0,-0.7 0.5,-1.3 1.2,-1.5 z" />
                     </Canvas>
+                    <Canvas x:Name="Mail" Visibility="Collapsed">
+                        <Rectangle Width="32" Height="32" RadiusX="8" RadiusY="8" Fill="#0F6CBD" />
+                        <Rectangle Canvas.Left="6" Canvas.Top="9.5" Width="20" Height="14" RadiusX="2" RadiusY="2" Fill="White" />
+                        <Path Data="M7,11 L16,17.5 L25,11" Stroke="#0F6CBD" StrokeThickness="1.8" StrokeLineJoin="Round" />
+                    </Canvas>
                 </Grid>
             </Viewbox>
             <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding}" Value="mail"><Setter TargetName="Mail" Property="Visibility" Value="Visible" /></DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="face"><Setter TargetName="Face" Property="Visibility" Value="Visible" /></DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="teams"><Setter TargetName="Teams" Property="Visibility" Value="Visible" /></DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="skype"><Setter TargetName="Skype" Property="Visibility" Value="Visible" /></DataTrigger>
@@ -3524,10 +3530,10 @@
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <RadioButton GroupName="JournalSetting" IsChecked="{Binding IsChecked, Mode=TwoWay}" Margin="0,0,8,0" Cursor="Hand" Focusable="False">
+                                            <RadioButton GroupName="JournalSetting" IsChecked="{Binding IsChecked, Mode=TwoWay}" Margin="0,0,6,0" Cursor="Hand" Focusable="False">
                                                 <RadioButton.Template>
                                                     <ControlTemplate TargetType="RadioButton">
-                                                        <Border x:Name="Tile" Width="78" Padding="4,8,4,6" CornerRadius="9" BorderThickness="1"
+                                                        <Border x:Name="Tile" Width="68" Padding="2,8,2,6" CornerRadius="9" BorderThickness="1"
                                                                 Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}">
                                                             <StackPanel HorizontalAlignment="Center">
                                                                 <ContentControl Width="28" Height="28" Focusable="False" Content="{Binding Badge}"

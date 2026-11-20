@@ -2676,4 +2676,7 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Timeline_HasDecisions" xml:space="preserve">
     <value>Kararlar</value>
   </data>
+  <data name="Setting_Email" xml:space="preserve">
+    <value>E-posta</value>
+  </data>
 </root>
