@@ -8,7 +8,7 @@ namespace Pusula.Wpf.ViewModels
 {
     /// <summary>
     /// Toplantı kaydına mail (.msg): ortam Outlook iken mail dosyası seçilir; kayıtla birlikte kaydın klasöründeki
-    /// <c>Diger\</c> klasörüne <c>tarih_başlık.msg</c> adıyla <b>kopyalanır</b> (asıl dosyaya dokunulmaz, üzerine yazılmaz)
+    /// <c>Diger\</c> klasörüne kendi adıyla <b>kopyalanır</b> (asıl dosyaya dokunulmaz, üzerine yazılmaz)
     /// ve notta <c>mail: Diger/….msg</c> olarak tutulur. Pusula maili okumaz; kartta ✉ ile Outlook'ta açılır.
     /// </summary>
     public sealed partial class MainViewModel
@@ -114,7 +114,8 @@ namespace Pusula.Wpf.ViewModels
             {
                 var folder = Path.Combine(record, MailFolderName);
                 Directory.CreateDirectory(folder);
-                var name = MeasurementFiles.NameFor(entry.Date, string.Empty, entry.Title);
+                // Mail kendi adıyla saklanır; aynı ad varsa _2, _3 … (üzerine yazılmaz).
+                var name = Path.GetFileNameWithoutExtension(journalMailSource);
                 var target = Path.Combine(folder, name + ".msg");
                 for (var n = 2; File.Exists(target); n++)
                 {

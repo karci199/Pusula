@@ -1,7 +1,7 @@
 ﻿param([string]$Bin, [string]$Out, [string]$Data, [string]$Sample)
 . (Join-Path $PSScriptRoot '..\_Ortak.ps1')
-# Toplantıya mail (.msg): ortam Outlook iken mail seçilir; kayıtla stokun Diger klasörüne tarih_başlık.msg olarak kopyalanır
-# (asıl dosya yerinde, üzerine yazılmaz); notta "mail: Diger/…"; pencere maille doldurulmaz; kartta ✉.
+# Toplantıya mail (.msg): ortam Outlook iken mail seçilir; kayıtla stokun Diger klasörüne kopyalanır
+# kendi adıyla (asıl dosya yerinde, üzerine yazılmaz); notta "mail: Diger/…"; pencere maille doldurulmaz; kartta ✉.
 $settingsFile = Join-Path $env:LOCALAPPDATA 'Pusula\ayarlar.json'
 $savedSettings = if (Test-Path $settingsFile) { [IO.File]::ReadAllText($settingsFile) } else { $null }
 $src = Join-Path $env:TEMP ('pusula-mail-' + [Guid]::NewGuid().ToString('N').Substring(0, 8))
@@ -38,20 +38,20 @@ try {
     $vm.JournalHeading = 'Ölçüt yazışması'
     Check 'eklenir' ($vm.ConfirmJournal()); Wait
     $day = (Get-Date).ToString('yyyy-MM-dd')
-    $copy = Join-Path $stock ('Diger\' + $day + '_Olcut_yazismasi.msg')
-    Check 'Diger klasörüne tarih_başlık.msg kopyalandı' ((Test-Path $copy) -and (Test-Path $msg)) $copy
-    Check 'notta mail yolu' ([IO.File]::ReadAllText($note).Contains('mail: Diger/' + $day + '_Olcut_yazismasi.msg'))
+    $copy = Join-Path $stock 'Diger\Outlook mesajı.msg'
+    Check 'Diger klasörüne kendi adıyla kopyalandı' ((Test-Path $copy) -and (Test-Path $msg)) $copy
+    Check 'notta mail yolu' ([IO.File]::ReadAllText($note).Contains('mail: Diger/Outlook mesajı.msg'))
     $read = [Pusula.Core.Notes.Journal]::Read($note) | Where-Object { $_.Title -eq 'Ölçüt yazışması' } | Select-Object -First 1
-    Check 'okunur: Mail, ortam Outlook' ($read.Mail -eq 'Diger/' + $day + '_Olcut_yazismasi.msg' -and $read.Setting -eq 'Outlook') $read.Mail
+    Check 'okunur: Mail, ortam Outlook' ($read.Mail -eq 'Diger/Outlook mesajı.msg' -and $read.Setting -eq 'Outlook') $read.Mail
 
     "--- Aynı başlık, düzenleme, kart"
     [void]$vm.OpenJournalHere(); $vm.JournalKind = 'Toplantı'; & $choose 'Outlook'; [void]$vm.SetJournalMail($msg); $vm.JournalHeading = 'Ölçüt yazışması'; $vm.JournalTimeText = '23:58'
     Check 'ikinci kayıt' ($vm.ConfirmJournal()); Wait
-    Check 'aynı ad: _2, üzerine yazılmaz' (Test-Path (Join-Path $stock ('Diger\' + $day + '_Olcut_yazismasi_2.msg')))
+    Check 'aynı ad: _2, üzerine yazılmaz' (Test-Path (Join-Path $stock 'Diger\Outlook mesajı_2.msg'))
     $vm.OpenJournalEdit($read)
-    Check 'düzenlemede mail görünür' ($vm.IsJournalMailVisible -and $vm.HasJournalMail -and $vm.JournalMailText -eq ($day + '_Olcut_yazismasi.msg'))
+    Check 'düzenlemede mail görünür' ($vm.IsJournalMailVisible -and $vm.HasJournalMail -and $vm.JournalMailText -eq 'Outlook mesajı.msg')
     $vm.JournalBody = 'Ölçütler mailde kesinleşti.'
-    Check 'kaydedilir, mail korunur' ($vm.ConfirmJournal() -and ([regex]::Matches([IO.File]::ReadAllText($note), 'mail: Diger/' + $day + '_Olcut_yazismasi\.msg')).Count -eq 1); Wait
+    Check 'kaydedilir, mail korunur' ($vm.ConfirmJournal() -and ([regex]::Matches([IO.File]::ReadAllText($note), 'mail: Diger/Outlook mesajı\.msg')).Count -eq 1); Wait
     $vm.RefreshCommand.Execute($null); Wait; Wait; $vm.IsRangeAll = $true; $vm.IsTimelineDone = $true; Wait
     $card = @($vm.StockDays | ForEach-Object { $_.Cards }) | Where-Object { $_.Title -eq 'Ölçüt yazışması' -and $_.Description -like 'Ölçütler*' } | Select-Object -First 1
     Check 'kartta mail düğmesi, ortam Outlook' ($card.HasMail -and $card.Setting -eq 'Outlook')
