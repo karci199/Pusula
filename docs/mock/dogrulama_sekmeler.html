@@ -1,0 +1,115 @@
+﻿<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Doğrulama sekmeleri</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#202020}
+.page{width:1400px;padding:20px 24px 24px;background:#202020;color:#e6e6e6;font-family:"Segoe UI",Arial,sans-serif;font-size:13px}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin:0 0 9px}
+.cap b{color:#4cc2ff;margin-right:6px}
+.card{background:#262626;border:1px solid #363636;border-radius:12px;padding:14px 16px}
+.seg{display:inline-flex;background:#1c1c1c;border:1px solid #363636;border-radius:10px;padding:4px;gap:4px}
+.sg{display:flex;align-items:center;gap:9px;padding:8px 16px;border-radius:7px;color:#b8b8b8;font-size:13.5px}
+.sg .ic{width:24px;height:24px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;background:#2f2f2f}
+.sg .ct{background:#333;border-radius:9px;padding:0 8px;font-size:11.5px;color:#cfcfcf}
+.sg .sub{font-size:11px;color:#8a8a8a;display:block;margin-top:-1px}
+.sg.on{background:#2f3a44;color:#fff;font-weight:600;box-shadow:inset 0 -2px 0 #4cc2ff}
+.sg.on .ct{background:#4cc2ff;color:#000}
+.i1{color:#8fd0ff}.i2{color:#c8b6ff}.i3{color:#6ccb5f}
+.top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.sp{flex:1}
+.btn{border:1px solid #444;background:#333;border-radius:5px;padding:5px 12px;font-size:12.5px}
+.btn.p{background:#4cc2ff;color:#000;border-color:#4cc2ff}
+.warn{display:flex;align-items:center;gap:10px;background:#33290f;border:1px solid #5a4a1a;color:#f6c46f;border-radius:8px;padding:7px 12px;margin-bottom:12px;font-size:12.5px}
+.warn .a{margin-left:auto;color:#4cc2ff}
+.ok{background:#1c2f22;border-color:#2f5a3a;color:#6ccb5f}
+.fl{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.chipf{border:1px solid #3e3e3e;border-radius:15px;padding:3px 11px;display:flex;gap:7px;align-items:center;font-size:12.5px;color:#cfcfcf}
+.chipf.on{border-color:#4cc2ff;background:#1d3348;color:#fff;font-weight:600}
+.cbx{border:1px solid #444;background:#333;border-radius:5px;padding:4px 10px;font-size:12.5px;display:flex;gap:8px;align-items:center}
+.lbl{color:#8a8a8a;font-size:12px}
+table{width:100%;border-collapse:collapse;background:#2b2b2b;border:1px solid #363636;border-radius:10px;overflow:hidden}
+th{color:#8a8a8a;font-weight:600;text-align:left;padding:8px 10px;border-bottom:1px solid #3a3a3a;font-size:12px;background:#282828}
+td{padding:9px 10px;border-bottom:1px solid #333;vertical-align:middle}
+tr.gh td{background:#262626;font-weight:600;color:#cfcfcf;padding:7px 10px}
+.n{font-weight:700}
+.sm{color:#8a8a8a;font-size:11.8px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex:none;margin-right:6px}
+.chip{display:inline-flex;align-items:center;font-size:11.5px;padding:1px 8px;border-radius:9px;margin:1px 3px 1px 0;font-weight:600}
+.cg{background:#1d3348;color:#8fd0ff}.cp{background:#2f2a45;color:#c8b6ff}.cr{background:#1f3a2a;color:#6ccb5f}.cm{background:#3a2f12;color:#f6c46f}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.8px;padding:2px 10px;border-radius:10px}
+.pg{background:#1f3a2a}.pr{background:#3d1f22}.ps{background:#3a3a3a;color:#cfcfcf}.pb{background:#2f3a44}.pw{background:#33290f}
+.bar{display:inline-block;width:70px;height:5px;border-radius:3px;background:#3a3a3a;vertical-align:middle;margin-left:8px;overflow:hidden}
+.bar i{display:block;height:100%;float:left}
+.note{margin-top:12px;font-size:12.5px;color:#9a9a9a;line-height:1.7}
+.note b{color:#ddd}
+</style></head><body>
+<div class="page" id="p">
+  <div class="cap" id="cap"></div>
+  <div class="card">
+    <div class="top">
+      <div class="seg">
+        <div class="sg" id="t1"><span class="ic i1">≡</span><span>Gereksinimler<span class="sub">ne doğrulanacak</span></span><span class="ct">9</span></div>
+        <div class="sg" id="t2"><span class="ic i2">▤</span><span>Plan<span class="sub">nasıl doğrulanacak</span></span><span class="ct">5</span></div>
+        <div class="sg" id="t3"><span class="ic i3">✓</span><span>Rapor<span class="sub">ne çıktı</span></span><span class="ct">4</span></div>
+      </div>
+      <span class="sp"></span>
+      <span class="btn">🗎 Dosyayı aç</span><span class="btn p" id="add"></span>
+    </div>
+    <div id="body"></div>
+  </div>
+  <div class="note" id="note"></div>
+</div>
+<script>
+const tab = (location.hash || '#1').substring(1);
+document.getElementById('t' + tab).classList.add('on');
+const G = (s) => '<span class="chip cg">' + s + '</span>', P = (s) => '<span class="chip cp">' + s + '</span>', M = (s) => '<span class="chip cm">' + s + '</span>';
+const pill = (c, d, t) => '<span class="pill ' + c + '"><i class="dot" style="background:' + d + ';margin:0"></i>' + t + '</span>';
+const pass = pill('pg', '#6ccb5f', 'Geçti'), fail = pill('pr', '#ff99a4', 'Kaldı'), plan = pill('pb', '#e6e6e6', 'Planlandı'), wait = pill('ps', '#8a8a8a', 'Bekliyor'), nr = pill('ps', '#8a8a8a', 'Hazırlanmadı');
+let cap, add, body, note;
+if (tab === '1') {
+  cap = '1 · GEREKSİNİMLER — HER MADDENİN PLANI, RAPORU VE HESAPLANAN DURUMU TEK BAKIŞTA';
+  add = '＋ Gereksinim';
+  body = '<div class="fl"><span class="chipf on">Hepsi 9</span><span class="chipf"><i class="dot" style="background:#4cc2ff;margin:0"></i>İşlevsel 4</span><span class="chipf"><i class="dot" style="background:#6ccb5f;margin:0"></i>Özellik 2</span><span class="chipf"><i class="dot" style="background:#f6c46f;margin:0"></i>ÇK/EMC 2</span><span class="chipf"><i class="dot" style="background:#8a8a8a;margin:0"></i>Diğer 1</span><span class="sp" style="flex:1"></span><span class="lbl">Durum</span><span class="cbx">Hepsi ⌄</span><span class="lbl">Sırala</span><span class="cbx">Sıra no ⌄</span></div>'
+   + '<div class="warn">⚠ 2 gereksinim hiçbir plan maddesinde yok: ' + M('DGÖ-4') + M('DGÖ-8') + '<span class="a">Yalnız bunları göster</span></div>'
+   + '<table><tr><th style="width:90px">TG no</th><th>Gereksinim</th><th style="width:110px">Tür</th><th style="width:170px">Plan</th><th style="width:220px">Rapor</th><th style="width:130px">Durum</th></tr>'
+   + '<tr class="gh"><td colspan="6"><i class="dot" style="background:#4cc2ff"></i>İşlevsel <span class="sm">4 madde · 1 geçti · 1 kaldı</span><span class="bar"><i style="width:25%;background:#6ccb5f"></i><i style="width:25%;background:#ff99a4"></i></span></td></tr>'
+   + '<tr><td class="n">DGÖ-1</td><td>Yanca hüzme genişliği<div class="sm">8–12 GHz, 3 dB ≥ 30°</div></td><td><i class="dot" style="background:#4cc2ff"></i>Temel</td><td>' + P('4.1') + P('4.2') + '</td><td>' + pill('pg','#6ccb5f','5.1') + ' ' + pill('pr','#ff99a4','5.2') + ' ' + pill('ps','#8a8a8a','5.3') + '</td><td>' + fail + '</td></tr>'
+   + '<tr><td class="n">DGÖ-2</td><td>Yan lob seviyesi<div class="sm">≤ −15 dB</div></td><td><i class="dot" style="background:#4cc2ff"></i>Temel</td><td>' + P('4.1') + '</td><td>' + pill('pg','#6ccb5f','5.1') + '</td><td>' + pass + '</td></tr>'
+   + '<tr><td class="n">TSD-0042</td><td>Besleme konnektörü torku<div class="sm">4 Nm</div></td><td><i class="dot" style="background:#f6c46f"></i>Türetilmiş</td><td>' + P('4.4') + '</td><td>' + pill('pg','#6ccb5f','5.4') + '</td><td>' + pass + '</td></tr>'
+   + '<tr><td class="n">DGÖ-3</td><td>VSWR<div class="sm">≤ 1,5:1</div></td><td><i class="dot" style="background:#4cc2ff"></i>Temel</td><td>' + P('4.3') + '</td><td>' + M('rapor yok') + '</td><td>' + plan + '</td></tr>'
+   + '<tr class="gh"><td colspan="6"><i class="dot" style="background:#6ccb5f"></i>Özellik <span class="sm">2 madde</span></td></tr>'
+   + '<tr><td class="n">DGÖ-4</td><td>Kazanç<div class="sm">≥ 15 dBi @ 10 GHz</div></td><td><i class="dot" style="background:#4cc2ff"></i>Temel</td><td>' + M('plan yok') + '</td><td></td><td>' + wait + '</td></tr>'
+   + '</table>';
+  note = '<b>Plan</b> ve <b>Rapor</b> sütunları bağlardan gelir (tıklayınca o madde açılır). <b>Durum</b> raporlardan hesaplanır: biri Kaldı → Kaldı · hepsi Geçti → Geçti · plan var rapor yok → Planlandı · plan yok → Bekliyor; elle Kapsam dışı / Şartlı kabul seçilebilir.';
+} else if (tab === '2') {
+  cap = '2 · PLAN — PLAN MADDELERİ VE DOĞRULADIKLARI GEREKSİNİMLER';
+  add = '＋ Plan maddesi';
+  body = '<div class="fl"><span class="lbl">Doküman</span><span class="cbx">AB-7000-0002_TP_AA · yayınlandı</span><span style="flex:1"></span><span class="lbl">Yöntem</span><span class="cbx">Hepsi ⌄</span></div>'
+   + '<div class="warn">⚠ 1 plan maddesinin raporu yok: ' + P('4.3') + ' · 2 gereksinim planda yok: ' + M('DGÖ-4') + M('DGÖ-8') + '<span class="a">Göster</span></div>'
+   + '<table><tr><th style="width:70px">TP no</th><th>Açıklama</th><th style="width:110px">Yöntem</th><th style="width:110px">Altyapı</th><th style="width:240px">Gereksinimler</th><th style="width:200px">Rapor</th></tr>'
+   + '<tr><td class="n">4.1</td><td>SATIMO hüzme ve yan lob ölçümü<div class="sm">Jig JT-1000-0009 · SN01, SN02</div></td><td><i class="dot" style="background:#4cc2ff"></i>Test</td><td>SATIMO</td><td>' + G('DGÖ-1') + G('DGÖ-2') + '</td><td>' + pill('pg','#6ccb5f','5.1 Geçti') + ' ' + pill('pr','#ff99a4','5.2 Kaldı') + '</td></tr>'
+   + '<tr><td class="n">4.2</td><td>Kazanç ölçümü (8, 10, 12 GHz)</td><td><i class="dot" style="background:#4cc2ff"></i>Test</td><td>SATIMO</td><td>' + G('DGÖ-1') + '</td><td>' + pill('ps','#8a8a8a','5.3 Hazırlanmadı') + '</td></tr>'
+   + '<tr><td class="n">4.3</td><td>VNA S11 ölçümü</td><td><i class="dot" style="background:#4cc2ff"></i>Test</td><td>VNA</td><td>' + G('DGÖ-3') + '</td><td>' + M('rapor yok') + '</td></tr>'
+   + '<tr><td class="n">4.4</td><td>Montaj ve tork muayenesi</td><td><i class="dot" style="background:#6ccb5f"></i>Muayene</td><td></td><td>' + G('TSD-0042') + G('DGÖ-5') + '</td><td>' + pill('pg','#6ccb5f','5.4 Geçti') + '</td></tr>'
+   + '<tr><td class="n">4.6</td><td>Sıcaklık çevrimi</td><td><i class="dot" style="background:#4cc2ff"></i>Test</td><td>İklim odası</td><td>' + G('DGÖ-6') + G('DGÖ-7') + '</td><td>' + pill('pr','#ff99a4','5.6 Kaldı') + '</td></tr>'
+   + '</table>';
+  note = 'Satıra çift tık ya da ⋯ → <b>Düzenle</b>: TP no, açıklama, yöntem, altyapı, not ve <b>Gereksinimler</b> (çoklu seçim, yazarak ara; planda olmayanlar ⚠ ile). Satır açılınca okunur bölüm ve <b>Ayrıntı ↗</b>.';
+} else {
+  cap = '3 · RAPOR — RAPOR MADDELERİ, SONUÇ VE BAĞLI PLAN MADDELERİ';
+  add = '＋ Rapor maddesi';
+  body = '<div class="fl"><span class="lbl">Doküman</span><span class="cbx">AB-7000-0002_TR_XX · hazırlanıyor</span><span style="flex:1"></span><span class="lbl">Sonuç</span><span class="cbx">Hepsi ⌄</span></div>'
+   + '<div class="warn ok">✓ Her rapor maddesi bir plan maddesine bağlı.</div>'
+   + '<table><tr><th style="width:70px">TR no</th><th>Açıklama</th><th style="width:140px">Sonuç</th><th style="width:150px">Plan</th><th style="width:170px">Gereksinimler</th><th style="width:250px">Sonucun yeri</th></tr>'
+   + '<tr><td class="n">5.1</td><td>Hüzme ölçüm sonuçları<div class="sm">en düşük 31,2° (11 GHz)</div></td><td>' + pass + '</td><td>' + P('4.1') + '</td><td>' + G('DGÖ-1') + G('DGÖ-2') + '</td><td>📁 <span class="sm">03_Testler\\…\\SNP1_T2</span> <span style="color:#4cc2ff">Aç</span></td></tr>'
+   + '<tr><td class="n">5.2</td><td>Yan lob sonuçları<div class="sm">−13,8 dB · BN-2026-014</div></td><td>' + fail + '</td><td>' + P('4.1') + '</td><td>' + G('DGÖ-1') + G('DGÖ-2') + '</td><td>📁 <span class="sm">03_Testler\\…\\SNP1_T1</span> <span style="color:#4cc2ff">Aç</span></td></tr>'
+   + '<tr><td class="n">5.3</td><td>Kazanç sonuçları</td><td>' + nr + '</td><td>' + P('4.2') + '</td><td>' + G('DGÖ-1') + '</td><td></td></tr>'
+   + '<tr><td class="n">5.4</td><td>Montaj muayene sonucu</td><td>' + pass + '</td><td>' + P('4.4') + '</td><td>' + G('TSD-0042') + G('DGÖ-5') + '</td><td></td></tr>'
+   + '</table>';
+  note = '<b>Gereksinimler</b> sütunu plan üzerinden gelir (yazılmaz, hesaplanır). Düzenle: TR no, açıklama, <b>Sonuç</b> (Geçti · Kaldı · Hazırlanmadı), <b>Plan maddeleri</b> (çoklu seçim), sonucun yeri, not.';
+}
+document.getElementById('cap').innerHTML = '<b>' + tab + '</b>' + cap.substring(4);
+document.getElementById('add').textContent = add;
+document.getElementById('body').innerHTML = body;
+document.getElementById('note').innerHTML = note;
+</script>
+</body></html>
