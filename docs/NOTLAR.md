@@ -133,6 +133,12 @@ AB-7000-0002\
   alan (ilk satırı tabloda, tamamı açılınca), alt grup pencerede yok (md'deki eski değerler korunur), tür / bağlı temel / yöntem /
   altyapı / TP-TR madde no / durum. "Pencere açık kalsın" sıradaki maddeyi hemen girmek içindir.
 - Sırada: test planı ve test raporu md'de ayrıntılandırılacak (altyapı, dikkat, sonuçlar, bildirim no, sonuç dizini, ekler).
+- **Excel'den alma (21.11.2026, sonra bakılacak; kullanıcı örnek dosyalara bakacak).** Sütunlar dosyadan dosyaya biraz
+  değişir, ortak olanlar genelde şunlar:
+  - Test gereksinimi: doğrulama madde no · madde açıklaması · gereksinim türü · not
+  - Test planı: test planı madde no · açıklama · doğrulama yöntemi · not
+  - Test raporu: rapor no · açıklama · test sonucu · not
+  Excel elle düzenlenebilir olduğu için sütun eşleme (başlıktan tanıma) gerekir; zor kısım bu.
 
 ## Sıradaki adımlar (kullanıcıyla konuşulan sıra)
 

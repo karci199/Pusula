@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Gereksinim adımı</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#202020}
+.page{width:1460px;padding:24px 28px 28px;background:#202020;color:#e6e6e6;font-family:"Segoe UI",Arial,sans-serif;font-size:13.5px}
+h1{font-size:20px;margin:0 0 4px}
+.lead{color:#a8a8a8;margin-bottom:18px}
+.flow{display:grid;grid-template-columns:360px 40px 1fr;gap:0;align-items:stretch}
+.arrow{display:flex;align-items:center;justify-content:center;color:#4cc2ff;font-size:26px}
+.box{background:#2b2b2b;border:1px solid #3a3a3a;border-radius:9px;padding:14px 16px}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin-bottom:8px}
+.cap b{color:#4cc2ff;margin-right:6px}
+.doc{background:#f4f1ea;color:#222;border-radius:6px;padding:12px 14px;font-family:Georgia,serif;font-size:13px;line-height:1.55}
+.doc .h{font-weight:700;margin-bottom:6px}
+.doc .m{margin:6px 0}
+.doc .no{font-weight:700;color:#7a2f12}
+table{width:100%;border-collapse:collapse;font-size:12.8px}
+th{color:#8a8a8a;font-weight:600;text-align:left;padding:6px 8px;border-bottom:1px solid #3a3a3a}
+td{padding:7px 8px;border-bottom:1px solid #333;vertical-align:top}
+.n{font-weight:700}
+.pill{font-size:11px;padding:1px 8px;border-radius:10px;font-weight:600;white-space:nowrap}
+.g{background:#1f3a2a;color:#6ccb5f}.y{background:#3a2f12;color:#f6c46f}.b{background:#1d3348;color:#8fd0ff}.r{background:#3d1f22;color:#ff99a4}.s{background:#3a3a3a;color:#bdbdbd}
+.sub{color:#9a9a9a;font-size:12px}
+.md{margin-top:14px;background:#1f1f1f;border:1px solid #383838;border-radius:8px;padding:10px 12px;font-family:Consolas,monospace;font-size:12px;line-height:1.6;color:#cfcfcf;white-space:pre}
+.md .d{color:#8fd0ff}.md .c{color:#777}
+.bottom{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+.list{font-size:13px;line-height:1.8;color:#cfcfcf}
+.list li{margin-left:-14px}
+.ok{color:#6ccb5f}.no2{color:#f6c46f}
+</style></head><body><div class="page">
+<h1>Adım 1 · Gereksinim — örnek: AB-7000-0002 (Takım anten boynuz Y)</h1>
+<div class="lead">Şartnamedeki "ne doğrulanacak" maddeleri stokta tek tabloda toplanır; her madde sonra test planına (TP) ve test raporuna (TR) bağlanır.</div>
+
+<div class="flow">
+  <div class="box">
+    <div class="cap"><b>KAYNAK</b>DOORS · TEST GEREKSİNİMİ DOKÜMANI</div>
+    <div class="doc">
+      <div class="h">AB-7000-0002 Test Gereksinimleri · Rev AA</div>
+      <div class="m"><span class="no">DGÖ-1</span> Anten 3 dB yanca hüzme genişliği 8–12 GHz bandında ≥ 30° olmalıdır.</div>
+      <div class="m"><span class="no">DGÖ-2</span> Yan lob seviyesi ≤ −15 dB olmalıdır.</div>
+      <div class="m"><span class="no">DGÖ-5</span> Anten −40…+71 °C'de çalışmalıdır.</div>
+    </div>
+    <div class="sub" style="margin-top:10px">Tasarımcının Word dokümanındaki numarasız madde: TG no yerine doküman no (ör. <b>TSD-0042</b>) yazılır, Tür = Türetilmiş, Bağlı = DGÖ-1.</div>
+  </div>
+  <div class="arrow">➜</div>
+  <div class="box">
+    <div class="cap"><b>PUSULA</b>STOK SAYFASI · DOĞRULAMALAR SEKMESİ (VAR)</div>
+    <table>
+      <tr><th>TG no</th><th>Gereksinim</th><th>Grup</th><th>Tür</th><th>Yöntem</th><th>TP</th><th>TR</th><th>Durum</th></tr>
+      <tr><td class="n">DGÖ-1</td><td>3 dB yanca hüzme genişliği ≥ 30°</td><td>İşlevsel</td><td>Temel</td><td>Test</td><td>TP 4.1</td><td>TR 5.1</td><td><span class="pill g">Geçti</span></td></tr>
+      <tr><td class="n">TSD-0042</td><td>Besleme konnektörü torku 4 Nm</td><td>İşlevsel</td><td>Türetilmiş · DGÖ-1</td><td>Muayene</td><td>TP 4.3</td><td>—</td><td><span class="pill b">Planlandı</span></td></tr>
+      <tr><td class="n">DGÖ-2</td><td>Yan lob ≤ −15 dB</td><td>Özellik</td><td>Temel</td><td>Test</td><td>TP 4.2</td><td>TR 5.2</td><td><span class="pill r">Kaldı</span></td></tr>
+      <tr><td class="n">DGÖ-5</td><td>−40…+71 °C çalışma</td><td>ÇK/EMC</td><td>Temel</td><td>Test</td><td>—</td><td>—</td><td><span class="pill s">Bekliyor</span></td></tr>
+    </table>
+    <div class="md"><span class="c">Diskte: Obsidian notu, yalnız ilk tablo uygulamaca yazılır</span>
+<span class="d">7000_MILKON\AB-7000-0002\03_Testler\AB-7000-0002_Test_Gereksinimleri.md</span>
+| # | TG no | Kaynak | Başlık | Gereksinim | Grup | Tür | Bağlı | Yöntem | TP no | TR no | Durum |
+| 1 | DGÖ-1 | TGD_AA | Hüzme  | 3 dB yanca…| İşlevsel | Temel |  | Test | 4.1 | 5.1 | Geçti |</div>
+  </div>
+</div>
+
+<div class="bottom">
+  <div class="box">
+    <div class="cap"><b>✓</b>BU ADIMDA OLANLAR (17.11.2026'dan beri)</div>
+    <ul class="list">
+      <li class="ok">Madde ekle / düzenle (TG no, gereksinim, grup, tür, bağlı, yöntem, TP/TR no, durum)</li>
+      <li class="ok">Gruplar (İşlevsel · Özellik · ÇK/EMC · Diğer), ilerleme çubuğu "Doğrulama 1/3"</li>
+      <li class="ok">Doküman YAML'ında test gereksinimi / tasarımcı dokümanı / TP / TR adları, _AA = yayınlandı</li>
+      <li class="ok">Kayıt ve iş penceresinde madde seçimi (ölçüm hangi maddeyi doğruluyor)</li>
+    </ul>
+  </div>
+  <div class="box">
+    <div class="cap"><b style="color:#f6c46f">?</b>EKSİK OLABİLECEKLER · SEÇİM SENİN</div>
+    <ul class="list">
+      <li class="no2"><b>A.</b> Excel / DOORS dışa aktarımından toplu içe alma (maddeleri tek tek yazmamak)</li>
+      <li class="no2"><b>B.</b> Kapsam boşluğu: TP'si / TR'si olmayan maddeler listesi (proje genelinde)</li>
+      <li class="no2"><b>C.</b> Revizyon: şartname Rev AB gelince değişen maddeleri işaretleme</li>
+      <li class="no2"><b>D.</b> Hiçbiri; Adım 2 Planlama'ya (test planı md'si) geç</li>
+    </ul>
+  </div>
+</div>
+</div></body></html>
