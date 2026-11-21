@@ -1431,6 +1431,9 @@ namespace Pusula.Wpf.ViewModels
             }
 
             var group = VerificationGroupChoices.FirstOrDefault(c => c.IsChecked)?.Key ?? Resources.Verify_GroupFunctional;
+            // Plan / rapor açıklama ve notu pencerede yok: düzenlemede diskteki güncel satırdan korunur (Obsidian'da değişmiş olabilir).
+            var onDisk = editingVerification == null ? null
+                : VerificationList.Read(verificationStock).FirstOrDefault(v => v.Number == editingVerification.Number) ?? editingVerification;
             var item = new VerificationItem
             {
                 Text = text,
@@ -1446,6 +1449,10 @@ namespace Pusula.Wpf.ViewModels
                 TgNo = NewVerTgNo.Trim(),
                 TpNo = NewVerTpNo.Trim(),
                 TrNo = NewVerTrNo.Trim(),
+                TpDescription = onDisk?.TpDescription ?? string.Empty,
+                TpNote = onDisk?.TpNote ?? string.Empty,
+                TrDescription = onDisk?.TrDescription ?? string.Empty,
+                TrNote = onDisk?.TrNote ?? string.Empty,
                 Status = NewVerStatus.Trim(),
             };
 

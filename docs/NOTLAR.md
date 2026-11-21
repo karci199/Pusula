@@ -118,8 +118,13 @@ AB-7000-0002\
 
 ### Doğrulama tablosu (17.11.2026: test gereksinimi → test planı → test raporu)
 
-- Sütunlar: # · TG no · Kaynak · Başlık · Kısa not · Gereksinim · Grup · Alt grup · Tür · Bağlı · Yöntem · Altyapı · TP no · TR no · Durum
-  (başlıktan tanınır, sıra serbest, tanınmayan sütunlar korunur; eski tablolar ilk yazımda yükselir).
+- Sütunlar: # · TG no · Kaynak · Başlık · Kısa not · Gereksinim · Grup · Alt grup · Tür · Bağlı · Yöntem · Altyapı · TP no ·
+  TP açıklama · TP not · TR no · TR açıklama · TR not · Durum (21.11.2026: 19 sütun; başlıktan tanınır, sıra serbest,
+  tanınmayan sütunlar korunur; eski tablolar ilk yazımda yükselir).
+- 21.11.2026 kararı: madde önce yalnız gereksinimle girilir (madde penceresinde TP / TR yok; var olanlar korunur). Plan ve
+  rapor sonra, seçilen maddelere toplu "Planla…" / "Raporla…" ile (mock: `docs/mock/planla_raporla.png`; henüz kodlanmadı).
+  Test sonucu türleri (rapor): Geçti · Kaldı · Hazırlanmadı. Kaldıysa bildirim no TR notuna yazılır. Hepsi test değil
+  (ör. kütle tartılır = Muayene); ad "Doğrulama" kalır.
 - TG no = DOORS'taki test gereksinimi dokümanının madde no'su. Tasarımcının yayınlamadığı Word dokümanındaki maddelerde no
   yoktur; Kaynak sütununa doküman no yazılır.
 - Tür: Temel (şartnamede) / Türetilmiş (temelin sağlanması için tasarımcının koyduğu; Bağlı = temel TG no); boş olabilir.

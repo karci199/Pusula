@@ -50,8 +50,20 @@ namespace Pusula.Core.Testing
         /// <summary>Test planındaki madde numarası (TP-5.1); isteğe bağlı.</summary>
         public string TpNo { get; set; } = string.Empty;
 
+        /// <summary>Test planındaki maddenin açıklaması (örn. "SATIMO hüzme ölçümü"); isteğe bağlı.</summary>
+        public string TpDescription { get; set; } = string.Empty;
+
+        /// <summary>Test planı notu (jig, SN, dikkat edilecekler); isteğe bağlı.</summary>
+        public string TpNote { get; set; } = string.Empty;
+
         /// <summary>Test raporundaki madde numarası (TR-5.1); isteğe bağlı.</summary>
         public string TrNo { get; set; } = string.Empty;
+
+        /// <summary>Test raporundaki maddenin açıklaması; isteğe bağlı.</summary>
+        public string TrDescription { get; set; } = string.Empty;
+
+        /// <summary>Test raporu notu (ölçülen değer, kaldıysa bildirim no); isteğe bağlı.</summary>
+        public string TrNote { get; set; } = string.Empty;
 
         /// <summary>Durum metni: Bekliyor, Planlandı, Hazırlık yapılıyor, Yapılıyor, Değerlendiriliyor, Geçti, Kaldı, Şartlı kabul, Tekrarlanacak, Kapsam dışı.</summary>
         public string Status { get; set; } = string.Empty;
@@ -63,7 +75,7 @@ namespace Pusula.Core.Testing
     /// <summary>
     /// Stokun doğrulama listesi: <c>03_Testler\&lt;stok&gt;_Test_Gereksinimleri.md</c> içindeki ilk tablo.
     /// Sütunlar başlıklarından tanınır: # · TG no · kaynak · başlık · kısa not · gereksinim · grup · alt grup · tür · bağlı ·
-    /// yöntem · altyapı · TP no · TR no · durum (sıra serbest, tanınmayan sütunlar korunur). Eski tablolarda eksik sütunlar
+    /// yöntem · altyapı · TP no · TP açıklama · TP not · TR no · TR açıklama · TR not · durum (sıra serbest, tanınmayan sütunlar korunur). Eski tablolarda eksik sütunlar
     /// ilk yazımda eklenir. Uygulama tabloya satır
     /// ekler, satırı değiştirir ya da kaldırır (16.11.2026 kullanıcı kararı); dosyanın geri kalanına dokunmaz.
     /// </summary>
@@ -92,12 +104,16 @@ namespace Pusula.Core.Testing
         private const int ColMethod = 10;
         private const int ColFacility = 11;
         private const int ColTp = 12;
-        private const int ColTr = 13;
-        private const int ColStatus = 14;
-        private const int KnownCount = 15;
+        private const int ColTpDescription = 13;
+        private const int ColTpNote = 14;
+        private const int ColTr = 15;
+        private const int ColTrDescription = 16;
+        private const int ColTrNote = 17;
+        private const int ColStatus = 18;
+        private const int KnownCount = 19;
 
         /// <summary>Yeni ya da yükseltilen tablonun başlıkları (sırasıyla).</summary>
-        public static readonly string[] Headers = { "#", "TG no", "Kaynak", "Başlık", "Kısa not", "Gereksinim", "Grup", "Alt grup", "Tür", "Bağlı", "Yöntem", "Altyapı", "TP no", "TR no", "Durum" };
+        public static readonly string[] Headers = { "#", "TG no", "Kaynak", "Başlık", "Kısa not", "Gereksinim", "Grup", "Alt grup", "Tür", "Bağlı", "Yöntem", "Altyapı", "TP no", "TP açıklama", "TP not", "TR no", "TR açıklama", "TR not", "Durum" };
 
         // Eski (16.11.2026 öncesi) 7 sütunlu tablonun sırası; başlık tanınmazsa kullanılır.
         private static readonly int[] LegacyOrder = { ColNumber, ColText, ColGroup, ColSubGroup, ColFacility, ColTg, ColStatus };
@@ -442,6 +458,16 @@ namespace Pusula.Core.Testing
                 case "trno":
                 case "tr":
                     return ColTr;
+                case "tpaçıklama":
+                case "tpaciklama":
+                    return ColTpDescription;
+                case "tpnot":
+                    return ColTpNote;
+                case "traçıklama":
+                case "traciklama":
+                    return ColTrDescription;
+                case "trnot":
+                    return ColTrNote;
                 case "durum":
                     return ColStatus;
                 default:
@@ -555,6 +581,10 @@ namespace Pusula.Core.Testing
                 item.TgNo = values[ColTg] ?? string.Empty;
                 item.TpNo = values[ColTp] ?? string.Empty;
                 item.TrNo = values[ColTr] ?? string.Empty;
+                item.TpDescription = values[ColTpDescription] ?? string.Empty;
+                item.TpNote = values[ColTpNote] ?? string.Empty;
+                item.TrDescription = values[ColTrDescription] ?? string.Empty;
+                item.TrNote = values[ColTrNote] ?? string.Empty;
                 item.Status = values[ColStatus] ?? string.Empty;
                 return item;
             }
@@ -608,6 +638,18 @@ namespace Pusula.Core.Testing
                             break;
                         case ColTr:
                             value = item.TrNo;
+                            break;
+                        case ColTpDescription:
+                            value = item.TpDescription;
+                            break;
+                        case ColTpNote:
+                            value = item.TpNote;
+                            break;
+                        case ColTrDescription:
+                            value = item.TrDescription;
+                            break;
+                        case ColTrNote:
+                            value = item.TrNote;
                             break;
                         case ColStatus:
                             value = item.Status;

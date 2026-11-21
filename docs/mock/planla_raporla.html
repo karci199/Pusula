@@ -1,0 +1,93 @@
+﻿<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Planla · Raporla</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#202020}
+.page{width:1500px;padding:24px 28px 28px;background:#202020;color:#e6e6e6;font-family:"Segoe UI",Arial,sans-serif;font-size:13.5px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px 22px}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin:0 0 9px}
+.cap b{color:#4cc2ff;margin-right:6px}
+.full{grid-column:1/4}
+.card{background:#2b2b2b;border:1px solid #3a3a3a;border-radius:9px;padding:14px 16px}
+.dlg{background:#2b2b2b;border:1px solid #444;border-radius:9px;padding:18px 20px 16px}
+.ttl{font-size:18px;font-weight:600;margin-bottom:4px}
+.sub{color:#a8a8a8;font-size:12.5px;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{color:#8a8a8a;font-weight:600;text-align:left;padding:6px 8px;border-bottom:1px solid #3a3a3a}
+td{padding:8px;border-bottom:1px solid #333;vertical-align:middle}
+.n{font-weight:700}
+.dash{color:#6f6f6f}
+.act{color:#4cc2ff;font-size:12.5px}
+.sel td{background:#1d3348}
+.cb{display:inline-flex;width:16px;height:16px;border-radius:4px;border:1px solid #777;align-items:center;justify-content:center;font-size:10px}
+.cb.on{background:#4cc2ff;border-color:#4cc2ff;color:#000}
+.pill{font-size:11px;padding:1px 8px;border-radius:10px;font-weight:600}
+.pg{background:#1f3a2a;color:#6ccb5f}.pr{background:#3d1f22;color:#ff99a4}.pb{background:#1d3348;color:#8fd0ff}.ps{background:#3a3a3a;color:#bdbdbd}
+.bar{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.btn{border:1px solid #444;background:#333;border-radius:5px;padding:5px 12px;font-size:13px}
+.btn.p{background:#4cc2ff;color:#000;border-color:#4cc2ff}
+.row{display:grid;grid-template-columns:110px 1fr;gap:0 12px;margin-bottom:10px;align-items:start}
+.lab{color:#cfcfcf;padding-top:7px}
+.in{min-height:32px;border-radius:5px;background:#333;border:1px solid #3e3e3e;border-bottom:1px solid #8a8a8a;padding:6px 10px;display:flex;align-items:center;justify-content:space-between}
+.in.area{min-height:52px;align-items:flex-start}
+.ph{color:#8a8a8a}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding-top:4px}
+.chip{background:#1d3348;color:#8fd0ff;border-radius:10px;padding:2px 10px;font-size:12.5px;font-weight:600}
+.btns{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+.hint{font-size:12px;color:#9a9a9a;margin-top:4px;line-height:1.45}
+.note{font-size:12.5px;color:#9a9a9a;line-height:1.75;background:#262626;border:1px solid #333;border-radius:10px;padding:12px 16px}
+.note b{color:#ddd}
+</style></head><body><div class="page">
+
+<div class="full">
+  <div class="cap"><b>1</b>DOĞRULAMALAR SEKMESİ · MADDE ÖNCE YALNIZ GEREKSİNİMLE EKLENİR; PLAN VE RAPOR SONRA, SEÇİLEN MADDELERE TOPLU</div>
+  <div class="card">
+    <div class="bar"><span style="color:#9a9a9a">2 madde seçili</span><span class="btn p">Planla…</span><span class="btn">Raporla…</span><span style="flex:1"></span><span class="btn">＋ Madde</span></div>
+    <table>
+      <tr><th style="width:34px"></th><th>TG no</th><th>Gereksinim</th><th>Tür</th><th>Test planı</th><th>Test raporu</th><th>Durum</th></tr>
+      <tr class="sel"><td><span class="cb on">✓</span></td><td class="n">DGÖ-1</td><td>3 dB yanca hüzme genişliği ≥ 30°</td><td>Temel</td><td class="dash">— <span class="act">Planla</span></td><td class="dash">—</td><td><span class="pill ps">Bekliyor</span></td></tr>
+      <tr class="sel"><td><span class="cb on">✓</span></td><td class="n">DGÖ-2</td><td>Yan lob ≤ −15 dB</td><td>Temel</td><td class="dash">— <span class="act">Planla</span></td><td class="dash">—</td><td><span class="pill ps">Bekliyor</span></td></tr>
+      <tr><td><span class="cb"></span></td><td class="n">TSD-0042</td><td>Besleme konnektörü torku 4 Nm</td><td>Türetilmiş</td><td>4.3 · Muayene</td><td class="dash">— <span class="act">Raporla</span></td><td><span class="pill pb">Planlandı</span></td></tr>
+      <tr><td><span class="cb"></span></td><td class="n">DGÖ-5</td><td>−40…+71 °C çalışma</td><td>Temel</td><td>4.6 · Test</td><td>5.4 · Kaldı</td><td><span class="pill pr">Kaldı</span></td></tr>
+    </table>
+  </div>
+</div>
+
+<div>
+  <div class="cap"><b>2</b>PLANLA · SEÇİLİ MADDELER İÇİN</div>
+  <div class="dlg">
+    <div class="ttl">Plana ekle</div>
+    <div class="sub">Doküman: AB-7000-0002_TP_XX (hazırlanıyor) · stoktaki test planı</div>
+    <div class="row"><div class="lab">Maddeler</div><div class="chips"><span class="chip">DGÖ-1</span><span class="chip">DGÖ-2</span></div></div>
+    <div class="row"><div class="lab">TP madde no</div><div class="in">4.1</div></div>
+    <div class="row"><div class="lab">Açıklama</div><div class="in">SATIMO hüzme ve yan lob ölçümü</div></div>
+    <div class="row"><div class="lab">Yöntem</div><div class="in">Test <span style="color:#999">⌄</span></div></div>
+    <div class="row"><div class="lab">Not</div><div class="in area">Jig JT-1000-0009, SN01 ve SN02</div></div>
+    <div class="hint">Durum Bekliyor → <b>Planlandı</b>. Bir plan maddesi birden çok gereksinimi kapsayabilir.</div>
+    <div class="btns"><span class="btn">Vazgeç</span><span class="btn p">Ekle</span></div>
+  </div>
+</div>
+
+<div>
+  <div class="cap"><b>3</b>RAPORLA · TEST SONRASI</div>
+  <div class="dlg">
+    <div class="ttl">Rapora yaz</div>
+    <div class="sub">Doküman: AB-7000-0002_TR_XX · stoktaki test raporu</div>
+    <div class="row"><div class="lab">Maddeler</div><div class="chips"><span class="chip">DGÖ-2</span></div></div>
+    <div class="row"><div class="lab">Rapor no</div><div class="in">5.2</div></div>
+    <div class="row"><div class="lab">Açıklama</div><div class="in">Yan lob sonuçları</div></div>
+    <div class="row"><div class="lab">Sonuç</div><div class="in"><span style="color:#ff99a4">Kaldı</span> <span style="color:#999">⌄</span></div></div>
+    <div class="row"><div class="lab">Not</div><div class="in area">−13,8 dB · bildirim no BN-2026-014 · tekrar</div></div>
+    <div class="hint">Sonuç durumu belirler (Geçti · Kaldı · Şartlı kabul · Tekrarlanacak). Kaldıysa bildirim no nota yazılır.</div>
+    <div class="btns"><span class="btn">Vazgeç</span><span class="btn p">Yaz</span></div>
+  </div>
+</div>
+
+<div>
+  <div class="cap"><b>4</b>NEREYE YAZILIR</div>
+  <div class="note">
+    <b>Tek dosya:</b> 03_Testler\AB-7000-0002_Test_Gereksinimleri.md tablosu; plan ve rapor sütunları (TP no, TP açıklama, yöntem, TP not, TR no, TR açıklama, sonuç, TR not) aynı satıra yazılır. Excel buradan çıkar.<br><br>
+    <b>Dokümanlar:</b> stokta bir test planı ve bir test raporu (YAML'da adı; _AA yayınlandı, _XX hazırlanıyor). Pencere başlığında görünür; yoksa "doküman adı yok" yazar, yine de no girilebilir.<br><br>
+    <b>Satır menüsü</b> tek madde için aynı pencereleri açar; tablodaki "Planla" / "Raporla" bağlantısı da.
+  </div>
+</div>
+</div></body></html>

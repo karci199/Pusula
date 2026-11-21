@@ -3374,17 +3374,7 @@
                             </StackPanel>
                         </StackPanel>
                     </controls:FormField>
-                    <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldPlanReport}" LabelWidth="150">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="8" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <TextBox Text="{Binding NewVerTpNo, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderTp}" />
-                            <TextBox Grid.Column="2" Text="{Binding NewVerTrNo, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderTr}" />
-                        </Grid>
-                    </controls:FormField>
+                    <!-- TP / TR no pencerede yok (21.11.2026): madde önce yalnız gereksinimle girilir; plan ve rapor sonra ayrı adımda. Var olan değerler düzenlemede korunur. -->
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldStatus}" LabelWidth="150">
                         <ComboBox ItemsSource="{Binding VerificationStatuses}" SelectedItem="{Binding NewVerStatus, Mode=TwoWay}" />
                     </controls:FormField>
