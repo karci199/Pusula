@@ -3127,6 +3127,39 @@ namespace Pusula.Wpf.Properties
         /// <summary>Ana sayfa Yapılacaklar: + İş düğmesinin ipucu.</summary>
         public static string Task_HomeHint { get { return Get("Task_HomeHint"); } }
 
+        /// <summary>Ortak ekleme penceresinin başlığı.</summary>
+        public static string Inv_AddToolTitle { get { return Get("Inv_AddToolTitle"); } }
+
+        /// <summary>Ekleme penceresi: kaydın bağlı olduğu yer (Genel, proje ya da stok); klasör buna göre açılır.</summary>
+        public static string Inv_UsePlace { get { return Get("Inv_UsePlace"); } }
+
+        /// <summary>Ekleme penceresi: kullanım yeri ipucu.</summary>
+        public static string Inv_UsePlaceHint { get { return Get("Inv_UsePlaceHint"); } }
+
+        /// <summary>Kullanım yeri listesinde Genel satırının açıklaması.</summary>
+        public static string Inv_UsePlaceGeneral { get { return Get("Inv_UsePlaceGeneral"); } }
+
+        /// <summary>Kullanım yeri rozeti: genel.</summary>
+        public static string Inv_BadgeGeneral { get { return Get("Inv_BadgeGeneral"); } }
+
+        /// <summary>Kullanım yeri rozeti: proje.</summary>
+        public static string Inv_BadgeProject { get { return Get("Inv_BadgeProject"); } }
+
+        /// <summary>Kullanım yeri rozeti: stok.</summary>
+        public static string Inv_BadgeStock { get { return Get("Inv_BadgeStock"); } }
+
+        /// <summary>Ekleme penceresi: not alanı.</summary>
+        public static string Inv_Notes { get { return Get("Inv_Notes"); } }
+
+        /// <summary>"+" menüsü: ortak ekleme penceresini açar.</summary>
+        public static string Add_Tool { get { return Get("Add_Tool"); } }
+
+        /// <summary>Stok sayfası, Test yardımcı araçları: ekleme penceresini açan düğme.</summary>
+        public static string StockInv_AddTool { get { return Get("StockInv_AddTool"); } }
+
+        /// <summary>Stok sayfası: Ekle düğmesinin ipucu.</summary>
+        public static string StockInv_AddToolHint { get { return Get("StockInv_AddToolHint"); } }
+
         #endregion
     }
 }

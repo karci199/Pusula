@@ -28,7 +28,7 @@ try {
     $vm.SelectedNode = $stock; Pump
     $cable = @($vm.InventoryTypes)[0]
     $vm.OpenNewInventory($cable)
-    Check 'diyalog açıldı, başlık' ($vm.IsInventoryDialogOpen -and $vm.InventoryDialogTitle -eq 'Yeni kablo') $vm.InventoryDialogTitle
+    Check 'diyalog açıldı, başlık ortak' ($vm.IsInventoryDialogOpen -and $vm.InventoryDialogTitle -eq [Pusula.Wpf.Properties.Resources]::Inv_AddToolTitle -and $vm.InventoryTypeChoice.Key -eq 'cable') $vm.InventoryDialogTitle
     Check 'düzeyler: Genel, Proje, Stok' ($vm.InventoryLevels.Count -eq 3 -and $vm.NewInventoryLevel.Level -eq 'Stock')
     $vm.NewInventoryNumber = 'KBL-1'; $vm.NewInventoryName = 'Deneme'
     Check 'biçim dışı reddedilir' (-not $vm.ConfirmNewInventory() -and $vm.InventoryError -match 'JT-0000-0000') $vm.InventoryError

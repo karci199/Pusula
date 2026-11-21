@@ -2756,6 +2756,13 @@
                             </TabItem.Header>
                             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,0">
                                 <StackPanel Margin="0,10,0,0">
+                                    <Button HorizontalAlignment="Right" Margin="0,0,8,8" Style="{DynamicResource AccentButtonStyle}"
+                                            Click="StockToolAdd_Click" ToolTip="{x:Static res:Resources.StockInv_AddToolHint}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="14" />
+                                            <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.StockInv_AddTool}" />
+                                        </StackPanel>
+                                    </Button>
                                     <Grid Margin="8,0,8,6">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="34" />
@@ -3321,31 +3328,73 @@
                            TextWrapping="Wrap" Margin="0,0,0,10"
                            Text="{x:Static res:Resources.Mark_Hint}"
                            Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource BoolToVis}}" />
-                <controls:FormField Header="{x:Static res:Resources.Inv_Name}" IsRequired="True" LabelWidth="130">
+                <!-- Ortak ekleme penceresi: Tür · Alt tür · Tanım · Stok no · Kullanım yeri · Notlar · Etiketler (her türde aynı) -->
+                <controls:FormField Header="{x:Static res:Resources.Col_Type}" IsRequired="True" LabelWidth="130"
+                                    Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}">
+                    <ComboBox ItemsSource="{Binding InventoryTypeOptions}" SelectedItem="{Binding InventoryTypeChoice, Mode=TwoWay}" Width="300" HorizontalAlignment="Left">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="9" Height="9" Fill="{Binding Color}" VerticalAlignment="Center" />
+                                    <TextBlock Margin="10,0,0,0" Text="{Binding Name}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </controls:FormField>
+                <controls:FormField Header="{x:Static res:Resources.Inv_SubType}" LabelWidth="130" Margin="0,10,0,0"
+                                    Visibility="{Binding HasInventorySubTypes, Converter={StaticResource BoolToVis}}">
+                    <ComboBox ItemsSource="{Binding InventorySubTypes}" SelectedItem="{Binding NewInventorySubType, Mode=TwoWay}" Width="300" HorizontalAlignment="Left" />
+                </controls:FormField>
+                <controls:FormField Header="{x:Static res:Resources.Inv_Name}" IsRequired="True" LabelWidth="130" Margin="0,10,0,0">
                     <TextBox Text="{Binding NewInventoryName, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" controls:TextBoxHelper.PlaceholderText="{Binding NewInventoryNamePlaceholder}" />
                 </controls:FormField>
-                <UniformGrid Columns="2" Margin="0,10,0,0">
-                    <controls:FormField Header="{x:Static res:Resources.Inv_StockNo}" IsRequired="True" LabelWidth="130" Margin="0,0,16,0">
-                        <TextBox Text="{Binding NewInventoryNumber, UpdateSourceTrigger=PropertyChanged}" ToolTip="{Binding InventoryNumberHint}" controls:TextBoxHelper.PlaceholderText="{Binding InventoryNumberHint}" />
-                    </controls:FormField>
-                    <Grid>
-                        <controls:FormField Header="{x:Static res:Resources.Inv_Level}" LabelWidth="130"
-                                            Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}">
-                            <ComboBox ItemsSource="{Binding InventoryLevels}" SelectedItem="{Binding NewInventoryLevel, Mode=TwoWay}" DisplayMemberPath="Label" />
-                        </controls:FormField>
-                        <controls:FormField Header="{x:Static res:Resources.Col_Status}" LabelWidth="130"
-                                            Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource BoolToVis}}">
-                            <ComboBox ItemsSource="{Binding InventoryStatuses}" SelectedItem="{Binding NewInventoryStatus, Mode=TwoWay}" />
-                        </controls:FormField>
-                    </Grid>
-                </UniformGrid>
-                <UniformGrid Columns="2" Margin="0,10,0,0" Visibility="{Binding HasInventorySubTypes, Converter={StaticResource BoolToVis}}">
-                    <controls:FormField Header="{x:Static res:Resources.Inv_SubType}" LabelWidth="130" Margin="0,0,16,0">
-                        <ComboBox ItemsSource="{Binding InventorySubTypes}" SelectedItem="{Binding NewInventorySubType, Mode=TwoWay}" />
-                    </controls:FormField>
-                </UniformGrid>
-                <controls:FormField Header="{x:Static res:Resources.Inv_Note}" LabelWidth="130" Margin="0,10,0,0" ErrorText="{Binding InventoryError}">
-                    <TextBox Text="{Binding NewInventoryNote, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Placeholder_Note}" />
+                <controls:FormField Header="{x:Static res:Resources.Inv_StockNo}" IsRequired="True" LabelWidth="130" Margin="0,10,0,0">
+                    <TextBox Text="{Binding NewInventoryNumber, UpdateSourceTrigger=PropertyChanged}" Width="300" HorizontalAlignment="Left"
+                             ToolTip="{Binding InventoryNumberHint}" controls:TextBoxHelper.PlaceholderText="{Binding InventoryNumberHint}" />
+                </controls:FormField>
+                <controls:FormField Header="{x:Static res:Resources.Inv_UsePlace}" LabelWidth="130" Margin="0,10,0,0"
+                                    Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}">
+                    <StackPanel>
+                    <ComboBox ItemsSource="{Binding InventoryLevels}" SelectedItem="{Binding NewInventoryLevel, Mode=TwoWay}"
+                              IsTextSearchEnabled="True" TextSearch.TextPath="Label">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border x:Name="Badge" CornerRadius="8" Padding="7,1" MinWidth="46" Background="{DynamicResource SubtleFillColorSecondaryBrush}" VerticalAlignment="Center">
+                                        <TextBlock x:Name="BadgeText" Text="{Binding Badge}" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="{Binding Label}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="2" Margin="10,0,0,0" Text="{Binding Detail}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
+                                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                                </Grid>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding IsStock}" Value="True">
+                                        <Setter TargetName="Badge" Property="Background" Value="{DynamicResource SystemFillColorSuccessBrush}" /><Setter TargetName="BadgeText" Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsProject}" Value="True">
+                                        <Setter TargetName="Badge" Property="Background" Value="{DynamicResource SystemFillColorCautionBrush}" /><Setter TargetName="BadgeText" Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBlock Margin="0,4,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" TextWrapping="Wrap" Text="{x:Static res:Resources.Inv_UsePlaceHint}" />
+                    </StackPanel>
+                </controls:FormField>
+                <controls:FormField Header="{x:Static res:Resources.Col_Status}" LabelWidth="130" Margin="0,10,0,0"
+                                    Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource BoolToVis}}">
+                    <ComboBox ItemsSource="{Binding InventoryStatuses}" SelectedItem="{Binding NewInventoryStatus, Mode=TwoWay}" Width="300" HorizontalAlignment="Left" />
+                </controls:FormField>
+                <controls:FormField Header="{x:Static res:Resources.Inv_Notes}" LabelWidth="130" Margin="0,10,0,0" ErrorText="{Binding InventoryError}">
+                    <TextBox Text="{Binding NewInventoryNote, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap"
+                             MinHeight="64" MaxHeight="140" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top"
+                             controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Placeholder_Note}" />
                 </controls:FormField>
                 <controls:FormField Header="{x:Static res:Resources.Inv_Tags}" LabelWidth="130" Margin="0,10,0,0">
                     <local:TagBox Tags="{Binding NewInventoryTags, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Tag_Placeholder}" />

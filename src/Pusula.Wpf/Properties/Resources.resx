@@ -2920,4 +2920,37 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Task_HomeHint" xml:space="preserve">
     <value>Bir stoka yapılacak iş ekle</value>
   </data>
+  <data name="Inv_AddToolTitle" xml:space="preserve">
+    <value>Test yardımcı aracı ekle</value>
+  </data>
+  <data name="Inv_UsePlace" xml:space="preserve">
+    <value>Kullanım yeri</value>
+  </data>
+  <data name="Inv_UsePlaceHint" xml:space="preserve">
+    <value>Liste açıkken numarayı yazınca oraya gider. Klasör buna göre açılır; başka stoklar sonra aracın sayfasından bağlanır.</value>
+  </data>
+  <data name="Inv_UsePlaceGeneral" xml:space="preserve">
+    <value>ortak · bütün projeler</value>
+  </data>
+  <data name="Inv_BadgeGeneral" xml:space="preserve">
+    <value>Genel</value>
+  </data>
+  <data name="Inv_BadgeProject" xml:space="preserve">
+    <value>Proje</value>
+  </data>
+  <data name="Inv_BadgeStock" xml:space="preserve">
+    <value>Stok</value>
+  </data>
+  <data name="Inv_Notes" xml:space="preserve">
+    <value>Notlar</value>
+  </data>
+  <data name="Add_Tool" xml:space="preserve">
+    <value>Test yardımcı aracı</value>
+  </data>
+  <data name="StockInv_AddTool" xml:space="preserve">
+    <value>Ekle</value>
+  </data>
+  <data name="StockInv_AddToolHint" xml:space="preserve">
+    <value>Bu stoka test yardımcı aracı ekle (kullanım yeri bu stok gelir)</value>
+  </data>
 </root>

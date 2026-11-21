@@ -1084,18 +1084,22 @@ namespace Pusula.Wpf
 
             var index = 2;
             menu.Items.Insert(index++, new MenuItem { Header = Properties.Resources.Tree_Inventory, Tag = "inventory", IsEnabled = false, FontSize = 12, Margin = new Thickness(0, 6, 0, 0) });
-            foreach (var type in viewModel.InventoryTypes)
+            // Bütün test yardımcı araçları tek pencereden eklenir; tür pencerede seçilir.
+            var tool = new MenuItem
             {
-                var item = new MenuItem
-                {
-                    Header = type.Name.Replace("_", "__"),
-                    Tag = "inventory",
-                    Icon = new AppIcon { Glyph = TreeNodeViewModel.GlyphOf(type.Icon), Foreground = BrushOf(type.Color) },
-                };
-                var chosen = type;
-                item.Click += (s, args) => viewModel.OpenNewInventory(chosen);
-                menu.Items.Insert(index++, item);
-            }
+                Header = Properties.Resources.Add_Tool,
+                Tag = "inventory",
+                Icon = new AppIcon { Glyph = AppIcons.Inventory },
+                IsEnabled = viewModel.InventoryTypes.Any(),
+            };
+            tool.Click += (s, args) => viewModel.OpenAddTool();
+            menu.Items.Insert(index, tool);
+        }
+
+        // Stok sayfası, Test yardımcı araçları: "Ekle" ortak pencereyi açar; kullanım yeri bu stok gelir.
+        private void StockToolAdd_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.OpenAddTool();
         }
 
         // Başlıktaki üst kayıt (proje / stok) bağlantısı: oraya gider.

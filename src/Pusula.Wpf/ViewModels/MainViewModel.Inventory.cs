@@ -16,14 +16,53 @@ namespace Pusula.Wpf.ViewModels
     {
         /// <summary>Seçeneği oluşturur.</summary>
         public LevelOption(string label, InventoryLevel level, string owner)
+            : this(label, level, owner, string.Empty)
+        {
+        }
+
+        /// <summary>Seçeneği açıklamasıyla oluşturur (kullanım yeri listesi: numara + stok adı).</summary>
+        public LevelOption(string label, InventoryLevel level, string owner, string detail)
         {
             Label = label;
             Level = level;
             Owner = owner;
+            Detail = detail;
         }
 
-        /// <summary>Görünen metin.</summary>
+        /// <summary>Görünen metin (stok / proje numarası ya da "Genel"); listede yazarak aramada da bu kullanılır.</summary>
         public string Label { get; }
+
+        /// <summary>Sağda soluk açıklama: stokun adı ya da "bütün projeler".</summary>
+        public string Detail { get; }
+
+        /// <summary>Soldaki küçük rozet: Genel · Proje · Stok.</summary>
+        public string Badge
+        {
+            get
+            {
+                switch (Level)
+                {
+                    case InventoryLevel.Project:
+                        return Resources.Inv_BadgeProject;
+                    case InventoryLevel.Stock:
+                        return Resources.Inv_BadgeStock;
+                    default:
+                        return Resources.Inv_BadgeGeneral;
+                }
+            }
+        }
+
+        /// <summary>Rozet rengi düzeye göre (stok yeşil, proje sarı, genel gri).</summary>
+        public bool IsStock
+        {
+            get { return Level == InventoryLevel.Stock; }
+        }
+
+        /// <summary>Proje düzeyi mi.</summary>
+        public bool IsProject
+        {
+            get { return Level == InventoryLevel.Project; }
+        }
 
         /// <summary>Düzey.</summary>
         public InventoryLevel Level { get; }
@@ -261,7 +300,7 @@ namespace Pusula.Wpf.ViewModels
             {
                 return isInventoryMarkMode
                     ? MarkMenuText(newInventoryType) + " · " + Path.GetFileName(markInventoryFolder)
-                    : NewMenuText(newInventoryType);
+                    : Resources.Inv_AddToolTitle;
             }
         }
 
@@ -533,7 +572,92 @@ namespace Pusula.Wpf.ViewModels
             private set { SetProperty(ref inventoryError, value); }
         }
 
-        /// <summary>Verilen tür için yeni kayıt diyaloğunu açar; düzey seçenekleri seçime göre kurulur.</summary>
+        /// <summary>Ekleme penceresinde seçilebilen türler (Mekanik jig, Kablaj, Yazılım …).</summary>
+        public ObservableCollection<TypeDefinition> InventoryTypeOptions { get; } = new ObservableCollection<TypeDefinition>();
+
+        /// <summary>
+        /// Ekleme penceresinde seçili tür. Değişince alt tür listesi, numara ipucu ve tanım ipucu o türe göre yenilenir;
+        /// yazılan tanım, numara, not ve etiket korunur.
+        /// </summary>
+        public TypeDefinition? InventoryTypeChoice
+        {
+            get { return newInventoryType; }
+            set
+            {
+                // Seçenekler yenilenirken açılır kutu boş yazar; yok sayılır.
+                if (value == null || ReferenceEquals(value, newInventoryType))
+                {
+                    return;
+                }
+
+                newInventoryType = value;
+                InventorySubTypes.Clear();
+                foreach (var subType in value.SubTypes)
+                {
+                    InventorySubTypes.Add(subType);
+                }
+
+                newInventoryValues.Clear();
+                newInventorySubType = string.Empty;
+                NewInventorySubType = InventorySubTypes.FirstOrDefault() ?? string.Empty;
+                OnPropertyChanged(nameof(NewInventorySubType));
+                BuildNewInventoryFields();
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(InventoryNumberHint));
+                OnPropertyChanged(nameof(NewInventoryNamePlaceholder));
+                OnPropertyChanged(nameof(HasInventorySubTypes));
+            }
+        }
+
+        // Kullanım yeri listesi: Genel, bütün projeler, bütün stoklar. Varsayılan ağaçta seçili olan (stok > proje > Genel).
+        private void BuildUsePlaces()
+        {
+            InventoryLevels.Clear();
+            var general = new LevelOption(Resources.Inv_LevelGeneral, InventoryLevel.General, string.Empty, Resources.Inv_UsePlaceGeneral);
+            InventoryLevels.Add(general);
+            var projects = Nodes.Where(n => n.Kind == FolderKind.Project).OrderBy(n => n.Title, StringComparer.CurrentCultureIgnoreCase).ToList();
+            foreach (var project in projects)
+            {
+                InventoryLevels.Add(new LevelOption(Path.GetFileName(project.Path), InventoryLevel.Project, project.Path, string.Empty));
+            }
+
+            foreach (var stock in projects.SelectMany(p => p.Children).Where(c => c.Kind == FolderKind.Stock).OrderBy(c => c.Title, StringComparer.CurrentCultureIgnoreCase))
+            {
+                var info = JsonFile.TryRead<StockInfo>(TrackingFiles.StockFile(stock.Path));
+                InventoryLevels.Add(new LevelOption(stock.Title, InventoryLevel.Stock, stock.Path, info?.Name ?? string.Empty));
+            }
+
+            LevelOption? chosen = null;
+            if (selectedNode != null && selectedNode.Kind == FolderKind.Stock)
+            {
+                chosen = InventoryLevels.FirstOrDefault(o => o.Level == InventoryLevel.Stock && string.Equals(o.Owner, selectedNode.Path, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var projectFolder = SelectedProjectFolder();
+            if (chosen == null && projectFolder.Length > 0)
+            {
+                chosen = InventoryLevels.FirstOrDefault(o => o.Level == InventoryLevel.Project && string.Equals(o.Owner, projectFolder, StringComparison.OrdinalIgnoreCase));
+            }
+
+            NewInventoryLevel = chosen ?? general;
+        }
+
+        /// <summary>Ortak ekleme penceresini açar: tür son seçilen (ilk açılışta listenin ilki), kullanım yeri ağaçtaki seçim.</summary>
+        public void OpenAddTool()
+        {
+            var first = types.InventoryTypes.FirstOrDefault();
+            if (first == null)
+            {
+                return;
+            }
+
+            var last = lastToolTypeKey.Length > 0 ? types.InventoryTypes.FirstOrDefault(t => string.Equals(t.Key, lastToolTypeKey, StringComparison.OrdinalIgnoreCase)) : null;
+            OpenNewInventory(last ?? first);
+        }
+
+        private string lastToolTypeKey = string.Empty;
+
+        /// <summary>Verilen tür için yeni kayıt diyaloğunu açar; kullanım yeri ağaçtaki seçime göre gelir.</summary>
         public void OpenNewInventory(TypeDefinition type)
         {
             if (!HasRoot)
@@ -542,34 +666,19 @@ namespace Pusula.Wpf.ViewModels
                 return;
             }
 
-            newInventoryType = type;
             IsInventoryMarkMode = false;
-            InventoryLevels.Clear();
-            InventoryLevels.Add(new LevelOption(Resources.Inv_LevelGeneral, InventoryLevel.General, string.Empty));
-            var project = SelectedProjectFolder();
-            if (project.Length > 0)
+            BuildUsePlaces();
+            InventoryTypeOptions.Clear();
+            foreach (var option in types.InventoryTypes)
             {
-                InventoryLevels.Add(new LevelOption(string.Format(Resources.Inv_LevelProject, Path.GetFileName(project)), InventoryLevel.Project, project));
+                InventoryTypeOptions.Add(option);
             }
 
-            if (selectedNode != null && selectedNode.Kind == FolderKind.Stock)
-            {
-                InventoryLevels.Add(new LevelOption(string.Format(Resources.Inv_LevelStock, selectedNode.Title), InventoryLevel.Stock, selectedNode.Path));
-            }
-
-            InventorySubTypes.Clear();
-            foreach (var subType in type.SubTypes)
-            {
-                InventorySubTypes.Add(subType);
-            }
-
-            NewInventoryLevel = InventoryLevels.Last();
             NewInventoryNumber = string.Empty;
             NewInventoryName = string.Empty;
             newInventoryValues.Clear();
-            newInventorySubType = string.Empty;
-            NewInventorySubType = InventorySubTypes.FirstOrDefault() ?? string.Empty;
-            BuildNewInventoryFields();
+            newInventoryType = null;
+            InventoryTypeChoice = InventoryTypeOptions.FirstOrDefault(t => string.Equals(t.Key, type.Key, StringComparison.OrdinalIgnoreCase)) ?? type;
             NewInventoryNote = string.Empty;
             NewInventoryRequestDate = DateTime.Today;
             NewInventoryRequestDateText = DateTime.Today.ToString("dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture);
@@ -635,6 +744,11 @@ namespace Pusula.Wpf.ViewModels
                 {
                     Status = string.Format(Resources.Error_Io, fieldsError);
                 }
+            }
+
+            if (!isInventoryMarkMode)
+            {
+                lastToolTypeKey = newInventoryType.Key;
             }
 
             Refresh();

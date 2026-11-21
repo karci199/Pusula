@@ -1,0 +1,152 @@
+﻿<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Test yardımcı aracı ekle</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#202020}
+.page{width:1500px;padding:26px 30px 30px;background:#202020;color:#e6e6e6;font-family:"Segoe UI",Arial,sans-serif;font-size:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px 22px}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin:0 0 9px;display:flex;align-items:center;gap:7px}
+.cap b{color:#4cc2ff}
+.dlg{background:#2b2b2b;border:1px solid #444;border-radius:9px;padding:18px 20px 16px;position:relative}
+.ttl{font-size:18px;font-weight:600;margin-bottom:14px}
+.row{display:grid;grid-template-columns:104px 1fr;gap:0 12px;margin-bottom:10px;align-items:start}
+.lab{color:#cfcfcf;padding-top:7px;font-size:13.5px}
+.lab i{color:#ff99a4;font-style:normal;margin-left:3px}
+.in{min-height:34px;border-radius:5px;background:#333;border:1px solid #3e3e3e;border-bottom:1px solid #8a8a8a;padding:6px 10px;display:flex;align-items:center;gap:8px}
+.in.focus{border-bottom:2px solid #4cc2ff;background:#1f1f1f}
+.in .ph{color:#8a8a8a}
+.in.area{min-height:58px;align-items:flex-start}
+.sel{justify-content:space-between}
+.chev{color:#999;font-size:12px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+.tag{font-size:12px;padding:1px 8px;border-radius:10px;background:#1d3348;color:#8fd0ff}
+.where{display:flex;align-items:center;gap:7px}
+.lv{font-size:11px;padding:1px 7px;border-radius:9px;font-weight:600}
+.lv.s{background:#1f3a2a;color:#6ccb5f}.lv.p{background:#3a2f12;color:#f6c46f}.lv.g{background:#3a3a3a;color:#cfcfcf}
+.hint{font-size:11.5px;color:#9a9a9a;margin-top:4px;line-height:1.45}
+.btns{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+.b{padding:6px 0;width:104px;text-align:center;border-radius:5px;background:#3a3a3a;font-size:13.5px}
+.b.p{background:#4cc2ff;color:#000}
+.drop{position:absolute;background:#2c2c2c;border:1px solid #4a4a4a;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.55);padding:4px;z-index:5}
+.opt{padding:6px 10px;border-radius:5px;display:flex;align-items:center;gap:9px;font-size:13.5px}
+.opt.hl{background:#3a3a3a}
+.opt .nm{color:#9a9a9a;font-size:12.5px;margin-left:auto}
+.opt mark{background:none;color:#4cc2ff;font-weight:700}
+.grp{font-size:10.5px;color:#8a8a8a;padding:6px 10px 2px;font-weight:600;letter-spacing:.3px}
+.sep{height:1px;background:#3e3e3e;margin:4px 6px}
+.note{grid-column:1/4;font-size:12.5px;color:#9a9a9a;line-height:1.75;background:#262626;border:1px solid #333;border-radius:10px;padding:12px 16px}
+.note b{color:#ddd}
+.note code{color:#f6c46f;font-family:Consolas,monospace}
+</style></head><body><div class="page">
+
+<!-- 1 Mekanik jig -->
+<div>
+  <div class="cap"><i class="dot" style="background:#b99cff"></i><b>1</b>MEKANİK JİG · STOKA BAĞLI</div>
+  <div class="dlg">
+    <div class="ttl">Test yardımcı aracı ekle</div>
+    <div class="row"><div class="lab">Tür<i>*</i></div><div class="in sel"><span class="where"><i class="dot" style="background:#b99cff"></i>Mekanik jig</span><span class="chev">⌄</span></div></div>
+    <div class="row"><div class="lab">Alt tür</div><div class="in sel"><span>SATIMO</span><span class="chev">⌄</span></div></div>
+    <div class="row"><div class="lab">Tanım<i>*</i></div><div class="in">TEST MEKANİK SATIMO AB-7000-0002</div></div>
+    <div class="row"><div class="lab">Stok no<i>*</i></div><div class="in">JT-7000-0011</div></div>
+    <div class="row"><div class="lab">Kullanım yeri</div><div class="in sel"><span class="where"><span class="lv s">Stok</span>AB-7000-0002 · Boynuz Y</span><span class="chev">⌄</span></div></div>
+    <div class="row"><div class="lab">Notlar</div><div class="in area">Boynuz anteni SATIMO kulesine tutturan plaka.</div></div>
+    <div class="row"><div class="lab">Etiketler</div><div class="in"><span class="tag">#satimo</span><span class="ph">#</span></div></div>
+    <div class="btns"><div class="b">Vazgeç</div><div class="b p">Oluştur</div></div>
+  </div>
+</div>
+
+<!-- 2 Kablaj -->
+<div>
+  <div class="cap"><i class="dot" style="background:#ffb36b"></i><b>2</b>KABLAJ · HİÇBİR YERE BAĞLI DEĞİL (GENEL)</div>
+  <div class="dlg">
+    <div class="ttl">Test yardımcı aracı ekle</div>
+    <div class="row"><div class="lab">Tür<i>*</i></div><div class="in sel"><span class="where"><i class="dot" style="background:#ffb36b"></i>Kablaj</span><span class="chev">⌄</span></div></div>
+    <div class="row"><div class="lab">Alt tür</div><div class="in sel"><span>RF kablo</span><span class="chev">⌄</span></div></div>
+    <div class="row"><div class="lab">Tanım<i>*</i></div><div class="in">RF TEST KABLOSU SMA-N 1,5 M</div></div>
+    <div class="row"><div class="lab">Stok no<i>*</i></div><div class="in">JT-1000-0031</div></div>
+    <div class="row"><div class="lab">Kullanım yeri</div><div class="in sel"><span class="where"><span class="lv g">Genel</span>Ortak · bütün projeler</span><span class="chev">⌄</span></div></div>
+    <div class="row"><div class="lab">Notlar</div><div class="in area">Lab-A dolabında, 18 GHz'e kadar.</div></div>
+    <div class="row"><div class="lab">Etiketler</div><div class="in"><span class="tag">#rf</span><span class="tag">#lab-a</span></div></div>
+    <div class="btns"><div class="b">Vazgeç</div><div class="b p">Oluştur</div></div>
+  </div>
+</div>
+
+<!-- 3 Yazılım -->
+<div>
+  <div class="cap"><i class="dot" style="background:#6ccb5f"></i><b>3</b>YAZILIM · PROJEYE BAĞLI · JY NUMARA</div>
+  <div class="dlg">
+    <div class="ttl">Test yardımcı aracı ekle</div>
+    <div class="row"><div class="lab">Tür<i>*</i></div><div class="in sel"><span class="where"><i class="dot" style="background:#6ccb5f"></i>Yazılım</span><span class="chev">⌄</span></div></div>
+    <div class="row"><div class="lab">Alt tür</div><div class="in sel"><span>Test betiği</span><span class="chev">⌄</span></div></div>
+    <div class="row"><div class="lab">Tanım<i>*</i></div><div class="in">SATIMO HÜZME ÖLÇÜM BETİĞİ</div></div>
+    <div class="row"><div class="lab">Stok no<i>*</i></div><div class="in">JY-7000-0005</div></div>
+    <div class="row"><div class="lab">Kullanım yeri</div><div class="in sel"><span class="where"><span class="lv p">Proje</span>7000_MILKON</span><span class="chev">⌄</span></div></div>
+    <div class="row"><div class="lab">Notlar</div><div class="in area">Projenin bütün antenlerinde kullanılır.</div></div>
+    <div class="row"><div class="lab">Etiketler</div><div class="in"><span class="ph">#</span></div></div>
+    <div class="btns"><div class="b">Vazgeç</div><div class="b p">Oluştur</div></div>
+  </div>
+</div>
+
+<!-- 4 Cihaz -->
+<div>
+  <div class="cap"><i class="dot" style="background:#4cc2ff"></i><b>4</b>CİHAZ · GENEL</div>
+  <div class="dlg">
+    <div class="ttl">Test yardımcı aracı ekle</div>
+    <div class="row"><div class="lab">Tür<i>*</i></div><div class="in sel"><span class="where"><i class="dot" style="background:#4cc2ff"></i>Cihaz</span><span class="chev">⌄</span></div></div>
+    <div class="row"><div class="lab">Alt tür</div><div class="in sel"><span>Zayıflatıcı</span><span class="chev">⌄</span></div></div>
+    <div class="row"><div class="lab">Tanım<i>*</i></div><div class="in">30 DB ZAYIFLATICI 18 GHZ</div></div>
+    <div class="row"><div class="lab">Stok no<i>*</i></div><div class="in">JT-1000-0040</div></div>
+    <div class="row"><div class="lab">Kullanım yeri</div><div class="in sel"><span class="where"><span class="lv g">Genel</span>Ortak · bütün projeler</span><span class="chev">⌄</span></div></div>
+    <div class="row"><div class="lab">Notlar</div><div class="in area"><span class="ph">Kısa notlar (isteğe bağlı)</span></div></div>
+    <div class="row"><div class="lab">Etiketler</div><div class="in"><span class="tag">#kalibrasyonlu</span></div></div>
+    <div class="btns"><div class="b">Vazgeç</div><div class="b p">Oluştur</div></div>
+  </div>
+</div>
+
+<!-- 5 Diğer -->
+<div>
+  <div class="cap"><i class="dot" style="background:#9a9a9a"></i><b>5</b>DİĞER · BAŞKA STOKA BAĞLI</div>
+  <div class="dlg">
+    <div class="ttl">Test yardımcı aracı ekle</div>
+    <div class="row"><div class="lab">Tür<i>*</i></div><div class="in sel"><span class="where"><i class="dot" style="background:#9a9a9a"></i>Diğer</span><span class="chev">⌄</span></div></div>
+    <div class="row"><div class="lab">Alt tür</div><div class="in sel"><span class="ph">Seçilmedi</span><span class="chev">⌄</span></div></div>
+    <div class="row"><div class="lab">Tanım<i>*</i></div><div class="in">ANTEN TAŞIMA KUTUSU</div></div>
+    <div class="row"><div class="lab">Stok no<i>*</i></div><div class="in">JT-7000-0012</div></div>
+    <div class="row"><div class="lab">Kullanım yeri</div><div class="in sel"><span class="where"><span class="lv s">Stok</span>AB-7000-0003 · DA400 Döner anten</span><span class="chev">⌄</span></div></div>
+    <div class="row"><div class="lab">Notlar</div><div class="in area">Köpük iç yastıklı, sevkiyatta kullanılır.</div></div>
+    <div class="row"><div class="lab">Etiketler</div><div class="in"><span class="ph">#</span></div></div>
+    <div class="btns"><div class="b">Vazgeç</div><div class="b p">Oluştur</div></div>
+  </div>
+</div>
+
+<!-- 6 Kullanım yeri açılırı -->
+<div>
+  <div class="cap"><b>6</b>KULLANIM YERİ · YAZARAK ARA</div>
+  <div class="dlg" style="height:448px">
+    <div class="row"><div class="lab">Kullanım yeri</div><div class="in focus"><span>7000</span><span style="border-left:1px solid #ddd;height:15px"></span></div></div>
+    <div class="drop" style="left:118px;top:58px;width:330px">
+      <div class="opt"><span class="lv g">Genel</span>Ortak · bütün projeler</div>
+      <div class="sep"></div>
+      <div class="grp">PROJE</div>
+      <div class="opt"><span class="lv p">Proje</span><span><mark>7000</mark>_MILKON</span></div>
+      <div class="grp">STOK</div>
+      <div class="opt hl"><span class="lv s">Stok</span><span>AB-<mark>7000</mark>-0002</span><span class="nm">Takım anten boynuz Y</span></div>
+      <div class="opt"><span class="lv s">Stok</span><span>AB-<mark>7000</mark>-0001</span><span class="nm">Boynuz anten X</span></div>
+      <div class="opt"><span class="lv s">Stok</span><span>AB-<mark>7000</mark>-0003</span><span class="nm">DA400 Döner anten</span></div>
+      <div class="opt"><span class="lv s">Stok</span><span>JY-<mark>7000</mark>-0004</span><span class="nm">Hüzme analiz</span></div>
+    </div>
+    <div class="hint" style="position:absolute;left:20px;right:20px;bottom:16px;line-height:1.6">
+      Varsayılan: ağaçta seçili olan (stok, proje ya da Genel).<br>
+      <b style="color:#ddd">Stok</b> → klasör <code style="color:#f6c46f">&lt;stok&gt;\02_Test_Araclari\…</code><br>
+      <b style="color:#ddd">Proje</b> → <code style="color:#f6c46f">&lt;proje&gt;\00_Proje_Geneli\Envanter\…</code><br>
+      <b style="color:#ddd">Genel</b> → <code style="color:#f6c46f">ENVANTER\…</code><br>
+      Başka stoklar da sonradan jigin sayfasından bağlanabilir.</div>
+  </div>
+</div>
+
+<div class="note">
+  <b>Ekleme penceresi her türde aynı:</b> Tür · Alt tür · Tanım · Stok no · Kullanım yeri · Notlar · Etiketler. Numara: yazılım <code>JY</code>, diğerleri <code>JT</code>.
+  Alt tür listesinin sonunda "＋ Yeni alt tür…" durur. <b>Kullanım yeri</b> için başka ad önerileri: "Bağlı olduğu", "Ait olduğu", "Yeri".
+  <b>Pencerede olmayanlar</b> (jigin kendi sayfasında / md'de): fotoğraflar, talep ve teslim tarihleri, türe özel özellikler, başka stoklara bağlama,
+  <code>KN1</code> / <code>M1</code> gibi ek parçalar.
+</div>
+</div></body></html>
