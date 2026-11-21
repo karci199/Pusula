@@ -56,6 +56,15 @@ try {
     $card = @($vm.StockDays | ForEach-Object { $_.Cards }) | Where-Object { $_.Title -eq 'Ölçüt yazışması' -and $_.Description -like 'Ölçütler*' } | Select-Object -First 1
     Check 'kartta mail düğmesi, ortam Outlook' ($card.HasMail -and $card.Setting -eq 'Outlook')
 
+    "--- Karar"
+    [void]$vm.OpenJournalHere(); $vm.JournalKind = 'Karar'
+    Check 'Kararda mail alanı var' ($vm.IsJournalMailVisible -and -not $vm.IsJournalMeetingMail)
+    [void]$vm.SetJournalMail($msg); $vm.JournalHeading = 'Mailde alınan karar'
+    Check 'kararla mail eklenir' ($vm.ConfirmJournal() -and (Test-Path (Join-Path $stock 'Diger\Outlook mesajı_3.msg'))); Wait
+    Check 'kararın notunda mail' (([Pusula.Core.Notes.Journal]::Read($note) | Where-Object { $_.Title -eq 'Mailde alınan karar' } | Select-Object -First 1).Mail -eq 'Diger/Outlook mesajı_3.msg')
+    [void]$vm.OpenJournalHere(); $vm.JournalKind = 'Hazırlık'
+    Check 'Hazırlıkta mail alanı yok' (-not $vm.IsJournalMailVisible)
+    $vm.IsJournalOpen = $false; Pump
     # Görüntüler: pencere (mail seçili) ve kart
     function Find-Open($node) { if ($node -eq $null) { return $null }; if ($node.GetType().Name -eq 'ContentDialog' -and $node.IsOpen) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Open ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }
     function Find-Popup($node) { if ($node -is [System.Windows.Controls.Primitives.Popup]) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Popup ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }

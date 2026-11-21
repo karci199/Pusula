@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Pusula.Core.Notes;
 using Pusula.Wpf.Properties;
@@ -57,6 +57,7 @@ namespace Pusula.Wpf.ViewModels
         private void OnDecisionChanged()
         {
             OnPropertyChanged(nameof(IsJournalDecision));
+            OnMailChanged();
         }
     }
 }

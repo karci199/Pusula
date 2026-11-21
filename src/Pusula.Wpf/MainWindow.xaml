@@ -3787,6 +3787,24 @@
                                 <TextBlock Margin="0,4,0,0" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Journal_DecisionItemHint}" />
                             </StackPanel>
                         </controls:FormField>
+                        <controls:FormField Margin="0,0,0,10" Header="{x:Static res:Resources.Journal_Mail}" LabelWidth="120"
+                                            Visibility="{Binding IsJournalDecision, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <Border Padding="8,5" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                        Background="Transparent" AllowDrop="True" DragOver="JournalMail_DragOver" Drop="JournalMail_Drop">
+                                    <DockPanel>
+                                        <Button DockPanel.Dock="Right" Padding="4,1" Style="{DynamicResource SubtleButtonStyle}" ToolTip="{x:Static res:Resources.Journal_MailRemove}"
+                                                Visibility="{Binding HasJournalMail, Converter={StaticResource BoolToVis}}" Click="JournalMailClear_Click">
+                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Remove}" FontSize="10" />
+                                        </Button>
+                                        <Button DockPanel.Dock="Left" Padding="10,3" Click="JournalMailPick_Click" Content="{x:Static res:Resources.Journal_MailPick}" />
+                                        <ContentControl DockPanel.Dock="Left" Width="18" Height="18" Margin="10,0,6,0" Focusable="False" Content="mail" ContentTemplate="{StaticResource SettingIconTemplate}" />
+                                        <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding JournalMailText}" />
+                                    </DockPanel>
+                                </Border>
+                                <TextBlock Margin="0,4,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Journal_MailHint}" />
+                            </StackPanel>
+                        </controls:FormField>
                     </StackPanel>
                 </Border>
                 <!-- Toplantı: katılımcı (@), ortam (ikonlu), kararlar; açıklama "Notlar" olur -->
@@ -3838,7 +3856,7 @@
                             </StackPanel>
                         </controls:FormField>
                         <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Journal_Mail}" LabelWidth="120"
-                                            Visibility="{Binding IsJournalMailVisible, Converter={StaticResource BoolToVis}}">
+                                            Visibility="{Binding IsJournalMeetingMail, Converter={StaticResource BoolToVis}}">
                             <StackPanel>
                                 <Border Padding="8,5" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
                                         Background="Transparent" AllowDrop="True" DragOver="JournalMail_DragOver" Drop="JournalMail_Drop">

@@ -7,7 +7,7 @@ using Pusula.Wpf.Properties;
 namespace Pusula.Wpf.ViewModels
 {
     /// <summary>
-    /// Toplantı kaydına mail (.msg): ortam Outlook iken mail dosyası seçilir; kayıtla birlikte kaydın klasöründeki
+    /// Kayda mail (.msg): toplantıda ortam Outlook iken ya da kararda mail dosyası seçilir; kayıtla birlikte kaydın klasöründeki
     /// <c>Diger\</c> klasörüne kendi adıyla <b>kopyalanır</b> (asıl dosyaya dokunulmaz, üzerine yazılmaz)
     /// ve notta <c>mail: Diger/….msg</c> olarak tutulur. Pusula maili okumaz; kartta ✉ ile Outlook'ta açılır.
     /// </summary>
@@ -19,10 +19,16 @@ namespace Pusula.Wpf.ViewModels
         private string journalMailSource = string.Empty;
         private string journalMailRelative = string.Empty;
 
-        /// <summary>Mail alanı görünür mü (toplantı ve ortam Outlook).</summary>
-        public bool IsJournalMailVisible
+        /// <summary>Toplantı kutusundaki mail alanı görünür mü (toplantı ve ortam Outlook).</summary>
+        public bool IsJournalMeetingMail
         {
             get { return IsJournalMeeting && string.Equals(journalSetting, Resources.Setting_Email, StringComparison.CurrentCultureIgnoreCase); }
+        }
+
+        /// <summary>Mail eklenebilir mi: toplantı (ortam Outlook) ya da karar (mailde alınan karar).</summary>
+        public bool IsJournalMailVisible
+        {
+            get { return IsJournalMeetingMail || IsJournalDecision; }
         }
 
         /// <summary>Seçilen (ya da kayıtlı) mail dosyasının adı; yoksa "Seçilmedi".</summary>
@@ -142,6 +148,7 @@ namespace Pusula.Wpf.ViewModels
         private void OnMailChanged()
         {
             OnPropertyChanged(nameof(IsJournalMailVisible));
+            OnPropertyChanged(nameof(IsJournalMeetingMail));
             OnPropertyChanged(nameof(JournalMailText));
             OnPropertyChanged(nameof(HasJournalMail));
         }
