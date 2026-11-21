@@ -87,6 +87,9 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Bağlı rapor maddeleri ve sonuçları (yoksa tek sarı "rapor yok" çipi).</summary>
         public IList<LinkChip> Reports { get; }
+
+        /// <summary>Satırın sol şeridi: 0 yok, 2 kırmızı (raporu Kaldı), 4 sarı (bağı eksik).</summary>
+        public int Stripe { get; set; }
     }
 
     /// <summary>Rapor sekmesinde bir satır: rapor maddesi, sonuç, bağlı planlar ve (plan üzerinden) gereksinimler.</summary>
@@ -156,6 +159,9 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Plan üzerinden gereksinimler (hesaplanır).</summary>
         public IList<LinkChip> Requirements { get; }
+
+        /// <summary>Satırın sol şeridi: 0 yok, 2 kırmızı (Kaldı), 4 sarı (planı ya da sonucu yok).</summary>
+        public int Stripe { get; set; }
     }
 
     /// <summary>Ana pencere: doğrulama sekmesinin Plan ve Rapor görünümleri, bağlar ve kapsama.</summary>
@@ -205,8 +211,7 @@ namespace Pusula.Wpf.ViewModels
             OnPropertyChanged(nameof(IsVerReqView));
             OnPropertyChanged(nameof(IsVerPlanView));
             OnPropertyChanged(nameof(IsVerReportView));
-            OnPropertyChanged(nameof(VerCoverageText));
-            OnPropertyChanged(nameof(HasVerCoverageWarning));
+            BuildCoverageParts();
         }
 
         /// <summary>Plan maddesi sayısı (sekme rozeti).</summary>
@@ -225,14 +230,26 @@ namespace Pusula.Wpf.ViewModels
         public bool ShowRequirementReports
         {
             get { return showRequirementReports; }
-            set { SetProperty(ref showRequirementReports, value); }
+            set
+            {
+                if (SetProperty(ref showRequirementReports, value))
+                {
+                    VerificationColumns.ShowReport = value;
+                }
+            }
         }
 
         /// <summary>Rapor görünümünde Gereksinimler sütunu açık mı (varsayılan kapalı: bağlı planlar görünür).</summary>
         public bool ShowReportRequirements
         {
             get { return showReportRequirements; }
-            set { SetProperty(ref showReportRequirements, value); }
+            set
+            {
+                if (SetProperty(ref showReportRequirements, value))
+                {
+                    VerificationColumns.ShowReportRequirements = value;
+                }
+            }
         }
 
         /// <summary>Hiçbir plan maddesinde olmayan gereksinimler.</summary>
@@ -244,31 +261,11 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Hiçbir plan maddesine bağlı olmayan rapor maddeleri.</summary>
         public IList<string> ReportsWithoutPlan { get; private set; } = new List<string>();
 
-        /// <summary>Seçili görünümün kapsama uyarısı; eksik yoksa boş.</summary>
+        /// <summary>Seçili görünümün kapsama uyarısı (parçaların birleşimi); eksik yoksa boş.</summary>
         public string VerCoverageText
         {
-            get
-            {
-                var parts = new List<string>();
-                if (verificationView != 2 && RequirementsWithoutPlan.Count > 0)
-                {
-                    parts.Add(string.Format(CultureInfo.CurrentCulture, Resources.Verify_CoverageNoPlan, RequirementsWithoutPlan.Count, string.Join(", ", RequirementsWithoutPlan)));
-                }
-
-                if (verificationView != 0 && PlansWithoutReport.Count > 0)
-                {
-                    parts.Add(string.Format(CultureInfo.CurrentCulture, Resources.Verify_CoverageNoReport, PlansWithoutReport.Count, string.Join(", ", PlansWithoutReport)));
-                }
-
-                if (verificationView == 2 && ReportsWithoutPlan.Count > 0)
-                {
-                    parts.Add(string.Format(CultureInfo.CurrentCulture, Resources.Verify_CoverageReportNoPlan, ReportsWithoutPlan.Count, string.Join(", ", ReportsWithoutPlan)));
-                }
-
-                return string.Join(" · ", parts);
-            }
+            get { return string.Join(" · ", CoverageParts.Select(p => p.Text)); }
         }
-
         /// <summary>Kapsama uyarısı var mı.</summary>
         public bool HasVerCoverageWarning
         {
@@ -303,7 +300,7 @@ namespace Pusula.Wpf.ViewModels
             PlansWithoutReport = tps.Where(tp => tp.Length > 0 && !verificationReports.Any(r => r.Plans.Contains(tp, StringComparer.OrdinalIgnoreCase))).ToList();
             ReportsWithoutPlan = verificationReports.Where(r => !r.Plans.Any(p => tps.Contains(p, StringComparer.OrdinalIgnoreCase))).Select(r => r.TrNo).ToList();
 
-            PlanRows.Clear();
+            allPlanRows = new List<PlanRow>();
             foreach (var plan in verificationPlans)
             {
                 var reqs = plan.Requirements.Select(r => new LinkChip(r, keys.Contains(r, StringComparer.OrdinalIgnoreCase) ? 0 : 4)).ToList();
@@ -313,17 +310,29 @@ namespace Pusula.Wpf.ViewModels
                 }
 
                 var reports = ReportsOf(new[] { plan.TpNo });
-                PlanRows.Add(new PlanRow(plan, reqs, reports.Count > 0 ? reports : new List<LinkChip> { new LinkChip(Resources.Verify_NoReport, 4) }));
+                var reportState = PlanReportState(plan);
+                allPlanRows.Add(new PlanRow(plan, reqs, reports.Count > 0 ? reports : new List<LinkChip> { new LinkChip(Resources.Verify_NoReport, 4) })
+                {
+                    Stripe = reportState == 2 ? 2 : (reportState == 0 || PlanReqState(plan) == 0 ? 4 : 0),
+                });
             }
 
-            ReportRows.Clear();
+            allReportRows = new List<ReportRow>();
             foreach (var report in verificationReports)
             {
                 var plans = report.Plans.Select(p => new LinkChip(p, tps.Contains(p, StringComparer.OrdinalIgnoreCase) ? 5 : 4)).ToList();
                 var reqs = verificationPlans.Where(p => report.Plans.Contains(p.TpNo, StringComparer.OrdinalIgnoreCase))
                     .SelectMany(p => p.Requirements).Distinct(StringComparer.OrdinalIgnoreCase).Select(r => new LinkChip(r, 0)).ToList();
-                ReportRows.Add(new ReportRow(report, plans.Count > 0 ? plans : new List<LinkChip> { new LinkChip(Resources.Verify_NoPlan, 4) }, reqs));
+                var result = ReportResultState(report);
+                allReportRows.Add(new ReportRow(report, plans.Count > 0 ? plans : new List<LinkChip> { new LinkChip(Resources.Verify_NoPlan, 4) }, reqs)
+                {
+                    Stripe = result == 2 ? 2 : (result == 0 || ReportPlanState(report) == 0 ? 4 : 0),
+                });
             }
+
+            UpdateLinkCounts();
+            FilterPlanRows();
+            FilterReportRows();
 
             OnPropertyChanged(nameof(PlanCount));
             OnPropertyChanged(nameof(ReportCount));
@@ -368,14 +377,14 @@ namespace Pusula.Wpf.ViewModels
         public IList<PlanRow> PlanRowsOf(VerificationItem item)
         {
             var key = VerificationList.KeyOf(item);
-            return PlanRows.Where(p => p.Item.Requirements.Contains(key, StringComparer.OrdinalIgnoreCase)).ToList();
+            return allPlanRows.Where(p => p.Item.Requirements.Contains(key, StringComparer.OrdinalIgnoreCase)).ToList();
         }
 
         /// <summary>Gereksinimin planları üzerinden bağlı rapor maddeleri (açılan satırdaki Test raporu kartı).</summary>
         public IList<ReportRow> ReportRowsOf(VerificationItem item)
         {
             var tps = PlanRowsOf(item).Select(p => p.TpNo).ToList();
-            return ReportRows.Where(r => r.Item.Plans.Any(p => tps.Contains(p, StringComparer.OrdinalIgnoreCase))).ToList();
+            return allReportRows.Where(r => r.Item.Plans.Any(p => tps.Contains(p, StringComparer.OrdinalIgnoreCase))).ToList();
         }
 
         /// <summary>

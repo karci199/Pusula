@@ -167,6 +167,45 @@
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
+        <!-- Bağ süzgeci hap düğmesi: nokta, metin, sayı; seçili olan vurgulu, sayısı sıfır olan soluk -->
+        <DataTemplate x:Key="LinkPillTemplate">
+            <ToggleButton x:Name="Pill" Margin="0,0,6,0" Cursor="Hand" Focusable="False" IsChecked="{Binding IsChecked, Mode=TwoWay}">
+                <ToggleButton.Template>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="Bg" Padding="10,3,6,3" CornerRadius="12" BorderThickness="1"
+                                Background="{DynamicResource SubtleFillColorSecondaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bg" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" /></Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bg" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </ToggleButton.Template>
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse x:Name="Dot" Width="7" Height="7" Margin="0,0,6,0" VerticalAlignment="Center" Visibility="Collapsed" />
+                    <TextBlock x:Name="Txt" FontSize="12" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Text}" />
+                    <Border x:Name="CountBg" Margin="6,0,0,0" MinWidth="18" Padding="5,0" CornerRadius="8" VerticalAlignment="Center" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                        <TextBlock x:Name="CountTxt" HorizontalAlignment="Center" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Count}" />
+                    </Border>
+                </StackPanel>
+            </ToggleButton>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Tone}" Value="1"><Setter TargetName="Dot" Property="Visibility" Value="Visible" /><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding Tone}" Value="2"><Setter TargetName="Dot" Property="Visibility" Value="Visible" /><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding Tone}" Value="4"><Setter TargetName="Dot" Property="Visibility" Value="Visible" /><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding IsZero}" Value="True"><Setter TargetName="Pill" Property="Opacity" Value="0.45" /></DataTrigger>
+                <DataTrigger Binding="{Binding IsChecked}" Value="True">
+                    <Setter TargetName="Txt" Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                    <Setter TargetName="Txt" Property="FontWeight" Value="SemiBold" />
+                    <Setter TargetName="CountBg" Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                    <Setter TargetName="CountTxt" Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
         <!-- Çoklu seçim satırı: kutu, numara, açıklama, sağda bağlı olduğu diğer maddeler (yoksa sarı) -->
         <DataTemplate x:Key="LinkOptionTemplate">
             <CheckBox x:Name="Box" Margin="4,2" Padding="6,0,0,0" HorizontalContentAlignment="Stretch" IsChecked="{Binding IsChecked, Mode=TwoWay}"
@@ -2577,10 +2616,32 @@
                                     <Border Margin="0,10,0,0" Padding="12,7" CornerRadius="8" BorderThickness="1"
                                             Background="{DynamicResource SystemFillColorCautionBackgroundBrush}" BorderBrush="{DynamicResource SystemFillColorCautionBrush}"
                                             Visibility="{Binding HasVerCoverageWarning, Converter={StaticResource BoolToVis}}">
-                                        <StackPanel Orientation="Horizontal">
-                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Warning}" FontSize="13" Foreground="{DynamicResource SystemFillColorCautionBrush}" VerticalAlignment="Center" />
-                                            <TextBlock Margin="8,0,0,0" FontSize="12.5" TextWrapping="Wrap" Foreground="{DynamicResource SystemFillColorCautionBrush}" Text="{Binding VerCoverageText}" VerticalAlignment="Center" />
-                                        </StackPanel>
+                                        <DockPanel>
+                                            <local:AppIcon DockPanel.Dock="Left" Glyph="{x:Static local:AppIcons.Warning}" FontSize="13" Foreground="{DynamicResource SystemFillColorCautionBrush}" VerticalAlignment="Center" />
+                                            <ItemsControl Margin="6,0,0,0" ItemsSource="{Binding CoverageParts}" ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False" VerticalAlignment="Center">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button x:Name="Part" Margin="0,0,6,0" Padding="5,1" Cursor="Hand" Tag="{Binding}" Click="CoveragePart_Click" ToolTip="{x:Static res:Resources.Verify_CoverageHint}">
+                                                            <Button.Template>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <Border x:Name="Bg" CornerRadius="4" Padding="{TemplateBinding Padding}" Background="Transparent">
+                                                                        <TextBlock x:Name="Txt" FontSize="12.5" TextDecorations="Underline" Foreground="{DynamicResource SystemFillColorCautionBrush}" Text="{Binding Text}" />
+                                                                    </Border>
+                                                                    <ControlTemplate.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bg" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" /></Trigger>
+                                                                        <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                                                            <Setter TargetName="Bg" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                                                            <Setter TargetName="Txt" Property="TextDecorations" Value="{x:Null}" />
+                                                                            <Setter TargetName="Txt" Property="FontWeight" Value="SemiBold" />
+                                                                        </DataTrigger>
+                                                                    </ControlTemplate.Triggers>
+                                                                </ControlTemplate>
+                                                            </Button.Template>
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </DockPanel>
                                     </Border>
                                 </StackPanel>
 
@@ -2588,30 +2649,59 @@
                                 <Border Grid.Row="1" Grid.RowSpan="3" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                         Background="{DynamicResource LayerBrush}" Padding="16,8,16,10" Visibility="{Binding IsVerPlanView, Converter={StaticResource BoolToVis}}">
                                     <DockPanel>
-                                    <Button DockPanel.Dock="Top" HorizontalAlignment="Right" Margin="0,4,0,4" Style="{DynamicResource AccentButtonStyle}" Padding="14,5" Click="VerPlanNew_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" VerticalAlignment="Center" />
-                                            <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Verify_PlanItemAdd}" />
-                                        </StackPanel>
-                                    </Button>
+                                    <StackPanel DockPanel.Dock="Top" Margin="0,4,0,6">
+                                        <WrapPanel>
+                                            <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_PillRequirement}" />
+                                            <ItemsControl ItemsSource="{Binding PlanReqPills}" ItemTemplate="{StaticResource LinkPillTemplate}" ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False" VerticalAlignment="Center" />
+                                            <TextBlock Margin="18,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_PillReport}" />
+                                            <ItemsControl ItemsSource="{Binding PlanReportPills}" ItemTemplate="{StaticResource LinkPillTemplate}" ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False" VerticalAlignment="Center" />
+                                        </WrapPanel>
+                                        <Grid Margin="0,8,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBox Width="220" Text="{Binding PlanListSearch, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_SearchPlans}" />
+                                                <Button Margin="8,0,0,0" Padding="8,3" Style="{DynamicResource SubtleButtonStyle}" Click="VerLinkClear_Click" Visibility="{Binding HasPlanLinkFilter, Converter={StaticResource BoolToVis}}">
+                                                    <TextBlock FontSize="12.5" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="{x:Static res:Resources.Verify_FilterClear}" />
+                                                </Button>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                                <TextBlock Margin="0,0,14,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding PlanShownText}" />
+                                                <Button Style="{DynamicResource AccentButtonStyle}" Padding="14,5" Click="VerPlanNew_Click">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" VerticalAlignment="Center" />
+                                                        <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Verify_PlanItemAdd}" />
+                                                    </StackPanel>
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
                                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                                         <StackPanel>
                                             <Grid Margin="0,6,0,6" TextElement.Foreground="{DynamicResource TextSecondaryBrush}" TextElement.FontSize="12" TextElement.FontWeight="SemiBold">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="80" />
+                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.PlanTp, RelativeSource={RelativeSource AncestorType=Window}}" />
                                                     <ColumnDefinition Width="*" MinWidth="200" />
-                                                    <ColumnDefinition Width="110" />
-                                                    <ColumnDefinition Width="120" />
-                                                    <ColumnDefinition Width="240" />
-                                                    <ColumnDefinition Width="220" />
+                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.PlanMethod, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.PlanFacility, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.PlanRequirements, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.PlanReports, RelativeSource={RelativeSource AncestorType=Window}}" />
                                                     <ColumnDefinition Width="40" />
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{x:Static res:Resources.Verify_PlanNo}" />
+                                                <TextBlock Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_PlanNo}" />
+                                                <Thumb Style="{StaticResource ColumnGrip}" HorizontalAlignment="Right" Tag="ptp" />
                                                 <TextBlock Grid.Column="1" Text="{x:Static res:Resources.Verify_ColDescription}" />
-                                                <TextBlock Grid.Column="2" Text="{x:Static res:Resources.Verify_FieldMethod}" />
-                                                <TextBlock Grid.Column="3" Text="{x:Static res:Resources.Verify_FieldFacility}" />
-                                                <TextBlock Grid.Column="4" Text="{x:Static res:Resources.Verify_ColRequirements}" />
-                                                <TextBlock Grid.Column="5" Text="{x:Static res:Resources.Verify_ViewReport}" />
+                                                <TextBlock Grid.Column="2" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_FieldMethod}" />
+                                                <Thumb Grid.Column="2" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="pmethod" />
+                                                <TextBlock Grid.Column="3" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_FieldFacility}" />
+                                                <Thumb Grid.Column="3" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="pfacility" />
+                                                <TextBlock Grid.Column="4" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ColRequirements}" />
+                                                <Thumb Grid.Column="4" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="preqs" />
+                                                <TextBlock Grid.Column="5" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ViewReport}" />
+                                                <Thumb Grid.Column="5" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="preports" />
                                             </Grid>
                                             <ItemsControl ItemsSource="{Binding PlanRows}" Focusable="False">
                                                 <ItemsControl.ItemTemplate>
@@ -2619,28 +2709,29 @@
                                                         <Border Padding="0,8" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}" Background="Transparent" Tag="{Binding Item}" MouseLeftButtonDown="VerPlanRow_MouseLeftButtonDown">
                                                             <Grid>
                                                                 <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="80" />
+                                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.PlanTp, RelativeSource={RelativeSource AncestorType=Window}}" />
                                                                     <ColumnDefinition Width="*" MinWidth="200" />
-                                                                    <ColumnDefinition Width="110" />
-                                                                    <ColumnDefinition Width="120" />
-                                                                    <ColumnDefinition Width="240" />
-                                                                    <ColumnDefinition Width="220" />
+                                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.PlanMethod, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.PlanFacility, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.PlanRequirements, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                                    <ColumnDefinition Width="{Binding DataContext.VerificationColumns.PlanReports, RelativeSource={RelativeSource AncestorType=Window}}" />
                                                                     <ColumnDefinition Width="40" />
                                                                 </Grid.ColumnDefinitions>
-                                                                <TextBlock FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding TpNo}" />
+                                                                <Rectangle x:Name="PStripe" Width="3" Margin="0,-4,0,-4" HorizontalAlignment="Left" RadiusX="1.5" RadiusY="1.5" Fill="Transparent" />
+                                                                <TextBlock Margin="10,0,0,0" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding TpNo}" />
                                                                 <StackPanel Grid.Column="1" Margin="0,0,12,0" VerticalAlignment="Center">
                                                                     <TextBlock TextWrapping="Wrap" Text="{Binding Description}" />
                                                                     <TextBlock FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" TextTrimming="CharacterEllipsis" Text="{Binding Note}"
                                                                                Visibility="{Binding HasNote, Converter={StaticResource BoolToVis}}" />
                                                                 </StackPanel>
-                                                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                                                <StackPanel Grid.Column="2" Margin="10,0,0,0" Orientation="Horizontal" VerticalAlignment="Center">
                                                                     <Ellipse x:Name="MDot" Width="8" Height="8" Margin="0,0,6,0" VerticalAlignment="Center" Fill="{DynamicResource TextTertiaryBrush}" />
                                                                     <TextBlock Text="{Binding Method}" />
                                                                 </StackPanel>
-                                                                <TextBlock Grid.Column="3" VerticalAlignment="Center" Text="{Binding Facility}" />
-                                                                <ItemsControl Grid.Column="4" VerticalAlignment="Center" ItemsSource="{Binding Requirements}" ItemTemplate="{StaticResource LinkChipTemplate}"
+                                                                <TextBlock Grid.Column="3" Margin="10,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Facility}" />
+                                                                <ItemsControl Grid.Column="4" Margin="10,0,0,0" VerticalAlignment="Center" ItemsSource="{Binding Requirements}" ItemTemplate="{StaticResource LinkChipTemplate}"
                                                                               ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False" />
-                                                                <ItemsControl Grid.Column="5" VerticalAlignment="Center" ItemsSource="{Binding Reports}" ItemTemplate="{StaticResource LinkChipTemplate}"
+                                                                <ItemsControl Grid.Column="5" Margin="10,0,0,0" VerticalAlignment="Center" ItemsSource="{Binding Reports}" ItemTemplate="{StaticResource LinkChipTemplate}"
                                                                               ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False" />
                                                                 <Button Grid.Column="6" Padding="8,4" VerticalAlignment="Center" Style="{DynamicResource SubtleButtonStyle}" Tag="{Binding Item}" Click="VerPlanEdit_Click"
                                                                         ToolTip="{x:Static res:Resources.Verify_EditHint}">
@@ -2653,6 +2744,8 @@
                                                             <DataTrigger Binding="{Binding MethodTone}" Value="2"><Setter TargetName="MDot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
                                                             <DataTrigger Binding="{Binding MethodTone}" Value="3"><Setter TargetName="MDot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
                                                             <DataTrigger Binding="{Binding MethodTone}" Value="4"><Setter TargetName="MDot" Property="Fill" Value="{DynamicResource TextPrimaryBrush}" /></DataTrigger>
+                                                            <DataTrigger Binding="{Binding Stripe}" Value="2"><Setter TargetName="PStripe" Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" /></DataTrigger>
+                                                            <DataTrigger Binding="{Binding Stripe}" Value="4"><Setter TargetName="PStripe" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
                                                         </DataTemplate.Triggers>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
@@ -2668,34 +2761,62 @@
                                 <Border Grid.Row="1" Grid.RowSpan="3" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                         Background="{DynamicResource LayerBrush}" Padding="16,8,16,10" Visibility="{Binding IsVerReportView, Converter={StaticResource BoolToVis}}">
                                     <DockPanel>
-                                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,4">
-                                            <CheckBox Margin="0,0,16,0" VerticalAlignment="Center" Content="{x:Static res:Resources.Verify_ShowRequirements}" IsChecked="{Binding ShowReportRequirements, Mode=TwoWay}" />
-                                            <Button Style="{DynamicResource AccentButtonStyle}" Padding="14,5" Click="VerReportNew_Click">
+                                        <StackPanel DockPanel.Dock="Top" Margin="0,4,0,6">
+                                            <WrapPanel>
+                                                <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_PillPlan}" />
+                                                <ItemsControl ItemsSource="{Binding ReportPlanPills}" ItemTemplate="{StaticResource LinkPillTemplate}" ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False" VerticalAlignment="Center" />
+                                                <TextBlock Margin="18,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_PillResult}" />
+                                                <ItemsControl ItemsSource="{Binding ReportResultPills}" ItemTemplate="{StaticResource LinkPillTemplate}" ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False" VerticalAlignment="Center" />
+                                            </WrapPanel>
+                                            <Grid Margin="0,8,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
                                                 <StackPanel Orientation="Horizontal">
-                                                    <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" VerticalAlignment="Center" />
-                                                    <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Verify_ReportItemAdd}" />
+                                                    <TextBox Width="220" Text="{Binding ReportListSearch, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_SearchReports}" />
+                                                    <Button Margin="8,0,0,0" Padding="8,3" Style="{DynamicResource SubtleButtonStyle}" Click="VerLinkClear_Click" Visibility="{Binding HasReportLinkFilter, Converter={StaticResource BoolToVis}}">
+                                                        <TextBlock FontSize="12.5" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="{x:Static res:Resources.Verify_FilterClear}" />
+                                                    </Button>
                                                 </StackPanel>
-                                            </Button>
+                                                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                                    <CheckBox Margin="0,0,16,0" VerticalAlignment="Center" Content="{x:Static res:Resources.Verify_ShowRequirements}" IsChecked="{Binding ShowReportRequirements, Mode=TwoWay}" />
+                                                    <TextBlock Margin="0,0,14,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding ReportShownText}" />
+                                                    <Button Style="{DynamicResource AccentButtonStyle}" Padding="14,5" Click="VerReportNew_Click">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" VerticalAlignment="Center" />
+                                                            <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Verify_ReportItemAdd}" />
+                                                        </StackPanel>
+                                                    </Button>
+                                                </StackPanel>
+                                            </Grid>
                                         </StackPanel>
                                         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                                             <StackPanel>
                                                 <Grid Margin="0,6,0,6" TextElement.Foreground="{DynamicResource TextSecondaryBrush}" TextElement.FontSize="12" TextElement.FontWeight="SemiBold">
                                                     <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="80" />
+                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportTr, RelativeSource={RelativeSource AncestorType=Window}}" />
                                                         <ColumnDefinition Width="*" MinWidth="200" />
-                                                        <ColumnDefinition Width="130" />
-                                                        <ColumnDefinition Width="150" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                        <ColumnDefinition Width="260" />
+                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportResult, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportPlans, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportRequirements, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportPath, RelativeSource={RelativeSource AncestorType=Window}}" />
                                                         <ColumnDefinition Width="40" />
                                                     </Grid.ColumnDefinitions>
-                                                    <TextBlock Text="{x:Static res:Resources.Verify_ReportNo}" />
+                                                    <TextBlock Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ReportNo}" />
+                                                    <Thumb Style="{StaticResource ColumnGrip}" HorizontalAlignment="Right" Tag="rtr" />
                                                     <TextBlock Grid.Column="1" Text="{x:Static res:Resources.Verify_ColDescription}" />
-                                                    <TextBlock Grid.Column="2" Text="{x:Static res:Resources.Verify_ColResult}" />
-                                                    <TextBlock Grid.Column="3" Text="{x:Static res:Resources.Verify_ViewPlan}" />
-                                                    <TextBlock Grid.Column="4" Width="170" Text="{x:Static res:Resources.Verify_ColRequirements}"
+                                                    <TextBlock Grid.Column="2" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ColResult}" />
+                                                    <Thumb Grid.Column="2" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="rresult" />
+                                                    <TextBlock Grid.Column="3" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ViewPlan}" />
+                                                    <Thumb Grid.Column="3" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="rplans" />
+                                                    <TextBlock Grid.Column="4" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ColRequirements}"
                                                                Visibility="{Binding ShowReportRequirements, Converter={StaticResource BoolToVis}}" />
-                                                    <TextBlock Grid.Column="5" Text="{x:Static res:Resources.Verify_ColResultPath}" />
+                                                    <Thumb Grid.Column="4" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="rreqs"
+                                                           Visibility="{Binding ShowReportRequirements, Converter={StaticResource BoolToVis}}" />
+                                                    <TextBlock Grid.Column="5" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ColResultPath}" />
+                                                    <Thumb Grid.Column="5" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="rpath" />
                                                 </Grid>
                                                 <ItemsControl ItemsSource="{Binding ReportRows}" Focusable="False">
                                                     <ItemsControl.ItemTemplate>
@@ -2703,32 +2824,33 @@
                                                             <Border Padding="0,8" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}" Background="Transparent" Tag="{Binding Item}" MouseLeftButtonDown="VerReportRow_MouseLeftButtonDown">
                                                                 <Grid>
                                                                     <Grid.ColumnDefinitions>
-                                                                        <ColumnDefinition Width="80" />
+                                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportTr, RelativeSource={RelativeSource AncestorType=Window}}" />
                                                                         <ColumnDefinition Width="*" MinWidth="200" />
-                                                                        <ColumnDefinition Width="130" />
-                                                                        <ColumnDefinition Width="150" />
-                                                                        <ColumnDefinition Width="Auto" />
-                                                                        <ColumnDefinition Width="260" />
+                                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportResult, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportPlans, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportRequirements, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportPath, RelativeSource={RelativeSource AncestorType=Window}}" />
                                                                         <ColumnDefinition Width="40" />
                                                                     </Grid.ColumnDefinitions>
-                                                                    <TextBlock FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding TrNo}" />
+                                                                    <Rectangle x:Name="RStripe" Width="3" Margin="0,-4,0,-4" HorizontalAlignment="Left" RadiusX="1.5" RadiusY="1.5" Fill="Transparent" />
+                                                                    <TextBlock Margin="10,0,0,0" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding TrNo}" />
                                                                     <StackPanel Grid.Column="1" Margin="0,0,12,0" VerticalAlignment="Center">
                                                                         <TextBlock TextWrapping="Wrap" Text="{Binding Description}" />
                                                                         <TextBlock FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" TextTrimming="CharacterEllipsis" Text="{Binding Note}"
                                                                                    Visibility="{Binding HasNote, Converter={StaticResource BoolToVis}}" />
                                                                     </StackPanel>
-                                                                    <Border x:Name="RPill" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="9,1" CornerRadius="9" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                                                    <Border x:Name="RPill" Grid.Column="2" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="9,1" CornerRadius="9" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
                                                                         <StackPanel Orientation="Horizontal">
                                                                             <Ellipse x:Name="RDot" Width="8" Height="8" Margin="0,0,6,0" VerticalAlignment="Center" Fill="{DynamicResource TextTertiaryBrush}" />
                                                                             <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding Result}" />
                                                                         </StackPanel>
                                                                     </Border>
-                                                                    <ItemsControl Grid.Column="3" VerticalAlignment="Center" ItemsSource="{Binding Plans}" ItemTemplate="{StaticResource LinkChipTemplate}"
+                                                                    <ItemsControl Grid.Column="3" Margin="10,0,0,0" VerticalAlignment="Center" ItemsSource="{Binding Plans}" ItemTemplate="{StaticResource LinkChipTemplate}"
                                                                                   ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False" />
-                                                                    <ItemsControl Grid.Column="4" Width="170" VerticalAlignment="Center" ItemsSource="{Binding Requirements}" ItemTemplate="{StaticResource LinkChipTemplate}"
+                                                                    <ItemsControl Grid.Column="4" Margin="10,0,0,0" VerticalAlignment="Center" ItemsSource="{Binding Requirements}" ItemTemplate="{StaticResource LinkChipTemplate}"
                                                                                   ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False"
                                                                                   Visibility="{Binding DataContext.ShowReportRequirements, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
-                                                                    <StackPanel Grid.Column="5" Orientation="Horizontal" VerticalAlignment="Center" Visibility="{Binding HasResultPath, Converter={StaticResource BoolToVis}}">
+                                                                    <StackPanel Grid.Column="5" Margin="10,0,0,0" Orientation="Horizontal" VerticalAlignment="Center" Visibility="{Binding HasResultPath, Converter={StaticResource BoolToVis}}">
                                                                         <local:AppIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="12" Foreground="{DynamicResource SystemFillColorCautionBrush}" VerticalAlignment="Center" />
                                                                         <TextBlock Margin="6,0,0,0" MaxWidth="230" FontSize="12" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding ResultPath}" ToolTip="{Binding ResultPath}" />
                                                                     </StackPanel>
@@ -2747,6 +2869,8 @@
                                                                     <Setter TargetName="RPill" Property="Background" Value="{DynamicResource SystemFillColorCriticalBackgroundBrush}" />
                                                                     <Setter TargetName="RDot" Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" />
                                                                 </DataTrigger>
+                                                                <DataTrigger Binding="{Binding Stripe}" Value="2"><Setter TargetName="RStripe" Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" /></DataTrigger>
+                                                                <DataTrigger Binding="{Binding Stripe}" Value="4"><Setter TargetName="RStripe" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
                                                             </DataTemplate.Triggers>
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
@@ -2795,11 +2919,24 @@
 
                                 <!-- Durum süzgeci (çoklu seçimli açılır kutu) ve sıralama; sağda kaç madde göründüğü -->
                                 <Grid Grid.Row="2" Margin="0,0,0,12" Visibility="{Binding IsVerReqView, Converter={StaticResource BoolToVis}}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel Orientation="Horizontal">
+                                    <WrapPanel Grid.ColumnSpan="2" Margin="0,0,0,10">
+                                        <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_PillPlan}" />
+                                        <ItemsControl ItemsSource="{Binding ReqPlanPills}" ItemTemplate="{StaticResource LinkPillTemplate}" ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False" VerticalAlignment="Center" />
+                                        <TextBlock Margin="18,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_PillReport}" />
+                                        <ItemsControl ItemsSource="{Binding ReqReportPills}" ItemTemplate="{StaticResource LinkPillTemplate}" ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False" VerticalAlignment="Center" />
+                                        <Button Margin="8,0,0,0" Padding="8,3" VerticalAlignment="Center" Style="{DynamicResource SubtleButtonStyle}" Click="VerLinkClear_Click" Visibility="{Binding HasReqLinkFilter, Converter={StaticResource BoolToVis}}">
+                                            <TextBlock FontSize="12.5" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="{x:Static res:Resources.Verify_FilterClear}" />
+                                        </Button>
+                                    </WrapPanel>
+                                    <StackPanel Grid.Row="1" Orientation="Horizontal">
                                         <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_FilterStatus}" />
                                         <ToggleButton x:Name="StatusFilterButton" Width="200" Padding="11,5" HorizontalContentAlignment="Stretch">
                                             <Grid>
@@ -2835,7 +2972,7 @@
                                         <TextBlock Margin="20,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_SortBy}" />
                                         <ComboBox Width="140" ItemsSource="{Binding VerificationSorts}" SelectedItem="{Binding VerificationSort, Mode=TwoWay}" />
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
+                                    <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
                                         <CheckBox Margin="0,0,16,0" VerticalAlignment="Center" Content="{x:Static res:Resources.Verify_ShowReports}" IsChecked="{Binding ShowRequirementReports, Mode=TwoWay}" />
                                         <TextBlock VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding VerificationShownText}" />
                                     </StackPanel>
@@ -2868,8 +3005,8 @@
                                                     <Thumb Grid.Column="4" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="method" />
                                                     <TextBlock Grid.Column="5" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ColPlan}" />
                                                     <Thumb Grid.Column="5" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="plan" />
-                                                    <TextBlock Grid.Column="6" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ColReport}" />
-                                                    <Thumb Grid.Column="6" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="report" />
+                                                    <TextBlock Grid.Column="6" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ColReport}" Visibility="{Binding ShowRequirementReports, Converter={StaticResource BoolToVis}}" />
+                                                    <Thumb Grid.Column="6" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="report" Visibility="{Binding ShowRequirementReports, Converter={StaticResource BoolToVis}}" />
                                                     <TextBlock Grid.Column="7" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_FieldStatus}" />
                                                     <Thumb Grid.Column="7" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="status" />
                                                 </Grid>
@@ -3192,6 +3329,8 @@
                                                                             <DataTrigger Binding="{Binding MethodTone}" Value="2"><Setter TargetName="MethodText" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
                                                                             <DataTrigger Binding="{Binding MethodTone}" Value="3"><Setter TargetName="MethodText" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
                                                                             <DataTrigger Binding="{Binding MethodTone}" Value="4"><Setter TargetName="MethodText" Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" /></DataTrigger>
+                                                                            <!-- Hiçbir plana bağlı değil: sol şerit sarı (durum rengi varsa o kazanır) -->
+                                                                            <DataTrigger Binding="{Binding HasNoPlan}" Value="True"><Setter TargetName="StatusBar" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
                                                                             <!-- Durum renkleri: 6 planlandı, 7 hazırlık, 3 yapılıyor, 8 değerlendiriliyor, 1 geçti, 2 kaldı, 9 şartlı kabul, 4 tekrarlanacak, 5 kapsam dışı -->
                                                                             <DataTrigger Binding="{Binding StatusKind}" Value="6">
                                                                                 <Setter TargetName="StatusLabel" Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
@@ -3765,7 +3904,7 @@
                         ToolTip="{x:Static res:Resources.StatusBar_OpenLast}" ToolTipService.ShowOnDisabled="False">
                     <StackPanel Orientation="Horizontal">
                         <local:AppIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="12" Foreground="{DynamicResource SystemFillColorSuccessBrush}" VerticalAlignment="Center" />
-                        <TextBlock Margin="6,0,0,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding LastAction}" VerticalAlignment="Center" />
+                        <TextBlock x:Name="LastActionText" Margin="6,0,0,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding LastAction}" VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>
             </StatusBarItem>

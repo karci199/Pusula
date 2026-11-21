@@ -3119,7 +3119,7 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
     <value>Ayrıntı md dosyasında: ## Plan / ## Sonuç altında bu maddenin bölümü (altına serbest yazılabilir)</value>
   </data>
   <data name="Verify_CoverageNoPlan" xml:space="preserve">
-    <value>{0} gereksinim hiçbir plan maddesinde yok: {1}</value>
+    <value>{0} gereksinim hiçbir plan maddesine bağlı değil: {1}</value>
   </data>
   <data name="Verify_CoverageNoReport" xml:space="preserve">
     <value>{0} plan maddesinin raporu yok: {1}</value>
@@ -3146,13 +3146,13 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
     <value>ne doğrulanacak</value>
   </data>
   <data name="Verify_ViewPlan" xml:space="preserve">
-    <value>Plan</value>
+    <value>Test planı</value>
   </data>
   <data name="Verify_ViewPlanHint" xml:space="preserve">
     <value>nasıl doğrulanacak</value>
   </data>
   <data name="Verify_ViewReport" xml:space="preserve">
-    <value>Rapor</value>
+    <value>Test raporu</value>
   </data>
   <data name="Verify_ViewReportHint" xml:space="preserve">
     <value>ne çıktı</value>
@@ -3258,5 +3258,41 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   </data>
   <data name="Verify_EditHint" xml:space="preserve">
     <value>Düzenle</value>
+  </data>
+  <data name="Verify_LinkHave" xml:space="preserve">
+    <value>Var</value>
+  </data>
+  <data name="Verify_LinkNone" xml:space="preserve">
+    <value>Yok</value>
+  </data>
+  <data name="Verify_PillPlan" xml:space="preserve">
+    <value>Test planı</value>
+  </data>
+  <data name="Verify_PillReport" xml:space="preserve">
+    <value>Test raporu</value>
+  </data>
+  <data name="Verify_PillRequirement" xml:space="preserve">
+    <value>Gereksinim</value>
+  </data>
+  <data name="Verify_PillResult" xml:space="preserve">
+    <value>Sonuç</value>
+  </data>
+  <data name="Verify_SearchPlans" xml:space="preserve">
+    <value>Ara: TP no, açıklama</value>
+  </data>
+  <data name="Verify_SearchReports" xml:space="preserve">
+    <value>Ara: TR no, açıklama</value>
+  </data>
+  <data name="Verify_CoverageReqNoReport" xml:space="preserve">
+    <value>{0} gereksinimin raporu yok: {1}</value>
+  </data>
+  <data name="Verify_CoveragePlanNoReq" xml:space="preserve">
+    <value>{0} plan maddesi hiçbir gereksinime bağlı değil: {1}</value>
+  </data>
+  <data name="Verify_CoverageReportNoResult" xml:space="preserve">
+    <value>{0} raporun sonucu yok: {1}</value>
+  </data>
+  <data name="Verify_CoverageHint" xml:space="preserve">
+    <value>Tıkla: bu maddeleri listele</value>
   </data>
 </root>

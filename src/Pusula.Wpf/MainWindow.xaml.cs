@@ -256,6 +256,21 @@ namespace Pusula.Wpf
             viewModel.ConfirmDeleteVerLink();
         }
 
+        // Kapsama uyarısının bir parçası: o maddeleri listeleyen süzgeç.
+        private void CoveragePart_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is CoveragePart part)
+            {
+                viewModel.ApplyCoveragePart(part);
+            }
+        }
+
+        // Bağ süzgecini (ve aramayı) temizle.
+        private void VerLinkClear_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.ClearLinkFilter();
+        }
+
         // Doğrulama satırı: tek tık açar / kapar (tam gereksinim, plan / rapor özeti), çift tık düzenleme penceresi.
         private void VerificationRow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -279,7 +294,7 @@ namespace Pusula.Wpf
         {
             if ((sender as FrameworkElement)?.Tag is string key)
             {
-                viewModel.VerificationColumns.Resize(key, key == "tg" ? e.HorizontalChange : -e.HorizontalChange);
+                viewModel.VerificationColumns.Resize(key, VerificationColumns.IsLeading(key) ? e.HorizontalChange : -e.HorizontalChange);
             }
         }
 

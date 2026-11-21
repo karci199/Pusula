@@ -3466,6 +3466,42 @@ namespace Pusula.Wpf.Properties
         /// <summary>Plan / rapor satırı: düzenle düğmesi ipucu.</summary>
         public static string Verify_EditHint { get { return Get("Verify_EditHint"); } }
 
+        /// <summary>Bağ süzgeci: bağlı.</summary>
+        public static string Verify_LinkHave { get { return Get("Verify_LinkHave"); } }
+
+        /// <summary>Bağ süzgeci: bağsız ya da sonuçsuz.</summary>
+        public static string Verify_LinkNone { get { return Get("Verify_LinkNone"); } }
+
+        /// <summary>Bağ süzgeci grubu: test planı.</summary>
+        public static string Verify_PillPlan { get { return Get("Verify_PillPlan"); } }
+
+        /// <summary>Bağ süzgeci grubu: test raporu.</summary>
+        public static string Verify_PillReport { get { return Get("Verify_PillReport"); } }
+
+        /// <summary>Bağ süzgeci grubu: gereksinim.</summary>
+        public static string Verify_PillRequirement { get { return Get("Verify_PillRequirement"); } }
+
+        /// <summary>Bağ süzgeci grubu: sonuç.</summary>
+        public static string Verify_PillResult { get { return Get("Verify_PillResult"); } }
+
+        /// <summary>Test planı listesinde arama.</summary>
+        public static string Verify_SearchPlans { get { return Get("Verify_SearchPlans"); } }
+
+        /// <summary>Test raporu listesinde arama.</summary>
+        public static string Verify_SearchReports { get { return Get("Verify_SearchReports"); } }
+
+        /// <summary>Kapsama uyarısı; {0} sayı, {1} TG no listesi.</summary>
+        public static string Verify_CoverageReqNoReport { get { return Get("Verify_CoverageReqNoReport"); } }
+
+        /// <summary>Kapsama uyarısı; {0} sayı, {1} TP no listesi.</summary>
+        public static string Verify_CoveragePlanNoReq { get { return Get("Verify_CoveragePlanNoReq"); } }
+
+        /// <summary>Kapsama uyarısı; {0} sayı, {1} TR no listesi.</summary>
+        public static string Verify_CoverageReportNoResult { get { return Get("Verify_CoverageReportNoResult"); } }
+
+        /// <summary>Kapsama uyarısı parçasının ipucu.</summary>
+        public static string Verify_CoverageHint { get { return Get("Verify_CoverageHint"); } }
+
         #endregion
     }
 }

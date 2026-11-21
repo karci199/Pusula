@@ -293,6 +293,9 @@ namespace Pusula.Wpf.ViewModels
             get { return new[] { Resources.Verify_StatusPassed, Resources.Verify_StatusFailed, Resources.Verify_ResultNotReady }; }
         }
 
+        /// <summary>Hiçbir plan maddesine bağlı değil mi (satırın sol şeridi sarı).</summary>
+        public bool HasNoPlan { get; set; }
+
         /// <summary>Bağlı plan maddeleri (açılan satırdaki Test planı kartı).</summary>
         public IList<PlanRow> PlanItems { get; set; } = new List<PlanRow>();
 
@@ -655,53 +658,162 @@ namespace Pusula.Wpf.ViewModels
     }
 
     /// <summary>
-    /// Doğrulama tablosunun sütun genişlikleri (TG no, tür, yöntem, test planı, test raporu, durum); gereksinim sütunu kalanı
-    /// doldurur. Başlıktaki ayırıcı sürüklenince değişir, ayarlara (<c>columns["verification"]</c>) kaydedilir.
+    /// Doğrulama tablolarının sütun genişlikleri. Gereksinimler: TG no, tür, yöntem, test planı, test raporu, durum;
+    /// Test planı: TP no, yöntem, altyapı, gereksinimler, test raporu; Test raporu: TR no, sonuç, test planı,
+    /// gereksinimler, sonucun yeri. Açıklama / gereksinim sütunu kalanı doldurur. Başlıktaki ayırıcı sürüklenince
+    /// değişir, ayarlara (<c>columns["verification"]</c>) kaydedilir. Gizli sütun (açılıp kapanan) sıfır genişliktedir.
     /// </summary>
     public sealed class VerificationColumns : ViewModelBase
     {
         /// <summary>Sütun anahtarları (sırasıyla).</summary>
-        public static readonly string[] Keys = { "tg", "kind", "method", "plan", "report", "status" };
+        public static readonly string[] Keys =
+        {
+            "tg", "kind", "method", "plan", "report", "status",
+            "ptp", "pmethod", "pfacility", "preqs", "preports",
+            "rtr", "rresult", "rplans", "rreqs", "rpath",
+        };
 
-        private static readonly double[] Defaults = { 104, 150, 110, 104, 104, 170 };
+        // Ayırıcısı sütunun sağ kenarında olanlar (sağa çekince genişler); diğerleri sol kenarda.
+        private static readonly string[] Leading = { "tg", "ptp", "rtr" };
+
+        private static readonly double[] Defaults = { 104, 150, 110, 104, 104, 170, 80, 110, 120, 240, 220, 80, 130, 150, 170, 260 };
         private const double MinWidth = 56;
         private const double MaxWidth = 600;
         private readonly double[] widths = (double[])Defaults.Clone();
+        private bool showReport;
+        private bool showReportRequirements;
+
+        private GridLength At(int i)
+        {
+            return new GridLength(widths[i]);
+        }
 
         /// <summary>TG no sütunu.</summary>
         public GridLength Tg
         {
-            get { return new GridLength(widths[0]); }
+            get { return At(0); }
         }
 
         /// <summary>Tür sütunu.</summary>
         public GridLength Kind
         {
-            get { return new GridLength(widths[1]); }
+            get { return At(1); }
         }
 
         /// <summary>Yöntem sütunu.</summary>
         public GridLength Method
         {
-            get { return new GridLength(widths[2]); }
+            get { return At(2); }
         }
 
         /// <summary>Test planı sütunu.</summary>
         public GridLength Plan
         {
-            get { return new GridLength(widths[3]); }
+            get { return At(3); }
         }
 
-        /// <summary>Test raporu sütunu.</summary>
+        /// <summary>Test raporu sütunu ("Raporları göster" kapalıyken sıfır).</summary>
         public GridLength Report
         {
-            get { return new GridLength(widths[4]); }
+            get { return showReport ? At(4) : new GridLength(0); }
         }
 
         /// <summary>Durum sütunu.</summary>
         public GridLength Status
         {
-            get { return new GridLength(widths[5]); }
+            get { return At(5); }
+        }
+
+        /// <summary>Test planı tablosu: TP no.</summary>
+        public GridLength PlanTp
+        {
+            get { return At(6); }
+        }
+
+        /// <summary>Test planı tablosu: yöntem.</summary>
+        public GridLength PlanMethod
+        {
+            get { return At(7); }
+        }
+
+        /// <summary>Test planı tablosu: altyapı.</summary>
+        public GridLength PlanFacility
+        {
+            get { return At(8); }
+        }
+
+        /// <summary>Test planı tablosu: gereksinimler.</summary>
+        public GridLength PlanRequirements
+        {
+            get { return At(9); }
+        }
+
+        /// <summary>Test planı tablosu: test raporu.</summary>
+        public GridLength PlanReports
+        {
+            get { return At(10); }
+        }
+
+        /// <summary>Test raporu tablosu: TR no.</summary>
+        public GridLength ReportTr
+        {
+            get { return At(11); }
+        }
+
+        /// <summary>Test raporu tablosu: sonuç.</summary>
+        public GridLength ReportResult
+        {
+            get { return At(12); }
+        }
+
+        /// <summary>Test raporu tablosu: test planı.</summary>
+        public GridLength ReportPlans
+        {
+            get { return At(13); }
+        }
+
+        /// <summary>Test raporu tablosu: gereksinimler ("Gereksinimleri göster" kapalıyken sıfır).</summary>
+        public GridLength ReportRequirements
+        {
+            get { return showReportRequirements ? At(14) : new GridLength(0); }
+        }
+
+        /// <summary>Test raporu tablosu: sonucun yeri.</summary>
+        public GridLength ReportPath
+        {
+            get { return At(15); }
+        }
+
+        /// <summary>Gereksinimler tablosunda Test raporu sütunu açık mı.</summary>
+        public bool ShowReport
+        {
+            get { return showReport; }
+            set
+            {
+                if (SetProperty(ref showReport, value))
+                {
+                    OnPropertyChanged(nameof(Report));
+                }
+            }
+        }
+
+        /// <summary>Test raporu tablosunda Gereksinimler sütunu açık mı.</summary>
+        public bool ShowReportRequirements
+        {
+            get { return showReportRequirements; }
+            set
+            {
+                if (SetProperty(ref showReportRequirements, value))
+                {
+                    OnPropertyChanged(nameof(ReportRequirements));
+                }
+            }
+        }
+
+        /// <summary>Ayırıcı sütunun sağ kenarında mı (sağa çekince genişler).</summary>
+        public static bool IsLeading(string key)
+        {
+            return Array.IndexOf(Leading, key) >= 0;
         }
 
         /// <summary>Sütunu <paramref name="delta"/> kadar genişletir (eksi daraltır); sınırlar içinde kalır.</summary>
@@ -744,8 +856,7 @@ namespace Pusula.Wpf.ViewModels
         {
             return Keys.Select((k, i) => new ColumnLayout { Key = k, Index = i, Width = widths[i] }).ToList();
         }
-    }
-    /// <summary>
+    }    /// <summary>
     /// Listeden seç ya da yeni yaz: seçenekler "—" (boş), var olan adlar ve en sonda "+ Yeni …"; son seçilince
     /// altında yazı kutusu açılır. Değer, seçili ad ya da yazılan yeni addır.
     /// </summary>
@@ -1455,6 +1566,7 @@ namespace Pusula.Wpf.ViewModels
             if (!string.Equals(stock, verificationStock, StringComparison.OrdinalIgnoreCase))
             {
                 verificationFilter = string.Empty;
+                ResetLinkFilters();
             }
 
             verificationStock = stock;
@@ -1699,7 +1811,7 @@ namespace Pusula.Wpf.ViewModels
                 }
 
                 var kinds = new HashSet<int>(verificationStatusFilter.Select(VerificationRow.KindOf));
-                var rows = SortVerification(verificationItems.Where(i => SameGroup(i, option.Key) && (kinds.Count == 0 || kinds.Contains(VerificationRow.KindOf(i.Status))))).Select(i => new VerificationRow(i) { SourceLine = SourceLineOf(i), Attempts = AttemptsOf(i), LinkedPlans = PlansOfRequirement(i), LinkedReports = ReportsOfRequirement(i), PlanItems = PlanRowsOf(i), ReportItems = ReportRowsOf(i) }).ToList();
+                var rows = SortVerification(verificationItems.Where(i => SameGroup(i, option.Key) && (kinds.Count == 0 || kinds.Contains(VerificationRow.KindOf(i.Status))) && PassesReqLinks(i))).Select(i => new VerificationRow(i) { SourceLine = SourceLineOf(i), Attempts = AttemptsOf(i), LinkedPlans = PlansOfRequirement(i), LinkedReports = ReportsOfRequirement(i), PlanItems = PlanRowsOf(i), ReportItems = ReportRowsOf(i), HasNoPlan = ReqPlanState(i) == 0 }).ToList();
                 if (rows.Count > 0)
                 {
                     VerificationGroups.Add(new VerificationGroup(option.Key, Math.Max(0, option.Tone), rows));
@@ -1707,6 +1819,7 @@ namespace Pusula.Wpf.ViewModels
             }
 
             OnPropertyChanged(nameof(VerificationShownText));
+            MarkActiveParts();
         }
 
         // Maddeye bağlı ölçüm kayıtları (Günlük'te madde: anahtarı), yeniden eskiye.
