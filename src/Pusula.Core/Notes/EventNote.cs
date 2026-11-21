@@ -71,6 +71,9 @@ namespace Pusula.Core.Notes
         /// <summary>Günlük girdisinin ölçüm klasörü (<c>klasör:</c>, kayıt klasörüne göre); yoksa boş.</summary>
         public string Folder { get; private set; } = string.Empty;
 
+        /// <summary>Bağlı mail dosyası (<c>mail:</c>, kayıt klasörüne göre); yoksa boş.</summary>
+        public string Mail { get; private set; } = string.Empty;
+
         /// <summary>Revizyona giren stok; revizyon değilse boş.</summary>
         public string RevisionStock { get; private set; } = string.Empty;
 
@@ -124,6 +127,7 @@ namespace Pusula.Core.Notes
                 RevisionOld = revision[1],
                 RevisionNew = revision[2],
                 RevisionChangeNo = revision[3],
+                Mail = revision[4],
                 RequestType = request.Type,
                 RequestNo = request.No,
                 RequestFrom = request.From,

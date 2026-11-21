@@ -48,6 +48,7 @@ namespace Pusula.Wpf.ViewModels
                 if (SetProperty(ref journalSetting, value ?? string.Empty))
                 {
                     OnPropertyChanged(nameof(JournalSettingChoices));
+                    OnMailChanged();
                 }
             }
         }
@@ -123,6 +124,7 @@ namespace Pusula.Wpf.ViewModels
         {
             OnPropertyChanged(nameof(IsJournalMeeting));
             OnPropertyChanged(nameof(JournalBodyLabel));
+            OnMailChanged();
         }
     }
 }

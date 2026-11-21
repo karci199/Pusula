@@ -2371,6 +2371,33 @@ namespace Pusula.Wpf.Properties
         /// <summary>Seçim listesinde boş seçenek.</summary>
         public static string Verify_None { get { return Get("Verify_None"); } }
 
+        /// <summary>Toplantı: mail dosyası alanı.</summary>
+        public static string Journal_Mail { get { return Get("Journal_Mail"); } }
+
+        /// <summary>Mail dosyası seçme düğmesi.</summary>
+        public static string Journal_MailPick { get { return Get("Journal_MailPick"); } }
+
+        /// <summary>Mail seçme penceresinin başlığı.</summary>
+        public static string Journal_MailPickTitle { get { return Get("Journal_MailPickTitle"); } }
+
+        /// <summary>Mail alanının açıklaması.</summary>
+        public static string Journal_MailHint { get { return Get("Journal_MailHint"); } }
+
+        /// <summary>Mail seçilmemişse.</summary>
+        public static string Journal_MailNone { get { return Get("Journal_MailNone"); } }
+
+        /// <summary>Mail alanına başka dosya verilince.</summary>
+        public static string Journal_MailOnlyMsg { get { return Get("Journal_MailOnlyMsg"); } }
+
+        /// <summary>Kayıttaki mail dosyası yoksa.</summary>
+        public static string Journal_MailMissing { get { return Get("Journal_MailMissing"); } }
+
+        /// <summary>Mail kaldırma düğmesinin ipucu.</summary>
+        public static string Journal_MailRemove { get { return Get("Journal_MailRemove"); } }
+
+        /// <summary>Kartın mail düğmesinin ipucu.</summary>
+        public static string Timeline_OpenMail { get { return Get("Timeline_OpenMail"); } }
+
         /// <summary>Revizyon: stok no alanı.</summary>
         public static string Revision_Stock { get { return Get("Revision_Stock"); } }
 

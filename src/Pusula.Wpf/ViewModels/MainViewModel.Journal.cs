@@ -228,6 +228,7 @@ namespace Pusula.Wpf.ViewModels
             ResetJournalDecision(note);
             ResetJournalRequest(note);
             ResetJournalRevision(note);
+            ResetJournalMail(note);
             OnPropertyChanged(nameof(IsJournalEditing));
             OnPropertyChanged(nameof(JournalPrimaryText));
         }
@@ -385,6 +386,7 @@ namespace Pusula.Wpf.ViewModels
             ResetJournalDecision(null);
             ResetJournalRequest(null);
             ResetJournalRevision(null);
+            ResetJournalMail(null);
             OnPropertyChanged(nameof(IsJournalEditing));
             IsJournalOpen = true;
             return true;
@@ -432,7 +434,7 @@ namespace Pusula.Wpf.ViewModels
                 return false;
             }
 
-            if (!PrepareJournalMeasurement(entry) || !CreateJournalFolder(entry))
+            if (!PrepareJournalMeasurement(entry) || !CreateJournalFolder(entry) || !CopyJournalMail(entry))
             {
                 return false;
             }

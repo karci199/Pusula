@@ -141,6 +141,9 @@ namespace Pusula.Wpf.ViewModels
                 RevisionMeta = string.Join(" · ", new[] { journal.RevisionStock, journal.RevisionChangeNo }.Where(s => s.Length > 0));
             }
 
+            // Mail: kartta ✉ düğmesi (Outlook'ta açar).
+            HasMail = journal != null && journal.Mail.Trim().Length > 0;
+
             // Ölçüm klasörü: kartta "📁 sayı" düğmesi.
             if (journal != null && journal.Folder.Trim().Length > 0)
             {
@@ -148,6 +151,9 @@ namespace Pusula.Wpf.ViewModels
                 FileCount = MeasurementFiles.CountFiles(FolderPath);
             }
         }
+
+        /// <summary>Kayda bağlı mail (.msg) var mı (✉ düğmesi).</summary>
+        public bool HasMail { get; }
 
         /// <summary>Revizyon çipi ("rev A → B"); revizyon değilse boş.</summary>
         public string RevisionText { get; } = string.Empty;

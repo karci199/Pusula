@@ -928,6 +928,10 @@
                                 </Button>
                                 <TextBlock x:Name="When" DockPanel.Dock="Right" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="12"
                                            Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding TimeText}" />
+                                <Button DockPanel.Dock="Right" Margin="8,0,0,0" Padding="6,2" VerticalAlignment="Center" ToolTip="{x:Static res:Resources.Timeline_OpenMail}"
+                                        Visibility="{Binding HasMail, Converter={StaticResource BoolToVis}}" Click="TimelineOpenMail_Click">
+                                    <ContentControl Width="16" Height="16" Focusable="False" Content="mail" ContentTemplate="{StaticResource SettingIconTemplate}" />
+                                </Button>
                                 <Button DockPanel.Dock="Right" Margin="8,0,0,0" Padding="8,2" VerticalAlignment="Center" ToolTip="{x:Static res:Resources.Timeline_OpenFolder}"
                                         Visibility="{Binding HasFolder, Converter={StaticResource BoolToVis}}" Click="TimelineOpenFolder_Click">
                                     <StackPanel Orientation="Horizontal">
@@ -3831,6 +3835,24 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                                 <TextBlock Margin="0,5,0,0" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Journal_SettingHint}" />
+                            </StackPanel>
+                        </controls:FormField>
+                        <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Journal_Mail}" LabelWidth="120"
+                                            Visibility="{Binding IsJournalMailVisible, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <Border Padding="8,5" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                        Background="Transparent" AllowDrop="True" DragOver="JournalMail_DragOver" Drop="JournalMail_Drop">
+                                    <DockPanel>
+                                        <Button DockPanel.Dock="Right" Padding="4,1" Style="{DynamicResource SubtleButtonStyle}" ToolTip="{x:Static res:Resources.Journal_MailRemove}"
+                                                Visibility="{Binding HasJournalMail, Converter={StaticResource BoolToVis}}" Click="JournalMailClear_Click">
+                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Remove}" FontSize="10" />
+                                        </Button>
+                                        <Button DockPanel.Dock="Left" Padding="10,3" Click="JournalMailPick_Click" Content="{x:Static res:Resources.Journal_MailPick}" />
+                                        <ContentControl DockPanel.Dock="Left" Width="18" Height="18" Margin="10,0,6,0" Focusable="False" Content="mail" ContentTemplate="{StaticResource SettingIconTemplate}" />
+                                        <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding JournalMailText}" />
+                                    </DockPanel>
+                                </Border>
+                                <TextBlock Margin="0,4,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Journal_MailHint}" />
                             </StackPanel>
                         </controls:FormField>
                         <controls:FormField Margin="0,12,0,10" Header="{x:Static res:Resources.Journal_Decisions}" LabelWidth="120">

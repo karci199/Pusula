@@ -271,6 +271,46 @@ namespace Pusula.Wpf
             }
         }
 
+        // Toplantı (Outlook): mail dosyası seç, sürükle-bırak, kaldır; kartta Outlook'ta aç.
+        private void JournalMailPick_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Microsoft.Win32.OpenFileDialog { Title = Properties.Resources.Journal_MailPickTitle, Filter = "Outlook (*.msg)|*.msg" };
+            if (dialog.ShowDialog(this) == true)
+            {
+                viewModel.SetJournalMail(dialog.FileName);
+            }
+        }
+
+        private void JournalMail_DragOver(object sender, DragEventArgs e)
+        {
+            e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None;
+            e.Handled = true;
+        }
+
+        private void JournalMail_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetData(DataFormats.FileDrop) is string[] paths && paths.Length > 0)
+            {
+                viewModel.SetJournalMail(paths[0]);
+            }
+
+            e.Handled = true;
+        }
+
+        private void JournalMailClear_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.ClearJournalMail();
+        }
+
+        private void TimelineOpenMail_Click(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (((FrameworkElement)sender).DataContext is StockTimelineCard card && card.Item?.Journal != null)
+            {
+                viewModel.OpenMail(card.Item.Journal);
+            }
+        }
+
         // Talep kartında "Teslim alındı": talep kapanır, çizelgeye teslim kaydı düşer.
         private void TimelineDeliver_Click(object sender, RoutedEventArgs e)
         {

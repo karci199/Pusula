@@ -2811,4 +2811,31 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Revision_ChangeNoHint" xml:space="preserve">
     <value>İsteğe bağlı: ECR/ECO, iş emri.</value>
   </data>
+  <data name="Journal_Mail" xml:space="preserve">
+    <value>Mail (.msg)</value>
+  </data>
+  <data name="Journal_MailPick" xml:space="preserve">
+    <value>Mail seç…</value>
+  </data>
+  <data name="Journal_MailPickTitle" xml:space="preserve">
+    <value>Mail dosyası (.msg) seç</value>
+  </data>
+  <data name="Journal_MailHint" xml:space="preserve">
+    <value>Outlook&apos;tan masaüstüne sürüklediğiniz .msg; kayıtla birlikte stokun Diger klasörüne kopyalanır, asıl dosyaya dokunulmaz.</value>
+  </data>
+  <data name="Journal_MailNone" xml:space="preserve">
+    <value>Seçilmedi</value>
+  </data>
+  <data name="Journal_MailOnlyMsg" xml:space="preserve">
+    <value>Yalnız .msg dosyası eklenebilir.</value>
+  </data>
+  <data name="Journal_MailMissing" xml:space="preserve">
+    <value>Mail dosyası bulunamadı: {0}</value>
+  </data>
+  <data name="Journal_MailRemove" xml:space="preserve">
+    <value>Maili kaldır (dosyaya dokunulmaz)</value>
+  </data>
+  <data name="Timeline_OpenMail" xml:space="preserve">
+    <value>Maili Outlook&apos;ta aç</value>
+  </data>
 </root>

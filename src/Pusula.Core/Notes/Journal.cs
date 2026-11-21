@@ -95,6 +95,9 @@ namespace Pusula.Core.Notes
 
         /// <summary>Değişiklik numarası (ECR/ECO, iş emri); isteğe bağlı.</summary>
         public string RevisionChangeNo { get; set; } = string.Empty;
+
+        /// <summary>Bağlı mail dosyası (.msg), kayıt klasörüne göre <c>/</c> ile (<c>Diger/2026-11-20_Konu.msg</c>); boşsa yazılmaz.</summary>
+        public string Mail { get; set; } = string.Empty;
     }
 
     /// <summary>Okunan talep bilgisi (Günlük girdisinden <see cref="EventNote"/>'a taşınır).</summary>
@@ -285,6 +288,9 @@ namespace Pusula.Core.Notes
         /// <summary>Bilgi satırında talep durumunun öneki (<c>durum: Açık</c>).</summary>
         public const string RequestStatusKey = "durum:";
 
+        /// <summary>Bilgi satırında bağlı mail dosyasının öneki (<c>mail: Diger/2026-11-20_Konu.msg</c>).</summary>
+        public const string MailKey = "mail:";
+
         /// <summary>Bilgi satırında revizyona giren stokun öneki (<c>stok: AB-7000-0001</c>).</summary>
         public const string RevisionStockKey = "stok:";
 
@@ -338,6 +344,7 @@ namespace Pusula.Core.Notes
             entry.RevisionOld = note.RevisionOld;
             entry.RevisionNew = note.RevisionNew;
             entry.RevisionChangeNo = note.RevisionChangeNo;
+            entry.Mail = note.Mail;
             entry.Related.AddRange(note.Related);
             entry.Tags.AddRange(note.Tags);
             return entry;
@@ -741,6 +748,11 @@ namespace Pusula.Core.Notes
                 meta.Add(DecidedByKey + " " + string.Join(" ", deciders.Select(p => "@" + p)));
             }
 
+            if (entry.Mail.Trim().Length > 0)
+            {
+                meta.Add(MailKey + " " + entry.Mail.Trim().Replace('\\', '/'));
+            }
+
             if (entry.RevisionNew.Trim().Length > 0)
             {
                 if (entry.RevisionStock.Trim().Length > 0)
@@ -884,6 +896,7 @@ namespace Pusula.Core.Notes
             var revOld = string.Empty;
             var revNew = string.Empty;
             var revChange = string.Empty;
+            var mail = string.Empty;
             var related = new List<string>();
             var tags = new List<string>();
             var text = new List<string>();
@@ -919,6 +932,10 @@ namespace Pusula.Core.Notes
                         else if (lower.StartsWith(ParticipantsKey, StringComparison.Ordinal))
                         {
                             participants.AddRange(segment.Substring(ParticipantsKey.Length).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(p => p.TrimStart('@')).Where(p => p.Length > 0));
+                        }
+                        else if (lower.StartsWith(MailKey, StringComparison.Ordinal))
+                        {
+                            mail = segment.Substring(MailKey.Length).Trim();
                         }
                         else if (lower.StartsWith(RevisionStockKey, StringComparison.Ordinal))
                         {
@@ -995,7 +1012,7 @@ namespace Pusula.Core.Notes
                 related.Distinct(StringComparer.OrdinalIgnoreCase).ToList(), tags.Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
                 sourceLine, bodyText, kind, item, result, folder, participants, setting, DecisionsOf(bodyText), deciders,
                 new RequestInfo(requestType, requestNo, requestFrom, requestDue, requestStatus, ItemsOf(bodyText), RequestDetailOf(bodyText)),
-                new[] { revStock, revOld, revNew, revChange });
+                new[] { revStock, revOld, revNew, revChange, mail });
         }
 
         private static bool IsMetaLine(string line)
@@ -1006,7 +1023,7 @@ namespace Pusula.Core.Notes
                 || lower.StartsWith(ParticipantsKey, StringComparison.Ordinal) || lower.StartsWith(DecidedByKey, StringComparison.Ordinal) || lower.StartsWith(SettingKey, StringComparison.Ordinal)
                 || lower.StartsWith(RequestKey, StringComparison.Ordinal) || lower.StartsWith(RequestNoKey, StringComparison.Ordinal) || lower.StartsWith(RequestFromKey, StringComparison.Ordinal)
                 || lower.StartsWith(RequestDueKey, StringComparison.Ordinal) || lower.StartsWith(RequestStatusKey, StringComparison.Ordinal)
-                || lower.StartsWith(RevisionStockKey, StringComparison.Ordinal) || lower.StartsWith(RevisionKey, StringComparison.Ordinal) || lower.StartsWith(RevisionChangeKey, StringComparison.Ordinal)
+                || lower.StartsWith(MailKey, StringComparison.Ordinal) || lower.StartsWith(RevisionStockKey, StringComparison.Ordinal) || lower.StartsWith(RevisionKey, StringComparison.Ordinal) || lower.StartsWith(RevisionChangeKey, StringComparison.Ordinal)
                 || lower.StartsWith("ilgili:", StringComparison.Ordinal) || (line.StartsWith("#", StringComparison.Ordinal) && !line.StartsWith("# ", StringComparison.Ordinal));
         }
     }
