@@ -69,7 +69,8 @@ namespace Pusula.Wpf.ViewModels
             Item = item;
             var journal = item.Journal;
             var kind = journal != null ? EventKinds.Find(journal.Kind) : null;
-            KindLabel = journal != null ? EventKinds.Label(journal.Kind) : item.Result.Name;
+            // Kayıtta yazan ad gösterilir (eski "Arıza" gibi türler adıyla; ikon ve renk yeni türden).
+            KindLabel = journal != null ? (journal.KindLabel.Trim().Length > 0 ? journal.KindLabel.Trim() : EventKinds.Label(journal.Kind)) : item.Result.Name;
             Glyph = kind?.Glyph ?? (journal != null ? "" : "");
             Tone = kind?.Tone ?? item.Result.Tone;
             Title = item.Title;

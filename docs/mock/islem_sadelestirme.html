@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>İşlem türleri · sadeleştirme</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1f1f1f;font-family:"Segoe UI",Arial,sans-serif;color:#e6e6e6;font-size:14px}
+.page{width:1460px;padding:26px 30px 30px;background:#202020;display:grid;grid-template-columns:700px 1fr;gap:34px}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin:0 0 10px}
+.mut{color:#9a9a9a;font-size:12.5px}
+.panel{background:#272727;border:1px solid #363636;border-radius:12px;padding:14px 16px}
+.map{display:grid;grid-template-columns:1fr 34px 1fr;row-gap:6px;align-items:center}
+.old{display:flex;flex-direction:column;gap:4px}
+.k{display:inline-flex;align-items:center;gap:7px;font-size:13px;padding:4px 10px 4px 5px;border-radius:7px;background:#2f2f2f;border:1px solid #3a3a3a;width:fit-content}
+.k.dim{opacity:.55;text-decoration:line-through}
+.i{width:20px;height:20px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+.arrow{color:#6a6a6a;text-align:center;font-size:16px}
+.new{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;padding:5px 12px 5px 6px;border-radius:8px;background:#303844;border:1px solid #4a5a6a;width:fit-content}
+.grp{border-top:1px solid #333;margin:4px 0}
+.combo{background:#2b2b2b;border:1px solid #3c3c3c;border-radius:10px;padding:6px}
+.opt{display:grid;grid-template-columns:28px 110px 1fr 120px;gap:8px;align-items:center;padding:7px 8px;border-radius:6px;font-size:13px}
+.opt.sel{background:#36404a}
+.opt b{font-weight:600}
+.ex{font-size:11.5px;padding:2px 8px;border-radius:6px;background:#1c3346;color:#8fd0ff;text-align:center;white-space:nowrap}
+.ex.none{background:transparent;color:#6a6a6a}
+.sep{height:1px;background:#3c3c3c;margin:4px 6px}
+.note{font-size:12.5px;color:#9a9a9a;line-height:1.65;margin-top:14px}
+.note b{color:#ddd}
+.c-blue{background:#1c3346;color:#8fd0ff}.c-purple{background:#2e2547;color:#c8b6ff}.c-green{background:#1f3a2a;color:#8fdc9b}
+.c-orange{background:#3d2c1c;color:#ffb07a}.c-yellow{background:#3d3420;color:#f6c46f}.c-red{background:#4a2326;color:#ff99a4}
+.c-gray{background:#383838;color:#cfcfcf}.c-teal{background:#143a3a;color:#7fd6d6}
+</style></head><body>
+<div class="page">
+  <div>
+    <div class="cap">ŞİMDİKİ 17 TÜR → YENİ 11 TÜR</div>
+    <div class="panel">
+      <div class="map">
+        <div class="old"><span class="k"><span class="i c-blue">◉</span>Ölçüm</span><span class="k dim"><span class="i c-blue">▶</span>Test başladı</span><span class="k dim"><span class="i c-green">■</span>Test bitti</span></div>
+        <div class="arrow">→</div><div><span class="new"><span class="i c-blue">◉</span>Ölçüm</span> <span class="mut">madde · sonuç · klasör</span></div>
+        <div class="grp" style="grid-column:1/4"></div>
+        <div class="old"><span class="k"><span class="i c-purple">◆</span>Toplantı</span></div>
+        <div class="arrow">→</div><div><span class="new"><span class="i c-purple">◆</span>Toplantı</span> <span class="mut">katılımcı · ortam · kararlar</span></div>
+        <div class="old"><span class="k"><span class="i c-purple">⚑</span>Karar</span></div>
+        <div class="arrow">→</div><div><span class="new"><span class="i c-purple">⚑</span>Karar</span> <span class="mut">karar veren · madde</span></div>
+        <div class="grp" style="grid-column:1/4"></div>
+        <div class="old"><span class="k"><span class="i c-green">⇄</span>Talep</span></div>
+        <div class="arrow">→</div><div><span class="new"><span class="i c-green">⇄</span>Talep</span> <span class="mut">tür · no · kimden · tarih</span></div>
+        <div class="old"><span class="k"><span class="i c-gray">⇩</span>Teslim alındı</span></div>
+        <div class="arrow">→</div><div><span class="new"><span class="i c-gray">⇩</span>Teslim</span> <span class="mut">talepten kendiliğinden</span></div>
+        <div class="old"><span class="k"><span class="i c-teal">⇧</span>Sevkiyat</span><span class="k dim"><span class="i c-green">⤴</span>Üretime teslim</span><span class="k dim"><span class="i c-gray">◌</span>Numune</span></div>
+        <div class="arrow">→</div><div><span class="new"><span class="i c-teal">⇧</span>Sevkiyat</span> <span class="mut">dışarı giden: üretime, müşteriye, numune</span></div>
+        <div class="grp" style="grid-column:1/4"></div>
+        <div class="old"><span class="k"><span class="i c-yellow">↻</span>Revizyon</span></div>
+        <div class="arrow">→</div><div><span class="new"><span class="i c-yellow">↻</span>Revizyon</span> <span class="mut">stok · rev · değişiklik no</span></div>
+        <div class="old"><span class="k"><span class="i c-red">!</span>Sorun</span><span class="k dim"><span class="i c-red">⚠</span>Arıza</span></div>
+        <div class="arrow">→</div><div><span class="new"><span class="i c-red">!</span>Sorun</span> <span class="mut">arıza da burada</span></div>
+        <div class="old"><span class="k"><span class="i c-green">✓</span>Çözüm</span><span class="k dim"><span class="i c-yellow">🔧</span>Onarım</span></div>
+        <div class="arrow">→</div><div><span class="new"><span class="i c-green">✓</span>Çözüm</span> <span class="mut">onarım da burada</span></div>
+        <div class="grp" style="grid-column:1/4"></div>
+        <div class="old"><span class="k"><span class="i c-orange">⚙</span>Hazırlık</span></div>
+        <div class="arrow">→</div><div><span class="new"><span class="i c-orange">⚙</span>Hazırlık</span></div>
+        <div class="old"><span class="k"><span class="i c-gray">✎</span>Not</span></div>
+        <div class="arrow">→</div><div><span class="new"><span class="i c-gray">✎</span>Not</span></div>
+      </div>
+    </div>
+    <div class="note">
+      <b>Eski kayıtlar silinmez, değişmez:</b> notta "Arıza" yazan kayıt yine "Arıza" diye okunur; kartta Sorun'un rengi ve ikonuyla görünür.<br>
+      <b>Kendi eklediğiniz türler</b> (İşlem ekle) aynen kalır.
+    </div>
+  </div>
+
+  <div>
+    <div class="cap">YENİ İŞLEM LİSTESİ · AÇILIR</div>
+    <div class="combo">
+      <div class="opt sel"><span class="i c-blue">◉</span><b>Ölçüm</b><span class="mut">Test, ölçüm, deneme</span><span class="ex">ek alan</span></div>
+      <div class="opt"><span class="i c-purple">◆</span><b>Toplantı</b><span class="mut">Toplantı, görüşme, yazışma</span><span class="ex">ek alan</span></div>
+      <div class="opt"><span class="i c-purple">⚑</span><b>Karar</b><span class="mut">Toplantısız alınan karar</span><span class="ex">ek alan</span></div>
+      <div class="sep"></div>
+      <div class="opt"><span class="i c-green">⇄</span><b>Talep</b><span class="mut">Jig, kablo, malzeme, test …</span><span class="ex">ek alan</span></div>
+      <div class="opt"><span class="i c-gray">⇩</span><b>Teslim</b><span class="mut">Gelen: jig, birim, malzeme</span><span class="ex none">—</span></div>
+      <div class="opt"><span class="i c-teal">⇧</span><b>Sevkiyat</b><span class="mut">Giden: üretime, müşteriye, numune</span><span class="ex none">—</span></div>
+      <div class="sep"></div>
+      <div class="opt"><span class="i c-yellow">↻</span><b>Revizyon</b><span class="mut">Donanım / yazılım rev</span><span class="ex">ek alan</span></div>
+      <div class="opt"><span class="i c-red">!</span><b>Sorun</b><span class="mut">Bulgu, arıza, aksaklık</span><span class="ex none">sonra</span></div>
+      <div class="opt"><span class="i c-green">✓</span><b>Çözüm</b><span class="mut">Giderme, onarım</span><span class="ex none">sonra</span></div>
+      <div class="sep"></div>
+      <div class="opt"><span class="i c-orange">⚙</span><b>Hazırlık</b><span class="mut">Kurulum, hazırlık işi</span><span class="ex none">—</span></div>
+      <div class="opt"><span class="i c-gray">✎</span><b>Not</b><span class="mut">Kısa bilgi</span><span class="ex none">—</span></div>
+      <div class="sep"></div>
+      <div class="opt" style="color:#8fd0ff"><span></span><span>+ İşlem ekle…</span><span class="mut">kendi türünüz</span><span></span></div>
+    </div>
+    <div class="note">
+      <b>Gruplar:</b> ne yapıldı (Ölçüm, Toplantı, Karar) · giren/çıkan (Talep, Teslim, Sevkiyat) · değişen/bozulan (Revizyon, Sorun, Çözüm) · diğer (Hazırlık, Not).<br>
+      <b>Sırada:</b> Sorun ve Çözüm'e ek alan (ilgili madde / birim; çözüm hangi sorunu kapattı).
+    </div>
+  </div>
+</div>
+</body></html>

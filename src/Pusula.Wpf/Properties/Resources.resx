@@ -1342,7 +1342,7 @@
     <value>Yolu kopyala</value>
   </data>
   <data name="Event_Delivery" xml:space="preserve">
-    <value>Teslim alındı</value>
+    <value>Teslim</value>
   </data>
   <data name="Importance_High" xml:space="preserve">
     <value>Önemli</value>

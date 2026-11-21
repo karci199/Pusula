@@ -177,6 +177,14 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
   Yalnız klasik Outlook (yeni Outlook COM desteklemez); şirket ayarına göre Outlook güvenlik uyarısı çıkabilir
   (kullanıcı soracak). Deneme betiği: `tools\OutlookDeneme.ps1` (yalnız okur). Mock: `docs/mock/outlook.png`.
   Teams elle girilir; takvim bağlama yok (bulut gerektirir).
+- **Mail dosyası okuma (21.11.2026, deneme aracı, uygulamaya bağlı değil):** `tools\MailOku\` (`MailOku.cs` +
+  `MailOku.ps1`). `.msg` Windows'un ole32'siyle (OLE bileşik dosya) okunur; Outlook, lisans ya da kütüphane gerekmez.
+  `.eml` (Gmail "Mesajı indir") kütüphanesiz MIME çözümüyle okunur: kodlanmış konu, quoted-printable / base64,
+  multipart, ekler. Çıktı: başlık (RE:/FW:/YNT: atılır), tarih, katılımcı `@Ad_Soyad`, ekip (`.msg`'de dağıtım listesi;
+  `.eml`'de tamamı büyük harfli ad), notlar (selam satırları atlanır), ekler. Örnekle: `MailOku.ps1 -Ornek`;
+  gerçek dosyayla: `MailOku.ps1 -Dosya mail.msg -EkKlasoru ekler`. Gerçek bir Outlook `.msg` ile henüz denenmedi.
+  Sonraki adım: Toplantı kaydında Ortam = Outlook iken "Mail dosyası seç…" ile pencereyi doldurmak, mail ve ekleri
+  `03_Testler\Yazismalar\tarih_konu\` klasörüne kopyalamak.
 
 - **İnceleme sonrası kalanlar (08.11.2026):** stok seçilince 5 okuma artık aynı anda yapılıyor; tek taramada birleştirmek ileride. Kısa not / bağ / not oluşturma UI thread'inde eşzamanlı dosya yazıyor. JSON oku-değiştir-yaz kalıbı 4 yerde
   tekrar (`JsonFile.Update<T>` yapılmalı). Süzgeç kutularının "Tümü" düzeltmesi geçici çözüm.

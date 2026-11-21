@@ -60,10 +60,43 @@ namespace Pusula.Wpf.ViewModels
         private static EventKindOption[]? builtIn;
         private static EventKindOption[] custom = new EventKindOption[0];
 
-        /// <summary>Bütün türler: hazırlar ("+ Kayıt" ızgarasındaki sırayla) ve eklenenler.</summary>
+        /// <summary>
+        /// Listede görünen türler (21.11.2026 sadeleştirmesi, 11 tür) sırasıyla ve ardından eklenenler. Eski türler
+        /// (Test başladı/bitti, Arıza, Onarım, Üretime teslim, Numune, Teslim alındı) listede yok; okunurken yeni türün
+        /// ikon ve rengiyle gösterilir (<see cref="Find"/>), adları korunur.
+        /// </summary>
         public static EventKindOption[] All
         {
-            get { return all ?? (all = BuiltIn().Concat(custom).ToArray()); }
+            get
+            {
+                if (all == null)
+                {
+                    var order = new[]
+                    {
+                        Resources.Event_Measurement, Resources.Event_Meeting, Resources.Event_Decision, Resources.Event_Request,
+                        Resources.Event_Delivery, Resources.Event_Shipment, Resources.Event_Revision, Resources.Event_Issue,
+                        Resources.Event_Solution, Resources.Event_Preparation, Resources.QuickNote_Chip,
+                    }.Select(Journal.KindKey).ToList();
+                    all = BuiltIn().Where(o => order.Contains(o.Key)).OrderBy(o => order.IndexOf(o.Key)).Concat(custom).ToArray();
+                }
+
+                return all;
+            }
+        }
+
+        // Eski türün anahtarı → yerine geçen türün adı.
+        private static Dictionary<string, string> Aliases()
+        {
+            return new Dictionary<string, string>
+            {
+                { Journal.KindKey(Resources.Event_TestStart), Resources.Event_Measurement },
+                { Journal.KindKey(Resources.Event_TestEnd), Resources.Event_Measurement },
+                { Journal.KindKey(Resources.Event_Fault), Resources.Event_Issue },
+                { Journal.KindKey(Resources.Event_Repair), Resources.Event_Solution },
+                { Journal.KindKey(Resources.Event_ToProduction), Resources.Event_Shipment },
+                { Journal.KindKey(Resources.Event_Sample), Resources.Event_Shipment },
+                { Journal.KindKey("Teslim alındı"), Resources.Event_Delivery },
+            };
         }
 
         /// <summary>Kullanıcının eklediği türleri ayarlar (hazır türlerle aynı adda olanlar atlanır).</summary>
@@ -87,9 +120,10 @@ namespace Pusula.Wpf.ViewModels
         public static EventKindOption? Find(string kind)
         {
             var key = Journal.KindKey(kind);
-            if (key == "teslim")
+            string target;
+            if (Aliases().TryGetValue(key, out target))
             {
-                key = Journal.KindKey(Resources.Event_Delivery);
+                key = Journal.KindKey(target);
             }
 
             return All.FirstOrDefault(o => o.Key == key);
@@ -104,8 +138,9 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Görünen ad.</summary>
         public static string Label(string kind)
         {
+            // Eski tür (Arıza gibi) kendi adıyla gösterilir; yalnız ikon ve rengi yeni türden gelir.
             var known = Find(kind);
-            if (known != null)
+            if (known != null && known.Key == Journal.KindKey(kind))
             {
                 return known.Label;
             }

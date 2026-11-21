@@ -78,7 +78,7 @@ try {
     $m = EntryOf 'Konnektör ve zayıflatıcı'
     Check 'teslim alınır' ($vm.MarkRequestDelivered($m)); Wait; Wait
     $m = [Pusula.Core.Notes.Journal]::Read($note) | Where-Object { $_.Title -eq 'Konnektör ve zayıflatıcı' -and $_.RequestType -eq 'Malzeme' } | Select-Object -First 1
-    $d = [Pusula.Core.Notes.Journal]::Read($note) | Where-Object { $_.Title -eq 'Konnektör ve zayıflatıcı' -and $_.KindLabel -eq 'Teslim alındı' } | Select-Object -First 1
+    $d = [Pusula.Core.Notes.Journal]::Read($note) | Where-Object { $_.Title -eq 'Konnektör ve zayıflatıcı' -and $_.KindLabel -eq 'Teslim' } | Select-Object -First 1
     Check 'talep kapandı, teslim kaydı düştü' ($m.RequestStatus -eq 'Teslim alındı' -and $d -ne $null -and $d.Excerpt -like 'Malzeme talebi teslim alındı*AMB-2026-1182') ($m.RequestStatus + ' | ' + $(if ($d) { $d.Excerpt } else { 'kayıt yok: ' + ((([Pusula.Core.Notes.Journal]::Read($note)) | Select-Object -First 3 | ForEach-Object { $_.KindLabel + '/' + $_.Title }) -join ', ') }))
     Check 'ikinci kez kapatılmaz' (-not $vm.MarkRequestDelivered($m))
     Check 'bekleyen talepler: 3' ($vm.OpenRequests.Count -eq 3) ([string]$vm.OpenRequests.Count)
