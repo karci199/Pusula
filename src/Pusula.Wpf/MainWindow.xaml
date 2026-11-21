@@ -66,6 +66,74 @@
         <local:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
         <local:PathToImageConverter x:Key="PathToImage" />
 
+        <!-- Doğrulama açılır listeleri: tablodaki renklerle aynı nokta + ad (durum / yöntem / tür metinden tanınır) -->
+        <DataTemplate x:Key="VerStatusItemTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Ellipse x:Name="Dot" Width="9" Height="9" Margin="0,0,9,0" VerticalAlignment="Center" Fill="{DynamicResource TextTertiaryBrush}" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding}" />
+            </StackPanel>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_None}"><Setter TargetName="Dot" Property="Fill" Value="Transparent" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_StatusPlanned}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource TextPrimaryBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_StatusPreparing}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_StatusInProgress}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_StatusEvaluating}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_StatusPassed}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_StatusFailed}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_StatusConditional}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_StatusRepeat}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_StatusNotApplicable}">
+                    <Setter TargetName="Dot" Property="Fill" Value="Transparent" />
+                    <Setter TargetName="Dot" Property="Stroke" Value="{DynamicResource TextTertiaryBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+        <DataTemplate x:Key="VerMethodItemTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Ellipse x:Name="Dot" Width="9" Height="9" Margin="0,0,9,0" VerticalAlignment="Center" Fill="{DynamicResource TextTertiaryBrush}" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding}" />
+            </StackPanel>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_None}"><Setter TargetName="Dot" Property="Fill" Value="Transparent" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_MethodTest}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_MethodInspection}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_MethodDocument}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_MethodDemonstration}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource TextPrimaryBrush}" /></DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+        <DataTemplate x:Key="VerKindItemTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Ellipse x:Name="Dot" Width="9" Height="9" Margin="0,0,9,0" VerticalAlignment="Center" Fill="Transparent" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding}" />
+            </StackPanel>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_KindBasic}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_KindDerived}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+        <!-- Durum süzgeci seçeneği: nokta (durum türüne göre) · ad · sayı -->
+        <DataTemplate x:Key="VerStatusFilterTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Ellipse x:Name="Dot" Width="9" Height="9" Margin="0,0,9,0" VerticalAlignment="Center" Fill="{DynamicResource TextTertiaryBrush}" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding Text}" />
+                <TextBlock Margin="8,0,0,0" VerticalAlignment="Center" Text="{Binding Count}" Foreground="{DynamicResource TextTertiaryBrush}" />
+            </StackPanel>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsAll}" Value="True"><Setter TargetName="Dot" Property="Fill" Value="Transparent" /></DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="6"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource TextPrimaryBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="7"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="3"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="8"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="1"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="2"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="9"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="4"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="5">
+                    <Setter TargetName="Dot" Property="Fill" Value="Transparent" />
+                    <Setter TargetName="Dot" Property="Stroke" Value="{DynamicResource TextTertiaryBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
         <!-- Kullanım yeri rozeti: Genel gri, Proje sarı, Stok yeşil (soluk zemin, renkli yazı) -->
         <DataTemplate x:Key="UsePlaceBadgeTemplate">
             <Border x:Name="Badge" CornerRadius="8" Padding="8,1" MinWidth="48" Background="{DynamicResource SubtleFillColorSecondaryBrush}" VerticalAlignment="Center">
@@ -2360,6 +2428,7 @@
                                 </Grid.Resources>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
@@ -2398,8 +2467,17 @@
                                     </StackPanel>
                                 </Grid>
 
+                                <!-- Durum süzgeci ve sıralama (çiplerin altında, solda) -->
+                                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
+                                    <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_FilterStatus}" />
+                                    <ComboBox Width="220" ItemsSource="{Binding VerificationStatusFilters}" SelectedItem="{Binding VerificationStatusFilter, Mode=TwoWay}"
+                                              ItemTemplate="{StaticResource VerStatusFilterTemplate}" />
+                                    <TextBlock Margin="20,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_SortBy}" />
+                                    <ComboBox Width="140" ItemsSource="{Binding VerificationSorts}" SelectedItem="{Binding VerificationSort, Mode=TwoWay}" />
+                                </StackPanel>
+
                                 <!-- Tablo kartı -->
-                                <Border Grid.Row="1" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                <Border Grid.Row="2" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                         Background="{DynamicResource LayerBrush}" Padding="16,8,8,10">
                                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,8,0">
                                         <StackPanel>
@@ -2481,6 +2559,7 @@
                                                                                                Text="{Binding Description}" Visibility="{Binding ShowsDescriptionLine, Converter={StaticResource BoolToVis}}" />
                                                                                 </StackPanel>
                                                                                 <StackPanel Grid.Column="3" Margin="10,0,6,0" Orientation="Horizontal" VerticalAlignment="Center">
+                                                                                    <Ellipse x:Name="KindDot" Width="8" Height="8" Margin="0,0,7,0" VerticalAlignment="Center" Fill="Transparent" />
                                                                                     <TextBlock Text="{Binding KindText}" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
                                                                                     <TextBlock Margin="6,0,0,0" FontSize="13" Text="{Binding ParentText}" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                                                                                                Visibility="{Binding HasParent, Converter={StaticResource BoolToVis}}" />
@@ -2613,6 +2692,8 @@
                                                                             </DataTrigger>
                                                                             <DataTrigger Binding="{Binding HasTp}" Value="False"><Setter TargetName="TpText" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" /></DataTrigger>
                                                                             <DataTrigger Binding="{Binding HasTr}" Value="False"><Setter TargetName="TrText" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" /></DataTrigger>
+                                                                            <DataTrigger Binding="{Binding KindTone}" Value="1"><Setter TargetName="KindDot" Property="Fill" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
+                                                                            <DataTrigger Binding="{Binding KindTone}" Value="2"><Setter TargetName="KindDot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
                                                                             <DataTrigger Binding="{Binding MethodTone}" Value="1"><Setter TargetName="MethodText" Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
                                                                             <DataTrigger Binding="{Binding MethodTone}" Value="2"><Setter TargetName="MethodText" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
                                                                             <DataTrigger Binding="{Binding MethodTone}" Value="3"><Setter TargetName="MethodText" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
@@ -3355,14 +3436,14 @@
                         </ComboBox>
                     </controls:FormField>
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldKind}" LabelWidth="150">
-                        <ComboBox ItemsSource="{Binding VerificationKinds}" SelectedItem="{Binding NewVerKind, Mode=TwoWay}" />
+                        <ComboBox ItemsSource="{Binding VerificationKinds}" SelectedItem="{Binding NewVerKind, Mode=TwoWay}" ItemTemplate="{StaticResource VerKindItemTemplate}" />
                     </controls:FormField>
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldParent}" LabelWidth="150"
                                         Visibility="{Binding IsNewVerDerived, Converter={StaticResource BoolToVis}}">
                         <ComboBox ItemsSource="{Binding VerificationParents}" SelectedItem="{Binding NewVerParent, Mode=TwoWay}" />
                     </controls:FormField>
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldMethod}" LabelWidth="150">
-                        <ComboBox ItemsSource="{Binding VerificationMethods}" SelectedItem="{Binding NewVerMethod, Mode=TwoWay}" />
+                        <ComboBox ItemsSource="{Binding VerificationMethods}" SelectedItem="{Binding NewVerMethod, Mode=TwoWay}" ItemTemplate="{StaticResource VerMethodItemTemplate}" />
                     </controls:FormField>
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldFacility}" LabelWidth="150">
                         <StackPanel>
@@ -3376,7 +3457,7 @@
                     </controls:FormField>
                     <!-- TP / TR no pencerede yok (21.11.2026): madde önce yalnız gereksinimle girilir; plan ve rapor sonra ayrı adımda. Var olan değerler düzenlemede korunur. -->
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldStatus}" LabelWidth="150">
-                        <ComboBox ItemsSource="{Binding VerificationStatuses}" SelectedItem="{Binding NewVerStatus, Mode=TwoWay}" />
+                        <ComboBox ItemsSource="{Binding VerificationStatuses}" SelectedItem="{Binding NewVerStatus, Mode=TwoWay}" ItemTemplate="{StaticResource VerStatusItemTemplate}" />
                     </controls:FormField>
                 </StackPanel>
             </ScrollViewer>

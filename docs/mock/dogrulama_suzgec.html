@@ -1,0 +1,85 @@
+﻿<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Doğrulama süzgeç</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#202020}
+.page{width:1400px;padding:22px 26px 26px;background:#202020;color:#e6e6e6;font-family:"Segoe UI",Arial,sans-serif;font-size:13.5px;display:grid;grid-template-columns:1fr 330px;gap:18px 22px}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin:0 0 9px}
+.cap b{color:#4cc2ff;margin-right:6px}
+.card{background:#2b2b2b;border:1px solid #3a3a3a;border-radius:9px;padding:14px 16px;position:relative}
+.bar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.chip{border:1px solid #3e3e3e;border-radius:16px;padding:4px 12px;display:flex;gap:7px;align-items:center;font-size:13px;color:#cfcfcf}
+.chip.on{border-color:#4cc2ff;background:#333;color:#fff;font-weight:600}
+.bd{background:#3a3a3a;border-radius:9px;padding:0 7px;font-size:11.5px}
+.chip.on .bd{background:#4cc2ff;color:#000}
+.cb{border:1px solid #444;background:#333;border-radius:5px;padding:5px 10px;display:flex;align-items:center;gap:8px;font-size:13px}
+.cb.f{border-color:#4cc2ff}
+.lbl{color:#8a8a8a;font-size:12.5px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+.d0{background:#8a8a8a}.d6{background:#e6e6e6}.d7{background:#f6c46f}.d3{background:#4cc2ff}.d8{background:#4cc2ff}.d1{background:#6ccb5f}.d2{background:#ff99a4}.d9{background:#f6c46f}.d4{background:#f6c46f}.d5{border:1px solid #8a8a8a}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{color:#8a8a8a;font-weight:600;text-align:left;padding:6px 8px;border-bottom:1px solid #3a3a3a}
+td{padding:8px;border-bottom:1px solid #333}
+.n{font-weight:700}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:1px 9px;border-radius:10px}
+.pk{display:inline-flex;align-items:center;gap:6px}
+.drop{position:absolute;background:#2c2c2c;border:1px solid #4a4a4a;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.55);padding:4px;z-index:5;width:240px}
+.opt{padding:6px 10px;border-radius:5px;display:flex;align-items:center;gap:10px}
+.opt.hl{background:#3a3a3a}
+.opt .c{margin-left:auto;color:#8a8a8a;font-size:12px}
+.dlg{background:#2b2b2b;border:1px solid #444;border-radius:9px;padding:16px 18px;position:relative;height:100%}
+.row{display:grid;grid-template-columns:70px 1fr;gap:10px;align-items:center;margin-bottom:10px}
+.in{height:32px;border-radius:5px;background:#333;border:1px solid #3e3e3e;border-bottom:1px solid #8a8a8a;padding:5px 10px;display:flex;align-items:center;gap:8px}
+.note{grid-column:1/3;font-size:12.5px;color:#9a9a9a;line-height:1.7;background:#262626;border:1px solid #333;border-radius:10px;padding:10px 16px}
+.note b{color:#ddd}
+</style></head><body><div class="page">
+<div>
+  <div class="cap"><b>1</b>DOĞRULAMALAR · GRUP ÇİPLERİNİN SAĞINDA DURUM SÜZGECİ VE SIRALAMA</div>
+  <div class="card" style="height:400px">
+    <div class="bar">
+      <span class="chip on">Hepsi <span class="bd">9</span></span>
+      <span class="chip"><i class="dot d3"></i>İşlevsel <span class="bd">4</span></span>
+      <span class="chip"><i class="dot d1"></i>Özellik <span class="bd">2</span></span>
+      <span class="chip"><i class="dot d7"></i>ÇK/EMC <span class="bd">2</span></span>
+      <span class="chip"><i class="dot d0"></i>Diğer <span class="bd">1</span></span>
+      <span style="flex:1"></span>
+      <span class="lbl">Durum</span><span class="cb f"><i class="dot d6"></i>Planlandı <span style="color:#999">⌄</span></span>
+      <span class="lbl">Sırala</span><span class="cb">Sıra no <span style="color:#999">⌄</span></span>
+    </div>
+    <div class="drop" style="right:150px;top:50px">
+      <div class="opt">Tümü<span class="c">9</span></div>
+      <div class="opt"><i class="dot d0"></i>Bekliyor<span class="c">3</span></div>
+      <div class="opt hl"><i class="dot d6"></i>Planlandı<span class="c">2</span></div>
+      <div class="opt"><i class="dot d7"></i>Hazırlık yapılıyor<span class="c">1</span></div>
+      <div class="opt"><i class="dot d3"></i>Yapılıyor<span class="c">0</span></div>
+      <div class="opt"><i class="dot d8"></i>Değerlendiriliyor<span class="c">0</span></div>
+      <div class="opt"><i class="dot d1"></i>Geçti<span class="c">2</span></div>
+      <div class="opt"><i class="dot d2"></i>Kaldı<span class="c">1</span></div>
+      <div class="opt"><i class="dot d9"></i>Şartlı kabul<span class="c">0</span></div>
+      <div class="opt"><i class="dot d4"></i>Tekrarlanacak<span class="c">0</span></div>
+      <div class="opt"><i class="dot d5"></i>Kapsam dışı<span class="c">0</span></div>
+    </div>
+    <table>
+      <tr><th>TG no</th><th>Gereksinim</th><th>Tür</th><th>Yöntem</th><th>Durum</th></tr>
+      <tr><td class="n">TSD-0042</td><td>Besleme konnektörü torku</td><td><span class="pk"><i class="dot d7"></i>Türetilmiş</span></td><td><span class="pk"><i class="dot d1"></i>Muayene</span></td><td><span class="pill"><i class="dot d6"></i>Planlandı</span></td></tr>
+      <tr><td class="n">DGÖ-3</td><td>VSWR</td><td><span class="pk"><i class="dot d3"></i>Temel</span></td><td><span class="pk"><i class="dot d3"></i>Test</span></td><td><span class="pill"><i class="dot d6"></i>Planlandı</span></td></tr>
+    </table>
+  </div>
+</div>
+<div>
+  <div class="cap"><b>2</b>MADDE PENCERESİ · AÇILIR LİSTELERDE RENKLİ NOKTA</div>
+  <div class="dlg">
+    <div class="row"><span class="lbl">Grup</span><span class="in"><i class="dot d3"></i>İşlevsel</span></div>
+    <div class="row"><span class="lbl">Tür</span><span class="in"><i class="dot d3"></i>Temel</span></div>
+    <div class="row"><span class="lbl">Yöntem</span><span class="in"><i class="dot d3"></i>Test</span></div>
+    <div class="row"><span class="lbl">Durum</span><span class="in"><i class="dot d1"></i>Geçti</span></div>
+    <div style="margin-top:14px;font-size:12.5px;color:#9a9a9a;line-height:1.8">
+      <b style="color:#ddd">Yöntem:</b> <i class="dot d3"></i> Test · <i class="dot d1"></i> Muayene · <i class="dot d7"></i> Belge · <i class="dot d6"></i> Gösterim · <i class="dot d0"></i> Diğer<br>
+      <b style="color:#ddd">Tür:</b> <i class="dot d3"></i> Temel · <i class="dot d7"></i> Türetilmiş<br>
+      <b style="color:#ddd">Durum:</b> tablodaki renklerin aynısı
+    </div>
+  </div>
+</div>
+<div class="note"><b>Sırala:</b> Sıra no · TG no · Durum (Kaldı → Bekliyor → … → Geçti) · Başlık. Gruplar yerinde kalır, sıralama grup içinde. Seçim stoklar arasında hatırlanır.
+<b>Durum süzgeci</b> grup çipleriyle birlikte çalışır (ör. ÇK/EMC + Bekliyor). Sayılar o anki grup seçimine göre.</div>
+</div></body></html>

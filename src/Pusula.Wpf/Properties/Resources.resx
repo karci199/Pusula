@@ -2998,4 +2998,22 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Inv_UsePlacePlaceholder" xml:space="preserve">
     <value>Boş bırakılırsa Genel · proje ya da stok için yazın</value>
   </data>
+  <data name="Verify_FilterStatus" xml:space="preserve">
+    <value>Durum</value>
+  </data>
+  <data name="Verify_SortBy" xml:space="preserve">
+    <value>Sırala</value>
+  </data>
+  <data name="Verify_SortNumber" xml:space="preserve">
+    <value>Sıra no</value>
+  </data>
+  <data name="Verify_SortTg" xml:space="preserve">
+    <value>TG no</value>
+  </data>
+  <data name="Verify_SortStatus" xml:space="preserve">
+    <value>Durum</value>
+  </data>
+  <data name="Verify_SortTitle" xml:space="preserve">
+    <value>Başlık</value>
+  </data>
 </root>

@@ -142,6 +142,36 @@ $vm.ConfirmDeleteVerification(); Wait
 $text = [IO.File]::ReadAllText($file)
 Check 'satır kalktı, diğerinin numarası aynı' ($vm.VerificationCount -eq 3 -and $text -notlike '*| 1 | Kazanç*' -and $text -like '*| 2 |  |  | RE102*' -and $text -like '*## Plan*') $text
 
+"--- durum süzgeci ve sıralama"
+Check 'durum süzgeci: Tümü + 10 durum, Tümü 3' (@($vm.VerificationStatusFilters).Count -eq 11 -and $vm.VerificationStatusFilters[0].Count -eq 3 -and $vm.VerificationStatusFilter.IsAll) (@($vm.VerificationStatusFilters | ForEach-Object { $_.Text + ' ' + $_.Count }) -join ', ')
+function ShownIds { @($vm.VerificationGroups | ForEach-Object { $_.Rows } | ForEach-Object { if ($_.Text) { $_.Text } else { $_.SubGroup } }) -join ',' }
+$vm.VerificationStatusFilter = @($vm.VerificationStatusFilters | Where-Object Key -eq 'Planlandı')[0]; Wait
+Check 'Planlandı süzgeci: yalnız S11' ((ShownIds) -eq 'S11') (ShownIds)
+($vm.VerificationFilters | Where-Object { $_.Key -eq 'ÇK/EMC' }).IsChecked = $true; Wait
+Check 'grup + durum birlikte: ÇK/EMC + Planlandı boş; sayılar gruba göre' ($vm.VerificationGroups.Count -eq 0 -and $vm.VerificationStatusFilters[0].Count -eq 1 -and $vm.VerificationStatusFilter.Key -eq 'Planlandı')
+$vm.VerificationFilters[0].IsChecked = $true; Wait
+$vm.VerificationStatusFilter = $vm.VerificationStatusFilters[0]; Wait
+Check 'Tümü: hepsi geri' (@($vm.VerificationGroups | ForEach-Object { $_.Rows }).Count -eq 3) (ShownIds)
+$isl = { (@(($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows) | ForEach-Object { if ($_.Text) { $_.Text } else { $_.SubGroup } }) -join ',' }
+Check 'sıra no: Yan lob, S11' ((& $isl) -eq 'Yan lob seviyesi,S11') (& $isl)
+$vm.VerificationSort = [Pusula.Wpf.Properties.Resources]::Verify_SortStatus; Wait
+Check 'duruma göre: Planlandı önce, Değerlendiriliyor sonra' ((& $isl) -eq 'S11,Yan lob seviyesi') (& $isl)
+$vm.VerificationSort = [Pusula.Wpf.Properties.Resources]::Verify_SortNumber; Wait
+$r0 = @(($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows)[0]
+Check 'tür rengi: türetilmiş 2' ($r0.KindTone -eq 2) ([string]$r0.KindTone)
+$vm.EditVerification($r0); Wait
+for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 }
+function Find-Open($node) { if ($node -eq $null) { return $null }; if ($node.GetType().Name -eq 'ContentDialog' -and $node.IsOpen) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Open ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }
+function Find-Popup($node) { if ($node -is [System.Windows.Controls.Primitives.Popup]) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Popup ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }
+$dlg = Find-Open $win
+if ($dlg) {
+    $pop = Find-Popup $dlg; if ($pop -and $pop.Child) { $dlg = $pop.Child; $sz = New-Object System.Windows.Size($win.ActualWidth, $win.ActualHeight); $dlg.Measure($sz); $dlg.Arrange((New-Object System.Windows.Rect($sz))); $dlg.UpdateLayout(); for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 } }
+    $bmp = New-Object System.Windows.Media.Imaging.RenderTargetBitmap([int]$dlg.ActualWidth, [int]$dlg.ActualHeight, 96, 96, [System.Windows.Media.PixelFormats]::Pbgra32)
+    $bmp.Render($dlg); $enc = New-Object System.Windows.Media.Imaging.PngBitmapEncoder; $enc.Frames.Add([System.Windows.Media.Imaging.BitmapFrame]::Create($bmp))
+    $fs = [IO.File]::Create("$Out\verification-edit.png"); $enc.Save($fs); $fs.Close()
+}
+$vm.IsVerificationDialogOpen = $false; Wait
+Snap $win "$Out\verification-filter.png"
 "--- elle yazılmış dosya: başka satırlara dokunulmaz"
 $other = Join-Path $Data '7000_MILKON\AB-7000-0003'
 $md = Join-Path $other '03_Testler\AB-7000-0003_Test_Gereksinimleri_AA.md'

@@ -3205,6 +3205,24 @@ namespace Pusula.Wpf.Properties
         /// <summary>Ekleme penceresi: kullanım yeri arama kutusunun ipucu.</summary>
         public static string Inv_UsePlacePlaceholder { get { return Get("Inv_UsePlacePlaceholder"); } }
 
+        /// <summary>Doğrulamalar: durum süzgecinin etiketi.</summary>
+        public static string Verify_FilterStatus { get { return Get("Verify_FilterStatus"); } }
+
+        /// <summary>Doğrulamalar: sıralama etiketi.</summary>
+        public static string Verify_SortBy { get { return Get("Verify_SortBy"); } }
+
+        /// <summary>Sıralama: tablodaki # sırası.</summary>
+        public static string Verify_SortNumber { get { return Get("Verify_SortNumber"); } }
+
+        /// <summary>Sıralama: TG no (DGÖ-2, DGÖ-10 sayı sırasıyla).</summary>
+        public static string Verify_SortTg { get { return Get("Verify_SortTg"); } }
+
+        /// <summary>Sıralama: önce Kaldı / Tekrarlanacak, sonda Geçti / Kapsam dışı.</summary>
+        public static string Verify_SortStatus { get { return Get("Verify_SortStatus"); } }
+
+        /// <summary>Sıralama: başlığa göre.</summary>
+        public static string Verify_SortTitle { get { return Get("Verify_SortTitle"); } }
+
         #endregion
     }
 }

@@ -202,6 +202,16 @@ namespace Pusula.Wpf.ViewModels
             get { return Item.Kind; }
         }
 
+        /// <summary>Türün rengi: 1 temel, 2 türetilmiş, 0 boş.</summary>
+        public int KindTone
+        {
+            get
+            {
+                return string.Equals(Item.Kind, Resources.Verify_KindBasic, StringComparison.CurrentCultureIgnoreCase) ? 1
+                    : string.Equals(Item.Kind, Resources.Verify_KindDerived, StringComparison.CurrentCultureIgnoreCase) ? 2 : 0;
+            }
+        }
+
         /// <summary>Türetilmişse bağlı temel madde ("← TG-1"); yoksa boş.</summary>
         public string ParentText
         {
@@ -335,6 +345,43 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Durum türü (bkz. <see cref="KindOf"/>).</summary>
         public int StatusKind { get; }
+    }
+
+    /// <summary>Doğrulamalar sekmesinde durum süzgecinin bir seçeneği: Tümü ya da bir durum, o anki gruptaki sayısıyla.</summary>
+    public sealed class VerificationStatusFilterOption
+    {
+        /// <summary>Seçeneği kurar; <paramref name="key"/> boşsa Tümü.</summary>
+        public VerificationStatusFilterOption(string key, string text, int count)
+        {
+            Key = key;
+            Text = text;
+            Count = count;
+            Kind = key.Length == 0 ? -1 : VerificationRow.KindOf(key);
+        }
+
+        /// <summary>Durum adı; Tümü için boş.</summary>
+        public string Key { get; }
+
+        /// <summary>Görünen ad.</summary>
+        public string Text { get; }
+
+        /// <summary>Bu durumdaki madde sayısı.</summary>
+        public int Count { get; }
+
+        /// <summary>Durum türü (renk için, bkz. <see cref="VerificationRow.KindOf"/>); Tümü için -1.</summary>
+        public int Kind { get; }
+
+        /// <summary>Tümü seçeneği mi.</summary>
+        public bool IsAll
+        {
+            get { return Key.Length == 0; }
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Text;
+        }
     }
 
     /// <summary>Doğrulama satırı açılınca görünen bir deneme: maddeye bağlı Günlük kaydı (tarih, sonuç, başlık, etiketler).</summary>
@@ -1239,6 +1286,7 @@ namespace Pusula.Wpf.ViewModels
                 });
             }
 
+            BuildStatusFilters();
             FillVerificationGroups();
             OnPropertyChanged(nameof(VerificationCount));
             OnPropertyChanged(nameof(StockVerificationText));
@@ -1262,7 +1310,144 @@ namespace Pusula.Wpf.ViewModels
                 other.IsChecked = false;
             }
 
+            BuildStatusFilters();
             FillVerificationGroups();
+        }
+
+        private string verificationStatusFilter = string.Empty;
+        private string verificationSort = string.Empty;
+        private bool buildingStatusFilters;
+
+        /// <summary>Durum süzgeci: Tümü ve her durum, o anki grup seçimindeki sayısıyla.</summary>
+        public ObservableCollection<VerificationStatusFilterOption> VerificationStatusFilters { get; } = new ObservableCollection<VerificationStatusFilterOption>();
+
+        /// <summary>Seçili durum süzgeci; seçilince tablo yalnız o durumdaki maddeleri gösterir (stoklar arasında hatırlanır).</summary>
+        public VerificationStatusFilterOption? VerificationStatusFilter
+        {
+            get { return VerificationStatusFilters.FirstOrDefault(o => string.Equals(o.Key, verificationStatusFilter, StringComparison.CurrentCultureIgnoreCase)); }
+            set
+            {
+                if (value == null || buildingStatusFilters || string.Equals(value.Key, verificationStatusFilter, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return;
+                }
+
+                verificationStatusFilter = value.Key;
+                OnPropertyChanged();
+                FillVerificationGroups();
+            }
+        }
+
+        /// <summary>Sıralama seçenekleri: Sıra no · TG no · Durum · Başlık (grup içinde).</summary>
+        public IList<string> VerificationSorts
+        {
+            get { return new[] { Resources.Verify_SortNumber, Resources.Verify_SortTg, Resources.Verify_SortStatus, Resources.Verify_SortTitle }; }
+        }
+
+        /// <summary>Seçili sıralama (stoklar arasında hatırlanır).</summary>
+        public string VerificationSort
+        {
+            get { return verificationSort.Length == 0 ? Resources.Verify_SortNumber : verificationSort; }
+            set
+            {
+                if (string.IsNullOrEmpty(value) || value == VerificationSort)
+                {
+                    return;
+                }
+
+                verificationSort = value;
+                OnPropertyChanged();
+                FillVerificationGroups();
+            }
+        }
+
+        // Durum süzgeci seçenekleri: sayılar o anki grup seçimine göre; seçili durum korunur.
+        private void BuildStatusFilters()
+        {
+            var inGroup = verificationItems.Where(i => verificationFilter.Length == 0 || SameGroup(i, verificationFilter)).ToList();
+            buildingStatusFilters = true;
+            VerificationStatusFilters.Clear();
+            VerificationStatusFilters.Add(new VerificationStatusFilterOption(string.Empty, Resources.Home_RangeAll, inGroup.Count));
+            foreach (var status in VerificationRow.Statuses)
+            {
+                var kind = VerificationRow.KindOf(status);
+                VerificationStatusFilters.Add(new VerificationStatusFilterOption(status, status, inGroup.Count(i => VerificationRow.KindOf(i.Status) == kind)));
+            }
+
+            buildingStatusFilters = false;
+            OnPropertyChanged(nameof(VerificationStatusFilter));
+        }
+
+        // "DGÖ-2" < "DGÖ-10": rakam dizileri sayı olarak, geri kalanı büyük/küçük harf duyarsız karşılaştırılır.
+        private static int CompareNatural(string a, string b)
+        {
+            int i = 0, j = 0;
+            while (i < a.Length && j < b.Length)
+            {
+                if (char.IsDigit(a[i]) && char.IsDigit(b[j]))
+                {
+                    var si = i;
+                    var sj = j;
+                    while (i < a.Length && char.IsDigit(a[i]))
+                    {
+                        i++;
+                    }
+
+                    while (j < b.Length && char.IsDigit(b[j]))
+                    {
+                        j++;
+                    }
+
+                    var na = a.Substring(si, i - si).TrimStart('0');
+                    var nb = b.Substring(sj, j - sj).TrimStart('0');
+                    var c = na.Length != nb.Length ? na.Length.CompareTo(nb.Length) : string.CompareOrdinal(na, nb);
+                    if (c != 0)
+                    {
+                        return c;
+                    }
+                }
+                else
+                {
+                    var c = string.Compare(a[i].ToString(), b[j].ToString(), StringComparison.CurrentCultureIgnoreCase);
+                    if (c != 0)
+                    {
+                        return c;
+                    }
+
+                    i++;
+                    j++;
+                }
+            }
+
+            return (a.Length - i).CompareTo(b.Length - j);
+        }
+        // Durum sırası (Durum'a göre sıralamada): önce dikkat isteyenler, sonda bitenler.
+        private static int StatusOrder(string status)
+        {
+            var order = new[] { 2, 4, 0, 6, 7, 3, 8, 9, 1, 5 };
+            var index = Array.IndexOf(order, VerificationRow.KindOf(status));
+            return index < 0 ? order.Length : index;
+        }
+
+        private IEnumerable<VerificationItem> SortVerification(IEnumerable<VerificationItem> items)
+        {
+            var sort = VerificationSort;
+            if (sort == Resources.Verify_SortTg)
+            {
+                return items.OrderBy(i => i.TgNo.Length == 0 ? 1 : 0).ThenBy(i => i.TgNo, Comparer<string>.Create(CompareNatural)).ThenBy(i => i.Number);
+            }
+
+            if (sort == Resources.Verify_SortStatus)
+            {
+                return items.OrderBy(i => StatusOrder(i.Status)).ThenBy(i => i.Number);
+            }
+
+            if (sort == Resources.Verify_SortTitle)
+            {
+                return items.OrderBy(i => i.Text.Length > 0 ? i.Text : i.SubGroup, StringComparer.CurrentCultureIgnoreCase).ThenBy(i => i.Number);
+            }
+
+            return items.OrderBy(i => i.Number);
         }
 
         private void FillVerificationGroups()
@@ -1275,7 +1460,8 @@ namespace Pusula.Wpf.ViewModels
                     continue;
                 }
 
-                var rows = verificationItems.Where(i => SameGroup(i, option.Key)).OrderBy(i => i.Number).Select(i => new VerificationRow(i) { SourceLine = SourceLineOf(i), Attempts = AttemptsOf(i) }).ToList();
+                var statusKind = verificationStatusFilter.Length == 0 ? -1 : VerificationRow.KindOf(verificationStatusFilter);
+                var rows = SortVerification(verificationItems.Where(i => SameGroup(i, option.Key) && (statusKind < 0 || VerificationRow.KindOf(i.Status) == statusKind))).Select(i => new VerificationRow(i) { SourceLine = SourceLineOf(i), Attempts = AttemptsOf(i) }).ToList();
                 if (rows.Count > 0)
                 {
                     VerificationGroups.Add(new VerificationGroup(option.Key, Math.Max(0, option.Tone), rows));
