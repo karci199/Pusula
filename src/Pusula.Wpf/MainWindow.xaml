@@ -66,6 +66,37 @@
         <local:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
         <local:PathToImageConverter x:Key="PathToImage" />
 
+        <!-- Kullanım yeri rozeti: Genel gri, Proje sarı, Stok yeşil (soluk zemin, renkli yazı) -->
+        <DataTemplate x:Key="UsePlaceBadgeTemplate">
+            <Border x:Name="Badge" CornerRadius="8" Padding="8,1" MinWidth="48" Background="{DynamicResource SubtleFillColorSecondaryBrush}" VerticalAlignment="Center">
+                <TextBlock x:Name="BadgeText" Text="{Binding Badge}" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsStock}" Value="True">
+                    <Setter TargetName="Badge" Property="Background" Value="{DynamicResource SystemFillColorSuccessBackgroundBrush}" />
+                    <Setter TargetName="BadgeText" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsProject}" Value="True">
+                    <Setter TargetName="Badge" Property="Background" Value="{DynamicResource SystemFillColorCautionBackgroundBrush}" />
+                    <Setter TargetName="BadgeText" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+        <!-- Kullanım yeri listesinde bir satır: rozet · numara · ad · proje -->
+        <DataTemplate x:Key="UsePlaceItemTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource UsePlaceBadgeTemplate}" />
+                <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="{Binding Label}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="2" Margin="10,0,0,0" Text="{Binding Detail}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Grid.Column="3" Margin="10,0,0,0" Text="{Binding Project}" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" />
+            </Grid>
+        </DataTemplate>
         <!-- Stok: bir envanter türünün sekmesi (Jigler, Kablolar …); sekmeler kodda türlerden kurulur -->
         <DataTemplate x:Key="StockInventoryTabTemplate">
             <Grid Margin="0,12,0,0" TextElement.FontWeight="Normal">
@@ -2920,8 +2951,8 @@
                                         </Grid>
                                         <DataTemplate.Triggers>
                                             <DataTrigger Binding="{Binding IsOwner}" Value="True">
-                                                <Setter TargetName="Badge" Property="Background" Value="{DynamicResource SystemFillColorSuccessBrush}" />
-                                                <Setter TargetName="BadgeText" Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                                                <Setter TargetName="Badge" Property="Background" Value="{DynamicResource SystemFillColorSuccessBackgroundBrush}" />
+                                                <Setter TargetName="BadgeText" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsConfirming}" Value="True">
                                                 <Setter TargetName="UnlinkIcon" Property="Visibility" Value="Collapsed" />
@@ -3462,35 +3493,28 @@
                 <controls:FormField Header="{x:Static res:Resources.Inv_UsePlace}" LabelWidth="130" Margin="0,10,0,0"
                                     Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}">
                     <StackPanel>
-                    <ComboBox ItemsSource="{Binding InventoryLevels}" SelectedItem="{Binding NewInventoryLevel, Mode=TwoWay}"
-                              IsTextSearchEnabled="True" TextSearch.TextPath="Label">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Border x:Name="Badge" CornerRadius="8" Padding="7,1" MinWidth="46" Background="{DynamicResource SubtleFillColorSecondaryBrush}" VerticalAlignment="Center">
-                                        <TextBlock x:Name="BadgeText" Text="{Binding Badge}" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
-                                    </Border>
-                                    <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="{Binding Label}" VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="2" Margin="10,0,0,0" Text="{Binding Detail}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
-                                               Foreground="{DynamicResource TextSecondaryBrush}" />
-                                </Grid>
-                                <DataTemplate.Triggers>
-                                    <DataTrigger Binding="{Binding IsStock}" Value="True">
-                                        <Setter TargetName="Badge" Property="Background" Value="{DynamicResource SystemFillColorSuccessBrush}" /><Setter TargetName="BadgeText" Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsProject}" Value="True">
-                                        <Setter TargetName="Badge" Property="Background" Value="{DynamicResource SystemFillColorCautionBrush}" /><Setter TargetName="BadgeText" Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
-                                    </DataTrigger>
-                                </DataTemplate.Triggers>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                    <TextBlock Margin="0,4,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" TextWrapping="Wrap" Text="{x:Static res:Resources.Inv_UsePlaceHint}" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <ContentPresenter Margin="0,0,8,0" VerticalAlignment="Center" Content="{Binding NewInventoryLevel}" ContentTemplate="{StaticResource UsePlaceBadgeTemplate}" />
+                        <TextBox x:Name="UsePlaceBox" Grid.Column="1" Text="{Binding UsePlaceText, UpdateSourceTrigger=PropertyChanged}"
+                                 controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Inv_UsePlacePlaceholder}"
+                                 PreviewKeyDown="UsePlaceBox_PreviewKeyDown" LostKeyboardFocus="UsePlaceBox_LostKeyboardFocus" />
+                        <Popup x:Name="UsePlacePopup" Grid.Column="1" PlacementTarget="{Binding ElementName=UsePlaceBox}" Placement="Bottom" VerticalOffset="2"
+                               IsOpen="{Binding IsUsePlaceOpen}" StaysOpen="True" AllowsTransparency="True"
+                               Width="{Binding ActualWidth, ElementName=UsePlaceBox}">
+                            <Border Padding="4" CornerRadius="{DynamicResource OverlayCornerRadius}" BorderThickness="1"
+                                    Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+                                <ListBox x:Name="UsePlaceList" ItemsSource="{Binding UsePlaceMatches}" ItemTemplate="{StaticResource UsePlaceItemTemplate}"
+                                         MaxHeight="260" BorderThickness="0" Background="Transparent" Focusable="False"
+                                         PreviewMouseLeftButtonUp="UsePlaceList_PreviewMouseLeftButtonUp" />
+                            </Border>
+                        </Popup>
+                    </Grid>
+                    <TextBlock Margin="0,4,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" Text="{Binding UsePlaceSummary}" />
+                    <TextBlock Margin="0,2,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" TextWrapping="Wrap" Text="{x:Static res:Resources.Inv_UsePlaceHint}" />
                     </StackPanel>
                 </controls:FormField>
                 <controls:FormField Header="{x:Static res:Resources.Col_Status}" LabelWidth="130" Margin="0,10,0,0"

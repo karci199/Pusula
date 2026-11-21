@@ -20,6 +20,21 @@ Check 'kullanım yeri: Genel + projeler + stoklar' ($levels[0].Level -eq 'Genera
 Check 'varsayılan kullanım yeri: seçili stok' ($vm.NewInventoryLevel.Level -eq 'Stock' -and $vm.NewInventoryLevel.Label -eq 'AB-7000-0002') $vm.NewInventoryLevel.Label
 Check 'stok satırında ad' ($vm.NewInventoryLevel.Detail.Length -gt 0) $vm.NewInventoryLevel.Detail
 
+"--- Kullanım yeri arama kutusu"
+Check 'seçili stok kutuda numarasıyla, özet ad · proje' ($vm.UsePlaceText -eq 'AB-7000-0002' -and $vm.UsePlaceSummary -like '*· 7000_MILKON') $vm.UsePlaceSummary
+$vm.UsePlaceText = '7000'
+$m = @($vm.UsePlaceMatches)
+Check 'yazınca: projeler üstte, sonra stoklar' ($vm.IsUsePlaceOpen -and $m[0].Level -eq 'Project' -and @($m | Where-Object Level -eq 'Stock').Count -ge 3 -and ($m | ForEach-Object { [int]($_.Level -eq 'Stock') }) -join '' -match '^0+1+$') (($m | ForEach-Object { $_.Badge + ':' + $_.Label }) -join ', ')
+$vm.UsePlaceText = 'milkon'
+Check 'proje adıyla stoklar da bulunur (AB-0000-… projeye ait olabilir)' (@($vm.UsePlaceMatches | Where-Object { $_.Level -eq 'Stock' -and $_.Project -eq '7000_MILKON' }).Count -ge 3)
+$vm.ChooseUsePlace(@($vm.UsePlaceMatches | Where-Object Label -eq 'AB-7000-0003')[0])
+Check 'listeden seçilir, kutu numarayı gösterir' ($vm.NewInventoryLevel.Label -eq 'AB-7000-0003' -and $vm.UsePlaceText -eq 'AB-7000-0003' -and -not $vm.IsUsePlaceOpen)
+$vm.UsePlaceText = 'zzz'
+$vm.RestoreUsePlaceText()
+Check 'seçilmeyen yazı atılır, yer değişmez' ($vm.NewInventoryLevel.Label -eq 'AB-7000-0003' -and $vm.UsePlaceText -eq 'AB-7000-0003')
+$vm.UsePlaceText = ''
+Check 'boş bırakılırsa Genel' ($vm.NewInventoryLevel.Level -eq 'General' -and $vm.UsePlaceSummary -eq [Pusula.Wpf.Properties.Resources]::Inv_UsePlaceGeneral)
+$vm.ChooseUsePlace(@($vm.InventoryLevels | Where-Object Label -eq 'AB-7000-0002')[0])
 $jig = @($vm.InventoryTypeOptions | Where-Object Key -eq 'jig')[0]
 $names = @($vm.InventoryTypeOptions | ForEach-Object { $_.Name })
 Check 'tür sırası ve adları' (($names[0..4] -join ',') -eq 'Mekanik jig,Kablaj,Yazılım,Cihaz,Diğer') ($names -join ',')

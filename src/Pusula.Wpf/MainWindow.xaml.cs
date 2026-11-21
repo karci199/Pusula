@@ -1126,6 +1126,54 @@ namespace Pusula.Wpf
             }
         }
 
+        // Kullanım yeri arama kutusu: ↓ ↑ listede gezer, Enter seçer (seçili yoksa ilkini), Esc listeyi kapatır.
+        private void UsePlaceBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            var count = UsePlaceList.Items.Count;
+            if (e.Key == Key.Down || e.Key == Key.Up)
+            {
+                if (count > 0)
+                {
+                    viewModel.IsUsePlaceOpen = true;
+                    var index = UsePlaceList.SelectedIndex + (e.Key == Key.Down ? 1 : -1);
+                    UsePlaceList.SelectedIndex = Math.Max(0, Math.Min(count - 1, index));
+                    UsePlaceList.ScrollIntoView(UsePlaceList.SelectedItem);
+                }
+
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Enter && viewModel.IsUsePlaceOpen && count > 0)
+            {
+                viewModel.ChooseUsePlace((UsePlaceList.SelectedItem ?? UsePlaceList.Items[0]) as ViewModels.LevelOption);
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Escape && viewModel.IsUsePlaceOpen)
+            {
+                viewModel.IsUsePlaceOpen = false;
+                e.Handled = true;
+            }
+        }
+
+        private void UsePlaceBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            // Liste tıklanırken kutu odağı kaybeder; seçim tıklamada yapılır, burada yalnız dışarı çıkılınca yazı geri alınır.
+            if (!UsePlaceList.IsMouseOver)
+            {
+                viewModel.RestoreUsePlaceText();
+            }
+        }
+
+        private void UsePlaceList_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var item = ItemsControl.ContainerFromElement(UsePlaceList, e.OriginalSource as DependencyObject) as ListBoxItem;
+            if (item != null)
+            {
+                viewModel.ChooseUsePlace(item.DataContext as ViewModels.LevelOption);
+                UsePlaceBox.Focus();
+                UsePlaceBox.CaretIndex = UsePlaceBox.Text.Length;
+                e.Handled = true;
+            }
+        }
         // Kayıt sayfası, Kullanan stoklar: "+ Stoka bağla" stok kutusunu açar ve listeyi indirir.
         private void UsingStockLinkToggle_Click(object sender, RoutedEventArgs e)
         {

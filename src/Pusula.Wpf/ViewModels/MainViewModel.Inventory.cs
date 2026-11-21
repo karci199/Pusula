@@ -22,11 +22,18 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Seçeneği açıklamasıyla oluşturur (kullanım yeri listesi: numara + stok adı).</summary>
         public LevelOption(string label, InventoryLevel level, string owner, string detail)
+            : this(label, level, owner, detail, string.Empty)
+        {
+        }
+
+        /// <summary>Stok seçeneğini ait olduğu projeyle oluşturur (stok numarası projeyi göstermeyebilir: AB-0000-…).</summary>
+        public LevelOption(string label, InventoryLevel level, string owner, string detail, string project)
         {
             Label = label;
             Level = level;
             Owner = owner;
             Detail = detail;
+            Project = project;
         }
 
         /// <summary>Görünen metin (stok / proje numarası ya da "Genel"); listede yazarak aramada da bu kullanılır.</summary>
@@ -34,6 +41,24 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Sağda soluk açıklama: stokun adı ya da "bütün projeler".</summary>
         public string Detail { get; }
+
+        /// <summary>Stokun ait olduğu proje klasörünün adı (7000_MILKON); proje ve Genel için boş.</summary>
+        public string Project { get; }
+
+        /// <summary>Seçili yerin özeti: "TAKIM ANTEN BOYNUZ Y · 7000_MILKON".</summary>
+        public string Summary
+        {
+            get { return string.Join(" · ", new[] { Detail, Project }.Where(s => s.Length > 0)); }
+        }
+
+        /// <summary>Yazılan metin bu seçeneğe uyuyor mu (numara, ad ya da proje içinde geçiyorsa; büyük/küçük harf ve İ/i duyarsız).</summary>
+        public bool Matches(string text)
+        {
+            var culture = System.Globalization.CultureInfo.GetCultureInfo("tr-TR").CompareInfo;
+            return new[] { Label, Detail, Project }.Any(s => s.Length > 0
+                && (culture.IndexOf(s, text, System.Globalization.CompareOptions.IgnoreCase) >= 0
+                    || s.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0));
+        }
 
         /// <summary>Soldaki küçük rozet: Genel · Proje · Stok.</summary>
         public string Badge
@@ -436,11 +461,116 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Düzey seçenekleri (Genel; seçime göre proje ve stok).</summary>
         public ObservableCollection<LevelOption> InventoryLevels { get; } = new ObservableCollection<LevelOption>();
 
-        /// <summary>Seçili düzey.</summary>
+        /// <summary>Seçili düzey (kullanım yeri). Değişince arama kutusundaki yazı seçilenin numarası olur (Genel'de boş).</summary>
         public LevelOption? NewInventoryLevel
         {
             get { return newInventoryLevel; }
-            set { SetProperty(ref newInventoryLevel, value); }
+            set
+            {
+                if (SetProperty(ref newInventoryLevel, value))
+                {
+                    SetUsePlaceTextQuietly(value == null || value.Level == InventoryLevel.General ? string.Empty : value.Label);
+                    OnPropertyChanged(nameof(UsePlaceSummary));
+                }
+            }
+        }
+
+        private string usePlaceText = string.Empty;
+        private bool isUsePlaceOpen;
+
+        /// <summary>
+        /// Kullanım yeri arama kutusu. Boşsa yer Genel olur; yazınca uyan projeler (her zaman üstte) ve stoklar listelenir
+        /// (numara, ad ya da stokun projesi içinde geçenler). Seçim listeden yapılır.
+        /// </summary>
+        public string UsePlaceText
+        {
+            get { return usePlaceText; }
+            set
+            {
+                if (!SetProperty(ref usePlaceText, value ?? string.Empty))
+                {
+                    return;
+                }
+
+                var text = usePlaceText.Trim();
+                UsePlaceMatches.Clear();
+                if (text.Length == 0)
+                {
+                    var general = InventoryLevels.FirstOrDefault(o => o.Level == InventoryLevel.General);
+                    if (!ReferenceEquals(newInventoryLevel, general))
+                    {
+                        newInventoryLevel = general;
+                        OnPropertyChanged(nameof(NewInventoryLevel));
+                        OnPropertyChanged(nameof(UsePlaceSummary));
+                    }
+
+                    IsUsePlaceOpen = false;
+                    return;
+                }
+
+                foreach (var option in InventoryLevels.Where(o => o.Level == InventoryLevel.Project && o.Matches(text))
+                    .Concat(InventoryLevels.Where(o => o.Level == InventoryLevel.Stock && o.Matches(text))).Take(40))
+                {
+                    UsePlaceMatches.Add(option);
+                }
+
+                IsUsePlaceOpen = UsePlaceMatches.Count > 0;
+            }
+        }
+
+        /// <summary>Arama kutusunun altındaki liste: önce projeler, sonra stoklar.</summary>
+        public ObservableCollection<LevelOption> UsePlaceMatches { get; } = new ObservableCollection<LevelOption>();
+
+        /// <summary>Liste açık mı.</summary>
+        public bool IsUsePlaceOpen
+        {
+            get { return isUsePlaceOpen; }
+            set { SetProperty(ref isUsePlaceOpen, value); }
+        }
+
+        /// <summary>Seçili yerin özeti (stok adı · proje) ya da Genel açıklaması.</summary>
+        public string UsePlaceSummary
+        {
+            get
+            {
+                if (newInventoryLevel == null)
+                {
+                    return string.Empty;
+                }
+
+                return newInventoryLevel.Level == InventoryLevel.General ? Resources.Inv_UsePlaceGeneral : newInventoryLevel.Summary;
+            }
+        }
+
+        /// <summary>Listeden seçer: yer o olur, liste kapanır.</summary>
+        public void ChooseUsePlace(LevelOption? option)
+        {
+            if (option != null)
+            {
+                newInventoryLevel = null;
+                NewInventoryLevel = option;
+            }
+
+            IsUsePlaceOpen = false;
+        }
+
+        /// <summary>Kutudan çıkılırken listeden seçilmemiş yazı atılır; kutuda yine seçili yerin numarası görünür.</summary>
+        public void RestoreUsePlaceText()
+        {
+            IsUsePlaceOpen = false;
+            if (usePlaceText.Trim().Length == 0)
+            {
+                return;
+            }
+
+            SetUsePlaceTextQuietly(newInventoryLevel == null || newInventoryLevel.Level == InventoryLevel.General ? string.Empty : newInventoryLevel.Label);
+        }
+
+        // Yazıyı süzgeç çalıştırmadan değiştirir (seçim yapılınca kutuda numara görünsün diye).
+        private void SetUsePlaceTextQuietly(string text)
+        {
+            usePlaceText = text;
+            OnPropertyChanged(nameof(UsePlaceText));
         }
 
         /// <summary>Alt tür seçenekleri.</summary>
@@ -733,7 +863,7 @@ namespace Pusula.Wpf.ViewModels
             foreach (var stock in projects.SelectMany(p => p.Children).Where(c => c.Kind == FolderKind.Stock).OrderBy(c => c.Title, StringComparer.CurrentCultureIgnoreCase))
             {
                 var info = JsonFile.TryRead<StockInfo>(TrackingFiles.StockFile(stock.Path));
-                InventoryLevels.Add(new LevelOption(stock.Title, InventoryLevel.Stock, stock.Path, info?.Name ?? string.Empty));
+                InventoryLevels.Add(new LevelOption(stock.Title, InventoryLevel.Stock, stock.Path, info?.Name ?? string.Empty, Path.GetFileName(Path.GetDirectoryName(stock.Path) ?? string.Empty)));
             }
 
             LevelOption? chosen = null;
@@ -748,7 +878,10 @@ namespace Pusula.Wpf.ViewModels
                 chosen = InventoryLevels.FirstOrDefault(o => o.Level == InventoryLevel.Project && string.Equals(o.Owner, projectFolder, StringComparison.OrdinalIgnoreCase));
             }
 
+            newInventoryLevel = null;
             NewInventoryLevel = chosen ?? general;
+            UsePlaceMatches.Clear();
+            IsUsePlaceOpen = false;
         }
 
         /// <summary>Ortak ekleme penceresini açar: tür son seçilen (ilk açılışta listenin ilki), kullanım yeri ağaçtaki seçim.</summary>

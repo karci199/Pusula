@@ -2927,7 +2927,7 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
     <value>Kullanım yeri</value>
   </data>
   <data name="Inv_UsePlaceHint" xml:space="preserve">
-    <value>Liste açıkken numarayı yazınca oraya gider. Klasör buna göre açılır; başka stoklar sonra aracın sayfasından bağlanır.</value>
+    <value>Numara, ad ya da proje yazın; projeler üstte. Klasör buna göre açılır; başka stoklar sonra aracın sayfasından bağlanır.</value>
   </data>
   <data name="Inv_UsePlaceGeneral" xml:space="preserve">
     <value>ortak · bütün projeler</value>
@@ -2994,5 +2994,8 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   </data>
   <data name="UsingStock_None" xml:space="preserve">
     <value>Henüz hiçbir stoka bağlı değil.</value>
+  </data>
+  <data name="Inv_UsePlacePlaceholder" xml:space="preserve">
+    <value>Boş bırakılırsa Genel · proje ya da stok için yazın</value>
   </data>
 </root>

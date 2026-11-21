@@ -3202,6 +3202,9 @@ namespace Pusula.Wpf.Properties
         /// <summary>Kullanan stoklar: boş kart.</summary>
         public static string UsingStock_None { get { return Get("UsingStock_None"); } }
 
+        /// <summary>Ekleme penceresi: kullanım yeri arama kutusunun ipucu.</summary>
+        public static string Inv_UsePlacePlaceholder { get { return Get("Inv_UsePlacePlaceholder"); } }
+
         #endregion
     }
 }
