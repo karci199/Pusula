@@ -347,34 +347,60 @@ namespace Pusula.Wpf.ViewModels
         public int StatusKind { get; }
     }
 
-    /// <summary>Doğrulamalar sekmesinde durum süzgecinin bir seçeneği: Tümü ya da bir durum, o anki gruptaki sayısıyla.</summary>
-    public sealed class VerificationStatusFilterOption
+    /// <summary>Doğrulamalar sekmesinde durum süzgecinin bir seçeneği: bir durum, o anki gruptaki sayısıyla; işaretlenebilir (çoklu seçim).</summary>
+    public sealed class VerificationStatusFilterOption : Pusula.Wpf.Mvvm.ViewModelBase
     {
-        /// <summary>Seçeneği kurar; <paramref name="key"/> boşsa Tümü.</summary>
-        public VerificationStatusFilterOption(string key, string text, int count)
+        private readonly Action<VerificationStatusFilterOption> changed;
+        private bool isChecked;
+
+        /// <summary>Seçeneği kurar; işaret değişince <paramref name="changed"/> çağrılır.</summary>
+        public VerificationStatusFilterOption(string key, int count, bool isChecked, Action<VerificationStatusFilterOption> changed)
         {
             Key = key;
-            Text = text;
             Count = count;
-            Kind = key.Length == 0 ? -1 : VerificationRow.KindOf(key);
+            Kind = VerificationRow.KindOf(key);
+            this.isChecked = isChecked;
+            this.changed = changed;
         }
 
-        /// <summary>Durum adı; Tümü için boş.</summary>
+        /// <summary>Durum adı.</summary>
         public string Key { get; }
 
-        /// <summary>Görünen ad.</summary>
-        public string Text { get; }
+        /// <summary>Görünen ad (durum adı).</summary>
+        public string Text
+        {
+            get { return Key; }
+        }
 
-        /// <summary>Bu durumdaki madde sayısı.</summary>
+        /// <summary>Bu durumdaki madde sayısı (o anki grupta).</summary>
         public int Count { get; }
 
-        /// <summary>Durum türü (renk için, bkz. <see cref="VerificationRow.KindOf"/>); Tümü için -1.</summary>
+        /// <summary>Hiç madde yok mu (listede soluk).</summary>
+        public bool IsEmpty
+        {
+            get { return Count == 0; }
+        }
+
+        /// <summary>Durum türü (renk için, bkz. <see cref="VerificationRow.KindOf"/>).</summary>
         public int Kind { get; }
 
-        /// <summary>Tümü seçeneği mi.</summary>
+        /// <summary>Tümü seçeneği mi (artık yok; şablon uyumu için her zaman <c>false</c>).</summary>
         public bool IsAll
         {
-            get { return Key.Length == 0; }
+            get { return false; }
+        }
+
+        /// <summary>İşaretli mi; değişince tablo yeniden süzülür.</summary>
+        public bool IsChecked
+        {
+            get { return isChecked; }
+            set
+            {
+                if (SetProperty(ref isChecked, value))
+                {
+                    changed(this);
+                }
+            }
         }
 
         /// <inheritdoc />
@@ -383,7 +409,6 @@ namespace Pusula.Wpf.ViewModels
             return Text;
         }
     }
-
     /// <summary>Doğrulama satırı açılınca görünen bir deneme: maddeye bağlı Günlük kaydı (tarih, sonuç, başlık, etiketler).</summary>
     public sealed class VerificationAttempt
     {
@@ -1314,30 +1339,67 @@ namespace Pusula.Wpf.ViewModels
             FillVerificationGroups();
         }
 
-        private string verificationStatusFilter = string.Empty;
+        private readonly HashSet<string> verificationStatusFilter = new HashSet<string>(StringComparer.CurrentCultureIgnoreCase);
         private string verificationSort = string.Empty;
-        private bool buildingStatusFilters;
 
-        /// <summary>Durum süzgeci: Tümü ve her durum, o anki grup seçimindeki sayısıyla.</summary>
+        /// <summary>Durum süzgeci (çoklu seçim): her durum, o anki grup seçimindeki sayısıyla. Hiçbiri işaretli değilse hepsi görünür.</summary>
         public ObservableCollection<VerificationStatusFilterOption> VerificationStatusFilters { get; } = new ObservableCollection<VerificationStatusFilterOption>();
 
-        /// <summary>Seçili durum süzgeci; seçilince tablo yalnız o durumdaki maddeleri gösterir (stoklar arasında hatırlanır).</summary>
-        public VerificationStatusFilterOption? VerificationStatusFilter
+        /// <summary>Durum kutusunun yazısı: "Hepsi", tek durumun adı ya da "2 durum" (stoklar arasında seçim hatırlanır).</summary>
+        public string VerificationStatusFilterText
         {
-            get { return VerificationStatusFilters.FirstOrDefault(o => string.Equals(o.Key, verificationStatusFilter, StringComparison.CurrentCultureIgnoreCase)); }
-            set
+            get
             {
-                if (value == null || buildingStatusFilters || string.Equals(value.Key, verificationStatusFilter, StringComparison.CurrentCultureIgnoreCase))
+                if (verificationStatusFilter.Count == 0)
                 {
-                    return;
+                    return Resources.Home_RangeAll;
                 }
 
-                verificationStatusFilter = value.Key;
-                OnPropertyChanged();
-                FillVerificationGroups();
+                return verificationStatusFilter.Count == 1
+                    ? verificationStatusFilter.First()
+                    : string.Format(CultureInfo.CurrentCulture, Resources.Verify_FilterStatusCount, verificationStatusFilter.Count);
             }
         }
 
+        /// <summary>Durum süzgecinde seçim var mı (kutu vurgulu, Temizle görünür).</summary>
+        public bool HasVerificationStatusFilter
+        {
+            get { return verificationStatusFilter.Count > 0; }
+        }
+
+        /// <summary>Görünen madde sayısı: "3 / 9 madde".</summary>
+        public string VerificationShownText
+        {
+            get
+            {
+                var shown = VerificationGroups.Sum(g => g.Rows.Count);
+                return string.Format(CultureInfo.CurrentCulture, Resources.Verify_Shown, shown, verificationItems.Count);
+            }
+        }
+
+        /// <summary>Durum süzgecini temizler (hepsi görünür).</summary>
+        public void ClearVerificationStatusFilter()
+        {
+            verificationStatusFilter.Clear();
+            BuildStatusFilters();
+            FillVerificationGroups();
+        }
+
+        private void OnStatusFilterChanged(VerificationStatusFilterOption option)
+        {
+            if (option.IsChecked)
+            {
+                verificationStatusFilter.Add(option.Key);
+            }
+            else
+            {
+                verificationStatusFilter.Remove(option.Key);
+            }
+
+            OnPropertyChanged(nameof(VerificationStatusFilterText));
+            OnPropertyChanged(nameof(HasVerificationStatusFilter));
+            FillVerificationGroups();
+        }
         /// <summary>Sıralama seçenekleri: Sıra no · TG no · Durum · Başlık (grup içinde).</summary>
         public IList<string> VerificationSorts
         {
@@ -1361,23 +1423,20 @@ namespace Pusula.Wpf.ViewModels
             }
         }
 
-        // Durum süzgeci seçenekleri: sayılar o anki grup seçimine göre; seçili durum korunur.
+        // Durum süzgeci seçenekleri: sayılar o anki grup seçimine göre; işaretler korunur.
         private void BuildStatusFilters()
         {
             var inGroup = verificationItems.Where(i => verificationFilter.Length == 0 || SameGroup(i, verificationFilter)).ToList();
-            buildingStatusFilters = true;
             VerificationStatusFilters.Clear();
-            VerificationStatusFilters.Add(new VerificationStatusFilterOption(string.Empty, Resources.Home_RangeAll, inGroup.Count));
             foreach (var status in VerificationRow.Statuses)
             {
                 var kind = VerificationRow.KindOf(status);
-                VerificationStatusFilters.Add(new VerificationStatusFilterOption(status, status, inGroup.Count(i => VerificationRow.KindOf(i.Status) == kind)));
+                VerificationStatusFilters.Add(new VerificationStatusFilterOption(status, inGroup.Count(i => VerificationRow.KindOf(i.Status) == kind), verificationStatusFilter.Contains(status), OnStatusFilterChanged));
             }
 
-            buildingStatusFilters = false;
-            OnPropertyChanged(nameof(VerificationStatusFilter));
+            OnPropertyChanged(nameof(VerificationStatusFilterText));
+            OnPropertyChanged(nameof(HasVerificationStatusFilter));
         }
-
         // "DGÖ-2" < "DGÖ-10": rakam dizileri sayı olarak, geri kalanı büyük/küçük harf duyarsız karşılaştırılır.
         private static int CompareNatural(string a, string b)
         {
@@ -1460,13 +1519,15 @@ namespace Pusula.Wpf.ViewModels
                     continue;
                 }
 
-                var statusKind = verificationStatusFilter.Length == 0 ? -1 : VerificationRow.KindOf(verificationStatusFilter);
-                var rows = SortVerification(verificationItems.Where(i => SameGroup(i, option.Key) && (statusKind < 0 || VerificationRow.KindOf(i.Status) == statusKind))).Select(i => new VerificationRow(i) { SourceLine = SourceLineOf(i), Attempts = AttemptsOf(i) }).ToList();
+                var kinds = new HashSet<int>(verificationStatusFilter.Select(VerificationRow.KindOf));
+                var rows = SortVerification(verificationItems.Where(i => SameGroup(i, option.Key) && (kinds.Count == 0 || kinds.Contains(VerificationRow.KindOf(i.Status))))).Select(i => new VerificationRow(i) { SourceLine = SourceLineOf(i), Attempts = AttemptsOf(i) }).ToList();
                 if (rows.Count > 0)
                 {
                     VerificationGroups.Add(new VerificationGroup(option.Key, Math.Max(0, option.Tone), rows));
                 }
             }
+
+            OnPropertyChanged(nameof(VerificationShownText));
         }
 
         // Maddeye bağlı ölçüm kayıtları (Günlük'te madde: anahtarı), yeniden eskiye.

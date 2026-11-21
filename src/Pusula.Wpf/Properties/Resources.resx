@@ -3016,4 +3016,13 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Verify_SortTitle" xml:space="preserve">
     <value>Başlık</value>
   </data>
+  <data name="Verify_FilterStatusCount" xml:space="preserve">
+    <value>{0} durum</value>
+  </data>
+  <data name="Verify_Shown" xml:space="preserve">
+    <value>{0} / {1} madde</value>
+  </data>
+  <data name="Verify_FilterClear" xml:space="preserve">
+    <value>Temizle</value>
+  </data>
 </root>

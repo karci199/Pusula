@@ -2467,15 +2467,50 @@
                                     </StackPanel>
                                 </Grid>
 
-                                <!-- Durum süzgeci ve sıralama (çiplerin altında, solda) -->
-                                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
-                                    <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_FilterStatus}" />
-                                    <ComboBox Width="220" ItemsSource="{Binding VerificationStatusFilters}" SelectedItem="{Binding VerificationStatusFilter, Mode=TwoWay}"
-                                              ItemTemplate="{StaticResource VerStatusFilterTemplate}" />
-                                    <TextBlock Margin="20,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_SortBy}" />
-                                    <ComboBox Width="140" ItemsSource="{Binding VerificationSorts}" SelectedItem="{Binding VerificationSort, Mode=TwoWay}" />
-                                </StackPanel>
-
+                                <!-- Durum süzgeci (çoklu seçimli açılır kutu) ve sıralama; sağda kaç madde göründüğü -->
+                                <Grid Grid.Row="1" Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_FilterStatus}" />
+                                        <ToggleButton x:Name="StatusFilterButton" Width="200" Padding="11,5" HorizontalContentAlignment="Stretch">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock x:Name="StatusFilterText" Text="{Binding VerificationStatusFilterText}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                                <local:AppIcon Grid.Column="1" Margin="8,0,0,0" Glyph="{x:Static local:AppIcons.ChevronDown}" FontSize="10" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                            </Grid>
+                                        </ToggleButton>
+                                        <Popup PlacementTarget="{Binding ElementName=StatusFilterButton}" Placement="Bottom" VerticalOffset="4" StaysOpen="False" AllowsTransparency="True"
+                                               IsOpen="{Binding IsChecked, ElementName=StatusFilterButton, Mode=TwoWay}">
+                                            <Border Padding="6" MinWidth="240" CornerRadius="{DynamicResource OverlayCornerRadius}" BorderThickness="1"
+                                                    Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+                                                <StackPanel>
+                                                    <Button Margin="2,0,2,4" Padding="8,3" HorizontalAlignment="Left" Click="VerStatusClear_Click"
+                                                            Content="{x:Static res:Resources.Verify_FilterClear}" IsEnabled="{Binding HasVerificationStatusFilter}" />
+                                                    <ItemsControl ItemsSource="{Binding VerificationStatusFilters}" Focusable="False">
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <CheckBox x:Name="Box" Margin="4,3" IsChecked="{Binding IsChecked, Mode=TwoWay}" Content="{Binding}"
+                                                                          ContentTemplate="{StaticResource VerStatusFilterTemplate}" />
+                                                                <DataTemplate.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsEmpty}" Value="True"><Setter TargetName="Box" Property="Opacity" Value="0.45" /></DataTrigger>
+                                                                </DataTemplate.Triggers>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </StackPanel>
+                                            </Border>
+                                        </Popup>
+                                        <TextBlock Margin="20,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_SortBy}" />
+                                        <ComboBox Width="140" ItemsSource="{Binding VerificationSorts}" SelectedItem="{Binding VerificationSort, Mode=TwoWay}" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding VerificationShownText}" />
+                                </Grid>
                                 <!-- Tablo kartı -->
                                 <Border Grid.Row="2" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                         Background="{DynamicResource LayerBrush}" Padding="16,8,8,10">

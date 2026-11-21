@@ -1126,6 +1126,12 @@ namespace Pusula.Wpf
             }
         }
 
+        // Doğrulamalar, durum süzgeci: Temizle bütün işaretleri kaldırır (hepsi görünür).
+        private void VerStatusClear_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.ClearVerificationStatusFilter();
+        }
+
         // Kullanım yeri arama kutusu: ↓ ↑ listede gezer, Enter seçer (seçili yoksa ilkini), Esc listeyi kapatır.
         private void UsePlaceBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {

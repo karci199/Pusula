@@ -142,16 +142,18 @@ $vm.ConfirmDeleteVerification(); Wait
 $text = [IO.File]::ReadAllText($file)
 Check 'satır kalktı, diğerinin numarası aynı' ($vm.VerificationCount -eq 3 -and $text -notlike '*| 1 | Kazanç*' -and $text -like '*| 2 |  |  | RE102*' -and $text -like '*## Plan*') $text
 
-"--- durum süzgeci ve sıralama"
-Check 'durum süzgeci: Tümü + 10 durum, Tümü 3' (@($vm.VerificationStatusFilters).Count -eq 11 -and $vm.VerificationStatusFilters[0].Count -eq 3 -and $vm.VerificationStatusFilter.IsAll) (@($vm.VerificationStatusFilters | ForEach-Object { $_.Text + ' ' + $_.Count }) -join ', ')
+"--- durum süzgeci (çoklu seçim) ve sıralama"
+Check 'durum süzgeci: 10 durum, seçim yok = Hepsi' (@($vm.VerificationStatusFilters).Count -eq 10 -and $vm.VerificationStatusFilterText -eq [Pusula.Wpf.Properties.Resources]::Home_RangeAll -and $vm.VerificationShownText -eq '3 / 3 madde') ($vm.VerificationStatusFilterText + ' | ' + $vm.VerificationShownText)
 function ShownIds { @($vm.VerificationGroups | ForEach-Object { $_.Rows } | ForEach-Object { if ($_.Text) { $_.Text } else { $_.SubGroup } }) -join ',' }
-$vm.VerificationStatusFilter = @($vm.VerificationStatusFilters | Where-Object Key -eq 'Planlandı')[0]; Wait
-Check 'Planlandı süzgeci: yalnız S11' ((ShownIds) -eq 'S11') (ShownIds)
+(@($vm.VerificationStatusFilters | Where-Object Key -eq 'Planlandı')[0]).IsChecked = $true; Wait
+Check 'Planlandı: yalnız S11, kutuda adı' ((ShownIds) -eq 'S11' -and $vm.VerificationStatusFilterText -eq 'Planlandı' -and $vm.VerificationShownText -eq '1 / 3 madde') ((ShownIds) + ' | ' + $vm.VerificationStatusFilterText)
+(@($vm.VerificationStatusFilters | Where-Object Key -eq 'Geçti')[0]).IsChecked = $true; Wait
+Check 'Planlandı + Geçti: iki madde, kutuda "2 durum"' (@($vm.VerificationGroups | ForEach-Object { $_.Rows }).Count -eq 2 -and $vm.VerificationStatusFilterText -eq '2 durum') ((ShownIds) + ' | ' + $vm.VerificationStatusFilterText)
 ($vm.VerificationFilters | Where-Object { $_.Key -eq 'ÇK/EMC' }).IsChecked = $true; Wait
-Check 'grup + durum birlikte: ÇK/EMC + Planlandı boş; sayılar gruba göre' ($vm.VerificationGroups.Count -eq 0 -and $vm.VerificationStatusFilters[0].Count -eq 1 -and $vm.VerificationStatusFilter.Key -eq 'Planlandı')
+Check 'grup + durum birlikte; işaretler korunur, sayılar gruba göre' ((ShownIds) -eq 'RE102 | CE102 sınır içinde' -and @($vm.VerificationStatusFilters | Where-Object IsChecked).Count -eq 2 -and (@($vm.VerificationStatusFilters | Where-Object Key -eq 'Planlandı')[0]).Count -eq 0) (ShownIds)
 $vm.VerificationFilters[0].IsChecked = $true; Wait
-$vm.VerificationStatusFilter = $vm.VerificationStatusFilters[0]; Wait
-Check 'Tümü: hepsi geri' (@($vm.VerificationGroups | ForEach-Object { $_.Rows }).Count -eq 3) (ShownIds)
+$vm.ClearVerificationStatusFilter(); Wait
+Check 'Temizle: hepsi geri' (@($vm.VerificationGroups | ForEach-Object { $_.Rows }).Count -eq 3 -and -not $vm.HasVerificationStatusFilter) (ShownIds)
 $isl = { (@(($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows) | ForEach-Object { if ($_.Text) { $_.Text } else { $_.SubGroup } }) -join ',' }
 Check 'sıra no: Yan lob, S11' ((& $isl) -eq 'Yan lob seviyesi,S11') (& $isl)
 $vm.VerificationSort = [Pusula.Wpf.Properties.Resources]::Verify_SortStatus; Wait

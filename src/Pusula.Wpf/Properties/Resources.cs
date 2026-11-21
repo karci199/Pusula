@@ -3223,6 +3223,15 @@ namespace Pusula.Wpf.Properties
         /// <summary>Sıralama: başlığa göre.</summary>
         public static string Verify_SortTitle { get { return Get("Verify_SortTitle"); } }
 
+        /// <summary>Durum süzgeci kutusu: birden çok durum seçiliyken; {0} sayı.</summary>
+        public static string Verify_FilterStatusCount { get { return Get("Verify_FilterStatusCount"); } }
+
+        /// <summary>Doğrulamalar: görünen / toplam madde.</summary>
+        public static string Verify_Shown { get { return Get("Verify_Shown"); } }
+
+        /// <summary>Durum süzgeci: bütün işaretleri kaldırır.</summary>
+        public static string Verify_FilterClear { get { return Get("Verify_FilterClear"); } }
+
         #endregion
     }
 }

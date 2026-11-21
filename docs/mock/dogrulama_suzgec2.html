@@ -1,0 +1,89 @@
+﻿<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Doğrulama süzgeç 2</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#202020}
+.page{width:1500px;padding:22px 26px 26px;background:#202020;color:#e6e6e6;font-family:"Segoe UI",Arial,sans-serif;font-size:13.5px}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin:0 0 9px}
+.cap b{color:#4cc2ff;margin-right:6px}
+.card{background:#262626;border:1px solid #333;border-radius:10px;padding:14px 16px}
+.tb{display:flex;align-items:center;gap:10px}
+.lbl{color:#8a8a8a;font-size:12px;width:44px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid #3e3e3e;border-radius:15px;padding:3px 11px;display:flex;gap:7px;align-items:center;font-size:12.8px;color:#cfcfcf;background:#2b2b2b}
+.chip.on{border-color:#4cc2ff;background:#1d3348;color:#fff;font-weight:600}
+.chip.zero{opacity:.38}
+.chip .c{color:#8a8a8a;font-size:11.5px}
+.chip.on .c{color:#8fd0ff}
+.ck{width:13px;height:13px;border-radius:3px;border:1px solid #777;display:inline-flex;align-items:center;justify-content:center;font-size:9px}
+.chip.on .ck{background:#4cc2ff;border-color:#4cc2ff;color:#000}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex:none}
+.d0{background:#8a8a8a}.d6{background:#e6e6e6}.d7{background:#f6c46f}.d3{background:#4cc2ff}.d8{background:#4cc2ff}.d1{background:#6ccb5f}.d2{background:#ff99a4}.d9{background:#f6c46f}.d4{background:#f6c46f}.d5{border:1px solid #8a8a8a}
+.sp{flex:1}
+.btn{border:1px solid #444;background:#333;border-radius:5px;padding:5px 12px;font-size:13px}
+.btn.p{background:#4cc2ff;color:#000;border-color:#4cc2ff}
+.lnk{color:#4cc2ff;font-size:12.5px}
+.sort{display:flex;border:1px solid #3e3e3e;border-radius:6px;overflow:hidden}
+.sort span{padding:4px 11px;font-size:12.5px;color:#cfcfcf;border-left:1px solid #3e3e3e}
+.sort span:first-child{border-left:0}
+.sort span.on{background:#3d3d3d;color:#fff;font-weight:600}
+.div{height:1px;background:#333;margin:10px 0}
+.sum{color:#9a9a9a;font-size:12.5px;margin-top:10px}
+.sum b{color:#e6e6e6}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
+th{color:#8a8a8a;font-weight:600;text-align:left;padding:6px 8px;border-bottom:1px solid #3a3a3a}
+td{padding:9px 8px;border-bottom:1px solid #333}
+.n{font-weight:700}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:1px 9px;border-radius:10px;background:#2f3a44}
+.note{margin-top:14px;font-size:12.5px;color:#9a9a9a;line-height:1.7;background:#262626;border:1px solid #333;border-radius:10px;padding:10px 16px}
+.note b{color:#ddd}
+</style></head><body><div class="page">
+<div class="cap"><b>✓</b>DOĞRULAMALAR · SÜZGEÇ ÇUBUĞU (GRUP TEK SEÇİM, DURUM ÇOKLU SEÇİM, SIRALAMA DÜĞMELERİ)</div>
+<div class="card">
+  <div class="tb">
+    <span class="lbl">Grup</span>
+    <div class="seg">
+      <span class="chip on">Hepsi <span class="c">9</span></span>
+      <span class="chip"><i class="dot d3"></i>İşlevsel <span class="c">4</span></span>
+      <span class="chip"><i class="dot d1"></i>Özellik <span class="c">2</span></span>
+      <span class="chip"><i class="dot d7"></i>ÇK/EMC <span class="c">2</span></span>
+      <span class="chip"><i class="dot d0"></i>Diğer <span class="c">1</span></span>
+    </div>
+    <span class="sp"></span>
+    <span class="btn">🗎 Dosyayı aç</span><span class="btn p">＋ Madde</span>
+  </div>
+  <div class="div"></div>
+  <div class="tb">
+    <span class="lbl">Durum</span>
+    <div class="seg">
+      <span class="chip"><span class="ck"></span><i class="dot d0"></i>Bekliyor <span class="c">3</span></span>
+      <span class="chip on"><span class="ck">✓</span><i class="dot d6"></i>Planlandı <span class="c">2</span></span>
+      <span class="chip on"><span class="ck">✓</span><i class="dot d7"></i>Hazırlık yapılıyor <span class="c">1</span></span>
+      <span class="chip zero"><span class="ck"></span><i class="dot d3"></i>Yapılıyor <span class="c">0</span></span>
+      <span class="chip zero"><span class="ck"></span><i class="dot d8"></i>Değerlendiriliyor <span class="c">0</span></span>
+      <span class="chip"><span class="ck"></span><i class="dot d1"></i>Geçti <span class="c">2</span></span>
+      <span class="chip"><span class="ck"></span><i class="dot d2"></i>Kaldı <span class="c">1</span></span>
+      <span class="chip zero"><span class="ck"></span><i class="dot d9"></i>Şartlı kabul <span class="c">0</span></span>
+      <span class="chip zero"><span class="ck"></span><i class="dot d4"></i>Tekrarlanacak <span class="c">0</span></span>
+      <span class="chip zero"><span class="ck"></span><i class="dot d5"></i>Kapsam dışı <span class="c">0</span></span>
+    </div>
+    <span class="sp"></span>
+    <span class="lnk">Temizle</span>
+  </div>
+  <div class="div"></div>
+  <div class="tb">
+    <span class="lbl">Sırala</span>
+    <div class="sort"><span class="on">Sıra no</span><span>TG no</span><span>Durum</span><span>Başlık</span></div>
+    <span class="sp"></span>
+    <span class="sum"><b>3</b> / 9 madde gösteriliyor · Planlandı, Hazırlık yapılıyor</span>
+  </div>
+  <table>
+    <tr><th>TG no</th><th>Gereksinim</th><th>Tür</th><th>Yöntem</th><th>Test planı</th><th>Test raporu</th><th>Durum</th></tr>
+    <tr><td class="n">TSD-0042</td><td>Besleme konnektörü torku · 4 Nm</td><td><i class="dot d7"></i> Türetilmiş ← DGÖ-2</td><td>Muayene</td><td>4.4</td><td></td><td><span class="pill"><i class="dot d6"></i>Planlandı</span></td></tr>
+    <tr><td class="n">DGÖ-3</td><td>VSWR · ≤ 1,5:1</td><td><i class="dot d3"></i> Temel</td><td>Test</td><td>4.3</td><td></td><td><span class="pill"><i class="dot d6"></i>Planlandı</span></td></tr>
+    <tr><td class="n">DGÖ-7</td><td>Işıma emisyonu (RE102)</td><td><i class="dot d3"></i> Temel</td><td>Test</td><td>4.8</td><td></td><td><span class="pill"><i class="dot d7"></i>Hazırlık yapılıyor</span></td></tr>
+  </table>
+</div>
+<div class="note"><b>Grup</b> tek seçim (bugünkü gibi). <b>Durum</b> çoklu seçim: hiçbiri seçili değilse hepsi görünür; birkaçı seçilince yalnız onlar. Sayısı 0 olanlar soluk ama tıklanır. <b>Temizle</b> seçimi kaldırır.
+<b>Sırala</b> açılır kutu yerine dört düğme. Sağda kaç maddenin göründüğü yazar. Seçimler stoklar arasında hatırlanır.</div>
+</div></body></html>

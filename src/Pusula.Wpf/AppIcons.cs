@@ -71,5 +71,8 @@
 
         /// <summary>Listeden çıkar (✕).</summary>
         public const string Remove = "\uE711";
+
+        /// <summary>Açılır kutu oku (aşağı).</summary>
+        public const string ChevronDown = "\uE70D";
     }
 }
