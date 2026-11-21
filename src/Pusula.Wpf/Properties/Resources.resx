@@ -2790,4 +2790,25 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Request_AddItem" xml:space="preserve">
     <value>Kalem ekle</value>
   </data>
+  <data name="Revision_Stock" xml:space="preserve">
+    <value>Stok no</value>
+  </data>
+  <data name="Revision_StockHint" xml:space="preserve">
+    <value>Varsayılan bu kayıt; alt parça ya da başka bir stoksa değiştirin.</value>
+  </data>
+  <data name="Revision_New" xml:space="preserve">
+    <value>Yeni rev</value>
+  </data>
+  <data name="Revision_Previous" xml:space="preserve">
+    <value>Önceki: {0}</value>
+  </data>
+  <data name="Revision_First" xml:space="preserve">
+    <value>İlk revizyon kaydı (önceki rev yok).</value>
+  </data>
+  <data name="Revision_ChangeNo" xml:space="preserve">
+    <value>Değişiklik no</value>
+  </data>
+  <data name="Revision_ChangeNoHint" xml:space="preserve">
+    <value>İsteğe bağlı: ECR/ECO, iş emri.</value>
+  </data>
 </root>

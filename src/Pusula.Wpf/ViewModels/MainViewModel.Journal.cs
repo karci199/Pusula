@@ -78,6 +78,7 @@ namespace Pusula.Wpf.ViewModels
                     OnMeetingChanged();
                     OnDecisionChanged();
                     OnRequestChanged();
+                    OnRevisionChanged();
                 }
             }
         }
@@ -178,7 +179,7 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Ekle düğmesinin yazısı: başlık yazılmadan boş (düğme görünmez).</summary>
         public string JournalPrimaryText
         {
-            get { return journalHeading.Trim().Length > 0 && JournalDate.HasValue && JournalMeasurementReady ? (editing != null ? Resources.Edit_Save : Resources.Journal_Add) : string.Empty; }
+            get { return journalHeading.Trim().Length > 0 && JournalDate.HasValue && JournalMeasurementReady && JournalRevisionReady ? (editing != null ? Resources.Edit_Save : Resources.Journal_Add) : string.Empty; }
         }
 
         private EventNote? editing;
@@ -226,6 +227,7 @@ namespace Pusula.Wpf.ViewModels
             ResetJournalMeeting(note);
             ResetJournalDecision(note);
             ResetJournalRequest(note);
+            ResetJournalRevision(note);
             OnPropertyChanged(nameof(IsJournalEditing));
             OnPropertyChanged(nameof(JournalPrimaryText));
         }
@@ -382,6 +384,7 @@ namespace Pusula.Wpf.ViewModels
             ResetJournalMeeting(null);
             ResetJournalDecision(null);
             ResetJournalRequest(null);
+            ResetJournalRevision(null);
             OnPropertyChanged(nameof(IsJournalEditing));
             IsJournalOpen = true;
             return true;
@@ -423,6 +426,7 @@ namespace Pusula.Wpf.ViewModels
 
             ApplyJournalMeeting(entry);
             ApplyJournalDecision(entry);
+            ApplyJournalRevision(entry);
             if (!ApplyJournalRequest(entry))
             {
                 return false;

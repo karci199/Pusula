@@ -133,12 +133,37 @@ namespace Pusula.Wpf.ViewModels
                 RequestMeta = string.Join(" · ", new[] { journal.RequestNo, string.Join(" ", journal.RequestFrom.Select(p => p.Replace('_', ' '))) }.Where(s => s.Length > 0));
             }
 
+            // Revizyon: kartta "rev A → B" çipi; stok ve değişiklik no açıklamanın altında.
+            if (journal != null && journal.RevisionNew.Length > 0)
+            {
+                RevisionText = "rev " + (journal.RevisionOld.Length > 0 ? journal.RevisionOld + " → " : string.Empty) + journal.RevisionNew;
+                RevisionMeta = string.Join(" · ", new[] { journal.RevisionStock, journal.RevisionChangeNo }.Where(s => s.Length > 0));
+            }
+
             // Ölçüm klasörü: kartta "📁 sayı" düğmesi.
             if (journal != null && journal.Folder.Trim().Length > 0)
             {
                 FolderPath = MeasurementFiles.Resolve(System.IO.Path.GetDirectoryName(journal.Path) ?? string.Empty, journal.Folder);
                 FileCount = MeasurementFiles.CountFiles(FolderPath);
             }
+        }
+
+        /// <summary>Revizyon çipi ("rev A → B"); revizyon değilse boş.</summary>
+        public string RevisionText { get; } = string.Empty;
+
+        /// <summary>Revizyon çipi görünür mü.</summary>
+        public bool HasRevision
+        {
+            get { return RevisionText.Length > 0; }
+        }
+
+        /// <summary>Revizyonun stoku ve değişiklik no ("AB-7000-0001 · ECO-12").</summary>
+        public string RevisionMeta { get; } = string.Empty;
+
+        /// <summary>Revizyon bilgisi var mı.</summary>
+        public bool HasRevisionMeta
+        {
+            get { return RevisionMeta.Length > 0; }
         }
 
         /// <summary>Talep türü ("Malzeme"); talep değilse boş.</summary>
@@ -450,6 +475,7 @@ namespace Pusula.Wpf.ViewModels
                     OnMeetingChanged();
                     OnDecisionChanged();
                     OnRequestChanged();
+                    OnRevisionChanged();
                 }
             }
         }

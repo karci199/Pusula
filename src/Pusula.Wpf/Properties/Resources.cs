@@ -2371,6 +2371,27 @@ namespace Pusula.Wpf.Properties
         /// <summary>Seçim listesinde boş seçenek.</summary>
         public static string Verify_None { get { return Get("Verify_None"); } }
 
+        /// <summary>Revizyon: stok no alanı.</summary>
+        public static string Revision_Stock { get { return Get("Revision_Stock"); } }
+
+        /// <summary>Stok no açıklaması.</summary>
+        public static string Revision_StockHint { get { return Get("Revision_StockHint"); } }
+
+        /// <summary>Revizyon: yeni rev alanı.</summary>
+        public static string Revision_New { get { return Get("Revision_New"); } }
+
+        /// <summary>Önceki revizyon bilgisi.</summary>
+        public static string Revision_Previous { get { return Get("Revision_Previous"); } }
+
+        /// <summary>Önceki revizyon yoksa.</summary>
+        public static string Revision_First { get { return Get("Revision_First"); } }
+
+        /// <summary>Revizyon: değişiklik no alanı.</summary>
+        public static string Revision_ChangeNo { get { return Get("Revision_ChangeNo"); } }
+
+        /// <summary>Değişiklik no açıklaması.</summary>
+        public static string Revision_ChangeNoHint { get { return Get("Revision_ChangeNoHint"); } }
+
         /// <summary>Malzeme talebinde kalem ekleme düğmesi.</summary>
         public static string Request_AddItem { get { return Get("Request_AddItem"); } }
 

@@ -83,6 +83,18 @@ namespace Pusula.Core.Notes
 
         /// <summary>İstenenin serbest anlatımı (test altyapı, test destek); notta <c>#### İstenen</c> altında.</summary>
         public string RequestDetail { get; set; } = string.Empty;
+
+        /// <summary>Revizyona giren stok numarası; boşsa revizyon değil.</summary>
+        public string RevisionStock { get; set; } = string.Empty;
+
+        /// <summary>Önceki revizyon (bir önceki revizyon kaydından); ilk revizyonda boş.</summary>
+        public string RevisionOld { get; set; } = string.Empty;
+
+        /// <summary>Yeni revizyon (B, _AB …).</summary>
+        public string RevisionNew { get; set; } = string.Empty;
+
+        /// <summary>Değişiklik numarası (ECR/ECO, iş emri); isteğe bağlı.</summary>
+        public string RevisionChangeNo { get; set; } = string.Empty;
     }
 
     /// <summary>Okunan talep bilgisi (Günlük girdisinden <see cref="EventNote"/>'a taşınır).</summary>
@@ -273,6 +285,15 @@ namespace Pusula.Core.Notes
         /// <summary>Bilgi satırında talep durumunun öneki (<c>durum: Açık</c>).</summary>
         public const string RequestStatusKey = "durum:";
 
+        /// <summary>Bilgi satırında revizyona giren stokun öneki (<c>stok: AB-7000-0001</c>).</summary>
+        public const string RevisionStockKey = "stok:";
+
+        /// <summary>Bilgi satırında revizyonun öneki (<c>rev: A → B</c>; ilk revizyonda <c>rev: A</c>).</summary>
+        public const string RevisionKey = "rev:";
+
+        /// <summary>Bilgi satırında değişiklik numarasının öneki.</summary>
+        public const string RevisionChangeKey = "değişiklik no:";
+
         /// <summary>Malzeme kalemleri başlığı.</summary>
         public const string ItemsHeading = "#### Kalemler";
 
@@ -313,6 +334,10 @@ namespace Pusula.Core.Notes
             entry.RequestStatus = note.RequestStatus;
             entry.RequestItems.AddRange(note.RequestItems);
             entry.RequestDetail = note.RequestDetail;
+            entry.RevisionStock = note.RevisionStock;
+            entry.RevisionOld = note.RevisionOld;
+            entry.RevisionNew = note.RevisionNew;
+            entry.RevisionChangeNo = note.RevisionChangeNo;
             entry.Related.AddRange(note.Related);
             entry.Tags.AddRange(note.Tags);
             return entry;
@@ -716,6 +741,20 @@ namespace Pusula.Core.Notes
                 meta.Add(DecidedByKey + " " + string.Join(" ", deciders.Select(p => "@" + p)));
             }
 
+            if (entry.RevisionNew.Trim().Length > 0)
+            {
+                if (entry.RevisionStock.Trim().Length > 0)
+                {
+                    meta.Add(RevisionStockKey + " " + entry.RevisionStock.Trim());
+                }
+
+                meta.Add(RevisionKey + " " + (entry.RevisionOld.Trim().Length > 0 ? entry.RevisionOld.Trim() + " → " : string.Empty) + entry.RevisionNew.Trim());
+                if (entry.RevisionChangeNo.Trim().Length > 0)
+                {
+                    meta.Add(RevisionChangeKey + " " + entry.RevisionChangeNo.Trim());
+                }
+            }
+
             if (entry.RequestType.Trim().Length > 0)
             {
                 meta.Add(RequestKey + " " + entry.RequestType.Trim());
@@ -841,6 +880,10 @@ namespace Pusula.Core.Notes
             var requestFrom = new List<string>();
             DateTime? requestDue = null;
             var requestStatus = string.Empty;
+            var revStock = string.Empty;
+            var revOld = string.Empty;
+            var revNew = string.Empty;
+            var revChange = string.Empty;
             var related = new List<string>();
             var tags = new List<string>();
             var text = new List<string>();
@@ -876,6 +919,20 @@ namespace Pusula.Core.Notes
                         else if (lower.StartsWith(ParticipantsKey, StringComparison.Ordinal))
                         {
                             participants.AddRange(segment.Substring(ParticipantsKey.Length).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(p => p.TrimStart('@')).Where(p => p.Length > 0));
+                        }
+                        else if (lower.StartsWith(RevisionStockKey, StringComparison.Ordinal))
+                        {
+                            revStock = segment.Substring(RevisionStockKey.Length).Trim();
+                        }
+                        else if (lower.StartsWith(RevisionKey, StringComparison.Ordinal))
+                        {
+                            var revs = segment.Substring(RevisionKey.Length).Split(new[] { "→" }, StringSplitOptions.None);
+                            revOld = revs.Length > 1 ? revs[0].Trim() : string.Empty;
+                            revNew = revs[revs.Length - 1].Trim();
+                        }
+                        else if (lower.StartsWith(RevisionChangeKey, StringComparison.Ordinal))
+                        {
+                            revChange = segment.Substring(RevisionChangeKey.Length).Trim();
                         }
                         else if (lower.StartsWith(RequestNoKey, StringComparison.Ordinal))
                         {
@@ -937,7 +994,8 @@ namespace Pusula.Core.Notes
                 string.Equals(importance, NormalImportance, StringComparison.OrdinalIgnoreCase) ? string.Empty : importance,
                 related.Distinct(StringComparer.OrdinalIgnoreCase).ToList(), tags.Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
                 sourceLine, bodyText, kind, item, result, folder, participants, setting, DecisionsOf(bodyText), deciders,
-                new RequestInfo(requestType, requestNo, requestFrom, requestDue, requestStatus, ItemsOf(bodyText), RequestDetailOf(bodyText)));
+                new RequestInfo(requestType, requestNo, requestFrom, requestDue, requestStatus, ItemsOf(bodyText), RequestDetailOf(bodyText)),
+                new[] { revStock, revOld, revNew, revChange });
         }
 
         private static bool IsMetaLine(string line)
@@ -948,6 +1006,7 @@ namespace Pusula.Core.Notes
                 || lower.StartsWith(ParticipantsKey, StringComparison.Ordinal) || lower.StartsWith(DecidedByKey, StringComparison.Ordinal) || lower.StartsWith(SettingKey, StringComparison.Ordinal)
                 || lower.StartsWith(RequestKey, StringComparison.Ordinal) || lower.StartsWith(RequestNoKey, StringComparison.Ordinal) || lower.StartsWith(RequestFromKey, StringComparison.Ordinal)
                 || lower.StartsWith(RequestDueKey, StringComparison.Ordinal) || lower.StartsWith(RequestStatusKey, StringComparison.Ordinal)
+                || lower.StartsWith(RevisionStockKey, StringComparison.Ordinal) || lower.StartsWith(RevisionKey, StringComparison.Ordinal) || lower.StartsWith(RevisionChangeKey, StringComparison.Ordinal)
                 || lower.StartsWith("ilgili:", StringComparison.Ordinal) || (line.StartsWith("#", StringComparison.Ordinal) && !line.StartsWith("# ", StringComparison.Ordinal));
         }
     }
