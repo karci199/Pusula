@@ -3388,6 +3388,84 @@ namespace Pusula.Wpf.Properties
         /// <summary>Rapor görünümü: boş.</summary>
         public static string Verify_ReportEmptyList { get { return Get("Verify_ReportEmptyList"); } }
 
+        /// <summary>Plan maddesi penceresi başlığı (yeni).</summary>
+        public static string Verify_PlanItemTitle { get { return Get("Verify_PlanItemTitle"); } }
+
+        /// <summary>Plan maddesi penceresi başlığı; {0} TP no.</summary>
+        public static string Verify_PlanItemTitleFor { get { return Get("Verify_PlanItemTitleFor"); } }
+
+        /// <summary>Rapor maddesi penceresi başlığı (yeni).</summary>
+        public static string Verify_ReportItemTitle { get { return Get("Verify_ReportItemTitle"); } }
+
+        /// <summary>Rapor maddesi penceresi başlığı; {0} TR no.</summary>
+        public static string Verify_ReportItemTitleFor { get { return Get("Verify_ReportItemTitleFor"); } }
+
+        /// <summary>Plan sekmesi: yeni plan maddesi düğmesi.</summary>
+        public static string Verify_PlanItemAdd { get { return Get("Verify_PlanItemAdd"); } }
+
+        /// <summary>Rapor sekmesi: yeni rapor maddesi düğmesi.</summary>
+        public static string Verify_ReportItemAdd { get { return Get("Verify_ReportItemAdd"); } }
+
+        /// <summary>Plan maddesi penceresi: gereksinim seçimi.</summary>
+        public static string Verify_FieldRequirements { get { return Get("Verify_FieldRequirements"); } }
+
+        /// <summary>Rapor maddesi penceresi: plan seçimi.</summary>
+        public static string Verify_FieldPlans { get { return Get("Verify_FieldPlans"); } }
+
+        /// <summary>Çoklu seçim: seçili yok.</summary>
+        public static string Verify_SelectedNone { get { return Get("Verify_SelectedNone"); } }
+
+        /// <summary>Çoklu seçim; {0} sayı, {1} numaralar.</summary>
+        public static string Verify_SelectedCount { get { return Get("Verify_SelectedCount"); } }
+
+        /// <summary>Çoklu seçim arama kutusu.</summary>
+        public static string Verify_SearchPlaceholder { get { return Get("Verify_SearchPlaceholder"); } }
+
+        /// <summary>Çoklu seçim: tabloda bağlı ama listede olmayan numara.</summary>
+        public static string Verify_LinkMissing { get { return Get("Verify_LinkMissing"); } }
+
+        /// <summary>Plan maddesi hatası.</summary>
+        public static string Verify_TpRequired { get { return Get("Verify_TpRequired"); } }
+
+        /// <summary>Rapor maddesi hatası.</summary>
+        public static string Verify_TrRequired { get { return Get("Verify_TrRequired"); } }
+
+        /// <summary>Madde no tekrar hatası; {0} numara.</summary>
+        public static string Verify_NoDuplicate { get { return Get("Verify_NoDuplicate"); } }
+
+        /// <summary>Durum çubuğu; {0} TP no.</summary>
+        public static string Verify_PlanItemSaved { get { return Get("Verify_PlanItemSaved"); } }
+
+        /// <summary>Durum çubuğu; {0} TR no.</summary>
+        public static string Verify_ReportItemSaved { get { return Get("Verify_ReportItemSaved"); } }
+
+        /// <summary>Durum çubuğu; {0} TP no.</summary>
+        public static string Verify_PlanItemDeleted { get { return Get("Verify_PlanItemDeleted"); } }
+
+        /// <summary>Durum çubuğu; {0} TR no.</summary>
+        public static string Verify_ReportItemDeleted { get { return Get("Verify_ReportItemDeleted"); } }
+
+        /// <summary>Durum çubuğu ek; {0} sayı.</summary>
+        public static string Verify_StatusSynced { get { return Get("Verify_StatusSynced"); } }
+
+        /// <summary>Plan / rapor maddesi silme onayı başlığı.</summary>
+        public static string Verify_DeleteLinkTitle { get { return Get("Verify_DeleteLinkTitle"); } }
+
+        /// <summary>Silme onayı; {0} TP no.</summary>
+        public static string Verify_DeletePlanText { get { return Get("Verify_DeletePlanText"); } }
+
+        /// <summary>Silme onayı; {0} TR no.</summary>
+        public static string Verify_DeleteReportText { get { return Get("Verify_DeleteReportText"); } }
+
+        /// <summary>Plan maddesi penceresi alt notu.</summary>
+        public static string Verify_PlanItemHint { get { return Get("Verify_PlanItemHint"); } }
+
+        /// <summary>Rapor maddesi penceresi alt notu.</summary>
+        public static string Verify_ReportItemHint { get { return Get("Verify_ReportItemHint"); } }
+
+        /// <summary>Plan / rapor satırı: düzenle düğmesi ipucu.</summary>
+        public static string Verify_EditHint { get { return Get("Verify_EditHint"); } }
+
         #endregion
     }
 }

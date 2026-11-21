@@ -1,0 +1,113 @@
+﻿<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Plan maddesi</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#202020;font-family:"Segoe UI",Arial,sans-serif;color:#e6e6e6;font-size:14px}
+.page{width:1280px;padding:26px 30px 30px;background:#202020;color:#e6e6e6;font-family:"Segoe UI",Arial,sans-serif;font-size:14px}
+h1{font-size:20px;margin:0 0 4px;font-weight:600}
+.lead{color:#a8a8a8;font-size:13px;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:560px 1fr;gap:24px;align-items:start}
+.cap{font-size:12px;font-weight:700;color:#a8a8a8;margin:0 0 8px;letter-spacing:.3px}
+.dlg{background:#2b2b2b;border:1px solid #474747;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.dh{padding:18px 22px 6px;font-size:18px;font-weight:600}
+.db{padding:8px 22px 18px}
+.row{display:grid;grid-template-columns:120px 1fr;gap:12px;margin-bottom:12px}
+.f{margin-bottom:12px}
+.lbl{font-size:12.5px;color:#cfcfcf;margin-bottom:5px}
+.in{background:#1f1f1f;border:1px solid #3d3d3d;border-bottom:1px solid #8a8a8a;border-radius:5px;padding:7px 10px;font-size:13.5px;min-height:34px;color:#e6e6e6}
+.in.focus{border-bottom:2px solid #4cc2ff}
+.ph{color:#7a7a7a}
+.ta{min-height:58px}
+.combo{display:flex;align-items:center;justify-content:space-between}
+.chev{color:#a8a8a8;font-size:11px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:6px;background:#1d3348;color:#4cc2ff;font-size:12px;font-weight:600;padding:2px 6px 2px 9px;border-radius:10px}
+.chip .x{color:#8fb7d4;font-size:11px;padding:0 3px}
+.pop{margin-top:4px;background:#2c2c2c;border:1px solid #4a4a4a;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.45);padding:6px}
+.srch{background:#1f1f1f;border:1px solid #3d3d3d;border-bottom:2px solid #4cc2ff;border-radius:5px;padding:6px 10px;font-size:13px;margin-bottom:6px}
+.opt{display:grid;grid-template-columns:22px 84px 1fr auto;gap:8px;align-items:center;padding:6px 8px;border-radius:5px;font-size:13px}
+.opt:hover,.opt.hov{background:#383838}
+.cb{width:16px;height:16px;border-radius:3px;border:1px solid #8a8a8a}
+.cb.on{background:#4cc2ff;border-color:#4cc2ff;position:relative}
+.cb.on:after{content:"";position:absolute;left:5px;top:1px;width:4px;height:9px;border:solid #1a1a1a;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.no{color:#4cc2ff;font-weight:600}
+.dsc{color:#cfcfcf;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.other{font-size:11px;color:#a8a8a8}
+.warn{font-size:11px;color:#f6c46f}
+.pfoot{display:flex;justify-content:space-between;color:#8a8a8a;font-size:11.5px;padding:6px 8px 2px;border-top:1px solid #3a3a3a;margin-top:4px}
+.df{display:flex;justify-content:flex-end;gap:8px;padding:14px 22px;background:#202020;border-top:1px solid #3a3a3a;border-radius:0 0 10px 10px}
+.btn{padding:6px 18px;border-radius:5px;font-size:13.5px;background:#3a3a3a;border:1px solid #4a4a4a}
+.btn.p{background:#4cc2ff;color:#111;border-color:#4cc2ff;font-weight:600}
+.btn.d{margin-right:auto;background:transparent;color:#ff99a4;border-color:#5a3a3e}
+.tb{background:#2b2b2b;border:1px solid #444;border-radius:10px;padding:10px 0 6px}
+.tbh{display:flex;justify-content:space-between;align-items:center;padding:0 14px 10px}
+.add{background:#4cc2ff;color:#111;font-weight:600;font-size:13px;padding:5px 14px;border-radius:5px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-weight:600;color:#a8a8a8;font-size:12px;padding:6px 14px;border-bottom:1px solid #3a3a3a}
+td{padding:8px 14px;border-bottom:1px solid #333}
+tr.sel td{background:#323232}
+.c{display:inline-block;font-size:11.5px;font-weight:600;padding:1px 7px;border-radius:8px;margin-right:4px;background:#1d3348;color:#4cc2ff}
+.cg{background:#1f3a2a;color:#e6e6e6}.cr{background:#442726;color:#e6e6e6}.cy{background:#433519;color:#f6c46f}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px}
+.act{color:#a8a8a8;font-size:12px;white-space:nowrap}
+.act span{margin-left:10px}
+.notes{margin-top:16px;background:#262626;border:1px solid #333;border-radius:10px;padding:12px 16px;font-size:12.5px;color:#b8b8b8;line-height:1.7}
+.notes b{color:#e6e6e6}
+.notes code{color:#f6c46f;font-family:Consolas,monospace}
+</style></head><body><div class="page">
+<h1>Plan maddesi: ekle / düzenle</h1>
+<div class="lead">Plan sekmesi → "+ Plan maddesi" ya da satıra çift tıkla. Bir madde birden çok gereksinimi kapsar.</div>
+<div class="grid">
+<div>
+  <div class="cap">PENCERE</div>
+  <div class="dlg">
+    <div class="dh">Plan maddesi</div>
+    <div class="db">
+      <div class="row">
+        <div><div class="lbl">TP no</div><div class="in">4.1</div></div>
+        <div><div class="lbl">Açıklama</div><div class="in">SATIMO hüzme ve yan lob</div></div>
+      </div>
+      <div class="row" style="grid-template-columns:1fr 1fr">
+        <div><div class="lbl">Yöntem</div><div class="in combo"><span><span class="dot" style="background:#4cc2ff"></span>Test</span><span class="chev">▼</span></div></div>
+        <div><div class="lbl">Altyapı</div><div class="in combo"><span>SATIMO</span><span class="chev">▼</span></div></div>
+      </div>
+      <div class="f">
+        <div class="lbl">Gereksinimler · 2 seçili</div>
+        <div class="in focus combo"><span class="chips"><span class="chip">DGÖ-1 <span class="x">✕</span></span><span class="chip">DGÖ-2 <span class="x">✕</span></span></span><span class="chev">▲</span></div>
+        <div class="pop">
+          <div class="srch">dgö<span class="ph">|</span></div>
+          <div class="opt"><span class="cb on"></span><span class="no">DGÖ-1</span><span class="dsc">Yanca hüzme genişliği</span><span class="other">4.1</span></div>
+          <div class="opt"><span class="cb on"></span><span class="no">DGÖ-2</span><span class="dsc">Yan lob seviyesi</span><span class="other">4.1</span></div>
+          <div class="opt hov"><span class="cb"></span><span class="no">DGÖ-3</span><span class="dsc">VSWR</span><span class="other">4.3</span></div>
+          <div class="opt"><span class="cb"></span><span class="no">DGÖ-4</span><span class="dsc">Kazanç</span><span class="warn">planı yok</span></div>
+          <div class="opt"><span class="cb"></span><span class="no">DGÖ-5</span><span class="dsc">Kütle</span><span class="other">4.4</span></div>
+          <div class="pfoot"><span>5 / 6 gösteriliyor</span><span>Sağda: bağlı olduğu diğer planlar</span></div>
+        </div>
+      </div>
+      <div class="f"><div class="lbl">Not</div><div class="in ta"><span class="ph">İsteğe bağlı</span></div></div>
+    </div>
+    <div class="df"><span class="btn d">Sil</span><span class="btn">Vazgeç</span><span class="btn p">Kaydet</span></div>
+  </div>
+</div>
+<div>
+  <div class="cap">PLAN SEKMESİ</div>
+  <div class="tb">
+    <div class="tbh"><span style="font-weight:600">Plan maddeleri · 3</span><span class="add">+ Plan maddesi</span></div>
+    <table>
+      <tr><th>TP no</th><th>Açıklama</th><th>Yöntem</th><th>Gereksinimler</th><th>Rapor</th><th></th></tr>
+      <tr class="sel"><td><b>4.1</b></td><td>SATIMO hüzme ve yan lob</td><td><span class="dot" style="background:#4cc2ff"></span>Test</td><td><span class="c">DGÖ-1</span><span class="c">DGÖ-2</span></td><td><span class="c cg"><span class="dot" style="background:#6ccb5f"></span>5.1</span><span class="c cr"><span class="dot" style="background:#ff99a4"></span>5.2</span></td><td class="act"><span>✎</span><span>🗑</span></td></tr>
+      <tr><td><b>4.3</b></td><td>VNA S11 ölçümü</td><td><span class="dot" style="background:#4cc2ff"></span>Test</td><td><span class="c">DGÖ-3</span></td><td><span class="c cy">rapor yok</span></td><td class="act"><span>✎</span><span>🗑</span></td></tr>
+      <tr><td><b>4.4</b></td><td>Montaj muayenesi</td><td><span class="dot" style="background:#6ccb5f"></span>Muayene</td><td><span class="c">TSD-0042</span><span class="c">DGÖ-5</span></td><td><span class="c cg"><span class="dot" style="background:#6ccb5f"></span>5.4</span></td><td class="act"><span>✎</span><span>🗑</span></td></tr>
+    </table>
+  </div>
+  <div class="notes">
+    <b>Kurallar</b><br>
+    • TP no boş olamaz, aynı numara iki kez olamaz. Yeni maddede sıradaki numara önerilir (4.5).<br>
+    • Yöntem / Altyapı: gereksinim tablosundakiyle aynı liste; elle yazılabilir.<br>
+    • Kaydet yalnız <code>## Plan</code> altındaki ilk tabloyu yazar, md'nin geri kalanına dokunmaz.<br>
+    • <b>Sil</b>: onay sorar; yalnız plan tablosundaki satır gider. Bu plana bağlı raporlarda bağ <span style="color:#f6c46f">"plan yok"</span> olarak görünür, kendiliğinden silinmez.<br>
+    • TP no değişirse bağlı raporlardaki numara da güncellenir.
+  </div>
+</div>
+</div>
+</div></body></html>

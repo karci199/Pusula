@@ -363,5 +363,93 @@ namespace Pusula.Wpf.ViewModels
             var chips = ReportsOf(tps);
             return chips.Count > 0 ? chips : new List<LinkChip> { new LinkChip(Resources.Verify_NoReport, 4) };
         }
+
+        /// <summary>Gereksinimin bağlı plan maddeleri (açılan satırdaki Test planı kartı).</summary>
+        public IList<PlanRow> PlanRowsOf(VerificationItem item)
+        {
+            var key = VerificationList.KeyOf(item);
+            return PlanRows.Where(p => p.Item.Requirements.Contains(key, StringComparer.OrdinalIgnoreCase)).ToList();
+        }
+
+        /// <summary>Gereksinimin planları üzerinden bağlı rapor maddeleri (açılan satırdaki Test raporu kartı).</summary>
+        public IList<ReportRow> ReportRowsOf(VerificationItem item)
+        {
+            var tps = PlanRowsOf(item).Select(p => p.TpNo).ToList();
+            return ReportRows.Where(r => r.Item.Plans.Any(p => tps.Contains(p, StringComparer.OrdinalIgnoreCase))).ToList();
+        }
+
+        /// <summary>
+        /// Bağlardan gereksinim durumu (kod karar verir): Kapsam dışı ve Şartlı kabul korunur; planı yoksa Bekliyor; bağlı bir
+        /// rapor Kaldı ise Kaldı; her planının raporu var ve hepsi Geçti ise Geçti; değilse sürmekte olan durum (hazırlık,
+        /// yapılıyor, değerlendiriliyor, tekrarlanacak) korunur, yoksa Planlandı.
+        /// </summary>
+        public static string StatusFromLinks(string current, IList<PlanItem> plans, IList<ReportItem> reports)
+        {
+            var now = current ?? string.Empty;
+            var kind = VerificationRow.KindOf(now);
+            if (kind == 5 || kind == 9)
+            {
+                return now;
+            }
+
+            if (plans.Count == 0)
+            {
+                return kind == 0 ? now : Resources.Verify_StatusPending;
+            }
+
+            var results = reports.Select(r => ResultKindOf(r.Result)).ToList();
+            if (results.Contains(2))
+            {
+                return Resources.Verify_StatusFailed;
+            }
+
+            var everyPlanReported = plans.All(p => reports.Any(r => r.Plans.Contains(p.TpNo, StringComparer.OrdinalIgnoreCase)));
+            if (results.Count > 0 && everyPlanReported && results.All(k => k == 1))
+            {
+                return Resources.Verify_StatusPassed;
+            }
+
+            return kind == 7 || kind == 3 || kind == 8 || kind == 4 ? now : Resources.Verify_StatusPlanned;
+        }
+
+        /// <summary>
+        /// Gereksinim satırlarını bağlarla eşitler: durum (<see cref="StatusFromLinks"/>), TP no (bağlı planlar) ve TR no
+        /// (planlar üzerinden raporlar) sütunları. Yalnız değişen satırlar yazılır. Değişen satır sayısı.
+        /// </summary>
+        private int SyncRequirementLinks()
+        {
+            if (verificationStock.Length == 0)
+            {
+                return 0;
+            }
+
+            var plans = PlanReportList.ReadPlans(verificationStock);
+            var reports = PlanReportList.ReadReports(verificationStock);
+            var changed = 0;
+            foreach (var item in VerificationList.Read(verificationStock))
+            {
+                var key = VerificationList.KeyOf(item);
+                var mine = plans.Where(p => p.Requirements.Contains(key, StringComparer.OrdinalIgnoreCase)).ToList();
+                var tps = mine.Select(p => p.TpNo).ToList();
+                var myReports = reports.Where(r => r.Plans.Any(p => tps.Contains(p, StringComparer.OrdinalIgnoreCase))).ToList();
+                var status = StatusFromLinks(item.Status, mine, myReports);
+                var tpText = string.Join(", ", tps);
+                var trText = string.Join(", ", myReports.Select(r => r.TrNo));
+                if (status == item.Status && tpText == item.TpNo && trText == item.TrNo)
+                {
+                    continue;
+                }
+
+                item.Status = status;
+                item.TpNo = tpText;
+                item.TrNo = trText;
+                if (VerificationList.Update(verificationStock, item).Length == 0)
+                {
+                    changed++;
+                }
+            }
+
+            return changed;
+        }
     }
 }

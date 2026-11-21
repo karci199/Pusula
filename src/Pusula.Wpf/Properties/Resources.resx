@@ -3181,4 +3181,82 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Verify_ReportEmptyList" xml:space="preserve">
     <value>Henüz rapor maddesi yok.</value>
   </data>
+  <data name="Verify_PlanItemTitle" xml:space="preserve">
+    <value>Plan maddesi</value>
+  </data>
+  <data name="Verify_PlanItemTitleFor" xml:space="preserve">
+    <value>Plan maddesi · {0}</value>
+  </data>
+  <data name="Verify_ReportItemTitle" xml:space="preserve">
+    <value>Rapor maddesi</value>
+  </data>
+  <data name="Verify_ReportItemTitleFor" xml:space="preserve">
+    <value>Rapor maddesi · {0}</value>
+  </data>
+  <data name="Verify_PlanItemAdd" xml:space="preserve">
+    <value>Plan maddesi</value>
+  </data>
+  <data name="Verify_ReportItemAdd" xml:space="preserve">
+    <value>Rapor maddesi</value>
+  </data>
+  <data name="Verify_FieldRequirements" xml:space="preserve">
+    <value>Gereksinimler</value>
+  </data>
+  <data name="Verify_FieldPlans" xml:space="preserve">
+    <value>Plan maddeleri</value>
+  </data>
+  <data name="Verify_SelectedNone" xml:space="preserve">
+    <value>Hiçbiri seçili değil</value>
+  </data>
+  <data name="Verify_SelectedCount" xml:space="preserve">
+    <value>{0} seçili: {1}</value>
+  </data>
+  <data name="Verify_SearchPlaceholder" xml:space="preserve">
+    <value>Ara: numara ya da başlık</value>
+  </data>
+  <data name="Verify_LinkMissing" xml:space="preserve">
+    <value>(listede yok)</value>
+  </data>
+  <data name="Verify_TpRequired" xml:space="preserve">
+    <value>TP no boş olamaz.</value>
+  </data>
+  <data name="Verify_TrRequired" xml:space="preserve">
+    <value>TR no boş olamaz.</value>
+  </data>
+  <data name="Verify_NoDuplicate" xml:space="preserve">
+    <value>{0} zaten var.</value>
+  </data>
+  <data name="Verify_PlanItemSaved" xml:space="preserve">
+    <value>Plan maddesi {0} kaydedildi.</value>
+  </data>
+  <data name="Verify_ReportItemSaved" xml:space="preserve">
+    <value>Rapor maddesi {0} kaydedildi.</value>
+  </data>
+  <data name="Verify_PlanItemDeleted" xml:space="preserve">
+    <value>Plan maddesi {0} silindi.</value>
+  </data>
+  <data name="Verify_ReportItemDeleted" xml:space="preserve">
+    <value>Rapor maddesi {0} silindi.</value>
+  </data>
+  <data name="Verify_StatusSynced" xml:space="preserve">
+    <value>{0} gereksinimin durumu / bağı güncellendi</value>
+  </data>
+  <data name="Verify_DeleteLinkTitle" xml:space="preserve">
+    <value>Maddeyi sil</value>
+  </data>
+  <data name="Verify_DeletePlanText" xml:space="preserve">
+    <value>Plan maddesi {0} silinsin mi? Yalnız plan tablosundaki satır silinir; bağlı raporlarda “plan yok” görünür.</value>
+  </data>
+  <data name="Verify_DeleteReportText" xml:space="preserve">
+    <value>Rapor maddesi {0} silinsin mi? Yalnız rapor tablosundaki satır silinir.</value>
+  </data>
+  <data name="Verify_PlanItemHint" xml:space="preserve">
+    <value>Yalnız md'deki Plan tablosu yazılır. Gereksinim durumları bağlardan hesaplanır.</value>
+  </data>
+  <data name="Verify_ReportItemHint" xml:space="preserve">
+    <value>Yalnız md'deki Rapor tablosu yazılır. Bağlı gereksinimlerin durumu sonuçtan hesaplanır: biri Kaldı ise Kaldı, hepsi Geçti ise Geçti.</value>
+  </data>
+  <data name="Verify_EditHint" xml:space="preserve">
+    <value>Düzenle</value>
+  </data>
 </root>

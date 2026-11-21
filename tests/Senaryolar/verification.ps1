@@ -174,80 +174,93 @@ if ($dlg) {
 }
 $vm.IsVerificationDialogOpen = $false; Wait
 Snap $win "$Out\verification-filter.png"
-"--- test planı kartı"
+"--- plan maddesi (çoka çok)"
 function RowOf([string]$sub) { @($vm.VerificationGroups | ForEach-Object { $_.Rows } | Where-Object { $_.SubGroup -eq $sub -or $_.Text -eq $sub })[0] }
+function Snap-Dialog([string]$name) {
+    for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 }
+    $dlg = Find-Open $win
+    if ($dlg) {
+        $pop = Find-Popup $dlg; if ($pop -and $pop.Child) { $dlg = $pop.Child; $sz = New-Object System.Windows.Size($win.ActualWidth, $win.ActualHeight); $dlg.Measure($sz); $dlg.Arrange((New-Object System.Windows.Rect($sz))); $dlg.UpdateLayout(); for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 } }
+        $bmp = New-Object System.Windows.Media.Imaging.RenderTargetBitmap([int]$dlg.ActualWidth, [int]$dlg.ActualHeight, 96, 96, [System.Windows.Media.PixelFormats]::Pbgra32)
+        $bmp.Render($dlg); $enc = New-Object System.Windows.Media.Imaging.PngBitmapEncoder; $enc.Frames.Add([System.Windows.Media.Imaging.BitmapFrame]::Create($bmp))
+        $fs = [IO.File]::Create("$Out\$name"); $enc.Save($fs); $fs.Close()
+    }
+}
+$KeyOf = { param($row) [Pusula.Core.Testing.VerificationList]::KeyOf($row.Item) }
+$PRL = [Pusula.Core.Testing.PlanReportList]
 $s11 = RowOf 'S11'
 $vm.SetVerificationStatus($s11, 'Bekliyor'); Wait
-$s11 = RowOf 'S11'
+$s11 = RowOf 'S11'; $yan = RowOf 'Yan lob seviyesi'
+$s11Key = & $KeyOf $s11; $yanKey = & $KeyOf $yan
 Check 'plan yok: kartta Test planı ekle' (-not $s11.HasPlan)
 $vm.OpenVerPlan($s11); Wait
-Check 'plan penceresi açılır, başlık' ($vm.IsVerPlanOpen -and $vm.VerPlanTitle -like 'Test planı · *') $vm.VerPlanTitle
+Check 'yeni plan penceresi: başlık, Sil yok, S11 seçili, TP önerildi' ($vm.IsVerPlanOpen -and $vm.VerPlanTitle -eq 'Plan maddesi' -and $vm.VerPlanDeleteText -eq '' -and ((@($vm.PlanRequirementOptions | Where-Object IsChecked | ForEach-Object Key)) -join ',') -eq $s11Key -and $vm.PlanTpNo.Length -gt 0) ($vm.VerPlanTitle + ' / ' + $vm.PlanTpNo)
 $vm.PlanTpNo = '4.1'; $vm.PlanDescription = 'VNA S11 ölçümü'; $vm.PlanMethod = 'Test'; $vm.PlanFacilityPick.Value = 'VNA'; $vm.PlanNote = 'Kalibrasyon kiti 3,5 mm'
-for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 }
-$dlg = Find-Open $win
-if ($dlg) {
-    $pop = Find-Popup $dlg; if ($pop -and $pop.Child) { $dlg = $pop.Child; $sz = New-Object System.Windows.Size($win.ActualWidth, $win.ActualHeight); $dlg.Measure($sz); $dlg.Arrange((New-Object System.Windows.Rect($sz))); $dlg.UpdateLayout(); for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 } }
-    $bmp = New-Object System.Windows.Media.Imaging.RenderTargetBitmap([int]$dlg.ActualWidth, [int]$dlg.ActualHeight, 96, 96, [System.Windows.Media.PixelFormats]::Pbgra32)
-    $bmp.Render($dlg); $enc = New-Object System.Windows.Media.Imaging.PngBitmapEncoder; $enc.Frames.Add([System.Windows.Media.Imaging.BitmapFrame]::Create($bmp))
-    $fs = [IO.File]::Create("$Out\verification-plan.png"); $enc.Save($fs); $fs.Close()
-}
+@($vm.PlanRequirementOptions | Where-Object Key -eq $yanKey)[0].IsChecked = $true
+Check 'seçim özeti iki gereksinim' ($vm.PlanSelectedText -like '2 seçili:*') $vm.PlanSelectedText
+$vm.PlanSearch = 'Yan lob'
+Check 'arama süzer' (@($vm.PlanRequirementOptions | Where-Object IsVisible).Count -ge 1 -and @($vm.PlanRequirementOptions | Where-Object IsVisible).Count -lt $vm.PlanRequirementOptions.Count)
+$vm.PlanSearch = ''
+Snap-Dialog 'verification-plan.png'
 Check 'kaydedilir' ($vm.ConfirmVerPlan())
 $vm.IsVerPlanOpen = $false; Wait
-$text = [IO.File]::ReadAllText($file)
+$p41 = @($PRL::ReadPlans($stock) | Where-Object TpNo -eq '4.1')[0]
+Check 'Plan tablosunda 4.1: iki gereksinim, yöntem, altyapı, not' ($p41 -and $p41.Requirements.Count -eq 2 -and $p41.Requirements -contains $s11Key -and $p41.Requirements -contains $yanKey -and $p41.Method -eq 'Test' -and $p41.Facility -eq 'VNA' -and $p41.Note -eq 'Kalibrasyon kiti 3,5 mm')
 $s11 = RowOf 'S11'
-Check 'satır: plan yazıldı, Bekliyor → Planlandı, açık' ($s11.HasPlan -and $s11.TpText -eq '4.1' -and $s11.PlanDescription -eq 'VNA S11 ölçümü' -and $s11.Method -eq 'Test' -and $s11.Facility -eq 'VNA' -and $s11.StatusText -eq 'Planlandı' -and $s11.IsExpanded) ($s11.StatusText)
-Check 'dosyada plan hücreleri' ($text -like '*| Test | VNA | 4.1 | VNA S11 ölçümü | Kalibrasyon kiti 3,5 mm |*| Planlandı |*') $text
-$yan = RowOf 'Yan lob seviyesi'
-$vm.OpenVerPlan($yan); $vm.PlanTpNo = '4.2'
-Check 'ileri durum değişmez (Değerlendiriliyor)' ($vm.ConfirmVerPlan() -and (RowOf 'Yan lob seviyesi').StatusText -eq 'Değerlendiriliyor')
+Check 'S11: kartta 4.1, Bekliyor → Planlandı, TP no sütunu' ($s11.HasPlan -and $s11.PlanItems[0].TpNo -eq '4.1' -and $s11.StatusText -eq 'Planlandı' -and $s11.Item.TpNo -eq '4.1') ($s11.StatusText + ' / ' + $s11.Item.TpNo)
+Check 'ileri durum değişmez (Değerlendiriliyor)' ((RowOf 'Yan lob seviyesi').StatusText -eq 'Değerlendiriliyor') (RowOf 'Yan lob seviyesi').StatusText
+$vm.NewPlanItem(); $vm.PlanTpNo = '4.1'
+Check 'aynı TP no reddedilir' (-not $vm.ConfirmVerPlan() -and $vm.PlanError -like '*4.1*') $vm.PlanError
+$vm.PlanTpNo = ' '
+Check 'boş TP no reddedilir' (-not $vm.ConfirmVerPlan() -and $vm.PlanError.Length -gt 0)
 $vm.IsVerPlanOpen = $false; Wait
-$vm.SetVerificationStatus((RowOf 'S11'), 'Yapılıyor'); Wait
-Check 'durum değişince plan açıklaması silinmez' ([IO.File]::ReadAllText($file) -like '*| 4.1 | VNA S11 ölçümü | Kalibrasyon kiti 3,5 mm |*| Yapılıyor |*')
-"--- test raporu kartı"
+"--- rapor maddesi"
 $s11 = RowOf 'S11'
 Check 'rapor yok: kartta Rapor ekle' (-not $s11.HasReport)
 $vm.OpenVerReport($s11); Wait
-Check 'rapor penceresi açılır' ($vm.IsVerReportOpen -and $vm.VerReportTitle -like 'Test raporu · *' -and @($vm.VerificationResults).Count -eq 3) $vm.VerReportTitle
+Check 'yeni rapor penceresi: S11 planı 4.1 seçili' ($vm.IsVerReportOpen -and $vm.VerReportTitle -eq 'Rapor maddesi' -and ((@($vm.ReportPlanOptions | Where-Object IsChecked | ForEach-Object Key)) -join ',') -eq '4.1' -and @($vm.VerificationResults).Count -eq 3) $vm.VerReportTitle
 $measure = Join-Path $stock '03_Testler\01_Islevsel\S11\SNP1_T1'
 New-Item -ItemType Directory -Force $measure | Out-Null
 $vm.ReportTrNo = '5.3'; $vm.ReportDescription = 'S11 sonuçları'; $vm.ReportResult = 'Kaldı'; $vm.ReportPath = $measure; $vm.ReportNote = '−8 dB · BN-2026-020'
-for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 }
-$dlg = Find-Open $win
-if ($dlg) {
-    $pop = Find-Popup $dlg; if ($pop -and $pop.Child) { $dlg = $pop.Child; $sz = New-Object System.Windows.Size($win.ActualWidth, $win.ActualHeight); $dlg.Measure($sz); $dlg.Arrange((New-Object System.Windows.Rect($sz))); $dlg.UpdateLayout(); for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 } }
-    $bmp = New-Object System.Windows.Media.Imaging.RenderTargetBitmap([int]$dlg.ActualWidth, [int]$dlg.ActualHeight, 96, 96, [System.Windows.Media.PixelFormats]::Pbgra32)
-    $bmp.Render($dlg); $enc = New-Object System.Windows.Media.Imaging.PngBitmapEncoder; $enc.Frames.Add([System.Windows.Media.Imaging.BitmapFrame]::Create($bmp))
-    $fs = [IO.File]::Create("$Out\verification-report.png"); $enc.Save($fs); $fs.Close()
-}
+Snap-Dialog 'verification-report.png'
 Check 'kaydedilir' ($vm.ConfirmVerReport())
 $vm.IsVerReportOpen = $false; Wait
+$r53 = @($PRL::ReadReports($stock) | Where-Object TrNo -eq '5.3')[0]
+Check 'Rapor tablosunda 5.3: plan 4.1, Kaldı, yer göreli' ($r53 -and ($r53.Plans -join ',') -eq '4.1' -and $r53.Result -eq 'Kaldı' -and $r53.ResultPath -eq '03_Testler\01_Islevsel\S11\SNP1_T1' -and $r53.Note -eq '−8 dB · BN-2026-020')
 $s11 = RowOf 'S11'
-Check 'satır: rapor, Kaldı → durum Kaldı, yer göreli' ($s11.HasReport -and $s11.TrText -eq '5.3' -and $s11.ReportResult -eq 'Kaldı' -and $s11.ReportResultKind -eq 2 -and $s11.StatusText -eq 'Kaldı' -and $s11.ResultPath -eq '03_Testler\01_Islevsel\S11\SNP1_T1' -and $s11.IsExpanded) ($s11.StatusText + ' | ' + $s11.ResultPath)
-Check 'dosyada rapor hücreleri' ([IO.File]::ReadAllText($file) -like '*| 5.3 | S11 sonuçları | −8 dB · BN-2026-020 | Kaldı | 03_Testler\01_Islevsel\S11\SNP1_T1 | Kaldı |*') ([IO.File]::ReadAllText($file))
-$vm.OpenVerReport($s11); $vm.ReportResult = 'Hazırlanmadı'
-Check 'Hazırlanmadı durumu değiştirmez' ($vm.ConfirmVerReport() -and (RowOf 'S11').StatusText -eq 'Kaldı')
-$vm.IsVerReportOpen = $false; Wait
-"--- md'de okunur bölümler (## Plan / ## Sonuç)"
-$text = [IO.File]::ReadAllText($file)
-$key = [Pusula.Core.Testing.VerificationList]::KeyOf((RowOf 'S11').Item)
-Check 'Plan bölümünde madde başlığı ve işaretli bilgi' ($text -like "*## Plan*### $key*%% pusula:plan $key %%*- **TP:** 4.1 · VNA S11 ölçümü*- **Yöntem:** Test · **Altyapı:** VNA*- **Not:** Kalibrasyon kiti 3,5 mm*%% pusula:son %%*## Sonuç*") $text
-Check 'Sonuç bölümünde rapor' ($text -like "*## Sonuç*%% pusula:sonuc $key %%*- **TR:** 5.3 · S11 sonuçları*- **Sonuç:** Hazırlanmadı*%% pusula:son %%*" -and $text.Contains('- **Yer:** ' + [char]96 + '03_Testler\01_Islevsel\S11\SNP1_T1' + [char]96)) $text
-# Altına elle ayrıntı yazılır; plan yeniden kaydedilince işaretli kısım değişir, ayrıntı kalır.
-$lines = [IO.File]::ReadAllText($file) -split "`r?`n"
-$planIdx = [Array]::IndexOf($lines, "%% pusula:plan $key %%"); $endIdx = $planIdx; while ($lines[$endIdx] -ne '%% pusula:son %%') { $endIdx++ }
-$lines = $lines[0..$endIdx] + @('Elle yazılan ayrıntı: 3 tekrar.') + $lines[($endIdx + 1)..($lines.Length - 1)]
-[IO.File]::WriteAllText($file, ($lines -join "`r`n"), (New-Object System.Text.UTF8Encoding($true)))
-$vm.OpenVerPlan((RowOf 'S11')); $vm.PlanDescription = 'VNA S11 ve S22'
-Check 'plan yeniden kaydedilir' ($vm.ConfirmVerPlan())
-$vm.IsVerPlanOpen = $false; Wait
-$text = [IO.File]::ReadAllText($file)
-Check 'işaretli kısım güncellendi, elle yazılan ayrıntı kaldı, tek bölüm' ($text -like '*- **TP:** 4.1 · VNA S11 ve S22*%% pusula:son %%*Elle yazılan ayrıntı: 3 tekrar.*' -and ([regex]::Matches($text, [regex]::Escape("%% pusula:plan $key %%"))).Count -eq 1) $text
-$yanKey = [Pusula.Core.Testing.VerificationList]::KeyOf((RowOf 'Yan lob seviyesi').Item)
-Check 'madde sırası: önceki madde önce' ($text.IndexOf("%% pusula:plan $yanKey %%") -lt $text.IndexOf("%% pusula:plan $key %%") -and $text.IndexOf("%% pusula:plan $yanKey %%") -gt 0) $text
-Check 'tablo bozulmadı' ([Pusula.Core.Testing.VerificationList]::Read($stock).Count -eq $vm.VerificationCount)
-Check 'yol yardımcıları' ([Pusula.Wpf.ViewModels.MainViewModel]::RelativeResultPath('C:\a\b', 'C:\a\b\c\d') -eq 'c\d' -and [Pusula.Wpf.ViewModels.MainViewModel]::RelativeResultPath('C:\a\b', 'D:\x') -eq 'D:\x' -and [Pusula.Wpf.ViewModels.MainViewModel]::FullResultPath('C:\a\b', 'c\d') -eq 'C:\a\b\c\d')
-$s11 = RowOf 'S11'; $s11.IsExpanded = $true; Wait
+Check 'bir rapor Kaldı → iki gereksinim de Kaldı, TR no sütunu' ($s11.StatusText -eq 'Kaldı' -and (RowOf 'Yan lob seviyesi').StatusText -eq 'Kaldı' -and $s11.Item.TrNo -eq '5.3') ($s11.StatusText + ' / ' + (RowOf 'Yan lob seviyesi').StatusText)
+Check 'kart: rapor 5.3 kırmızı' ($s11.HasReport -and $s11.ReportItems[0].TrNo -eq '5.3' -and $s11.ReportItems[0].ResultKind -eq 2)
+$vm.EditReportItem($r53); $vm.ReportResult = 'Geçti'
+Check 'Geçti kaydedilir' ($vm.ConfirmVerReport()); $vm.IsVerReportOpen = $false; Wait
+Check 'her plan raporlu ve hepsi Geçti → Geçti' ((RowOf 'S11').StatusText -eq 'Geçti') (RowOf 'S11').StatusText
+$vm.EditReportItem(@($PRL::ReadReports($stock) | Where-Object TrNo -eq '5.3')[0]); $vm.ReportResult = 'Hazırlanmadı'
+Check 'Hazırlanmadı kaydedilir' ($vm.ConfirmVerReport()); $vm.IsVerReportOpen = $false; Wait
+Check 'sonuç yok → Planlandı' ((RowOf 'S11').StatusText -eq 'Planlandı') (RowOf 'S11').StatusText
+"--- TP no değişimi bağları taşır"
+$vm.EditPlanItem(@($PRL::ReadPlans($stock) | Where-Object TpNo -eq '4.1')[0])
+Check 'düzenleme penceresi: başlık, Sil var' ($vm.VerPlanTitle -eq 'Plan maddesi · 4.1' -and $vm.VerPlanDeleteText -eq 'Sil') $vm.VerPlanTitle
+$vm.PlanTpNo = '4.10'
+Check 'yeniden adlandırılır' ($vm.ConfirmVerPlan()); $vm.IsVerPlanOpen = $false; Wait
+Check 'rapor 5.3 artık 4.10 a bağlı, S11 TP no 4.10' ((@($PRL::ReadReports($stock) | Where-Object TrNo -eq '5.3')[0].Plans -join ',') -eq '4.10' -and (RowOf 'S11').Item.TpNo -eq '4.10')
+$oldH = $win.Height; $win.Height = 1800; $s11 = RowOf 'S11'; $s11.IsExpanded = $true; Wait; Wait
 Snap $win "$Out\verification-plan-card.png"
+$win.Height = $oldH
+$vm.IsVerPlanView = $true; Wait
+Snap $win "$Out\verification-plan-view.png"
+$vm.IsVerReqView = $true; Wait
+"--- silme: yalnız kendi satırı"
+$before = [IO.File]::ReadAllText($file)
+$vm.EditReportItem(@($PRL::ReadReports($stock) | Where-Object TrNo -eq '5.3')[0]); $vm.RequestDeleteReportItem()
+Check 'silme onayı sorulur' ($vm.IsVerLinkDeleteOpen -and $vm.VerLinkDeleteText -like '*5.3*') $vm.VerLinkDeleteText
+$vm.ConfirmDeleteVerLink(); Wait
+Check 'rapor 5.3 gitti, S11 Planlandı, TR no boş' (@($PRL::ReadReports($stock) | Where-Object TrNo -eq '5.3').Count -eq 0 -and (RowOf 'S11').StatusText -eq 'Planlandı' -and (RowOf 'S11').Item.TrNo -eq '')
+$vm.EditPlanItem(@($PRL::ReadPlans($stock) | Where-Object TpNo -eq '4.10')[0]); $vm.IsVerPlanOpen = $false; $vm.RequestDeletePlanItem(); $vm.ConfirmDeleteVerLink(); Wait
+Check 'plan 4.10 gitti, S11 Bekliyor, TP no boş' (@($PRL::ReadPlans($stock) | Where-Object TpNo -eq '4.10').Count -eq 0 -and (RowOf 'S11').StatusText -eq 'Bekliyor' -and (RowOf 'S11').Item.TpNo -eq '') (RowOf 'S11').StatusText
+$text = [IO.File]::ReadAllText($file)
+Check 'ölçüm klasörü silinmedi' (Test-Path $measure)
+Check 'tablo bozulmadı' ([Pusula.Core.Testing.VerificationList]::Read($stock).Count -eq $vm.VerificationCount)
+Check 'sıradaki no' ($PRL::NextNo([string[]]@('4.4', '4.10', '4.2'), '1') -eq '4.11' -and $PRL::NextNo([string[]]@(), '1') -eq '1' -and $PRL::NextNo([string[]]@('TP-9'), '1') -eq 'TP-10')
+Check 'yol yardımcıları' ([Pusula.Wpf.ViewModels.MainViewModel]::RelativeResultPath('C:\a\b', 'C:\a\b\c\d') -eq 'c\d' -and [Pusula.Wpf.ViewModels.MainViewModel]::RelativeResultPath('C:\a\b', 'D:\x') -eq 'D:\x' -and [Pusula.Wpf.ViewModels.MainViewModel]::FullResultPath('C:\a\b', 'c\d') -eq 'C:\a\b\c\d')
 "--- elle yazılmış dosya: başka satırlara dokunulmaz"
 $other = Join-Path $Data '7000_MILKON\AB-7000-0003'
 $md = Join-Path $other '03_Testler\AB-7000-0003_Test_Gereksinimleri_AA.md'

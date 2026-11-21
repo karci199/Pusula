@@ -225,6 +225,57 @@ namespace Pusula.Core.Testing
 
             return pa.Length.CompareTo(pb.Length);
         }
+
+        /// <summary>
+        /// Sıradaki madde numarası: en büyük numaranın son sayısı bir artar ("4.4" → "4.5", "TP-9" → "TP-10").
+        /// Liste boşsa ya da son parça sayı değilse <paramref name="first"/>.
+        /// </summary>
+        public static string NextNo(IEnumerable<string> numbers, string first)
+        {
+            var last = (numbers ?? Enumerable.Empty<string>()).Where(n => !string.IsNullOrWhiteSpace(n))
+                .OrderBy(n => n, Comparer<string>.Create(CompareNo)).LastOrDefault();
+            if (last == null)
+            {
+                return first;
+            }
+
+            var end = last.Length;
+            var start = end;
+            while (start > 0 && char.IsDigit(last[start - 1]))
+            {
+                start--;
+            }
+
+            int value;
+            if (start == end || !int.TryParse(last.Substring(start, end - start), out value))
+            {
+                return first;
+            }
+
+            return last.Substring(0, start) + (value + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>Bağ listesinde bir numarayı yenisiyle değiştirir (yeni boşsa çıkarır). Değiştiyse true.</summary>
+        public static bool RenameLink(List<string> links, string oldNo, string newNo)
+        {
+            var index = links.FindIndex(l => string.Equals(l, oldNo, StringComparison.OrdinalIgnoreCase));
+            if (index < 0 || string.Equals(links[index], newNo, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(newNo) || links.Any(l => string.Equals(l, newNo, StringComparison.OrdinalIgnoreCase)))
+            {
+                links.RemoveAt(index);
+            }
+            else
+            {
+                links[index] = newNo.Trim();
+            }
+
+            return true;
+        }
+
         /// <summary>"DGÖ-1, DGÖ-2" → ["DGÖ-1", "DGÖ-2"] (virgül ya da noktalı virgül; boşlar atlanır, tekrarsız).</summary>
         public static List<string> SplitList(string text)
         {

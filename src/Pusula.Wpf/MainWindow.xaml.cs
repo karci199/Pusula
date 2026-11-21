@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using DesignKit.Controls;
+using Pusula.Core.Testing;
 using Pusula.Core.Types;
 using Pusula.Wpf.ViewModels;
 using Pusula.Wpf.ViewModels.TemplateEditor;
@@ -156,15 +157,6 @@ namespace Pusula.Wpf
             }
         }
 
-        // Rapor kartındaki sonucun yeri: Aç.
-        private void VerResultOpen_Click(object sender, RoutedEventArgs e)
-        {
-            if ((sender as FrameworkElement)?.Tag is VerificationRow row)
-            {
-                viewModel.OpenResultPath(row);
-            }
-        }
-
         // Açık satırdaki Maddeyi düzenle.
         private void VerEditRow_Click(object sender, RoutedEventArgs e)
         {
@@ -186,6 +178,82 @@ namespace Pusula.Wpf
         private void VerificationDelete_PrimaryButtonClick(object sender, RoutedEventArgs e)
         {
             viewModel.ConfirmDeleteVerification();
+        }
+
+        // Plan sekmesi: "+ Plan maddesi".
+        private void VerPlanNew_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.NewPlanItem();
+        }
+
+        // Rapor sekmesi: "+ Rapor maddesi".
+        private void VerReportNew_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.NewReportItem();
+        }
+
+        // Plan satırı ya da kartındaki kalem: maddeyi düzenle.
+        private void VerPlanEdit_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is PlanItem plan)
+            {
+                viewModel.EditPlanItem(plan);
+            }
+        }
+
+        // Rapor satırı ya da kartındaki kalem: maddeyi düzenle.
+        private void VerReportEdit_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is ReportItem report)
+            {
+                viewModel.EditReportItem(report);
+            }
+        }
+
+        // Plan satırına çift tık: düzenle.
+        private void VerPlanRow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2 && (sender as FrameworkElement)?.Tag is PlanItem plan)
+            {
+                viewModel.EditPlanItem(plan);
+                e.Handled = true;
+            }
+        }
+
+        // Rapor satırına çift tık: düzenle.
+        private void VerReportRow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2 && (sender as FrameworkElement)?.Tag is ReportItem report)
+            {
+                viewModel.EditReportItem(report);
+                e.Handled = true;
+            }
+        }
+
+        // Rapor kartındaki sonucun yeri: Aç.
+        private void VerReportPathOpen_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is ReportItem report)
+            {
+                viewModel.OpenReportPath(report);
+            }
+        }
+
+        // Plan maddesi penceresindeki Sil: onay sorulur.
+        private void VerPlanDelete_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.RequestDeletePlanItem();
+        }
+
+        // Rapor maddesi penceresindeki Sil: onay sorulur.
+        private void VerReportDelete_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.RequestDeleteReportItem();
+        }
+
+        private void VerLinkDelete_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            viewModel.ConfirmDeleteVerLink();
         }
 
         // Doğrulama satırı: tek tık açar / kapar (tam gereksinim, plan / rapor özeti), çift tık düzenleme penceresi.
