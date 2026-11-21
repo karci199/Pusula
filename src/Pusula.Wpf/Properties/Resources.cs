@@ -3160,6 +3160,18 @@ namespace Pusula.Wpf.Properties
         /// <summary>Stok sayfası: Ekle düğmesinin ipucu.</summary>
         public static string StockInv_AddToolHint { get { return Get("StockInv_AddToolHint"); } }
 
+        /// <summary>Ekleme penceresi: yeni alt tür düğmesi.</summary>
+        public static string Inv_NewSubType { get { return Get("Inv_NewSubType"); } }
+
+        /// <summary>Ekleme penceresi: yeni alt tür düğmesinin ipucu.</summary>
+        public static string Inv_NewSubTypeHint { get { return Get("Inv_NewSubTypeHint"); } }
+
+        /// <summary>Ekleme penceresi: yeni alt tür kutusunun ipucu.</summary>
+        public static string Inv_NewSubTypePlaceholder { get { return Get("Inv_NewSubTypePlaceholder"); } }
+
+        /// <summary>Ekleme penceresi: yazılan alt türü ekler.</summary>
+        public static string Inv_SubTypeAdd { get { return Get("Inv_SubTypeAdd"); } }
+
         #endregion
     }
 }

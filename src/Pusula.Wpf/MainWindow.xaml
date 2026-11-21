@@ -3342,9 +3342,24 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                 </controls:FormField>
-                <controls:FormField Header="{x:Static res:Resources.Inv_SubType}" LabelWidth="130" Margin="0,10,0,0"
-                                    Visibility="{Binding HasInventorySubTypes, Converter={StaticResource BoolToVis}}">
-                    <ComboBox ItemsSource="{Binding InventorySubTypes}" SelectedItem="{Binding NewInventorySubType, Mode=TwoWay}" Width="300" HorizontalAlignment="Left" />
+                <controls:FormField Header="{x:Static res:Resources.Inv_SubType}" LabelWidth="130" Margin="0,10,0,0">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <ComboBox ItemsSource="{Binding InventorySubTypes}" SelectedItem="{Binding NewInventorySubType, Mode=TwoWay}" Width="300"
+                                      Visibility="{Binding HasInventorySubTypes, Converter={StaticResource BoolToVis}}" Margin="0,0,6,0" />
+                            <Button Click="NewSubTypeToggle_Click" ToolTip="{x:Static res:Resources.Inv_NewSubTypeHint}">
+                                <StackPanel Orientation="Horizontal">
+                                    <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" />
+                                    <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Inv_NewSubType}" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0" Visibility="{Binding IsAddingSubType, Converter={StaticResource BoolToVis}}">
+                            <TextBox x:Name="NewSubTypeBox" Width="300" Margin="0,0,6,0" Text="{Binding NewSubTypeText, UpdateSourceTrigger=PropertyChanged}"
+                                     controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Inv_NewSubTypePlaceholder}" KeyDown="NewSubTypeBox_KeyDown" />
+                            <Button Style="{DynamicResource AccentButtonStyle}" Content="{x:Static res:Resources.Inv_SubTypeAdd}" Click="NewSubTypeAdd_Click" />
+                        </StackPanel>
+                    </StackPanel>
                 </controls:FormField>
                 <controls:FormField Header="{x:Static res:Resources.Inv_Name}" IsRequired="True" LabelWidth="130" Margin="0,10,0,0">
                     <TextBox Text="{Binding NewInventoryName, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" controls:TextBoxHelper.PlaceholderText="{Binding NewInventoryNamePlaceholder}" />

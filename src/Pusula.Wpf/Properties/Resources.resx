@@ -2953,4 +2953,16 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="StockInv_AddToolHint" xml:space="preserve">
     <value>Bu stoka test yardımcı aracı ekle (kullanım yeri bu stok gelir)</value>
   </data>
+  <data name="Inv_NewSubType" xml:space="preserve">
+    <value>Yeni alt tür</value>
+  </data>
+  <data name="Inv_NewSubTypeHint" xml:space="preserve">
+    <value>Bu türe yeni bir alt tür ekle; listede kalıcı olur (Tanımlar'dan da düzenlenir).</value>
+  </data>
+  <data name="Inv_NewSubTypePlaceholder" xml:space="preserve">
+    <value>Alt tür adı · Enter ekler, Esc vazgeçer</value>
+  </data>
+  <data name="Inv_SubTypeAdd" xml:space="preserve">
+    <value>Ekle</value>
+  </data>
 </root>

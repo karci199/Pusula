@@ -572,6 +572,60 @@ namespace Pusula.Wpf.ViewModels
             private set { SetProperty(ref inventoryError, value); }
         }
 
+        private bool isAddingSubType;
+        private string newSubTypeText = string.Empty;
+
+        /// <summary>Ekleme penceresinde "yeni alt tür" kutusu açık mı.</summary>
+        public bool IsAddingSubType
+        {
+            get { return isAddingSubType; }
+            set
+            {
+                if (SetProperty(ref isAddingSubType, value) && !value)
+                {
+                    NewSubTypeText = string.Empty;
+                }
+            }
+        }
+
+        /// <summary>Yazılan yeni alt tür adı.</summary>
+        public string NewSubTypeText
+        {
+            get { return newSubTypeText; }
+            set { SetProperty(ref newSubTypeText, value ?? string.Empty); }
+        }
+
+        /// <summary>
+        /// Yazılan alt türü seçili türün listesine kalıcı ekler (tür dosyasına yazılır) ve seçer. Listede zaten varsa
+        /// (büyük/küçük harf duyarsız) yalnız seçer. Boşsa bir şey yapmaz.
+        /// </summary>
+        public bool AddSubType()
+        {
+            var name = string.Join(" ", NewSubTypeText.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries));
+            var type = newInventoryType;
+            if (name.Length == 0 || type == null)
+            {
+                return false;
+            }
+
+            // "satimo" = "SATIMO" (i/I) ve "İzolatör" = "izolatör" (Türkçe İ/i) ikisi de aynı sayılır.
+            var turkish = System.Globalization.CultureInfo.GetCultureInfo("tr-TR").CompareInfo;
+            var existing = type.SubTypes.FirstOrDefault(s => string.Equals(s, name, StringComparison.OrdinalIgnoreCase)
+                || turkish.Compare(s, name, System.Globalization.CompareOptions.IgnoreCase) == 0);
+            if (existing == null)
+            {
+                type.SubTypes.Add(name);
+                SaveTypes();
+                InventorySubTypes.Add(name);
+                OnPropertyChanged(nameof(HasInventorySubTypes));
+                existing = name;
+            }
+
+            NewInventorySubType = existing;
+            IsAddingSubType = false;
+            return true;
+        }
+
         /// <summary>Ekleme penceresinde seçilebilen türler (Mekanik jig, Kablaj, Yazılım …).</summary>
         public ObservableCollection<TypeDefinition> InventoryTypeOptions { get; } = new ObservableCollection<TypeDefinition>();
 
@@ -667,6 +721,7 @@ namespace Pusula.Wpf.ViewModels
             }
 
             IsInventoryMarkMode = false;
+            IsAddingSubType = false;
             BuildUsePlaces();
             InventoryTypeOptions.Clear();
             foreach (var option in types.InventoryTypes)

@@ -1096,6 +1096,36 @@ namespace Pusula.Wpf
             menu.Items.Insert(index, tool);
         }
 
+        // Ekleme penceresi: "+ Yeni alt tür" kutuyu açar / kapatır; açılınca kutuya odaklanır.
+        private void NewSubTypeToggle_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.IsAddingSubType = !viewModel.IsAddingSubType;
+            if (viewModel.IsAddingSubType)
+            {
+                Dispatcher.BeginInvoke(new Action(() => NewSubTypeBox.Focus()), System.Windows.Threading.DispatcherPriority.Input);
+            }
+        }
+
+        private void NewSubTypeAdd_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.AddSubType();
+        }
+
+        // Enter ekler, Esc kapatır (Esc pencerenin kendisini kapatmasın).
+        private void NewSubTypeBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                viewModel.AddSubType();
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Escape)
+            {
+                viewModel.IsAddingSubType = false;
+                e.Handled = true;
+            }
+        }
+
         // Stok sayfası, Test yardımcı araçları: "Ekle" ortak pencereyi açar; kullanım yeri bu stok gelir.
         private void StockToolAdd_Click(object sender, RoutedEventArgs e)
         {

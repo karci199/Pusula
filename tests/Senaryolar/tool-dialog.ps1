@@ -31,6 +31,19 @@ Check 'numara ipucu türden' ($vm.InventoryNumberHint -like 'JIG-*') $vm.Invento
 $vm.InventoryTypeChoice = $null
 Check 'boş değer seçimi silmez' ($vm.InventoryTypeChoice.Key -eq 'jig')
 
+"--- Yeni alt tür"
+$before = $jig.SubTypes.Count
+$vm.IsAddingSubType = $true; $vm.NewSubTypeText = '  Anten   tutucu '
+Check 'yeni alt tür eklenir ve seçilir' ($vm.AddSubType() -and $vm.NewInventorySubType -eq 'Anten tutucu' -and $jig.SubTypes.Count -eq $before + 1 -and -not $vm.IsAddingSubType) $vm.NewInventorySubType
+$typesFile = @(Get-ChildItem $Data -Recurse -Filter 'turler.json')[0].FullName
+Check 'tür dosyasına yazıldı' ([IO.File]::ReadAllText($typesFile).Contains('Anten tutucu')) $typesFile
+$vm.IsAddingSubType = $true; $vm.NewSubTypeText = 'satimo'
+Check 'var olan alt tür tekrar eklenmez, seçilir' ($vm.AddSubType() -and $vm.NewInventorySubType -eq 'SATIMO' -and $jig.SubTypes.Count -eq $before + 1) $vm.NewInventorySubType
+$vm.IsAddingSubType = $true; $vm.NewSubTypeText = '   '
+Check 'boş ad eklenmez' (-not $vm.AddSubType() -and $jig.SubTypes.Count -eq $before + 1)
+$vm.IsAddingSubType = $false
+$vm.NewInventorySubType = 'Anten tutucu'
+
 $vm.NewInventoryName = 'TEST MEKANIK SATIMO AB-7000-0002'; $vm.NewInventoryNumber = 'JIG-7000-0011'
 $vm.NewInventoryNote = "Satır 1`r`nSatır 2"; $vm.NewInventoryTags = '#satimo'
 # Pencere görüntüsü: açık ContentDialog'un açılır katmanı ayrıca çizilir (Snap onu yakalamaz).
