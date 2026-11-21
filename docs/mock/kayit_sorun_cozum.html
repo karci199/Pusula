@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Kayıt · sorun ve çözüm</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1f1f1f;font-family:"Segoe UI",Arial,sans-serif;color:#e6e6e6;font-size:14px}
+.page{width:1500px;padding:26px 30px 30px;background:#202020;display:grid;grid-template-columns:1fr 1fr;gap:28px 30px}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin:0 0 10px}
+.cap b{color:#4cc2ff;margin-right:6px}
+.mut{color:#9a9a9a;font-size:12.5px}
+.row{display:flex;align-items:center;gap:8px}
+.dlg{background:#2b2b2b;border:1px solid #3c3c3c;border-radius:10px;padding:18px 22px}
+.dlg h1{margin:0 0 12px;font-size:19px;font-weight:600;color:#fff}
+.f{display:grid;grid-template-columns:110px 1fr;align-items:start;margin-bottom:10px}
+.f label{padding-top:7px;color:#d0d0d0}
+.f label i{color:#ff99a4;font-style:normal}
+.box{min-height:32px;border:1px solid #3c3c3c;background:#333;border-radius:5px;padding:6px 11px;color:#fff;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.combo{justify-content:space-between}
+.combo:after{content:"⌄";color:#aaa;font-size:14px;margin-top:-6px}
+.ph{color:#8a8a8a}
+.hint{font-size:12px;color:#8a8a8a;margin-top:5px}
+.ico{width:22px;height:22px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+.var{border-radius:8px;padding:12px 12px 2px;margin:2px -12px 10px -12px}
+.v-red{border:1px solid #e0556188;background:#e055610d}
+.v-green{border:1px solid #5cb85c88;background:#5cb85c0d}
+.tag{font-size:12px;padding:1px 9px;border-radius:10px;border:1px solid #2f6b8c;color:#8fd0ff}
+.seg{display:flex;gap:6px}
+.seg span{font-size:13px;padding:5px 14px;border-radius:14px;border:1px solid #444;background:#303030;color:#bdbdbd}
+.seg .on{border-color:#4cc2ff;color:#fff;font-weight:600;background:#36404a}
+.list{margin-top:4px;background:#2c2c2c;border:1px solid #474747;border-radius:8px;box-shadow:0 8px 24px #0008;padding:5px}
+.it{display:grid;grid-template-columns:1fr 90px;gap:8px;align-items:center;padding:6px 10px;border-radius:5px;font-size:13px}
+.it.sel{background:#36404a}
+.grp{font-size:11px;color:#8a8a8a;font-weight:600;letter-spacing:.3px;padding:6px 10px 3px}
+.st{font-size:11px;font-weight:600;padding:2px 8px;border-radius:5px;text-align:center;white-space:nowrap}
+.s-open{background:#4a2326;color:#ff99a4}.s-done{background:#1f3d26;color:#8fdc9b}
+.panel{background:#272727;border:1px solid #363636;border-radius:12px;padding:12px 14px}
+.card{border:1px solid #3c3c3c;background:#2f2f2f;border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.op{font-size:11.5px;padding:2px 8px;border-radius:6px}
+.o-red{background:#4a2326;color:#ff99a4}.o-green{background:#1f3a2a;color:#8fdc9b}
+.link{font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:6px;background:#2b3b2b;color:#b8da8a}
+.btn{font-size:12px;padding:3px 10px;border-radius:5px;background:#3a3a3a;border:1px solid #4a4a4a}
+.md{font-family:Consolas,monospace;font-size:12px;background:#1b1b1b;border:1px solid #333;border-radius:8px;padding:12px 14px;color:#cfcfcf;line-height:1.6;white-space:pre;overflow:hidden}
+.md .k{color:#8fd0ff}.md .y{color:#f6c46f}
+.note{grid-column:1/3;font-size:12.5px;color:#9a9a9a;line-height:1.65;background:#262626;border:1px solid #333;border-radius:10px;padding:12px 16px}
+.note b{color:#ddd}
+</style></head><body>
+<div class="page">
+  <div>
+    <div class="cap"><b>1</b>SORUN</div>
+    <div class="dlg">
+      <h1>Zaman çizelgesine kayıt</h1>
+      <div class="f"><label>İşlem</label><div class="box combo"><span class="row"><span class="ico o-red">!</span>Sorun</span></div></div>
+      <div class="var v-red">
+        <div class="f"><label>İlgili madde</label><div><div class="box combo"><span><b style="color:#8fd0ff">DGÖ-7</b> · Titreşim sonrası VSWR</span></div><div class="hint">İsteğe bağlı.</div></div></div>
+        <div class="f"><label>Birim</label><div><div class="box"><span class="tag">SN-002</span><span class="ph">seri no</span></div><div class="hint">İsteğe bağlı; hangi birimde görüldü.</div></div></div>
+        <div class="f"><label>Durum</label><div><div class="seg"><span class="on">Açık</span><span>Çözüldü</span></div><div class="hint">Açık başlar; bir Çözüm kaydı bağlanınca kendiliğinden "Çözüldü" olur.</div></div></div>
+      </div>
+      <div class="f"><label>Başlık <i>*</i></label><div class="box">Titreşimde jig gevşedi</div></div>
+      <div class="f"><label>Açıklama</label><div class="box" style="min-height:48px;align-items:flex-start">VSWR değişimi 0,16 (sınır 0,1).</div></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="cap"><b>2</b>ÇÖZÜM · BİR SORUNA BAĞLI YA DA TEK BAŞINA</div>
+    <div class="dlg">
+      <h1>Zaman çizelgesine kayıt</h1>
+      <div class="f"><label>İşlem</label><div class="box combo"><span class="row"><span class="ico o-green">✓</span>Çözüm</span></div></div>
+      <div class="var v-green">
+        <div class="f"><label>Çözdüğü sorun</label><div>
+          <div class="box combo"><span>Titreşimde jig gevşedi <span class="mut">· 04.11</span></span></div>
+          <div class="list">
+            <div class="it"><span>— Yok (doğrudan çözüm)</span><span></span></div>
+            <div class="grp">AÇIK SORUNLAR</div>
+            <div class="it sel"><span>Titreşimde jig gevşedi <span class="mut">· 04.11 · DGÖ-7 · SN-002</span></span><span class="st s-open">Açık</span></div>
+            <div class="it"><span>+70 °C'de kazanç düşüşü <span class="mut">· 14.11 · DGÖ-8</span></span><span class="st s-open">Açık</span></div>
+          </div>
+          <div class="hint">İsteğe bağlı. Seçilirse sorun "Çözüldü" olur; "Yok" ile çözüm tek başına yazılır.</div></div></div>
+      </div>
+      <div class="f"><label>Başlık <i>*</i></label><div class="box">Sabitleme vidaları değişti</div></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="cap"><b>3</b>ÇİZELGEDE</div>
+    <div class="panel">
+      <div class="card" style="border-left:4px solid #5cb85c">
+        <div class="row"><span class="op o-green">✓ Çözüm</span><b>Sabitleme vidaları değişti</b><span class="link">↳ Titreşimde jig gevşedi</span><span class="mut" style="margin-left:auto">10.11</span></div>
+        <div class="mut" style="margin-top:5px">Titreşim sonrası gevşeme giderildi.</div>
+      </div>
+      <div class="card" style="border-left:4px solid #e05561">
+        <div class="row"><span class="op o-red">! Sorun</span><b>Titreşimde jig gevşedi</b><span class="link" style="background:#2b3b4b;color:#8fd0ff">↳ DGÖ-7</span><span class="st s-done">Çözüldü · 10.11</span><span class="mut" style="margin-left:auto">04.11</span></div>
+        <div class="mut" style="margin-top:5px">VSWR değişimi 0,16 (sınır 0,1). · SN-002</div>
+      </div>
+      <div class="card" style="border-left:4px solid #e05561">
+        <div class="row"><span class="op o-red">! Sorun</span><b>+70 °C'de kazanç düşüşü</b><span class="st s-open">Açık · 7 gün</span><span style="flex:1"></span><span class="btn">✓ Çözüm ekle</span><span class="mut">14.11</span></div>
+        <div class="mut" style="margin-top:5px">1,3 dB düşüş.</div>
+      </div>
+      <div class="mut">Açık sorunlar Yapılacaklar sekmesinde "Açık sorunlar" olarak da listelenir.</div>
+    </div>
+  </div>
+
+  <div>
+    <div class="cap"><b>4</b>NOTA YAZILAN</div>
+    <div class="md"><span class="k">### 10.11.2026 · Çözüm · Sabitleme vidaları değişti</span>
+kişi: katan · <span class="y">çözdüğü: 04.11.2026 · Titreşimde jig gevşedi</span>
+
+Titreşim sonrası gevşeme giderildi.
+
+#### Ayrıntı
+
+<span class="k">### 04.11.2026 · Sorun · Titreşimde jig gevşedi</span>
+önem: Kritik · kişi: katan · madde: DGÖ-7 · <span class="y">birim: SN-002 · durum: Çözüldü</span>
+
+VSWR değişimi 0,16 (sınır 0,1).
+
+#### Ayrıntı</div>
+  </div>
+
+  <div class="note">
+    <b>Sorun:</b> ilgili madde, birim, durum (Açık / Çözüldü) — hepsi isteğe bağlı. Kartta açık sorunda "✓ Çözüm ekle" pencereyi bu sorun seçili açar.<br>
+    <b>Çözüm:</b> tek alan "Çözdüğü sorun": — Yok (doğrudan çözüm) ya da açık sorunlardan biri. Bağlanınca sorun "Çözüldü" olur.
+  </div>
+</div>
+</body></html>

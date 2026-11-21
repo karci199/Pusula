@@ -141,6 +141,30 @@ namespace Pusula.Wpf.ViewModels
                 RevisionMeta = string.Join(" · ", new[] { journal.RevisionStock, journal.RevisionChangeNo }.Where(s => s.Length > 0));
             }
 
+            // Sorun: durum rozeti ("Açık · 7 gün" / "Çözüldü · 10.11"), birim açıklamanın altında. Çözüm: "↳ sorun başlığı".
+            if (journal != null && MainViewModel.IsIssueKind(journal.KindLabel))
+            {
+                var solved = MainViewModel.IsIssueSolved(journal.RequestStatus);
+                IssueStatusKind = solved ? 2 : 1;
+                var days = Math.Max(0, (DateTime.Today - journal.Date.Date).Days);
+                var since = solved ? journal.RequestStatus.Trim().Substring(Resources.Issue_Solved.Length).Trim() : string.Empty;
+                DateTime solvedOn;
+                if (DateTime.TryParseExact(since, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out solvedOn))
+                {
+                    since = solvedOn.ToString("dd.MM", CultureInfo.InvariantCulture);
+                }
+
+                IssueStatusText = solved ? Resources.Issue_Solved + (since.Length > 0 ? " · " + since : string.Empty)
+                    : string.Format(CultureInfo.CurrentCulture, Resources.Issue_OpenDays, days);
+                IssueUnit = journal.IssueUnit;
+            }
+
+            if (journal != null && journal.Resolves.Trim().Length > 0)
+            {
+                var dash = journal.Resolves.IndexOf(" — ", StringComparison.Ordinal);
+                SolutionText = "↳ " + (dash >= 0 ? journal.Resolves.Substring(dash + 3) : journal.Resolves).Trim();
+            }
+
             // Mail: kartta ✉ düğmesi (Outlook'ta açar).
             HasMail = journal != null && journal.Mail.Trim().Length > 0;
 
@@ -154,6 +178,42 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Kayda bağlı mail (.msg) var mı (✉ düğmesi).</summary>
         public bool HasMail { get; }
+
+        /// <summary>Sorun durumu: 0 sorun değil, 1 açık, 2 çözüldü.</summary>
+        public int IssueStatusKind { get; }
+
+        /// <summary>Sorun durumu metni ("Açık · 7 gün", "Çözüldü · 10.11").</summary>
+        public string IssueStatusText { get; } = string.Empty;
+
+        /// <summary>Sorun mu (durum rozeti görünür).</summary>
+        public bool IsIssue
+        {
+            get { return IssueStatusKind > 0; }
+        }
+
+        /// <summary>Açık sorun mu ("✓ Çözüm ekle" düğmesi).</summary>
+        public bool IsIssueOpen
+        {
+            get { return IssueStatusKind == 1; }
+        }
+
+        /// <summary>Sorunun birimi (seri no); yoksa boş.</summary>
+        public string IssueUnit { get; } = string.Empty;
+
+        /// <summary>Birim var mı.</summary>
+        public bool HasIssueUnit
+        {
+            get { return IssueUnit.Length > 0; }
+        }
+
+        /// <summary>Çözümün bağlı olduğu sorun ("↳ Titreşimde jig gevşedi"); yoksa boş.</summary>
+        public string SolutionText { get; } = string.Empty;
+
+        /// <summary>Çözüm bir soruna bağlı mı.</summary>
+        public bool HasSolution
+        {
+            get { return SolutionText.Length > 0; }
+        }
 
         /// <summary>Revizyon çipi ("rev A → B"); revizyon değilse boş.</summary>
         public string RevisionText { get; } = string.Empty;
@@ -483,6 +543,7 @@ namespace Pusula.Wpf.ViewModels
                     OnDecisionChanged();
                     OnRequestChanged();
                     OnRevisionChanged();
+                    OnIssueChanged();
                 }
             }
         }
@@ -688,6 +749,16 @@ namespace Pusula.Wpf.ViewModels
             }
 
             OnPropertyChanged(nameof(HasOpenRequests));
+
+            // Açık sorunlar (Yapılacaklar sekmesinde): eskiden yeniye.
+            OpenIssues.Clear();
+            foreach (var card in Detail.Timeline.Where(t => t.Journal != null && IsIssueKind(t.Journal.KindLabel) && !IsIssueSolved(t.Journal.RequestStatus))
+                .OrderBy(t => t.SortDate).Select(t => new StockTimelineCard(t) { ProjectColor = color }))
+            {
+                OpenIssues.Add(card);
+            }
+
+            OnPropertyChanged(nameof(HasOpenIssues));
             if (timelineFilter == "all" || timelineFilter == "planned")
             {
                 var planned = Detail.OpenTasks.Where(t => !t.IsDone).OrderBy(t => t.Task.Due ?? DateTime.MaxValue).Select(t => new StockTimelineCard(t) { ProjectColor = color }).ToList();

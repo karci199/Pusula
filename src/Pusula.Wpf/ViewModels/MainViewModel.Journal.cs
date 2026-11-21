@@ -79,6 +79,7 @@ namespace Pusula.Wpf.ViewModels
                     OnDecisionChanged();
                     OnRequestChanged();
                     OnRevisionChanged();
+                    OnIssueChanged();
                 }
             }
         }
@@ -228,6 +229,7 @@ namespace Pusula.Wpf.ViewModels
             ResetJournalDecision(note);
             ResetJournalRequest(note);
             ResetJournalRevision(note);
+            ResetJournalIssue(note);
             ResetJournalMail(note);
             OnPropertyChanged(nameof(IsJournalEditing));
             OnPropertyChanged(nameof(JournalPrimaryText));
@@ -386,6 +388,7 @@ namespace Pusula.Wpf.ViewModels
             ResetJournalDecision(null);
             ResetJournalRequest(null);
             ResetJournalRevision(null);
+            ResetJournalIssue(null);
             ResetJournalMail(null);
             OnPropertyChanged(nameof(IsJournalEditing));
             IsJournalOpen = true;
@@ -429,6 +432,7 @@ namespace Pusula.Wpf.ViewModels
             ApplyJournalMeeting(entry);
             ApplyJournalDecision(entry);
             ApplyJournalRevision(entry);
+            ApplyJournalIssue(entry);
             if (!ApplyJournalRequest(entry))
             {
                 return false;
@@ -447,6 +451,7 @@ namespace Pusula.Wpf.ViewModels
             }
 
             ApplyJournalMeasurement(entry);
+            CloseResolvedIssue(entry);
             if (entry.Item.Length > 0 && string.Equals(journalItemStock, verificationStock, StringComparison.OrdinalIgnoreCase))
             {
                 LoadVerifications();

@@ -321,6 +321,16 @@ namespace Pusula.Wpf
             }
         }
 
+        // Açık sorunun kartından "✓ Çözüm ekle": kayıt penceresi Çözüm ve bu sorun seçili açılır.
+        private void TimelineAddSolution_Click(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (((FrameworkElement)sender).DataContext is StockTimelineCard card && card.Item?.Journal != null)
+            {
+                viewModel.OpenSolutionFor(card.Item.Journal);
+            }
+        }
+
         // Malzeme talebi: kalem satırı ekle / çıkar.
         private void RequestItemAdd_Click(object sender, RoutedEventArgs e)
         {

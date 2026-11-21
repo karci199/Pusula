@@ -3046,6 +3046,48 @@ namespace Pusula.Wpf.Properties
         /// <summary>Altyapı listesinin sonundaki yeni ekleme seçeneği.</summary>
         public static string Verify_NewFacility { get { return Get("Verify_NewFacility"); } }
 
+        /// <summary>Sorun: birim alanı.</summary>
+        public static string Issue_Unit { get { return Get("Issue_Unit"); } }
+
+        /// <summary>Sorun: birim alanının açıklaması.</summary>
+        public static string Issue_UnitHint { get { return Get("Issue_UnitHint"); } }
+
+        /// <summary>Sorun: ilgili madde alanı.</summary>
+        public static string Issue_Item { get { return Get("Issue_Item"); } }
+
+        /// <summary>Sorun: ilgili madde alanının açıklaması.</summary>
+        public static string Issue_ItemHint { get { return Get("Issue_ItemHint"); } }
+
+        /// <summary>Sorun: durum alanı.</summary>
+        public static string Issue_Status { get { return Get("Issue_Status"); } }
+
+        /// <summary>Sorun: durum alanının açıklaması.</summary>
+        public static string Issue_StatusHint { get { return Get("Issue_StatusHint"); } }
+
+        /// <summary>Sorun durumu: açık.</summary>
+        public static string Issue_Open { get { return Get("Issue_Open"); } }
+
+        /// <summary>Sorun durumu: çözüldü (notta tarihiyle).</summary>
+        public static string Issue_Solved { get { return Get("Issue_Solved"); } }
+
+        /// <summary>Kartta açık sorunun rozeti; {0} gün sayısı.</summary>
+        public static string Issue_OpenDays { get { return Get("Issue_OpenDays"); } }
+
+        /// <summary>Açık sorunun kartındaki düğme.</summary>
+        public static string Issue_AddSolution { get { return Get("Issue_AddSolution"); } }
+
+        /// <summary>Yapılacaklar sekmesinde açık sorunlar başlığı.</summary>
+        public static string Issue_OpenTitle { get { return Get("Issue_OpenTitle"); } }
+
+        /// <summary>Çözüm: çözdüğü sorun alanı.</summary>
+        public static string Solution_Resolves { get { return Get("Solution_Resolves"); } }
+
+        /// <summary>Çözüm: bir soruna bağlı olmayan seçenek.</summary>
+        public static string Solution_None { get { return Get("Solution_None"); } }
+
+        /// <summary>Çözüm: çözdüğü sorun alanının açıklaması.</summary>
+        public static string Solution_Hint { get { return Get("Solution_Hint"); } }
+
         #endregion
     }
 }

@@ -71,6 +71,12 @@ namespace Pusula.Core.Notes
         /// <summary>Günlük girdisinin ölçüm klasörü (<c>klasör:</c>, kayıt klasörüne göre); yoksa boş.</summary>
         public string Folder { get; private set; } = string.Empty;
 
+        /// <summary>Sorunun birimi (<c>birim:</c>); yoksa boş.</summary>
+        public string IssueUnit { get; private set; } = string.Empty;
+
+        /// <summary>Çözümün kapattığı sorunun anahtarı (<c>çözdüğü:</c>, bkz. <see cref="Journal.IssueKey"/>); yoksa boş.</summary>
+        public string Resolves { get; private set; } = string.Empty;
+
         /// <summary>Bağlı mail dosyası (<c>mail:</c>, kayıt klasörüne göre); yoksa boş.</summary>
         public string Mail { get; private set; } = string.Empty;
 
@@ -128,6 +134,8 @@ namespace Pusula.Core.Notes
                 RevisionNew = revision[2],
                 RevisionChangeNo = revision[3],
                 Mail = revision[4],
+                IssueUnit = revision[5],
+                Resolves = revision[6],
                 RequestType = request.Type,
                 RequestNo = request.No,
                 RequestFrom = request.From,

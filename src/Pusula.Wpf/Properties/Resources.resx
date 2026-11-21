@@ -2838,4 +2838,46 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Timeline_OpenMail" xml:space="preserve">
     <value>Maili Outlook&apos;ta aç</value>
   </data>
+  <data name="Issue_Unit" xml:space="preserve">
+    <value>Birim</value>
+  </data>
+  <data name="Issue_UnitHint" xml:space="preserve">
+    <value>İsteğe bağlı; hangi birimde görüldü (seri no).</value>
+  </data>
+  <data name="Issue_Item" xml:space="preserve">
+    <value>İlgili madde</value>
+  </data>
+  <data name="Issue_ItemHint" xml:space="preserve">
+    <value>İsteğe bağlı.</value>
+  </data>
+  <data name="Issue_Status" xml:space="preserve">
+    <value>Durum</value>
+  </data>
+  <data name="Issue_StatusHint" xml:space="preserve">
+    <value>Açık başlar; bir Çözüm kaydı bağlanınca kendiliğinden "Çözüldü" olur.</value>
+  </data>
+  <data name="Issue_Open" xml:space="preserve">
+    <value>Açık</value>
+  </data>
+  <data name="Issue_Solved" xml:space="preserve">
+    <value>Çözüldü</value>
+  </data>
+  <data name="Issue_OpenDays" xml:space="preserve">
+    <value>Açık · {0} gün</value>
+  </data>
+  <data name="Issue_AddSolution" xml:space="preserve">
+    <value>Çözüm ekle</value>
+  </data>
+  <data name="Issue_OpenTitle" xml:space="preserve">
+    <value>Açık sorunlar</value>
+  </data>
+  <data name="Solution_Resolves" xml:space="preserve">
+    <value>Çözdüğü sorun</value>
+  </data>
+  <data name="Solution_None" xml:space="preserve">
+    <value>— Yok (doğrudan çözüm)</value>
+  </data>
+  <data name="Solution_Hint" xml:space="preserve">
+    <value>İsteğe bağlı. Seçilirse sorun "Çözüldü" olur; "Yok" ile çözüm tek başına yazılır.</value>
+  </data>
 </root>
