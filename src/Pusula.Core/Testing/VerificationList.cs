@@ -395,6 +395,116 @@ namespace Pusula.Core.Testing
             }
         }
 
+        /// <summary>Silinen madde bölümünün yerine yazılan satır (altında elle yazılmış ayrıntı varsa bölüm kalır).</summary>
+        public const string RemovedLine = "- *Madde tablodan silindi.*";
+
+        /// <summary>
+        /// Madde tablodan silinince okunur bölümlerini toplar: bölümün altında elle yazılmış bir şey yoksa başlık ve işaretli
+        /// kısım kaldırılır; varsa elle yazılan korunur, işaretli kısma yalnız <see cref="RemovedLine"/> yazılır.
+        /// Hata metni ya da boş döndürür.
+        /// </summary>
+        public static string RemoveSections(string stockFolder, string key)
+        {
+            return EditSections(stockFolder, lines =>
+            {
+                var changed = false;
+                foreach (var kind in new[] { "plan", "sonuc" })
+                {
+                    var at = lines.FindIndex(l => string.Equals(l.Trim(), StartMarker(kind, key), StringComparison.Ordinal));
+                    if (at < 0)
+                    {
+                        continue;
+                    }
+
+                    var close = lines.FindIndex(at + 1, l => string.Equals(l.Trim(), EndMarker, StringComparison.Ordinal));
+                    if (close < 0)
+                    {
+                        continue;
+                    }
+
+                    // Bölümün sonu: sonraki başlık (### ya da ##) ya da dosya sonu; arada boş olmayan satır = elle yazılmış.
+                    var next = close + 1;
+                    while (next < lines.Count && !lines[next].StartsWith("#", StringComparison.Ordinal))
+                    {
+                        next++;
+                    }
+
+                    var hasFree = lines.Skip(close + 1).Take(next - close - 1).Any(l => l.Trim().Length > 0);
+                    var heading = at > 0 && lines[at - 1].StartsWith("### ", StringComparison.Ordinal) ? at - 1 : at;
+                    if (hasFree)
+                    {
+                        lines.RemoveRange(at + 1, close - at - 1);
+                        lines.Insert(at + 1, RemovedLine);
+                    }
+                    else
+                    {
+                        var from = heading > 0 && lines[heading - 1].Trim().Length == 0 ? heading - 1 : heading;
+                        lines.RemoveRange(from, close - from + 1);
+                    }
+
+                    changed = true;
+                }
+
+                return changed;
+            });
+        }
+
+        /// <summary>
+        /// Maddenin TG no'su değişince okunur bölümlerinin işaretlerini yeni anahtara çevirir (elle yazılan korunur;
+        /// başlık bir sonraki yazımda güncellenir). Yeni anahtarla bölüm zaten varsa dokunulmaz. Hata metni ya da boş döndürür.
+        /// </summary>
+        public static string RenameSections(string stockFolder, string oldKey, string newKey)
+        {
+            if (string.Equals(oldKey, newKey, StringComparison.Ordinal))
+            {
+                return string.Empty;
+            }
+
+            return EditSections(stockFolder, lines =>
+            {
+                var changed = false;
+                foreach (var kind in new[] { "plan", "sonuc" })
+                {
+                    var at = lines.FindIndex(l => string.Equals(l.Trim(), StartMarker(kind, oldKey), StringComparison.Ordinal));
+                    if (at < 0 || lines.Any(l => string.Equals(l.Trim(), StartMarker(kind, newKey), StringComparison.Ordinal)))
+                    {
+                        continue;
+                    }
+
+                    lines[at] = StartMarker(kind, newKey);
+                    changed = true;
+                }
+
+                return changed;
+            });
+        }
+
+        // Dosyayı satır satır düzenler (satır sonları, BOM korunur); işlev değişiklik yaptıysa atomik yazılır.
+        private static string EditSections(string stockFolder, Func<List<string>, bool> edit)
+        {
+            var path = PathFor(stockFolder);
+            try
+            {
+                if (!File.Exists(path))
+                {
+                    return string.Empty;
+                }
+
+                var text = File.ReadAllText(path);
+                var newline = text.Contains("\r\n") ? "\r\n" : "\n";
+                var lines = text.Replace("\r\n", "\n").Split('\n').ToList();
+                return edit(lines) ? WriteAtomic(path, string.Join(newline, lines), Journal.HasBom(path)) : string.Empty;
+            }
+            catch (IOException ex)
+            {
+                return ex.Message;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return ex.Message;
+            }
+        }
+
         /// <summary>Plan bölümünün satırları: TP · açıklama, yöntem · altyapı, not (boş olanlar atlanır).</summary>
         public static List<string> PlanLines(VerificationItem item)
         {
@@ -574,7 +684,8 @@ namespace Pusula.Core.Testing
                 }
             }
 
-            var block = new List<string> { string.Empty, title, marker };
+            // Önünde zaten boş satır varsa ikinci boş satır eklenmez.
+            var block = insertAt > 0 && lines[insertAt - 1].Trim().Length == 0 ? new List<string> { title, marker } : new List<string> { string.Empty, title, marker };
             block.AddRange(body);
             block.Add(EndMarker);
             if (insertAt < lines.Count && lines[insertAt].Trim().Length > 0)

@@ -1537,6 +1537,14 @@ namespace Pusula.Wpf.ViewModels
             pendingVerificationDelete = null;
             if (item != null && verificationStock.Length > 0 && WriteVerification(VerificationList.Remove(verificationStock, item.Number)))
             {
+                // Md'deki okunur bölümleri: altında elle yazılmış yoksa kalkar, varsa "silindi" notuyla kalır.
+                var sectionError = VerificationList.RemoveSections(verificationStock, VerificationList.KeyOf(item));
+                if (sectionError.Length > 0)
+                {
+                    Status = string.Format(CultureInfo.CurrentCulture, Resources.Verify_WriteFailed, sectionError);
+                    return;
+                }
+
                 Done(string.Format(CultureInfo.CurrentCulture, Resources.Verify_Deleted, item.Number, item.Text));
             }
         }
@@ -2174,8 +2182,9 @@ namespace Pusula.Wpf.ViewModels
 
             if (editingVerification != null)
             {
-                // Düzenleme: aynı numaralı satır yerinde değişir.
+                // Düzenleme: aynı numaralı satır yerinde değişir. TG no değiştiyse md'deki okunur bölümler yeni anahtara taşınır.
                 item.Number = editingVerification.Number;
+                VerificationList.RenameSections(verificationStock, VerificationList.KeyOf(editingVerification), VerificationList.KeyOf(item));
                 var updateError = VerificationList.Update(verificationStock, item);
                 if (updateError.Length > 0 && updateError != "missing")
                 {
