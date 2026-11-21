@@ -3325,6 +3325,69 @@ namespace Pusula.Wpf.Properties
         /// <summary>Plan / rapor kartı: Ayrıntı ipucu.</summary>
         public static string Verify_DetailHint { get { return Get("Verify_DetailHint"); } }
 
+        /// <summary>Kapsama uyarısı; {0} sayı, {1} TG no listesi.</summary>
+        public static string Verify_CoverageNoPlan { get { return Get("Verify_CoverageNoPlan"); } }
+
+        /// <summary>Kapsama uyarısı; {0} sayı, {1} TP no listesi.</summary>
+        public static string Verify_CoverageNoReport { get { return Get("Verify_CoverageNoReport"); } }
+
+        /// <summary>Kapsama uyarısı; {0} sayı, {1} TR no listesi.</summary>
+        public static string Verify_CoverageReportNoPlan { get { return Get("Verify_CoverageReportNoPlan"); } }
+
+        /// <summary>Plan satırı: bağlı gereksinim yok.</summary>
+        public static string Verify_NoRequirement { get { return Get("Verify_NoRequirement"); } }
+
+        /// <summary>Plan / gereksinim satırı: bağlı rapor yok.</summary>
+        public static string Verify_NoReport { get { return Get("Verify_NoReport"); } }
+
+        /// <summary>Gereksinim / rapor satırı: bağlı plan yok.</summary>
+        public static string Verify_NoPlan { get { return Get("Verify_NoPlan"); } }
+
+        /// <summary>Durum çubuğu: taşıma yapıldı.</summary>
+        public static string Verify_Migrated { get { return Get("Verify_Migrated"); } }
+
+        /// <summary>Doğrulama sekmesi: gereksinimler görünümü.</summary>
+        public static string Verify_ViewRequirements { get { return Get("Verify_ViewRequirements"); } }
+
+        /// <summary>Doğrulama sekmesi: gereksinimler alt yazısı.</summary>
+        public static string Verify_ViewRequirementsHint { get { return Get("Verify_ViewRequirementsHint"); } }
+
+        /// <summary>Doğrulama sekmesi: plan görünümü.</summary>
+        public static string Verify_ViewPlan { get { return Get("Verify_ViewPlan"); } }
+
+        /// <summary>Doğrulama sekmesi: plan alt yazısı.</summary>
+        public static string Verify_ViewPlanHint { get { return Get("Verify_ViewPlanHint"); } }
+
+        /// <summary>Doğrulama sekmesi: rapor görünümü.</summary>
+        public static string Verify_ViewReport { get { return Get("Verify_ViewReport"); } }
+
+        /// <summary>Doğrulama sekmesi: rapor alt yazısı.</summary>
+        public static string Verify_ViewReportHint { get { return Get("Verify_ViewReportHint"); } }
+
+        /// <summary>Gereksinimler görünümü: Rapor sütununu açar.</summary>
+        public static string Verify_ShowReports { get { return Get("Verify_ShowReports"); } }
+
+        /// <summary>Rapor görünümü: Gereksinimler sütununu açar.</summary>
+        public static string Verify_ShowRequirements { get { return Get("Verify_ShowRequirements"); } }
+
+        /// <summary>Plan / rapor tablosu: gereksinimler sütunu.</summary>
+        public static string Verify_ColRequirements { get { return Get("Verify_ColRequirements"); } }
+
+        /// <summary>Plan / rapor tablosu: açıklama sütunu.</summary>
+        public static string Verify_ColDescription { get { return Get("Verify_ColDescription"); } }
+
+        /// <summary>Rapor tablosu: sonuç sütunu.</summary>
+        public static string Verify_ColResult { get { return Get("Verify_ColResult"); } }
+
+        /// <summary>Rapor tablosu: sonucun yeri sütunu.</summary>
+        public static string Verify_ColResultPath { get { return Get("Verify_ColResultPath"); } }
+
+        /// <summary>Plan görünümü: boş.</summary>
+        public static string Verify_PlanEmptyList { get { return Get("Verify_PlanEmptyList"); } }
+
+        /// <summary>Rapor görünümü: boş.</summary>
+        public static string Verify_ReportEmptyList { get { return Get("Verify_ReportEmptyList"); } }
+
         #endregion
     }
 }

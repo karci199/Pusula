@@ -134,6 +134,69 @@
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
+        <!-- Bağ çipi: gereksinim mavi, plan mor, rapor sonucu (geçti yeşil, kaldı kırmızı, diğer gri), eksik sarı -->
+        <DataTemplate x:Key="LinkChipTemplate">
+            <Border x:Name="Chip" Margin="0,1,4,1" Padding="7,0" CornerRadius="8" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse x:Name="Dot" Width="7" Height="7" Margin="0,0,5,0" VerticalAlignment="Center" Visibility="Collapsed" />
+                    <TextBlock x:Name="Txt" FontSize="11.5" FontWeight="SemiBold" Text="{Binding Text}" Foreground="{DynamicResource TextSecondaryBrush}" />
+                </StackPanel>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Kind}" Value="0"><Setter TargetName="Txt" Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="5"><Setter TargetName="Txt" Property="Foreground" Value="#C8B6FF" /></DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="1">
+                    <Setter TargetName="Chip" Property="Background" Value="{DynamicResource SystemFillColorSuccessBackgroundBrush}" />
+                    <Setter TargetName="Dot" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                    <Setter TargetName="Txt" Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="2">
+                    <Setter TargetName="Chip" Property="Background" Value="{DynamicResource SystemFillColorCriticalBackgroundBrush}" />
+                    <Setter TargetName="Dot" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                    <Setter TargetName="Txt" Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="3">
+                    <Setter TargetName="Dot" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource TextTertiaryBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="4">
+                    <Setter TargetName="Chip" Property="Background" Value="{DynamicResource SystemFillColorCautionBackgroundBrush}" />
+                    <Setter TargetName="Txt" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+        <ItemsPanelTemplate x:Key="WrapItemsPanel">
+            <WrapPanel />
+        </ItemsPanelTemplate>
+        <!-- Doğrulama görünüm sekmesi: simge kutusu, ad + alt yazı, sayı rozeti; seçili olan vurgulu (alt çizgi) -->
+        <Style x:Key="VerViewTab" TargetType="RadioButton">
+            <Setter Property="Margin" Value="0,0,4,0" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Tab" CornerRadius="8" Padding="12,7,14,7" Background="Transparent" BorderThickness="0,0,0,2" BorderBrush="Transparent"
+                                TextElement.Foreground="{TemplateBinding Foreground}">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Tab" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" /></Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Tab" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                <Setter TargetName="Tab" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Kullanım yeri rozeti: Genel gri, Proje sarı, Stok yeşil (soluk zemin, renkli yazı) -->
         <DataTemplate x:Key="UsePlaceBadgeTemplate">
             <Border x:Name="Badge" CornerRadius="8" Padding="8,1" MinWidth="48" Background="{DynamicResource SubtleFillColorSecondaryBrush}" VerticalAlignment="Center">
@@ -2439,11 +2502,217 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
+                                <!-- Görünüm sekmeleri: Gereksinimler · Plan · Rapor; altında kapsama uyarısı -->
+                                <StackPanel Grid.Row="0" Margin="0,0,0,12">
+                                    <Border HorizontalAlignment="Left" Padding="4" CornerRadius="10" BorderThickness="1"
+                                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <RadioButton Style="{StaticResource VerViewTab}" GroupName="VerView" IsChecked="{Binding IsVerReqView, Mode=TwoWay}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Border Width="26" Height="26" CornerRadius="6" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="12" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    </Border>
+                                                    <StackPanel Margin="9,0,0,0" VerticalAlignment="Center">
+                                                        <TextBlock FontSize="13.5" Text="{x:Static res:Resources.Verify_ViewRequirements}" />
+                                                        <TextBlock FontSize="11" FontWeight="Normal" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_ViewRequirementsHint}" />
+                                                    </StackPanel>
+                                                    <Border Margin="10,0,0,0" MinWidth="22" Height="20" Padding="6,0" CornerRadius="10" VerticalAlignment="Center" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11.5" Text="{Binding VerificationCount}" />
+                                                    </Border>
+                                                </StackPanel>
+                                            </RadioButton>
+                                            <RadioButton Style="{StaticResource VerViewTab}" GroupName="VerView" IsChecked="{Binding IsVerPlanView, Mode=TwoWay}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Border Width="26" Height="26" CornerRadius="6" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Edit}" FontSize="12" Foreground="#C8B6FF" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    </Border>
+                                                    <StackPanel Margin="9,0,0,0" VerticalAlignment="Center">
+                                                        <TextBlock FontSize="13.5" Text="{x:Static res:Resources.Verify_ViewPlan}" />
+                                                        <TextBlock FontSize="11" FontWeight="Normal" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_ViewPlanHint}" />
+                                                    </StackPanel>
+                                                    <Border Margin="10,0,0,0" MinWidth="22" Height="20" Padding="6,0" CornerRadius="10" VerticalAlignment="Center" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11.5" Text="{Binding PlanCount}" />
+                                                    </Border>
+                                                </StackPanel>
+                                            </RadioButton>
+                                            <RadioButton Style="{StaticResource VerViewTab}" GroupName="VerView" IsChecked="{Binding IsVerReportView, Mode=TwoWay}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Border Width="26" Height="26" CornerRadius="6" Background="{DynamicResource SystemFillColorSuccessBackgroundBrush}">
+                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="12" Foreground="{DynamicResource SystemFillColorSuccessBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    </Border>
+                                                    <StackPanel Margin="9,0,0,0" VerticalAlignment="Center">
+                                                        <TextBlock FontSize="13.5" Text="{x:Static res:Resources.Verify_ViewReport}" />
+                                                        <TextBlock FontSize="11" FontWeight="Normal" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_ViewReportHint}" />
+                                                    </StackPanel>
+                                                    <Border Margin="10,0,0,0" MinWidth="22" Height="20" Padding="6,0" CornerRadius="10" VerticalAlignment="Center" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11.5" Text="{Binding ReportCount}" />
+                                                    </Border>
+                                                </StackPanel>
+                                            </RadioButton>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Margin="0,10,0,0" Padding="12,7" CornerRadius="8" BorderThickness="1"
+                                            Background="{DynamicResource SystemFillColorCautionBackgroundBrush}" BorderBrush="{DynamicResource SystemFillColorCautionBrush}"
+                                            Visibility="{Binding HasVerCoverageWarning, Converter={StaticResource BoolToVis}}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Warning}" FontSize="13" Foreground="{DynamicResource SystemFillColorCautionBrush}" VerticalAlignment="Center" />
+                                            <TextBlock Margin="8,0,0,0" FontSize="12.5" TextWrapping="Wrap" Foreground="{DynamicResource SystemFillColorCautionBrush}" Text="{Binding VerCoverageText}" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- Plan görünümü: plan maddeleri, doğruladıkları gereksinimler ve raporları -->
+                                <Border Grid.Row="1" Grid.RowSpan="3" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                        Background="{DynamicResource LayerBrush}" Padding="16,8,16,10" Visibility="{Binding IsVerPlanView, Converter={StaticResource BoolToVis}}">
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                        <StackPanel>
+                                            <Grid Margin="0,6,0,6" TextElement.Foreground="{DynamicResource TextSecondaryBrush}" TextElement.FontSize="12" TextElement.FontWeight="SemiBold">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="80" />
+                                                    <ColumnDefinition Width="*" MinWidth="200" />
+                                                    <ColumnDefinition Width="110" />
+                                                    <ColumnDefinition Width="120" />
+                                                    <ColumnDefinition Width="240" />
+                                                    <ColumnDefinition Width="220" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{x:Static res:Resources.Verify_PlanNo}" />
+                                                <TextBlock Grid.Column="1" Text="{x:Static res:Resources.Verify_ColDescription}" />
+                                                <TextBlock Grid.Column="2" Text="{x:Static res:Resources.Verify_FieldMethod}" />
+                                                <TextBlock Grid.Column="3" Text="{x:Static res:Resources.Verify_FieldFacility}" />
+                                                <TextBlock Grid.Column="4" Text="{x:Static res:Resources.Verify_ColRequirements}" />
+                                                <TextBlock Grid.Column="5" Text="{x:Static res:Resources.Verify_ViewReport}" />
+                                            </Grid>
+                                            <ItemsControl ItemsSource="{Binding PlanRows}" Focusable="False">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Padding="0,8" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="80" />
+                                                                    <ColumnDefinition Width="*" MinWidth="200" />
+                                                                    <ColumnDefinition Width="110" />
+                                                                    <ColumnDefinition Width="120" />
+                                                                    <ColumnDefinition Width="240" />
+                                                                    <ColumnDefinition Width="220" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <TextBlock FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding TpNo}" />
+                                                                <StackPanel Grid.Column="1" Margin="0,0,12,0" VerticalAlignment="Center">
+                                                                    <TextBlock TextWrapping="Wrap" Text="{Binding Description}" />
+                                                                    <TextBlock FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" TextTrimming="CharacterEllipsis" Text="{Binding Note}"
+                                                                               Visibility="{Binding HasNote, Converter={StaticResource BoolToVis}}" />
+                                                                </StackPanel>
+                                                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                                                    <Ellipse x:Name="MDot" Width="8" Height="8" Margin="0,0,6,0" VerticalAlignment="Center" Fill="{DynamicResource TextTertiaryBrush}" />
+                                                                    <TextBlock Text="{Binding Method}" />
+                                                                </StackPanel>
+                                                                <TextBlock Grid.Column="3" VerticalAlignment="Center" Text="{Binding Facility}" />
+                                                                <ItemsControl Grid.Column="4" VerticalAlignment="Center" ItemsSource="{Binding Requirements}" ItemTemplate="{StaticResource LinkChipTemplate}"
+                                                                              ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False" />
+                                                                <ItemsControl Grid.Column="5" VerticalAlignment="Center" ItemsSource="{Binding Reports}" ItemTemplate="{StaticResource LinkChipTemplate}"
+                                                                              ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False" />
+                                                            </Grid>
+                                                        </Border>
+                                                        <DataTemplate.Triggers>
+                                                            <DataTrigger Binding="{Binding MethodTone}" Value="1"><Setter TargetName="MDot" Property="Fill" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
+                                                            <DataTrigger Binding="{Binding MethodTone}" Value="2"><Setter TargetName="MDot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
+                                                            <DataTrigger Binding="{Binding MethodTone}" Value="3"><Setter TargetName="MDot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
+                                                            <DataTrigger Binding="{Binding MethodTone}" Value="4"><Setter TargetName="MDot" Property="Fill" Value="{DynamicResource TextPrimaryBrush}" /></DataTrigger>
+                                                        </DataTemplate.Triggers>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                            <TextBlock Margin="0,12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_PlanEmptyList}"
+                                                       Visibility="{Binding PlanCount, Converter={StaticResource ZeroToVis}}" />
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </Border>
+
+                                <!-- Rapor görünümü: rapor maddeleri, sonuç, bağlı planlar (gereksinimler istenirse) ve sonucun yeri -->
+                                <Border Grid.Row="1" Grid.RowSpan="3" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                        Background="{DynamicResource LayerBrush}" Padding="16,8,16,10" Visibility="{Binding IsVerReportView, Converter={StaticResource BoolToVis}}">
+                                    <DockPanel>
+                                        <CheckBox DockPanel.Dock="Top" HorizontalAlignment="Right" Margin="0,4,0,4" Content="{x:Static res:Resources.Verify_ShowRequirements}" IsChecked="{Binding ShowReportRequirements, Mode=TwoWay}" />
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                            <StackPanel>
+                                                <Grid Margin="0,6,0,6" TextElement.Foreground="{DynamicResource TextSecondaryBrush}" TextElement.FontSize="12" TextElement.FontWeight="SemiBold">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="80" />
+                                                        <ColumnDefinition Width="*" MinWidth="200" />
+                                                        <ColumnDefinition Width="130" />
+                                                        <ColumnDefinition Width="150" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="260" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="{x:Static res:Resources.Verify_ReportNo}" />
+                                                    <TextBlock Grid.Column="1" Text="{x:Static res:Resources.Verify_ColDescription}" />
+                                                    <TextBlock Grid.Column="2" Text="{x:Static res:Resources.Verify_ColResult}" />
+                                                    <TextBlock Grid.Column="3" Text="{x:Static res:Resources.Verify_ViewPlan}" />
+                                                    <TextBlock Grid.Column="4" Width="170" Text="{x:Static res:Resources.Verify_ColRequirements}"
+                                                               Visibility="{Binding ShowReportRequirements, Converter={StaticResource BoolToVis}}" />
+                                                    <TextBlock Grid.Column="5" Text="{x:Static res:Resources.Verify_ColResultPath}" />
+                                                </Grid>
+                                                <ItemsControl ItemsSource="{Binding ReportRows}" Focusable="False">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Border Padding="0,8" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="80" />
+                                                                        <ColumnDefinition Width="*" MinWidth="200" />
+                                                                        <ColumnDefinition Width="130" />
+                                                                        <ColumnDefinition Width="150" />
+                                                                        <ColumnDefinition Width="Auto" />
+                                                                        <ColumnDefinition Width="260" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <TextBlock FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding TrNo}" />
+                                                                    <StackPanel Grid.Column="1" Margin="0,0,12,0" VerticalAlignment="Center">
+                                                                        <TextBlock TextWrapping="Wrap" Text="{Binding Description}" />
+                                                                        <TextBlock FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" TextTrimming="CharacterEllipsis" Text="{Binding Note}"
+                                                                                   Visibility="{Binding HasNote, Converter={StaticResource BoolToVis}}" />
+                                                                    </StackPanel>
+                                                                    <Border x:Name="RPill" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="9,1" CornerRadius="9" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                                                        <StackPanel Orientation="Horizontal">
+                                                                            <Ellipse x:Name="RDot" Width="8" Height="8" Margin="0,0,6,0" VerticalAlignment="Center" Fill="{DynamicResource TextTertiaryBrush}" />
+                                                                            <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding Result}" />
+                                                                        </StackPanel>
+                                                                    </Border>
+                                                                    <ItemsControl Grid.Column="3" VerticalAlignment="Center" ItemsSource="{Binding Plans}" ItemTemplate="{StaticResource LinkChipTemplate}"
+                                                                                  ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False" />
+                                                                    <ItemsControl Grid.Column="4" Width="170" VerticalAlignment="Center" ItemsSource="{Binding Requirements}" ItemTemplate="{StaticResource LinkChipTemplate}"
+                                                                                  ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False"
+                                                                                  Visibility="{Binding DataContext.ShowReportRequirements, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
+                                                                    <StackPanel Grid.Column="5" Orientation="Horizontal" VerticalAlignment="Center" Visibility="{Binding HasResultPath, Converter={StaticResource BoolToVis}}">
+                                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="12" Foreground="{DynamicResource SystemFillColorCautionBrush}" VerticalAlignment="Center" />
+                                                                        <TextBlock Margin="6,0,0,0" MaxWidth="230" FontSize="12" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding ResultPath}" ToolTip="{Binding ResultPath}" />
+                                                                    </StackPanel>
+                                                                </Grid>
+                                                            </Border>
+                                                            <DataTemplate.Triggers>
+                                                                <DataTrigger Binding="{Binding ResultKind}" Value="1">
+                                                                    <Setter TargetName="RPill" Property="Background" Value="{DynamicResource SystemFillColorSuccessBackgroundBrush}" />
+                                                                    <Setter TargetName="RDot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding ResultKind}" Value="2">
+                                                                    <Setter TargetName="RPill" Property="Background" Value="{DynamicResource SystemFillColorCriticalBackgroundBrush}" />
+                                                                    <Setter TargetName="RDot" Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                                                                </DataTrigger>
+                                                            </DataTemplate.Triggers>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                                <TextBlock Margin="0,12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_ReportEmptyList}"
+                                                           Visibility="{Binding ReportCount, Converter={StaticResource ZeroToVis}}" />
+                                            </StackPanel>
+                                        </ScrollViewer>
+                                    </DockPanel>
+                                </Border>
+
                                 <!-- Süzgeç hapları + düğmeler -->
-                                <Grid Grid.Row="0" Margin="0,0,0,12">
+                                <Grid Grid.Row="1" Margin="0,0,0,12" Visibility="{Binding IsVerReqView, Converter={StaticResource BoolToVis}}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
@@ -2478,7 +2747,7 @@
                                 </Grid>
 
                                 <!-- Durum süzgeci (çoklu seçimli açılır kutu) ve sıralama; sağda kaç madde göründüğü -->
-                                <Grid Grid.Row="1" Margin="0,0,0,12">
+                                <Grid Grid.Row="2" Margin="0,0,0,12" Visibility="{Binding IsVerReqView, Converter={StaticResource BoolToVis}}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
@@ -2519,10 +2788,13 @@
                                         <TextBlock Margin="20,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_SortBy}" />
                                         <ComboBox Width="140" ItemsSource="{Binding VerificationSorts}" SelectedItem="{Binding VerificationSort, Mode=TwoWay}" />
                                     </StackPanel>
-                                    <TextBlock Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding VerificationShownText}" />
+                                    <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
+                                        <CheckBox Margin="0,0,16,0" VerticalAlignment="Center" Content="{x:Static res:Resources.Verify_ShowReports}" IsChecked="{Binding ShowRequirementReports, Mode=TwoWay}" />
+                                        <TextBlock VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding VerificationShownText}" />
+                                    </StackPanel>
                                 </Grid>
                                 <!-- Tablo kartı -->
-                                <Border Grid.Row="2" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                <Border Grid.Row="3" Visibility="{Binding IsVerReqView, Converter={StaticResource BoolToVis}}" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                         Background="{DynamicResource LayerBrush}" Padding="16,8,8,10">
                                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,8,0">
                                         <StackPanel>
@@ -2613,8 +2885,8 @@
                                                                                         Background="{DynamicResource SubtleFillColorSecondaryBrush}" Visibility="{Binding HasMethod, Converter={StaticResource BoolToVis}}">
                                                                                     <TextBlock x:Name="MethodText" Text="{Binding Method}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
                                                                                 </Border>
-                                                                                <TextBlock x:Name="TpText" Grid.Column="5" Margin="10,0,6,0" VerticalAlignment="Center" FontSize="13" TextTrimming="CharacterEllipsis" Text="{Binding TpText}" />
-                                                                                <TextBlock x:Name="TrText" Grid.Column="6" Margin="10,0,6,0" VerticalAlignment="Center" FontSize="13" TextTrimming="CharacterEllipsis" Text="{Binding TrText}" />
+                                                                                <ItemsControl Grid.Column="5" Margin="10,0,6,0" VerticalAlignment="Center" ItemsSource="{Binding LinkedPlans}" ItemTemplate="{StaticResource LinkChipTemplate}" ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False" />
+                                                                                <ItemsControl Grid.Column="6" Margin="10,0,6,0" VerticalAlignment="Center" ItemsSource="{Binding LinkedReports}" ItemTemplate="{StaticResource LinkChipTemplate}" ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False" Visibility="{Binding DataContext.ShowRequirementReports, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
                                                                                 <Border x:Name="StatusPill" Grid.Column="7" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="10,3" CornerRadius="11"
                                                                                         Background="{DynamicResource SubtleFillColorSecondaryBrush}" Cursor="Hand" ToolTip="{x:Static res:Resources.Verify_StatusHint}"
                                                                                         MouseLeftButtonUp="VerificationStatus_MouseLeftButtonUp" MouseLeftButtonDown="VerificationStatus_MouseLeftButtonDown">
@@ -2818,8 +3090,6 @@
                                                                                 <Setter TargetName="RowText" Property="FontStyle" Value="Italic" />
                                                                                 <Setter TargetName="RowText" Property="FontWeight" Value="Normal" />
                                                                             </DataTrigger>
-                                                                            <DataTrigger Binding="{Binding HasTp}" Value="False"><Setter TargetName="TpText" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" /></DataTrigger>
-                                                                            <DataTrigger Binding="{Binding HasTr}" Value="False"><Setter TargetName="TrText" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" /></DataTrigger>
                                                                             <DataTrigger Binding="{Binding MethodTone}" Value="1"><Setter TargetName="PlanMethodDot" Property="Fill" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
                                                                             <DataTrigger Binding="{Binding MethodTone}" Value="2"><Setter TargetName="PlanMethodDot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
                                                                             <DataTrigger Binding="{Binding MethodTone}" Value="3"><Setter TargetName="PlanMethodDot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>

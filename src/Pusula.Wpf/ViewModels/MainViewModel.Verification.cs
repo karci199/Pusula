@@ -239,20 +239,29 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Yöntemin rengi: 1 test, 2 muayene, 3 belge, 4 gösterim, 0 diğer.</summary>
         public int MethodTone
         {
-            get
-            {
-                var methods = Methods;
-                for (var i = 0; i < 4; i++)
-                {
-                    if (string.Equals(Item.Method, methods[i], StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        return i + 1;
-                    }
-                }
-
-                return 0;
-            }
+            get { return ToneOfMethod(Item.Method); }
         }
+
+        /// <summary>Yöntem adının rengi: 1 test, 2 muayene, 3 belge, 4 gösterim, 0 diğer ya da boş.</summary>
+        public static int ToneOfMethod(string method)
+        {
+            var methods = Methods;
+            for (var i = 0; i < 4; i++)
+            {
+                if (string.Equals(method, methods[i], StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return i + 1;
+                }
+            }
+
+            return 0;
+        }
+
+        /// <summary>Bağlı plan maddeleri (Plan sütunu; plan yoksa sarı "plan yok").</summary>
+        public IList<LinkChip> LinkedPlans { get; set; } = new List<LinkChip>();
+
+        /// <summary>Planlar üzerinden bağlı raporlar ve sonuçları (Rapor sütunu, istenirse açılır).</summary>
+        public IList<LinkChip> LinkedReports { get; set; } = new List<LinkChip>();
 
         /// <summary>Test planı madde no; yoksa "—".</summary>
         public string TpText
@@ -1786,6 +1795,7 @@ namespace Pusula.Wpf.ViewModels
                 });
             }
 
+            LoadPlanReports();
             BuildStatusFilters();
             FillVerificationGroups();
             OnPropertyChanged(nameof(VerificationCount));
@@ -1995,7 +2005,7 @@ namespace Pusula.Wpf.ViewModels
                 }
 
                 var kinds = new HashSet<int>(verificationStatusFilter.Select(VerificationRow.KindOf));
-                var rows = SortVerification(verificationItems.Where(i => SameGroup(i, option.Key) && (kinds.Count == 0 || kinds.Contains(VerificationRow.KindOf(i.Status))))).Select(i => new VerificationRow(i) { SourceLine = SourceLineOf(i), Attempts = AttemptsOf(i) }).ToList();
+                var rows = SortVerification(verificationItems.Where(i => SameGroup(i, option.Key) && (kinds.Count == 0 || kinds.Contains(VerificationRow.KindOf(i.Status))))).Select(i => new VerificationRow(i) { SourceLine = SourceLineOf(i), Attempts = AttemptsOf(i), LinkedPlans = PlansOfRequirement(i), LinkedReports = ReportsOfRequirement(i) }).ToList();
                 if (rows.Count > 0)
                 {
                     VerificationGroups.Add(new VerificationGroup(option.Key, Math.Max(0, option.Tone), rows));

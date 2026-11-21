@@ -28,7 +28,7 @@ Check 'dosya oluştu' (Test-Path $file)
 $text = [IO.File]::ReadAllText($file)
 Check 'dosyada 21 sütunlu başlık' ($text -like '*| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | TP no | TP açıklama | TP not | TR no | TR açıklama | TR not | TR sonuç | Sonuç yeri | Durum |*') $text
 Check 'dosyada satır' ($text -like '*| 1 | TG-012 |  | Kazanç ≥ 5 dBi @ 2,4 GHz |  |  | İşlevsel | Anten örüntü |  |  |  | SATIMO |  |  |  |  |  |  |  |  | Bekliyor |*') $text
-Check 'dosyada Plan ve Sonuç kısımları' ($text -like '*## Plan*' -and $text -like '*## Sonuç*')
+Check 'dosyada Plan ve Rapor kısımları' ($text -like '*## Plan*' -and $text -like '*## Rapor*')
 Check 'altyapı ortak listede' ((Test-Path $facilities) -and ([IO.File]::ReadAllText($facilities) -like '*- SATIMO*'))
 Check 'listede 1 madde' ($vm.VerificationCount -eq 1 -and $vm.VerificationGroups.Count -eq 1)
 

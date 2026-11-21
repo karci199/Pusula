@@ -180,7 +180,9 @@ namespace Pusula.Core.Testing
                 {
                     TrNo = group.Key,
                     Description = group.Select(r => r.TrDescription).FirstOrDefault(s => s.Length > 0) ?? string.Empty,
-                    Result = group.Select(r => r.TrResult).FirstOrDefault(s => s.Length > 0) ?? string.Empty,
+                    // Sonuç sütunu boşsa satırın durumu Geçti / Kaldı ise o alınır (eski dosyalarda sonuç durumda tutuluyordu).
+                    Result = group.Select(r => r.TrResult).FirstOrDefault(s => s.Length > 0)
+                        ?? group.Select(r => r.Status).FirstOrDefault(s => s == "Geçti" || s == "Kaldı") ?? string.Empty,
                     Plans = group.Select(r => r.TpNo.Trim()).Where(s => s.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
                     ResultPath = group.Select(r => r.ResultPath).FirstOrDefault(s => s.Length > 0) ?? string.Empty,
                     Note = group.Select(r => r.TrNote).FirstOrDefault(s => s.Length > 0) ?? string.Empty,
@@ -192,6 +194,9 @@ namespace Pusula.Core.Testing
                 return false;
             }
 
+            plans = plans.OrderBy(p => p.TpNo, Comparer<string>.Create(CompareNo)).ToList();
+            reports = reports.OrderBy(r => r.TrNo, Comparer<string>.Create(CompareNo)).ToList();
+
             var error = SavePlans(stockFolder, plans);
             if (error.Length == 0 && reports.Count > 0 && ReadReports(stockFolder).Count == 0)
             {
@@ -201,6 +206,25 @@ namespace Pusula.Core.Testing
             return error.Length == 0;
         }
 
+        /// <summary>Madde numaralarını karşılaştırır: "4.2" &lt; "4.10" (nokta, tire ya da boşlukla ayrılan sayılar sayı olarak).</summary>
+        public static int CompareNo(string a, string b)
+        {
+            var pa = (a ?? string.Empty).Split('.', '-', ' ');
+            var pb = (b ?? string.Empty).Split('.', '-', ' ');
+            for (var i = 0; i < Math.Min(pa.Length, pb.Length); i++)
+            {
+                int na, nb;
+                var c = int.TryParse(pa[i], out na) && int.TryParse(pb[i], out nb)
+                    ? na.CompareTo(nb)
+                    : string.Compare(pa[i], pb[i], StringComparison.OrdinalIgnoreCase);
+                if (c != 0)
+                {
+                    return c;
+                }
+            }
+
+            return pa.Length.CompareTo(pb.Length);
+        }
         /// <summary>"DGÖ-1, DGÖ-2" → ["DGÖ-1", "DGÖ-2"] (virgül ya da noktalı virgül; boşlar atlanır, tekrarsız).</summary>
         public static List<string> SplitList(string text)
         {

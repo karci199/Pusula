@@ -74,5 +74,8 @@
 
         /// <summary>Açılır kutu oku (aşağı).</summary>
         public const string ChevronDown = "\uE70D";
+
+        /// <summary>Uyarı (üçgen).</summary>
+        public const string Warning = "\uE7BA";
     }
 }

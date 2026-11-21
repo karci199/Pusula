@@ -3118,4 +3118,67 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Verify_DetailHint" xml:space="preserve">
     <value>Ayrıntı md dosyasında: ## Plan / ## Sonuç altında bu maddenin bölümü (altına serbest yazılabilir)</value>
   </data>
+  <data name="Verify_CoverageNoPlan" xml:space="preserve">
+    <value>{0} gereksinim hiçbir plan maddesinde yok: {1}</value>
+  </data>
+  <data name="Verify_CoverageNoReport" xml:space="preserve">
+    <value>{0} plan maddesinin raporu yok: {1}</value>
+  </data>
+  <data name="Verify_CoverageReportNoPlan" xml:space="preserve">
+    <value>{0} rapor maddesi hiçbir plana bağlı değil: {1}</value>
+  </data>
+  <data name="Verify_NoRequirement" xml:space="preserve">
+    <value>gereksinim yok</value>
+  </data>
+  <data name="Verify_NoReport" xml:space="preserve">
+    <value>rapor yok</value>
+  </data>
+  <data name="Verify_NoPlan" xml:space="preserve">
+    <value>plan yok</value>
+  </data>
+  <data name="Verify_Migrated" xml:space="preserve">
+    <value>Plan ve rapor tabloları gereksinim satırlarından kuruldu (kopyalandı, hiçbir şey silinmedi).</value>
+  </data>
+  <data name="Verify_ViewRequirements" xml:space="preserve">
+    <value>Gereksinimler</value>
+  </data>
+  <data name="Verify_ViewRequirementsHint" xml:space="preserve">
+    <value>ne doğrulanacak</value>
+  </data>
+  <data name="Verify_ViewPlan" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="Verify_ViewPlanHint" xml:space="preserve">
+    <value>nasıl doğrulanacak</value>
+  </data>
+  <data name="Verify_ViewReport" xml:space="preserve">
+    <value>Rapor</value>
+  </data>
+  <data name="Verify_ViewReportHint" xml:space="preserve">
+    <value>ne çıktı</value>
+  </data>
+  <data name="Verify_ShowReports" xml:space="preserve">
+    <value>Raporları göster</value>
+  </data>
+  <data name="Verify_ShowRequirements" xml:space="preserve">
+    <value>Gereksinimleri göster</value>
+  </data>
+  <data name="Verify_ColRequirements" xml:space="preserve">
+    <value>Gereksinimler</value>
+  </data>
+  <data name="Verify_ColDescription" xml:space="preserve">
+    <value>Açıklama</value>
+  </data>
+  <data name="Verify_ColResult" xml:space="preserve">
+    <value>Sonuç</value>
+  </data>
+  <data name="Verify_ColResultPath" xml:space="preserve">
+    <value>Sonucun yeri</value>
+  </data>
+  <data name="Verify_PlanEmptyList" xml:space="preserve">
+    <value>Henüz plan maddesi yok.</value>
+  </data>
+  <data name="Verify_ReportEmptyList" xml:space="preserve">
+    <value>Henüz rapor maddesi yok.</value>
+  </data>
 </root>
