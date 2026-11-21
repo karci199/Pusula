@@ -182,6 +182,12 @@ namespace Pusula.Wpf
             viewModel.OpenTaskDialogHere();
         }
 
+        // Ana sayfa "+ İş": önce stok seçilir.
+        private void HomeTaskDialogOpen_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.OpenTaskDialogHome();
+        }
+
         private void TaskDialog_PrimaryButtonClick(object sender, RoutedEventArgs e)
         {
             if (!viewModel.ConfirmTaskDialog())

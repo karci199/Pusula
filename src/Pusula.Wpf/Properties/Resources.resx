@@ -2908,4 +2908,16 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Photo_Folder" xml:space="preserve">
     <value>Klasör</value>
   </data>
+  <data name="Task_Stock" xml:space="preserve">
+    <value>Stok</value>
+  </data>
+  <data name="Task_StockHint" xml:space="preserve">
+    <value>Listeden seçin; liste açıkken numaranın başını yazınca o stoka gider.</value>
+  </data>
+  <data name="Task_PickStock" xml:space="preserve">
+    <value>Önce stoku seçin · iş o stokun ana notunun Yapılacaklar bölümüne yazılır</value>
+  </data>
+  <data name="Task_HomeHint" xml:space="preserve">
+    <value>Bir stoka yapılacak iş ekle</value>
+  </data>
 </root>

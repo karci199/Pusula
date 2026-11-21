@@ -3115,6 +3115,18 @@ namespace Pusula.Wpf.Properties
         /// <summary>TEÜ görünümünde fotoğraf klasörünü açan düğme.</summary>
         public static string Photo_Folder { get { return Get("Photo_Folder"); } }
 
+        /// <summary>İş penceresi (ana sayfadan): stok alanı.</summary>
+        public static string Task_Stock { get { return Get("Task_Stock"); } }
+
+        /// <summary>İş penceresi: stok alanının ipucu.</summary>
+        public static string Task_StockHint { get { return Get("Task_StockHint"); } }
+
+        /// <summary>İş penceresi (ana sayfadan): stok seçilmeden önceki alt başlık.</summary>
+        public static string Task_PickStock { get { return Get("Task_PickStock"); } }
+
+        /// <summary>Ana sayfa Yapılacaklar: + İş düğmesinin ipucu.</summary>
+        public static string Task_HomeHint { get { return Get("Task_HomeHint"); } }
+
         #endregion
     }
 }

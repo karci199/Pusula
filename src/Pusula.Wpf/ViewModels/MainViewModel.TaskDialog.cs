@@ -28,6 +28,7 @@ namespace Pusula.Wpf.ViewModels
         private string taskItem = string.Empty;
         private string taskTags = string.Empty;
         private string taskTarget = string.Empty;
+        private bool isTaskStockPick;
 
         /// <summary>Pencere açık mı.</summary>
         public bool IsTaskDialogOpen
@@ -167,7 +168,7 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Birincil düğme metni: iş yazıldıysa ve tarih geçerliyse "Ekle", değilse boş (düğme gizli).</summary>
         public string TaskPrimaryText
         {
-            get { return taskTitle.Trim().Length > 0 && (taskDueText.Trim().Length == 0 || ParseDay(taskDueText).HasValue) ? Resources.Journal_Add : string.Empty; }
+            get { return taskFolder.Length > 0 && taskTitle.Trim().Length > 0 && (taskDueText.Trim().Length == 0 || ParseDay(taskDueText).HasValue) ? Resources.Journal_Add : string.Empty; }
         }
 
         /// <summary>Gösterilen kaydın (stok, proje ya da envanter kaydı) notuna iş eklemek için pencereyi açar.</summary>
@@ -179,19 +180,105 @@ namespace Pusula.Wpf.ViewModels
                 return false;
             }
 
-            taskFolder = folder;
-            ReloadKinds();
+            ResetTaskDialog(folder);
             TaskTarget = string.Format(Resources.TaskDialog_Target, Path.GetFileName(folder.TrimEnd('\\')));
+            IsTaskDialogOpen = true;
+            return true;
+        }
+
+        /// <summary>Ana sayfadan iş eklemek için pencereyi açar: önce stok seçilir, iş o stokun ana notuna yazılır.</summary>
+        public bool OpenTaskDialogHome()
+        {
+            TaskStockOptions.Clear();
+            foreach (var stock in stockData.OrderBy(s => s.Node.Title, StringComparer.CurrentCultureIgnoreCase))
+            {
+                var name = stock.Info?.Name ?? string.Empty;
+                TaskStockOptions.Add(new ChoiceOption(stock.Node.Path, name.Length > 0 ? stock.Node.Title + " · " + name : stock.Node.Title, false, o => { }));
+            }
+
+            if (TaskStockOptions.Count == 0)
+            {
+                return false;
+            }
+
+            ResetTaskDialog(string.Empty);
+            IsTaskStockPick = true;
+            TaskTarget = Resources.Task_PickStock;
+            OnPropertyChanged(nameof(TaskStockOption));
+            IsTaskDialogOpen = true;
+            return true;
+        }
+
+        /// <summary>Ana sayfadan açıldı mı (stok seçimi görünür).</summary>
+        public bool IsTaskStockPick
+        {
+            get { return isTaskStockPick; }
+            private set { SetProperty(ref isTaskStockPick, value); }
+        }
+
+        /// <summary>Ana sayfadan açılınca seçilebilen stoklar ("AB-7000-0002 · SH2000").</summary>
+        public ObservableCollection<ChoiceOption> TaskStockOptions { get; } = new ObservableCollection<ChoiceOption>();
+
+        /// <summary>Seçili stok (anahtarı klasör yolu); seçilince ilgili madde listesi o stokun maddeleriyle dolar.</summary>
+        public ChoiceOption? TaskStockOption
+        {
+            get
+            {
+                return TaskStockOptions.FirstOrDefault(o => string.Equals(o.Key, taskFolder, StringComparison.OrdinalIgnoreCase));
+            }
+
+            set
+            {
+                // Liste temizlenirken ya da yazılan metin bir stoka uymazken gelen boş değer seçimi silmez.
+                if (value == null || string.Equals(value.Key, taskFolder, StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+
+                taskFolder = value.Key;
+                TaskTarget = string.Format(Resources.TaskDialog_Target, Path.GetFileName(taskFolder.TrimEnd('\\')));
+                FillTaskItems(taskFolder);
+                OnPropertyChanged(nameof(TaskStockOption));
+                OnPropertyChanged(nameof(TaskPrimaryText));
+            }
+        }
+
+        // Pencerenin alanlarını boşaltır; kişi varsayılan olarak kullanıcının kendisi.
+        private void ResetTaskDialog(string folder)
+        {
+            taskFolder = folder;
+            IsTaskStockPick = false;
+            ReloadKinds();
             TaskTitle = string.Empty;
             TaskKind = string.Empty;
             TaskBody = string.Empty;
             TaskPeople = CurrentUser.Length > 0 ? "@" + CurrentUser.Replace(' ', '_') : string.Empty;
             TaskDueText = string.Empty;
             TaskTags = string.Empty;
+            FillTaskItems(folder);
+            OnPropertyChanged(nameof(TaskPrimaryText));
+        }
+
+        // İlgili madde seçenekleri: "— Yok" ve stoktaki TG no'lu maddeler (gösterilen stoksa bellekteki, değilse dosyadan).
+        private void FillTaskItems(string folder)
+        {
             taskItem = string.Empty;
             TaskItemOptions.Clear();
             TaskItemOptions.Add(new ChoiceOption(string.Empty, Resources.Task_NoItem, true, o => { }));
-            var items = string.Equals(verificationStock, folder, StringComparison.OrdinalIgnoreCase) ? verificationItems : new List<Pusula.Core.Testing.VerificationItem>();
+            IList<Pusula.Core.Testing.VerificationItem> items;
+            if (folder.Length == 0)
+            {
+                items = new List<Pusula.Core.Testing.VerificationItem>();
+            }
+            else if (string.Equals(verificationStock, folder, StringComparison.OrdinalIgnoreCase))
+            {
+                items = verificationItems;
+            }
+            else
+            {
+                items = KindOf(folder) == RecordKind.Stock ? Pusula.Core.Testing.VerificationList.Read(folder) : new List<Pusula.Core.Testing.VerificationItem>();
+            }
+
             foreach (var item in items.Where(i => i.TgNo.Length > 0))
             {
                 var title = item.Text.Length > 0 ? item.Text : item.SubGroup;
@@ -199,9 +286,6 @@ namespace Pusula.Wpf.ViewModels
             }
 
             OnPropertyChanged(nameof(TaskItemOption));
-            OnPropertyChanged(nameof(TaskPrimaryText));
-            IsTaskDialogOpen = true;
-            return true;
         }
 
         /// <summary>İşi nota yazar; yazıldıysa <c>true</c> (pencere kapanır).</summary>

@@ -44,6 +44,36 @@ try {
     $task = [Pusula.Core.Notes.OpenTask]::Read($note) | Where-Object { $_.Text -like '*tasarımcıya*' } | Select-Object -First 1
     Check 'okunur: sorumlu ilk kişi, bağ DGÖ-1' ($task.PersonName -eq $me.Replace('_', ' ') -and $task.LinkTarget -eq 'DGÖ-1' -and $task.People.Count -eq 2) ($task.PersonName + ' / ' + $task.LinkTarget)
     Snap $win "$Out\task-card.png"
+
+    "--- Ana sayfadan + İş"
+    $vm.SelectedNode = $null; $vm.LoadHome(); Wait; Wait; $vm.HomeTab = 1; Wait
+    Check 'pencere stok seçimiyle açılır' ($vm.OpenTaskDialogHome() -and $vm.IsTaskDialogOpen -and $vm.IsTaskStockPick -and $vm.TaskStockOptions.Count -ge 2) ($vm.TaskStockOptions.Count)
+    $vm.TaskTitle = 'Ana sayfadan iş'
+    Check 'stok seçilmeden Ekle yok' ($vm.TaskPrimaryText -eq '' -and -not $vm.ConfirmTaskDialog())
+    $opt = $vm.TaskStockOptions | Where-Object { $_.Key -eq $stock } | Select-Object -First 1
+    Check 'seçenekte stok no ve ad' ($opt -ne $null -and $opt.Text -like 'AB-7000-0002*') $opt.Text
+    $vm.TaskStockOption = $opt
+    Check 'stok seçilince madde listesi o stokun (DGÖ-1)' ($vm.TaskPrimaryText -ne '' -and @($vm.TaskItemOptions | Where-Object { $_.Key -eq 'DGÖ-1' }).Count -eq 1 -and $vm.TaskTarget -like 'AB-7000-0002*')
+    $vm.TaskStockOption = $null
+    Check 'boş değer seçimi silmez' ($vm.TaskStockOption.Key -eq $stock)
+    $vm.TaskDueText = (Get-Date).ToString('dd.MM.yyyy')
+    # Pencere görüntüsü: açık ContentDialog'un açılır katmanı ayrıca çizilir (Snap onu yakalamaz).
+    function Find-Open($node) { if ($node -eq $null) { return $null }; if ($node.GetType().Name -eq 'ContentDialog' -and $node.IsOpen) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Open ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }
+    function Find-Popup($node) { if ($node -is [System.Windows.Controls.Primitives.Popup]) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Popup ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }
+    for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 }
+    $dlg = Find-Open $win
+    if ($dlg) {
+        $pop = Find-Popup $dlg; if ($pop -and $pop.Child) { $dlg = $pop.Child; $sz = New-Object System.Windows.Size($win.ActualWidth, $win.ActualHeight); $dlg.Measure($sz); $dlg.Arrange((New-Object System.Windows.Rect($sz))); $dlg.UpdateLayout(); for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 } }
+        $bmp = New-Object System.Windows.Media.Imaging.RenderTargetBitmap([int]$dlg.ActualWidth, [int]$dlg.ActualHeight, 96, 96, [System.Windows.Media.PixelFormats]::Pbgra32)
+        $bmp.Render($dlg); $enc = New-Object System.Windows.Media.Imaging.PngBitmapEncoder; $enc.Frames.Add([System.Windows.Media.Imaging.BitmapFrame]::Create($bmp))
+        $fs = [IO.File]::Create("$Out\task-home-dialog.png"); $enc.Save($fs); $fs.Close()
+    }
+    Check 'iş seçilen stokun notuna' ($vm.ConfirmTaskDialog() -and [IO.File]::ReadAllText($note).Contains('- [ ] Ana sayfadan iş')); Wait; Wait
+    $vm.LoadHome(); Wait; Wait
+    Check 'ana sayfa listesinde görünür' (@($vm.HomeTasks | Where-Object { $_.Task.Text -like '*Ana sayfadan iş*' }).Count -eq 1) (@($vm.HomeTasks | ForEach-Object { $_.Task.Text }) -join ' | ')
+    Snap $win "$Out\task-home.png"
+    $vm.SelectNodeByPath($stock) | Out-Null; Wait; Wait
+    Check 'stok sayfası: seçim gizli' ($vm.OpenTaskDialogHere() -and -not $vm.IsTaskStockPick); $vm.IsTaskDialogOpen = $false
 } finally {
     if ($savedSettings -ne $null) { [IO.File]::WriteAllText($settingsFile, $savedSettings) }
 }

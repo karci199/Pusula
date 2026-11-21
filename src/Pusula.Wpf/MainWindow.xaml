@@ -1548,6 +1548,13 @@
                                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,14,0">
                                 <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*" MaxWidth="1100" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                                 <StackPanel Margin="0,14,0,0">
+                                    <!-- + İş: stok seçilerek o stokun ana notuna iş eklenir -->
+                                    <Button HorizontalAlignment="Right" Margin="0,0,0,8" Style="{DynamicResource AccentButtonStyle}" Padding="14,6" Click="HomeTaskDialogOpen_Click" ToolTip="{x:Static res:Resources.Task_HomeHint}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" VerticalAlignment="Center" />
+                                            <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Timeline_AddTask}" />
+                                        </StackPanel>
+                                    </Button>
                                     <!-- Bütün stokların açık sorunları (kartta stok no; çift tık stoku açar) -->
                                     <StackPanel Margin="0,0,0,14" Visibility="{Binding HasHomeOpenIssues, Converter={StaticResource BoolToVis}}">
                                         <TextBlock Margin="0,0,0,8" FontSize="14" FontWeight="SemiBold" Text="{Binding HomeOpenIssuesTitle}" />
@@ -4139,6 +4146,16 @@
                 </StackPanel.Resources>
 
                 <TextBlock Margin="0,0,0,14" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" Text="{Binding TaskTarget}" />
+
+                <!-- Ana sayfadan açılınca: hangi stokun işi (numara yazılarak aranır) -->
+                <controls:FormField Margin="0,0,0,12" Header="{x:Static res:Resources.Task_Stock}" IsRequired="True" LabelWidth="120"
+                                    Visibility="{Binding IsTaskStockPick, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <ComboBox Width="360" HorizontalAlignment="Left" IsTextSearchEnabled="True" TextSearch.TextPath="Text"
+                                  ItemsSource="{Binding TaskStockOptions}" DisplayMemberPath="Text" SelectedItem="{Binding TaskStockOption, Mode=TwoWay}" MaxDropDownHeight="360" />
+                        <TextBlock Margin="0,4,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Task_StockHint}" />
+                    </StackPanel>
+                </controls:FormField>
 
                 <controls:FormField Header="{x:Static res:Resources.Task_FieldTitle}" IsRequired="True" LabelWidth="120">
                     <TextBox Text="{Binding TaskTitle, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" local:MentionAssist.Mode="link" />
