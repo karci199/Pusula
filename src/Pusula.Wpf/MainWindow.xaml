@@ -1548,6 +1548,11 @@
                                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,14,0">
                                 <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*" MaxWidth="1100" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                                 <StackPanel Margin="0,14,0,0">
+                                    <!-- Bütün stokların açık sorunları (kartta stok no; çift tık stoku açar) -->
+                                    <StackPanel Margin="0,0,0,14" Visibility="{Binding HasHomeOpenIssues, Converter={StaticResource BoolToVis}}">
+                                        <TextBlock Margin="0,0,0,8" FontSize="14" FontWeight="SemiBold" Text="{Binding HomeOpenIssuesTitle}" />
+                                        <ItemsControl ItemsSource="{Binding HomeOpenIssues}" ItemTemplate="{StaticResource TimelineCardTemplate}" Focusable="False" />
+                                    </StackPanel>
                                     <Border CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                             Background="{DynamicResource LayerBrush}" Padding="4">
                                         <StackPanel>

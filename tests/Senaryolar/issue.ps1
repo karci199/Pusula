@@ -73,6 +73,16 @@ try {
     Check 'kapanan sorun listeden çıkar' (-not (@($vm.JournalSolutionOptions) | Where-Object { $_.Text -like 'Titreşimde*' }))
     $vm.IsJournalOpen = $false
 
+    "--- Ana sayfa"
+    $vm.SelectedNode = $null; $vm.IsRangeAll = $true; $vm.LoadHome(); Wait; Wait; $vm.HomeTab = 1; Wait
+    $titles = @($vm.HomeOpenIssues | ForEach-Object Title)
+    $h = $vm.HomeOpenIssues | Where-Object { $_.Title -like '+70*' } | Select-Object -First 1
+    Check 'ana sayfa: açık sorun stok noyla, kapanan yok' ($vm.HasHomeOpenIssues -and $h -ne $null -and $h.Source -like 'AB-7000-0002*' -and $h.IsIssueOpen -and $titles -notcontains 'Titreşimde jig gevşedi' -and $vm.HomeOpenIssuesTitle -like 'Açık sorunlar · *') ($titles -join ' | ')
+    Snap $win "$Out\issue-home.png"
+    Check 'ana sayfadan Çözüm ekle: sorunun stokuna, sorun seçili' ($vm.OpenSolutionFor($h.Item.Journal, $h.SourcePath) -and $vm.JournalTarget -like '*AB-7000-0002*' -and $vm.JournalSolutionOption.Text -like '+70*') $vm.JournalTarget
+    $vm.IsJournalOpen = $false; Pump
+    $vm.SelectNodeByPath($stock); Wait; Wait
+
     "--- Düzenleme"
     $vm.OpenJournalEdit((EntryOf 'Sabitleme vidaları değişti' 'Çözüm'))
     Check 'çözüm düzenlemede bağ korunur' ($vm.JournalResolves -eq $key -and $vm.JournalSolutionOption.Key -eq $key)

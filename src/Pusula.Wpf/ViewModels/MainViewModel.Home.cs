@@ -438,6 +438,7 @@ namespace Pusula.Wpf.ViewModels
 
             homeEvents = events;
             FilterHomeTimeline();
+            FillHomeOpenIssues(events);
 
             // Kayıtlar sekmesi: işler okunduktan sonra (açık iş sayıları için).
             await LoadRecordsAsync(version).ConfigureAwait(true);

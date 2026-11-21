@@ -327,7 +327,8 @@ namespace Pusula.Wpf
             e.Handled = true;
             if (((FrameworkElement)sender).DataContext is StockTimelineCard card && card.Item?.Journal != null)
             {
-                viewModel.OpenSolutionFor(card.Item.Journal);
+                // Ana sayfada kayıt sorunun stokuna yazılır.
+                viewModel.OpenSolutionFor(card.Item.Journal, card.SourcePath);
             }
         }
 

@@ -29,6 +29,34 @@ namespace Pusula.Wpf.ViewModels
             get { return OpenIssues.Count > 0; }
         }
 
+        /// <summary>Ana sayfa · Yapılacaklar: bütün stokların açık sorunları (eskiden yeniye; kartta stok no).</summary>
+        public ObservableCollection<StockTimelineCard> HomeOpenIssues { get; } = new ObservableCollection<StockTimelineCard>();
+
+        /// <summary>Ana sayfada açık sorun var mı.</summary>
+        public bool HasHomeOpenIssues
+        {
+            get { return HomeOpenIssues.Count > 0; }
+        }
+
+        /// <summary>Ana sayfadaki açık sorunlar başlığı ("Açık sorunlar · 3").</summary>
+        public string HomeOpenIssuesTitle
+        {
+            get { return Resources.Issue_OpenTitle + " · " + HomeOpenIssues.Count.ToString(CultureInfo.CurrentCulture); }
+        }
+
+        // Ana sayfa kartlarından açık sorunlar.
+        private void FillHomeOpenIssues(IEnumerable<StockTimelineCard> events)
+        {
+            HomeOpenIssues.Clear();
+            foreach (var card in events.Where(c => c.IsIssueOpen).OrderBy(c => c.When))
+            {
+                HomeOpenIssues.Add(card);
+            }
+
+            OnPropertyChanged(nameof(HasHomeOpenIssues));
+            OnPropertyChanged(nameof(HomeOpenIssuesTitle));
+        }
+
         /// <summary>Sorun alanları görünür mü (yapıldı kaydı ve işlem Sorun).</summary>
         public bool IsJournalIssue
         {
@@ -132,7 +160,16 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Açık sorunun kartından "✓ Çözüm ekle": kayıt penceresini Çözüm ve bu sorun seçili açar.</summary>
         public bool OpenSolutionFor(EventNote issue)
         {
-            if (issue == null || !OpenJournalHere())
+            return OpenSolutionFor(issue, string.Empty);
+        }
+
+        /// <summary>
+        /// Açık sorun için Çözüm penceresini açar; <paramref name="folder"/> verilirse (ana sayfa) kayıt o stokun notuna,
+        /// boşsa gösterilen sayfaya yazılır.
+        /// </summary>
+        public bool OpenSolutionFor(EventNote issue, string folder)
+        {
+            if (issue == null || !(folder.Length > 0 ? OpenJournal(folder) : OpenJournalHere()))
             {
                 return false;
             }
