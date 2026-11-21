@@ -183,8 +183,14 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
   multipart, ekler. Çıktı: başlık (RE:/FW:/YNT: atılır), tarih, katılımcı `@Ad_Soyad`, ekip (`.msg`'de dağıtım listesi;
   `.eml`'de tamamı büyük harfli ad), notlar (selam satırları atlanır), ekler. Örnekle: `MailOku.ps1 -Ornek`;
   gerçek dosyayla: `MailOku.ps1 -Dosya mail.msg -EkKlasoru ekler`. Gerçek bir Outlook `.msg` ile henüz denenmedi.
-  Sonraki adım: Toplantı kaydında Ortam = Outlook iken "Mail dosyası seç…" ile pencereyi doldurmak, mail ve ekleri
-  `03_Testler\Yazismalar\tarih_konu\` klasörüne kopyalamak.
+  Uygulamada (21.11.2026): Toplantı (ortam Outlook) ve Karar kaydına `.msg` eklenir; pencere maille doldurulmaz
+  (kullanıcı kararı), dosya stokun en dışındaki `Diger\` klasörüne kendi adıyla kopyalanır (aynı ad varsa `_2`),
+  notta `mail: Diger/….msg`; kartta ✉ Outlook'ta açar.
+- **Mail istatistikleri (21.11.2026, sonraya):** mailler Outlook'ta okunur; Pusula `Diger\*.msg` dosyalarını arka planda
+  yalnız okuyup sayar, nota yazmaz. Türetilmiş özet `_TAKIP\mail-ozet.json` (her an yeniden üretilebilir). Fikirler:
+  (1) yanıt süresi (kişi / birim ortalaması, konuşma zincirinden), (2) kim bekliyor (son maili kim attı; "6 gündür
+  yanıt yok"), (3) kimle ne kadar yazışılıyor, (4) talep bağı (konu / gövdede talep no geçen mail talebe bağlanır),
+  (5) konu yoğunluğu (madde, revizyon başına mail), (6) dolaşan ekler. İlk adım önerisi: 2 ve 4.
 
 - **İnceleme sonrası kalanlar (08.11.2026):** stok seçilince 5 okuma artık aynı anda yapılıyor; tek taramada birleştirmek ileride. Kısa not / bağ / not oluşturma UI thread'inde eşzamanlı dosya yazıyor. JSON oku-değiştir-yaz kalıbı 4 yerde
   tekrar (`JsonFile.Update<T>` yapılmalı). Süzgeç kutularının "Tümü" düzeltmesi geçici çözüm.
