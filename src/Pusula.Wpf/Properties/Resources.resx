@@ -3103,4 +3103,13 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Verify_ReportMenu" xml:space="preserve">
     <value>Test raporu…</value>
   </data>
+  <data name="Stock_NoCoverPattern" xml:space="preserve">
+    <value>Kapak fotoğrafı yok · adı {0}_kapak.jpg olsun</value>
+  </data>
+  <data name="Stock_PhotosHidden" xml:space="preserve">
+    <value>{0} fotoğraf daha klasörde</value>
+  </data>
+  <data name="Stock_PhotosHiddenHint" xml:space="preserve">
+    <value>Şeritte yalnız adı sayıyla başlayanlar görünür (1_on.jpg, 2_montaj.jpg …). Tıklayınca klasör açılır.</value>
+  </data>
 </root>

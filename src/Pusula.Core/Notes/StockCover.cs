@@ -8,7 +8,9 @@ namespace Pusula.Core.Notes
 {
     /// <summary>
     /// Stokun kapağı: kökteki Obsidian notu (<c>&lt;stok no&gt;.md</c>) ve fotoğraflar. 21.11.2026 düzeninde fotoğraflar
-    /// <c>01_Ortak\Fotograflar</c> içindedir; adında "kapak" geçen kapaktır, diğerleri görünüşe göre (<c>_on</c>, <c>_arka</c> …) dizilir.
+    /// <c>01_Ortak\Fotograflar</c> içindedir. Kural (21.11.2026 kullanıcı kararı): ana fotoğraf <c>&lt;stok no&gt;_kapak.*</c>;
+    /// şeritte yalnız adı sayıyla başlayanlar (<c>1_on gorunus.jpg</c>, <c>2_montaj.jpg</c> …) sayı sırasıyla; numarasız
+    /// olanlar arayüzde görünmez (klasörde durur, sayısı <see cref="HiddenCount"/>).
     /// Eski stoklarda <c>01_Ortak</c>'taki "kapak" resmi ya da <c>07_Fotograflar</c> okunur.
     /// Yalnızca okur.
     /// </summary>
@@ -44,8 +46,17 @@ namespace Pusula.Core.Notes
         /// <summary>Fotoğrafların durması gereken klasör (<c>01_Ortak\Fotograflar</c>, henüz açılmamış olabilir); eski stokta okunan klasör.</summary>
         public string PhotosHome { get; private set; } = string.Empty;
 
-        /// <summary>Fotoğraflar (ada göre); ilki kapaktır.</summary>
+        /// <summary>Görünen fotoğraflar: kapak (varsa) ve ardından numaralı olanlar sayı sırasıyla.</summary>
         public List<string> Photos { get; private set; } = new List<string>();
+
+        /// <summary>Kapak fotoğrafı (<c>…_kapak.*</c>); yoksa boş.</summary>
+        public string Cover { get; private set; } = string.Empty;
+
+        /// <summary>Şeritteki fotoğraflar: adı sayıyla başlayanlar, sayı sırasıyla.</summary>
+        public List<string> Strip { get; private set; } = new List<string>();
+
+        /// <summary>Arayüzde görünmeyen (numarasız, kapak olmayan) fotoğraf sayısı.</summary>
+        public int HiddenCount { get; private set; }
 
         /// <summary>Stok klasörünü okur.</summary>
         public static StockCover Read(string stockFolder, string stockNo)
@@ -105,17 +116,60 @@ namespace Pusula.Core.Notes
             cover.DocumentsFolder = common.Length > 0 ? common : RecordContents.FindFolder(stockFolder, DocumentsLabel);
             cover.DocumentCount = cover.DocumentsFolder.Length == 0 ? 0 : RecordContents.CountFiles(cover.DocumentsFolder);
 
-            // Adında "kapak" geçen fotoğraf varsa kapak odur; yoksa sıraya göre ilki.
-            var chosen = cover.Photos.FirstOrDefault(p => Path.GetFileNameWithoutExtension(p).IndexOf(CoverWord, System.StringComparison.OrdinalIgnoreCase) >= 0);
-            if (chosen != null)
-            {
-                cover.Photos.Remove(chosen);
-                cover.Photos.Insert(0, chosen);
-            }
-
+            // Kapak: adı "<stok no>_kapak" (ya da …_kapak / kapak). Şerit: adı sayıyla başlayanlar. Gerisi gizli.
+            var all = cover.Photos;
+            cover.Cover = all.Where(IsCover).OrderBy(p => Path.GetFileNameWithoutExtension(p).StartsWith(stockNo + "_", System.StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+                .ThenBy(p => Path.GetFileName(p), System.StringComparer.OrdinalIgnoreCase).FirstOrDefault() ?? string.Empty;
+            cover.Strip = all.Where(p => !string.Equals(p, cover.Cover, System.StringComparison.OrdinalIgnoreCase) && NumberOf(p) >= 0)
+                .OrderBy(NumberOf).ThenBy(p => Path.GetFileName(p), System.StringComparer.OrdinalIgnoreCase).ToList();
+            cover.HiddenCount = all.Count - cover.Strip.Count - (cover.Cover.Length > 0 ? 1 : 0);
+            cover.Photos = (cover.Cover.Length > 0 ? new[] { cover.Cover } : new string[0]).Concat(cover.Strip).ToList();
             return cover;
         }
 
+        /// <summary>Kapak mı: dosya adı (uzantısız) <c>kapak</c> ya da <c>…_kapak</c> ile biter (büyük/küçük harf duyarsız).</summary>
+        public static bool IsCover(string path)
+        {
+            var name = Path.GetFileNameWithoutExtension(path ?? string.Empty);
+            return string.Equals(name, CoverWord, System.StringComparison.OrdinalIgnoreCase)
+                || name.EndsWith("_" + CoverWord, System.StringComparison.OrdinalIgnoreCase)
+                || name.EndsWith("-" + CoverWord, System.StringComparison.OrdinalIgnoreCase)
+                || name.EndsWith(" " + CoverWord, System.StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>Şerit numarası: adın başındaki sayı (<c>1_on.jpg</c> → 1, <c>01 montaj.png</c> → 1); sayıyla başlamıyorsa -1.</summary>
+        public static int NumberOf(string path)
+        {
+            var name = Path.GetFileNameWithoutExtension(path ?? string.Empty);
+            var digits = 0;
+            while (digits < name.Length && char.IsDigit(name[digits]))
+            {
+                digits++;
+            }
+
+            int n;
+            if (digits == 0 || (digits < name.Length && " _-.".IndexOf(name[digits]) < 0)
+                || !int.TryParse(name.Substring(0, digits), System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out n))
+            {
+                return -1;
+            }
+
+            return n;
+        }
+
+        /// <summary>Şeritteki adı: numaradan sonrası, <c>_</c> boşluğa çevrilir (<c>2_montaj_detayi.jpg</c> → "montaj detayi"); yoksa numara.</summary>
+        public static string StripLabelOf(string path)
+        {
+            var name = Path.GetFileNameWithoutExtension(path ?? string.Empty);
+            var digits = 0;
+            while (digits < name.Length && char.IsDigit(name[digits]))
+            {
+                digits++;
+            }
+
+            var rest = name.Substring(digits).TrimStart(' ', '_', '-', '.').Replace('_', ' ').Trim();
+            return rest.Length > 0 ? rest : name;
+        }
         /// <summary>Görünüş sırası (dosya adının sonu): kapak, ön, arka, yan, üst, montaj, iç, etiket.</summary>
         public static readonly string[] ViewKeys = { "kapak", "on", "arka", "yan", "ust", "montaj", "ic", "etiket" };
 

@@ -3310,6 +3310,15 @@ namespace Pusula.Wpf.Properties
         /// <summary>Satır menüsü: test raporu penceresini açar.</summary>
         public static string Verify_ReportMenu { get { return Get("Verify_ReportMenu"); } }
 
+        /// <summary>Fotoğraflar: kapak yokken genel resmin altındaki ipucu; {0} stok no.</summary>
+        public static string Stock_NoCoverPattern { get { return Get("Stock_NoCoverPattern"); } }
+
+        /// <summary>Fotoğraflar: numarasız (görünmeyen) fotoğraf sayısı.</summary>
+        public static string Stock_PhotosHidden { get { return Get("Stock_PhotosHidden"); } }
+
+        /// <summary>Fotoğraflar: görünmeyenler ipucu.</summary>
+        public static string Stock_PhotosHiddenHint { get { return Get("Stock_PhotosHiddenHint"); } }
+
         #endregion
     }
 }

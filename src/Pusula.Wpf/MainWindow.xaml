@@ -2211,6 +2211,7 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <DockPanel Margin="2,0,0,8">
                                     <Button DockPanel.Dock="Right" Padding="9,2" Click="StockPhotos_Click" ToolTip="{Binding Detail.Cover.PhotosHome}">
@@ -2223,7 +2224,7 @@
                                 </DockPanel>
                                 <Border Grid.Row="1" CornerRadius="8" Background="{DynamicResource SubtleFillColorSecondaryBrush}" Cursor="Hand"
                                         MouseLeftButtonUp="StockCover_MouseLeftButtonUp" ToolTip="{Binding Detail.Cover.SelectedPhoto}"
-                                        Visibility="{Binding Detail.Cover.HasCover, Converter={StaticResource BoolToVis}}">
+                                        Visibility="{Binding Detail.Cover.HasSelectedPhoto, Converter={StaticResource BoolToVis}}">
                                     <Grid>
                                         <Image Margin="6" Stretch="Uniform" Source="{Binding Detail.Cover.SelectedPhoto, Converter={StaticResource PathToImage}}" />
                                         <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8" Padding="8,2" CornerRadius="5" Background="#99000000">
@@ -2231,10 +2232,14 @@
                                         </Border>
                                     </Grid>
                                 </Border>
-                                <Border Grid.Row="1" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
-                                        Visibility="{Binding Detail.Cover.HasCover, Converter={StaticResource InverseBoolToVis}}">
-                                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Margin="20" FontSize="13.5" LineHeight="21"
-                                               Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Stock_NoCover}" />
+                                <!-- Kapak yoksa genel resim: kutu simgesi ve kapak adının ipucu -->
+                                <Border Grid.Row="1" CornerRadius="8" Background="{DynamicResource SubtleFillColorSecondaryBrush}" MinHeight="180"
+                                        Visibility="{Binding Detail.Cover.HasSelectedPhoto, Converter={StaticResource InverseBoolToVis}}">
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16">
+                                        <local:AppIcon HorizontalAlignment="Center" Glyph="{x:Static local:AppIcons.Stock}" FontSize="64" Foreground="{DynamicResource TextTertiaryBrush}" Opacity="0.55" />
+                                        <TextBlock Margin="0,12,0,0" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" FontSize="12.5"
+                                                   Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Detail.Cover.NoCoverText}" />
+                                    </StackPanel>
                                 </Border>
                                 <ItemsControl Grid.Row="2" Margin="0,8,-6,0" ItemsSource="{Binding Detail.Cover.Thumbs}" Focusable="False"
                                               Visibility="{Binding Detail.Cover.HasStrip, Converter={StaticResource BoolToVis}}">
@@ -2267,6 +2272,11 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
+                                <!-- Numarasız fotoğraflar görünmez; sayısı ve klasör bağlantısı -->
+                                <Button Grid.Row="3" Margin="0,6,0,0" HorizontalAlignment="Left" Padding="4,1" Style="{DynamicResource SubtleButtonStyle}" Click="StockPhotos_Click"
+                                        ToolTip="{x:Static res:Resources.Stock_PhotosHiddenHint}" Visibility="{Binding Detail.Cover.HasHidden, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock FontSize="11.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Detail.Cover.HiddenText}" />
+                                </Button>
                             </Grid>
                         </Border>
                         <Border Grid.Column="2" CornerRadius="10" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"

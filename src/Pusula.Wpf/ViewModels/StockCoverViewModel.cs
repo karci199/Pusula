@@ -63,6 +63,8 @@ namespace Pusula.Wpf.ViewModels
         private string moreText = string.Empty;
         private string documentsFolder = string.Empty;
         private string documentsText = string.Empty;
+        private string hiddenText = string.Empty;
+        private string noCoverText = string.Empty;
 
         /// <summary>Stok klasörü.</summary>
         public string StockFolder
@@ -89,11 +91,49 @@ namespace Pusula.Wpf.ViewModels
             get { return cover.Length > 0; }
         }
 
-        /// <summary>Büyük kutuda gösterilen fotoğraf (başta kapak, şeritten seçilen).</summary>
+        /// <summary>Büyük kutuda gösterilen fotoğraf (başta kapak, şeritten seçilen); kapak yoksa boş (genel resim görünür).</summary>
         public string SelectedPhoto
         {
             get { return selected; }
-            private set { SetProperty(ref selected, value); }
+            private set
+            {
+                if (SetProperty(ref selected, value))
+                {
+                    OnPropertyChanged(nameof(HasSelectedPhoto));
+                }
+            }
+        }
+
+        /// <summary>Büyük kutuda fotoğraf var mı; yoksa genel resim ve kapak adının ipucu görünür.</summary>
+        public bool HasSelectedPhoto
+        {
+            get { return selected.Length > 0; }
+        }
+
+        /// <summary>Kapak yokken büyük kutudaki ipucu: "Kapak: AB-7000-0002_kapak.jpg".</summary>
+        public string NoCoverText
+        {
+            get { return noCoverText; }
+            private set { SetProperty(ref noCoverText, value); }
+        }
+
+        /// <summary>Arayüzde görünmeyen (numarasız) fotoğraflar: "3 fotoğraf daha klasörde"; yoksa boş.</summary>
+        public string HiddenText
+        {
+            get { return hiddenText; }
+            private set
+            {
+                if (SetProperty(ref hiddenText, value))
+                {
+                    OnPropertyChanged(nameof(HasHidden));
+                }
+            }
+        }
+
+        /// <summary>Görünmeyen fotoğraf var mı.</summary>
+        public bool HasHidden
+        {
+            get { return hiddenText.Length > 0; }
         }
 
         /// <summary>Büyük kutudaki fotoğrafın görünüş adı ("Kapak").</summary>
@@ -125,10 +165,10 @@ namespace Pusula.Wpf.ViewModels
             get { return moreText.Length > 0; }
         }
 
-        /// <summary>Şerit görünür mü (birden çok fotoğraf).</summary>
+        /// <summary>Şerit görünür mü (en az bir numaralı fotoğraf).</summary>
         public bool HasStrip
         {
-            get { return Thumbs.Count > 1; }
+            get { return Thumbs.Count > 0; }
         }
 
         /// <summary>Notun yolu; yoksa boş.</summary>
@@ -235,11 +275,17 @@ namespace Pusula.Wpf.ViewModels
             return number > 0 ? names[index] + " " + number.ToString(CultureInfo.CurrentCulture) : names[index];
         }
 
-        /// <summary>Şeritten bir fotoğrafı büyük kutuda gösterir.</summary>
+        /// <summary>Şeritten bir fotoğrafı büyük kutuda gösterir; seçili olana yeniden basılırsa kapağa döner.</summary>
         public void Select(PhotoThumb thumb)
         {
             if (thumb == null)
             {
+                return;
+            }
+
+            if (thumb.IsSelected)
+            {
+                ShowCover();
                 return;
             }
 
@@ -250,6 +296,18 @@ namespace Pusula.Wpf.ViewModels
 
             SelectedPhoto = thumb.Path;
             SelectedLabel = thumb.Label;
+        }
+
+        // Büyük kutuda kapak (yoksa genel resim); şeritte seçim yok.
+        private void ShowCover()
+        {
+            foreach (var t in Thumbs)
+            {
+                t.IsSelected = false;
+            }
+
+            SelectedPhoto = cover;
+            SelectedLabel = cover.Length > 0 ? Resources.Photo_Cover : string.Empty;
         }
 
         /// <summary>Kartı temizler.</summary>
@@ -267,6 +325,8 @@ namespace Pusula.Wpf.ViewModels
             MoreText = string.Empty;
             DocumentsFolder = string.Empty;
             DocumentsText = string.Empty;
+            HiddenText = string.Empty;
+            NoCoverText = string.Empty;
             Thumbs.Clear();
             OnPropertyChanged(nameof(HasStrip));
         }
@@ -280,18 +340,17 @@ namespace Pusula.Wpf.ViewModels
             NoteExcerpt = read.NoteFile.Length == 0 ? string.Empty : read.NoteExcerpt.Length == 0 ? Resources.Inv_NoteEmpty : read.NoteExcerpt;
             PhotosFolder = read.PhotosFolder;
             PhotosHome = read.PhotosHome.Length > 0 ? read.PhotosHome : folder;
-            CoverPhoto = read.Photos.FirstOrDefault() ?? string.Empty;
-            foreach (var photo in read.Photos.Take(StripCount))
+            // 21.11.2026: büyükte kapak (<stok>_kapak); şeritte numaralı fotoğraflar; numarasızlar görünmez.
+            CoverPhoto = read.Cover;
+            NoCoverText = string.Format(CultureInfo.CurrentCulture, Resources.Stock_NoCoverPattern, Path.GetFileName(folder.TrimEnd('\\')));
+            foreach (var photo in read.Strip.Take(StripCount))
             {
-                Thumbs.Add(new PhotoThumb(photo, LabelOf(photo)));
+                Thumbs.Add(new PhotoThumb(photo, StockCover.StripLabelOf(photo)));
             }
 
-            if (Thumbs.Count > 0)
-            {
-                Select(Thumbs[0]);
-            }
-
-            MoreText = read.Photos.Count > StripCount ? "+" + (read.Photos.Count - StripCount).ToString(CultureInfo.CurrentCulture) : string.Empty;
+            ShowCover();
+            MoreText = read.Strip.Count > StripCount ? "+" + (read.Strip.Count - StripCount).ToString(CultureInfo.CurrentCulture) : string.Empty;
+            HiddenText = read.HiddenCount > 0 ? string.Format(CultureInfo.CurrentCulture, Resources.Stock_PhotosHidden, read.HiddenCount) : string.Empty;
             if (HasMore)
             {
                 Thumbs.Add(PhotoThumb.More(MoreText));

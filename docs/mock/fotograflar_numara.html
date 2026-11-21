@@ -1,0 +1,84 @@
+﻿<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Fotoğraflar</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#202020}
+.page{width:1300px;padding:22px 26px 26px;background:#202020;color:#e6e6e6;font-family:"Segoe UI",Arial,sans-serif;font-size:13.5px;display:grid;grid-template-columns:380px 380px 1fr;gap:22px}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin:0 0 9px}
+.cap b{color:#4cc2ff;margin-right:6px}
+.card{background:#2b2b2b;border:1px solid #3a3a3a;border-radius:10px;padding:12px 12px 10px}
+.hd{display:flex;align-items:center;margin-bottom:10px}
+.hd .t{font-weight:600}.hd .c{color:#8a8a8a;margin-left:6px}
+.btn{margin-left:auto;border:1px solid #444;background:#333;border-radius:5px;padding:3px 10px;font-size:12.5px}
+.big{height:220px;border-radius:8px;background:linear-gradient(135deg,#3a4a5c,#24303c);position:relative;display:flex;align-items:center;justify-content:center;color:#cfd8e3;font-size:13px}
+.big .tag{position:absolute;left:8px;bottom:8px;background:#000a;padding:2px 8px;border-radius:5px;font-size:12px}
+.big .name{position:absolute;left:8px;top:8px;background:#0008;padding:1px 7px;border-radius:5px;font-size:11px;color:#bdbdbd}
+.strip{display:grid;grid-template-columns:repeat(4,1fr) 44px;gap:6px;margin-top:8px}
+.th{height:58px;border-radius:6px;position:relative;display:flex;align-items:flex-end;justify-content:center;font-size:10.5px;color:#e6e6e6;padding-bottom:3px}
+.th .n{position:absolute;left:4px;top:3px;background:#000a;border-radius:4px;padding:0 5px;font-size:10px;font-weight:700}
+.more{height:58px;border-radius:6px;background:#333;display:flex;align-items:center;justify-content:center;color:#cfcfcf;font-weight:600}
+.lbls{display:grid;grid-template-columns:repeat(4,1fr) 44px;gap:6px;margin-top:3px;font-size:11px;color:#9a9a9a;text-align:center}
+.hidden{margin-top:8px;font-size:12px;color:#8a8a8a;display:flex;align-items:center;gap:6px}
+.hidden span{color:#4cc2ff}
+.empty{height:220px;border-radius:8px;border:1px dashed #4a4a4a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#8a8a8a;font-size:12.5px;text-align:center;padding:0 20px}
+.tree{background:#1f1f1f;border:1px solid #383838;border-radius:8px;padding:10px 12px;font-family:Consolas,monospace;font-size:12.3px;line-height:1.75;color:#cfcfcf;white-space:pre}
+.tree .k{color:#f6c46f}.tree .s{color:#6ccb5f}.tree .h{color:#777}.tree .d{color:#8fd0ff}
+.rules{margin-top:12px;font-size:12.5px;color:#a8a8a8;line-height:1.75;background:#262626;border:1px solid #333;border-radius:10px;padding:10px 14px}
+.rules b{color:#e6e6e6}
+.rules code{color:#f6c46f;font-family:Consolas,monospace}
+</style></head><body><div class="page">
+
+<div>
+  <div class="cap"><b>1</b>STOK SAYFASI · FOTOĞRAFLAR KARTI</div>
+  <div class="card">
+    <div class="hd"><span class="t">Fotoğraflar</span><span class="c">· 5</span><span class="btn">📁 Klasör</span></div>
+    <div class="big"><span class="name">AB-7000-0002_kapak.jpg</span>SH2000 · ön görünüş<span class="tag">Kapak</span></div>
+    <div class="strip">
+      <div class="th" style="background:#4a6a8a"><span class="n">1</span></div>
+      <div class="th" style="background:#5a7a5a"><span class="n">2</span></div>
+      <div class="th" style="background:#7a5a7a"><span class="n">3</span></div>
+      <div class="th" style="background:#8a6a3a"><span class="n">4</span></div>
+      <div class="more">+1</div>
+    </div>
+    <div class="lbls"><span>on gorunus</span><span>montaj detayi</span><span>konnektor</span><span>etiket</span><span></span></div>
+    <div class="hidden">👁 3 fotoğraf daha klasörde (numarasız) · <span>Klasörü aç</span></div>
+  </div>
+</div>
+
+<div>
+  <div class="cap"><b>2</b>KAPAK YOKSA</div>
+  <div class="card">
+    <div class="hd"><span class="t">Fotoğraflar</span><span class="c">· 2</span><span class="btn">📁 Klasör</span></div>
+    <div class="empty">Kapak fotoğrafı yok.<br>Ana fotoğrafın adı <b style="color:#f6c46f">AB-7000-0002_kapak.jpg</b> olsun.</div>
+    <div class="strip">
+      <div class="th" style="background:#4a6a8a"><span class="n">1</span></div>
+      <div class="th" style="background:#5a7a5a"><span class="n">2</span></div>
+      <div class="th" style="background:#2f2f2f;border:1px dashed #444"></div>
+      <div class="th" style="background:#2f2f2f;border:1px dashed #444"></div>
+      <div></div>
+    </div>
+    <div class="lbls"><span>on gorunus</span><span>montaj detayi</span><span></span><span></span><span></span></div>
+    <div class="hidden">Şeritte yalnız adı sayıyla başlayanlar görünür.</div>
+  </div>
+</div>
+
+<div>
+  <div class="cap"><b>3</b>KLASÖRDE · NE GÖRÜNÜR, NE GÖRÜNMEZ</div>
+<div class="tree"><span class="d">AB-7000-0002\01_Ortak\Fotograflar\</span>
+  <span class="k">AB-7000-0002_kapak.jpg</span>   <span class="h">→ büyük resim</span>
+  <span class="s">1_on gorunus.jpg</span>         <span class="h">→ şeritte 1.</span>
+  <span class="s">2_montaj detayi.jpg</span>      <span class="h">→ şeritte 2.</span>
+  <span class="s">3_konnektor.jpg</span>          <span class="h">→ şeritte 3.</span>
+  <span class="s">4_etiket.jpg</span>             <span class="h">→ şeritte 4.</span>
+  <span class="s">5_ic yapi.jpg</span>            <span class="h">→ "+1" (tıklayınca hepsi)</span>
+  IMG_4521.jpg             <span class="h">→ görünmez (numarasız)</span>
+  olcum_duzenek.jpg        <span class="h">→ görünmez</span>
+  AB-7000-0002_on.jpg      <span class="h">→ görünmez (eski ad)</span></div>
+  <div class="rules">
+    <b>Ana fotoğraf:</b> <code>&lt;stok no&gt;_kapak.*</code> (tek kalıp).<br>
+    <b>Şerit:</b> adı sayıyla başlayanlar (<code>1_</code>, <code>2_</code>, <code>01_</code>, <code>10_</code> …), sayı sırasıyla; sayıdan sonrası serbest ad, şeridin altında yazar. İlk 4'ü küçük resim, fazlası "+N".<br>
+    <b>Görünmeyenler:</b> numarasız olanlar; klasörde durur, sayısı altta yazar.<br>
+    Uzantılar: jpg, jpeg, png, bmp, gif, tif. Hiçbir dosya taşınmaz, adı değiştirilmez.
+  </div>
+</div>
+</div></body></html>
