@@ -3362,11 +3362,13 @@
                     </StackPanel>
                 </controls:FormField>
                 <controls:FormField Header="{x:Static res:Resources.Inv_Name}" IsRequired="True" LabelWidth="130" Margin="0,10,0,0">
-                    <TextBox Text="{Binding NewInventoryName, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" controls:TextBoxHelper.PlaceholderText="{Binding NewInventoryNamePlaceholder}" />
+                    <TextBox Text="{Binding NewInventoryName, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Inv_NamePlaceholderTool}" />
                 </controls:FormField>
                 <controls:FormField Header="{x:Static res:Resources.Inv_StockNo}" IsRequired="True" LabelWidth="130" Margin="0,10,0,0">
-                    <TextBox Text="{Binding NewInventoryNumber, UpdateSourceTrigger=PropertyChanged}" Width="300" HorizontalAlignment="Left"
-                             ToolTip="{Binding InventoryNumberHint}" controls:TextBoxHelper.PlaceholderText="{Binding InventoryNumberHint}" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox Text="{Binding NewInventoryNumber, UpdateSourceTrigger=PropertyChanged}" Width="300" ToolTip="{Binding InventoryNumberHint}" />
+                        <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding InventoryNumberFormatText}" />
+                    </StackPanel>
                 </controls:FormField>
                 <controls:FormField Header="{x:Static res:Resources.Inv_UsePlace}" LabelWidth="130" Margin="0,10,0,0"
                                     Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}">
@@ -3408,8 +3410,7 @@
                 </controls:FormField>
                 <controls:FormField Header="{x:Static res:Resources.Inv_Notes}" LabelWidth="130" Margin="0,10,0,0" ErrorText="{Binding InventoryError}">
                     <TextBox Text="{Binding NewInventoryNote, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap"
-                             MinHeight="64" MaxHeight="140" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top"
-                             controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Placeholder_Note}" />
+                             MinLines="3" MaxLines="6" VerticalScrollBarVisibility="Auto" />
                 </controls:FormField>
                 <controls:FormField Header="{x:Static res:Resources.Inv_Tags}" LabelWidth="130" Margin="0,10,0,0">
                     <local:TagBox Tags="{Binding NewInventoryTags, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Tag_Placeholder}" />

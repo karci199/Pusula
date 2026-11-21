@@ -44,7 +44,7 @@ namespace Pusula.Core.Types
 
         /// <summary>Dosya biçiminin sürümü.</summary>
         [DataMember(Name = "schemaVersion", Order = 0)]
-        public int SchemaVersion { get; set; } = 13;
+        public int SchemaVersion { get; set; } = 14;
 
         /// <summary>Kayıt türleri.</summary>
         [DataMember(Name = "types", Order = 1)]
@@ -307,23 +307,8 @@ namespace Pusula.Core.Types
             // "Ölçüm sistemi" alanı kalkar; yazılımda alt tür yok. Alan, etiket ve seçenek listelerindeki adlar da değişir.
             if (SchemaVersion < 9)
             {
-                var cable = Find("cable");
-                if (cable != null)
-                {
-                    foreach (var pair in new[] { Tuple.Create("RF", "RF kablo"), Tuple.Create("Haberleşme", "Haberleşme kablosu"), Tuple.Create("Güç", "Güç kablosu") })
-                    {
-                        RenameSubType(cable, pair.Item1, pair.Item2);
-                        foreach (var choice in cable.Fields.SelectMany(x => x.SubTypeChoices).Where(c => string.Equals(c.SubType, pair.Item1, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            choice.SubType = pair.Item2;
-                        }
+                RenameCableSubTypes(Tuple.Create("RF", "RF kablo"), Tuple.Create("Haberleşme", "Haberleşme kablosu"), Tuple.Create("Güç", "Güç kablosu"));
 
-                        foreach (var scope in TagList.SelectMany(x => x.Scopes).Where(s => s.Type == "cable" && string.Equals(s.SubType, pair.Item1, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            scope.SubType = pair.Item2;
-                        }
-                    }
-                }
 
                 var jig = Find("jig");
                 if (jig != null && SameSet(jig.SubTypes, OldJigSubTypes))
@@ -424,7 +409,37 @@ namespace Pusula.Core.Types
                 }
             }
 
-            SchemaVersion = 13;
+            // Sürüm 14 (21.11.2026): tür zaten Kablaj; alt türler kısa: RF, Haberleşme, Güç, Diğer (kullanıcı kararı).
+            if (SchemaVersion < 14)
+            {
+                RenameCableSubTypes(Tuple.Create("RF kablo", "RF"), Tuple.Create("Haberleşme kablosu", "Haberleşme"), Tuple.Create("Güç kablosu", "Güç"));
+            }
+
+            SchemaVersion = 14;
+        }
+
+        // Kablo alt türlerini yeniden adlandırır: alt tür listesi, alanların alt türleri, uç listeleri ve etiket kapsamları.
+        private void RenameCableSubTypes(params Tuple<string, string>[] pairs)
+        {
+            var cable = Find("cable");
+            if (cable == null)
+            {
+                return;
+            }
+
+            foreach (var pair in pairs)
+            {
+                RenameSubType(cable, pair.Item1, pair.Item2);
+                foreach (var choice in cable.Fields.SelectMany(x => x.SubTypeChoices).Where(c => string.Equals(c.SubType, pair.Item1, StringComparison.OrdinalIgnoreCase)))
+                {
+                    choice.SubType = pair.Item2;
+                }
+
+                foreach (var scope in TagList.SelectMany(x => x.Scopes).Where(s => s.Type == "cable" && string.Equals(s.SubType, pair.Item1, StringComparison.OrdinalIgnoreCase)))
+                {
+                    scope.SubType = pair.Item2;
+                }
+            }
         }
 
         // Varsayılan adı değiştirilmemiş türün adını yeniler (kullanıcı adı değiştirdiyse dokunulmaz).
@@ -530,9 +545,9 @@ namespace Pusula.Core.Types
             }
 
             // Basit örnekler: kapsamlı etiketler (yalnız RF kabloda, yalnız haberleşme kablosunda).
-            set.TagList.Add(TagDefinition.For("faz_kararli", "cable", "RF kablo"));
-            set.TagList.Add(TagDefinition.For("RS422", "cable", "Haberleşme kablosu"));
-            set.TagList.Add(TagDefinition.For("RS232", "cable", "Haberleşme kablosu"));
+            set.TagList.Add(TagDefinition.For("faz_kararli", "cable", "RF"));
+            set.TagList.Add(TagDefinition.For("RS422", "cable", "Haberleşme"));
+            set.TagList.Add(TagDefinition.For("RS232", "cable", "Haberleşme"));
 
             set.Types.Add(new TypeDefinition
             {
@@ -631,7 +646,7 @@ namespace Pusula.Core.Types
 
         // Türlerin hazır alanları (Türler penceresinden değiştirilebilir). Alt tür verilen alan yalnız o alt türlerde görünür.
         /// <summary>Kablo alt türleri (10.11.2026: RF, Haberleşme, Güç, Diğer).</summary>
-        public static readonly string[] CableSubTypes = { "RF kablo", "Haberleşme kablosu", "Güç kablosu", "Diğer" };
+        public static readonly string[] CableSubTypes = { "RF", "Haberleşme", "Güç", "Diğer" };
 
         /// <summary>Test gereci alt türleri (10.11.2026).</summary>
         public static readonly string[] EquipmentSubTypes = { "Adaptör", "Zayıflatıcı", "Yük (sonlandırıcı)", "Ayırıcı / birleştirici", "Diğer" };
@@ -644,14 +659,15 @@ namespace Pusula.Core.Types
 
         /// <summary>
         /// Eski alt tür adlarının yeni karşılığı (kayıtlarda eski ad kalabilir; dosyalara toplu yazılmaz, karşılaştırmada
-        /// yeni ad sayılır): RF → RF kablo, Haberleşme → Haberleşme kablosu, Güç (/ veri) → Güç kablosu, Kablaj → Diğer.
+        /// yeni ad sayılır): RF kablo → RF, Haberleşme kablosu → Haberleşme, Güç kablosu (Güç / veri) → Güç, Kablaj → Diğer.
         /// </summary>
         public static readonly IReadOnlyDictionary<string, string> SubTypeAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
-            { "RF", "RF kablo" },
-            { "Haberleşme", "Haberleşme kablosu" },
-            { "Güç", "Güç kablosu" },
-            { "Güç / veri", "Güç kablosu" },
+            { "RF kablo", "RF" },
+            { "Haberleşme kablosu", "Haberleşme" },
+            { "Güç kablosu", "Güç" },
+            { "Güç / veri", "Güç" },
+
             { "Kablaj", "Diğer" },
         };
 
@@ -677,10 +693,10 @@ namespace Pusula.Core.Types
             set.Find("cable")?.Fields.AddRange(new[]
             {
                 Field("Boy", FieldKind.Number, "m"),
-                Field("Frekans", FieldKind.Text, "MHz", null, "RF kablo"),
-                Field("Pin yapısı", FieldKind.Text, string.Empty, null, "Haberleşme kablosu"),
-                Field("Akım", FieldKind.Number, "A", null, "Güç kablosu"),
-                Field("Kesit (AWG)", FieldKind.Choice, string.Empty, AwgSizes, "Güç kablosu"),
+                Field("Frekans", FieldKind.Text, "MHz", null, "RF"),
+                Field("Pin yapısı", FieldKind.Text, string.Empty, null, "Haberleşme"),
+                Field("Akım", FieldKind.Number, "A", null, "Güç"),
+                Field("Kesit (AWG)", FieldKind.Choice, string.Empty, AwgSizes, "Güç"),
             });
             set.Find("jig")?.Fields.AddRange(new[]
             {

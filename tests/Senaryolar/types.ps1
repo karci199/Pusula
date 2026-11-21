@@ -25,7 +25,7 @@ try {
     $fr = New-Object Pusula.Wpf.ViewModels.TypeEditor.FieldRow; $fr.Name = 'Tork'; $fr.Kind = 'number'; $fr.Unit = 'Nm'; $fr.SubTypes = 'Montaj'; $jig.Fields.Add($fr)
     "--- 2b. Etiketler"
     $faz = $vm.Tags | Where-Object Name -eq 'faz_kararli'
-    Check 'etiketler yüklendi, kapsam metni' ($vm.Tags.Count -eq $set.TagList.Count -and $faz.Scope -eq 'Kablaj · RF kablo' -and ($vm.Tags | Where-Object Name -eq 'SATIMO').Scope -eq '') ("$($vm.Tags.Count) / $($faz.Scope)")
+    Check 'etiketler yüklendi, kapsam metni' ($vm.Tags.Count -eq $set.TagList.Count -and $faz.Scope -eq 'Kablaj · RF' -and ($vm.Tags | Where-Object Name -eq 'SATIMO').Scope -eq '') ("$($vm.Tags.Count) / $($faz.Scope)")
     $tr = New-Object Pusula.Wpf.ViewModels.TypeEditor.TagRow; $tr.Name = '#yeni etiket'; $tr.Scope = 'Mekanik jig, Kablaj · Güç'; $vm.Tags.Add($tr)
     $fileTypes = $set.FileTypes.Count
     $st = New-Object Pusula.Wpf.ViewModels.TypeEditor.StatusRow; $st.Name = 'Kalibrasyonda'; $st.Tone = 'waiting'; $st.IsSide = $true; $jig.Statuses.Add($st)
@@ -63,7 +63,7 @@ $grid.CancelEdit() | Out-Null
     Check 'yeni sıra dışı durum' ($j.FindStatus('Kalibrasyonda') -ne $null -and $j.SideStatuses.Count -eq 3)
     $yt = $re.TagList | Where-Object Name -eq 'yeni_etiket'
     Check 'yeni etiket kaydedildi: ad düzeltildi, kapsam jig + kablo · Güç' ($yt -ne $null -and $yt.Scopes.Count -eq 2 -and $yt.Scopes[0].Type -eq 'jig' -and $yt.Scopes[1].Type -eq 'cable' -and $yt.Scopes[1].SubType -eq 'Güç')
-    Check 'öteki etiketler ve kapsamları korundu' (@($re.TagList | Where-Object { $_.Name -eq 'faz_kararli' -and $_.Scopes[0].SubType -eq 'RF kablo' }).Count -eq 1)
+    Check 'öteki etiketler ve kapsamları korundu' (@($re.TagList | Where-Object { $_.Name -eq 'faz_kararli' -and $_.Scopes[0].SubType -eq 'RF' }).Count -eq 1)
     Check 'kaydetme dosya türlerini, sürümü ve uç listelerini korur' ($re.FileTypes.Count -eq $fileTypes -and $re.SchemaVersion -ge 5 -and $j.Fields[0].SubTypeChoices.Count -eq 1 -and $j.Fields[0].ChoicesFor('Montaj')[0] -eq 'Delrin') ("$($re.FileTypes.Count)/$fileTypes v$($re.SchemaVersion)")
     Check 'yeni tür: anahtar ve klasör son addan, stok/proje korunur' ($re.Find('olcum_cihazi').Name -eq 'Ölçüm cihazı' -and $re.Find('olcum_cihazi').GeneralFolder -eq 'ENVANTER\Olcum_cihazlari' -and $re.Find('stock') -ne $null -and $re.Find('project') -ne $null)
     $old10 = [Pusula.Core.Types.TypeSet]::CreateDefault(); $old10.Types.RemoveAll([Predicate[Pusula.Core.Types.TypeDefinition]]{ param($x) $x.Key -eq 'equipment' }) | Out-Null; $old10.SchemaVersion = 10; $old10.Normalize()

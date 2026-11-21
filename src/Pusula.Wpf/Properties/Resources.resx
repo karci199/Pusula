@@ -2965,4 +2965,10 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Inv_SubTypeAdd" xml:space="preserve">
     <value>Ekle</value>
   </data>
+  <data name="Inv_NumberFormat" xml:space="preserve">
+    <value>Biçim: {0}</value>
+  </data>
+  <data name="Inv_NamePlaceholderTool" xml:space="preserve">
+    <value>Ör. TEST MEKANİK SATIMO AB-7000-0002</value>
+  </data>
 </root>

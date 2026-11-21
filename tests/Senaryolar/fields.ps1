@@ -23,13 +23,13 @@ Check 'jig alanları (adet yok)' ($jigType.Fields.Count -eq 6 -and -not (@($jigT
 Check 'yazılım envanter türü' ($swType -ne $null -and $swType.IsInventory)
 Check 'RF kablo: frekans var, protokol yok' ((@($cableType.FieldsFor('RF') | % Key) -contains 'frekans') -and -not (@($cableType.FieldsFor('RF') | % Key) -contains 'protokol'))
 Check 'Haberleşme: pin yapısı (protokol etiket oldu)' (-not (@($cableType.FieldsFor('Haberleşme') | % Key) -contains 'protokol') -and (@($cableType.FieldsFor('Haberleşme') | % Key) -contains 'pin_yapisi'))
-Check 'kablo alt türleri: RF kablo, Haberleşme kablosu, Güç kablosu, Diğer' (($cableType.SubTypes -join ',') -eq 'RF kablo,Haberleşme kablosu,Güç kablosu,Diğer') ($cableType.SubTypes -join ',')
+Check 'kablo alt türleri: RF, Haberleşme, Güç, Diğer' (($cableType.SubTypes -join ',') -eq 'RF,Haberleşme,Güç,Diğer') ($cableType.SubTypes -join ',')
 # Sürüm 7: kablo uçları (konnektör) alan değil; ileride etiket / not.
 Check 'uç alanları kalktı' (-not (@($cableType.Fields | % Key) -contains 'uc_b'))
 Check 'Güç: AWG kesit, akım' ((@($cableType.FieldsFor('Güç') | % Key) -contains 'kesit_awg') -and (@($cableType.FieldsFor('Güç') | % Key) -contains 'akim') -and -not (@($cableType.FieldsFor('RF') | % Key) -contains 'kesit_awg'))
 Check 'jig: alt türler ölçüm altyapısı, alanlar her alt türde' (($jigType.SubTypes -join ',') -eq 'SATIMO,Yankısız oda,Kompakt range,Test sahası,Diğer' -and (@($jigType.FieldsFor('SATIMO') | % Key) -contains 'tork') -and (@($jigType.FieldsFor('Diğer') | % Key) -contains 'yuzey')) ($jigType.SubTypes -join ',')
 Check 'yazılımda alt tür yok' ($swType.SubTypes.Count -eq 0)
-Check 'eski alt tür adı yeni karşılığıyla eşleşir (RF → RF kablo)' ($cableType.CanonicalSubType('RF') -eq 'RF kablo' -and $cableType.CanonicalSubType('Güç / veri') -eq 'Güç kablosu' -and $jigType.CanonicalSubType('Mekanik') -eq 'Mekanik')
+Check 'eski alt tür adı yeni karşılığıyla eşleşir (RF kablo → RF)' ($cableType.CanonicalSubType('RF kablo') -eq 'RF' -and $cableType.CanonicalSubType('Güç / veri') -eq 'Güç' -and $jigType.CanonicalSubType('Mekanik') -eq 'Mekanik')
 
 "--- 1b. Sürüm 3 → 4 dönüşümü (Güç / veri, Kablaj, Adet, mm² kesit)"
 $old = [Pusula.Core.Types.TypeSet]::CreateDefault(); $oc = $old.Find('cable')
@@ -41,7 +41,7 @@ $adet = New-Object Pusula.Core.Types.FieldDefinition; $adet.Key = 'adet'; $adet.
 $mm = New-Object Pusula.Core.Types.FieldDefinition; $mm.Key = 'kesit'; $mm.Name = 'Kesit'; $mm.Kind = 'number'; $mm.Unit = 'mm²'; $mm.SubTypes.Add('Güç / veri'); $oc.Fields.Add($mm)
 $jadet = New-Object Pusula.Core.Types.FieldDefinition; $jadet.Key = 'adet'; $jadet.Name = 'Adet'; $jadet.Kind = 'number'; $old.Find('jig').Fields.Insert(0, $jadet)
 $old.SchemaVersion = 3; $old.Normalize()
-Check 'dönüşüm: alt türler RF kablo, Haberleşme kablosu, Güç kablosu, Diğer (sıra korunur)' (($oc.SubTypes -join ',') -eq 'RF kablo,Haberleşme kablosu,Güç kablosu,Diğer') ($oc.SubTypes -join ',')
+Check 'dönüşüm: alt türler RF, Haberleşme, Güç, Diğer (sıra korunur)' (($oc.SubTypes -join ',') -eq 'RF,Haberleşme,Güç,Diğer') ($oc.SubTypes -join ',')
 Check 'dönüşüm: alanların alt türü de Güç oldu' ((@($oc.FieldsFor('Güç') | % Key) -contains 'akim') -and -not (@($oc.Fields | ForEach-Object { $_.SubTypes }) -contains 'Güç / veri'))
 Check 'dönüşüm: adet kablo ve jigden kalktı' (-not (@($oc.Fields | % Key) -contains 'adet') -and -not (@($old.Find('jig').Fields | % Key) -contains 'adet'))
 Check 'dönüşüm: mm² kesit yerine AWG' (-not (@($oc.Fields | % Key) -contains 'kesit') -and (@($oc.FieldsFor('Güç') | % Key) -contains 'kesit_awg'))

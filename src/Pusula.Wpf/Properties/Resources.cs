@@ -3172,6 +3172,12 @@ namespace Pusula.Wpf.Properties
         /// <summary>Ekleme penceresi: yazılan alt türü ekler.</summary>
         public static string Inv_SubTypeAdd { get { return Get("Inv_SubTypeAdd"); } }
 
+        /// <summary>Ekleme penceresi: numara kutusunun yanındaki biçim; {0} örnek numara.</summary>
+        public static string Inv_NumberFormat { get { return Get("Inv_NumberFormat"); } }
+
+        /// <summary>Ekleme penceresi: tanım kutusunun ipucu.</summary>
+        public static string Inv_NamePlaceholderTool { get { return Get("Inv_NamePlaceholderTool"); } }
+
         #endregion
     }
 }

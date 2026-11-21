@@ -381,6 +381,7 @@ namespace Pusula.Wpf.ViewModels
             InventoryError = string.Empty;
             OnPropertyChanged(nameof(InventoryDialogTitle));
             OnPropertyChanged(nameof(InventoryNumberHint));
+            OnPropertyChanged(nameof(InventoryNumberFormatText));
             OnPropertyChanged(nameof(NewInventoryNamePlaceholder));
             OnPropertyChanged(nameof(HasInventorySubTypes));
             IsInventoryDialogOpen = true;
@@ -566,6 +567,12 @@ namespace Pusula.Wpf.ViewModels
             }
         }
 
+        /// <summary>Numara kutusunun yanındaki biçim yazısı: "Biçim: JT-0000-0000" (türe göre).</summary>
+        public string InventoryNumberFormatText
+        {
+            get { return InventoryNumberHint.Length == 0 ? string.Empty : string.Format(Resources.Inv_NumberFormat, InventoryNumberHint); }
+        }
+
         /// <summary>Diyalogdaki hata; boşsa gizlidir.</summary>
         public string InventoryError
         {
@@ -659,6 +666,7 @@ namespace Pusula.Wpf.ViewModels
                 BuildNewInventoryFields();
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(InventoryNumberHint));
+                OnPropertyChanged(nameof(InventoryNumberFormatText));
                 OnPropertyChanged(nameof(NewInventoryNamePlaceholder));
                 OnPropertyChanged(nameof(HasInventorySubTypes));
             }
@@ -745,6 +753,7 @@ namespace Pusula.Wpf.ViewModels
             InventoryError = string.Empty;
             OnPropertyChanged(nameof(InventoryDialogTitle));
             OnPropertyChanged(nameof(InventoryNumberHint));
+            OnPropertyChanged(nameof(InventoryNumberFormatText));
             OnPropertyChanged(nameof(NewInventoryNamePlaceholder));
             OnPropertyChanged(nameof(HasInventorySubTypes));
             IsInventoryDialogOpen = true;
