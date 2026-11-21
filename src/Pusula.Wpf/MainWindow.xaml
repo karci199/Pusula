@@ -2636,100 +2636,155 @@
                                                                         <!-- Açılan satır: tam gereksinim, kaynak; plan ve rapor tek satırlık özet -->
                                                                         <Border BorderThickness="0,1,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}" Margin="12,0"
                                                                                 Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVis}}" />
-                                                                        <StackPanel Margin="112,12,16,14" Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVis}}">
-                                                                            <TextBlock Margin="0,0,0,4" TextWrapping="Wrap" MaxWidth="900" HorizontalAlignment="Left" LineHeight="21" Text="{Binding Requirement}"
-                                                                                       Visibility="{Binding HasRequirement, Converter={StaticResource BoolToVis}}" />
-                                                                            <TextBlock Margin="0,0,0,4" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding SourceLine}"
-                                                                                       Visibility="{Binding HasSourceLine, Converter={StaticResource BoolToVis}}" />
-                                                                            <!-- Denemeler: maddeye bağlı ölçüm kayıtları (zaman çizelgesinden), yeniden eskiye -->
-                                                                            <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
-                                                                                <TextBlock FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center" Text="{x:Static res:Resources.Verify_Attempts}" />
-                                                                                <TextBlock Margin="8,0,0,0" FontSize="12.5" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding AttemptCountText}" />
-                                                                            </StackPanel>
-                                                                            <TextBlock Margin="0,4,0,0" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_NoAttempts}"
-                                                                                       Visibility="{Binding HasAttempts, Converter={StaticResource InverseBoolToVis}}" />
-                                                                            <ItemsControl Margin="0,4,0,0" ItemsSource="{Binding Attempts}" Focusable="False">
-                                                                                <ItemsControl.ItemTemplate>
-                                                                                    <DataTemplate>
-                                                                                        <Grid Margin="0,2">
-                                                                                            <Grid.ColumnDefinitions>
-                                                                                                <ColumnDefinition Width="92" />
-                                                                                                <ColumnDefinition Width="72" />
-                                                                                                <ColumnDefinition Width="*" />
-                                                                                            </Grid.ColumnDefinitions>
-                                                                                            <TextBlock FontSize="12.5" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding DateText}" />
-                                                                                            <Border x:Name="AttemptPill" Grid.Column="1" Padding="8,1" CornerRadius="5" HorizontalAlignment="Left" VerticalAlignment="Center"
-                                                                                                    Background="{DynamicResource SubtleFillColorSecondaryBrush}">
-                                                                                                <TextBlock x:Name="AttemptText" FontSize="11.5" FontWeight="SemiBold" Text="{Binding Result}" Foreground="{DynamicResource TextSecondaryBrush}" />
-                                                                                            </Border>
-                                                                                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                                                                                                <TextBlock FontSize="12.5" TextTrimming="CharacterEllipsis" Text="{Binding Title}" />
-                                                                                                <TextBlock Margin="8,0,0,0" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding TagText}" />
-                                                                                                <Button Margin="8,0,0,0" Padding="6,0" Style="{DynamicResource SubtleButtonStyle}" ToolTip="{x:Static res:Resources.Timeline_OpenFolder}"
-                                                                                                        Visibility="{Binding HasFolder, Converter={StaticResource BoolToVis}}" Click="AttemptFolder_Click">
-                                                                                                    <local:AppIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="12" Foreground="{DynamicResource SystemFillColorCautionBrush}" />
-                                                                                                </Button>
-                                                                                            </StackPanel>
-                                                                                        </Grid>
-                                                                                        <DataTemplate.Triggers>
-                                                                                            <DataTrigger Binding="{Binding ResultKind}" Value="1">
-                                                                                                <Setter TargetName="AttemptPill" Property="Background" Value="{DynamicResource SystemFillColorSuccessBackgroundBrush}" />
-                                                                                                <Setter TargetName="AttemptText" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
-                                                                                            </DataTrigger>
-                                                                                            <DataTrigger Binding="{Binding ResultKind}" Value="2">
-                                                                                                <Setter TargetName="AttemptPill" Property="Background" Value="{DynamicResource SystemFillColorCriticalBackgroundBrush}" />
-                                                                                                <Setter TargetName="AttemptText" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
-                                                                                            </DataTrigger>
-                                                                                        </DataTemplate.Triggers>
-                                                                                    </DataTemplate>
-                                                                                </ItemsControl.ItemTemplate>
-                                                                            </ItemsControl>
-                                                                            <UniformGrid Margin="0,8,0,0" Rows="1" Width="720" HorizontalAlignment="Left">
-                                                                                <Border Margin="0,0,10,0" Padding="12,9" CornerRadius="9" BorderThickness="1"
+                                                                        <StackPanel Margin="112,12,16,16" Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVis}}">
+                                                                            <!-- Gereksinim: tam metin ve kaynak; sağda maddeyi düzenle -->
+                                                                            <Grid Margin="0,0,0,12">
+                                                                                <Grid.ColumnDefinitions>
+                                                                                    <ColumnDefinition Width="*" />
+                                                                                    <ColumnDefinition Width="Auto" />
+                                                                                </Grid.ColumnDefinitions>
+                                                                                <StackPanel>
+                                                                                    <TextBlock TextWrapping="Wrap" MaxWidth="1000" HorizontalAlignment="Left" FontSize="14" LineHeight="21" Text="{Binding Requirement}"
+                                                                                               Visibility="{Binding HasRequirement, Converter={StaticResource BoolToVis}}" />
+                                                                                    <TextBlock Margin="0,4,0,0" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding SourceLine}"
+                                                                                               Visibility="{Binding HasSourceLine, Converter={StaticResource BoolToVis}}" />
+                                                                                </StackPanel>
+                                                                                <Button Grid.Column="1" VerticalAlignment="Top" Padding="10,3" Style="{DynamicResource SubtleButtonStyle}" Tag="{Binding}" Click="VerEditRow_Click">
+                                                                                    <StackPanel Orientation="Horizontal">
+                                                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Edit}" FontSize="12" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" VerticalAlignment="Center" />
+                                                                                        <TextBlock Margin="6,0,0,0" FontSize="12.5" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="{x:Static res:Resources.Verify_EditItem}" />
+                                                                                    </StackPanel>
+                                                                                </Button>
+                                                                            </Grid>
+                                                                            <Border Margin="0,0,0,12" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                                                                            <!-- Plan ve rapor kartları: satırın bütün genişliği, eşit iki sütun -->
+                                                                            <UniformGrid Rows="1">
+                                                                                <!-- Test planı -->
+                                                                                <Border Margin="0,0,7,0" Padding="14,12" CornerRadius="10" BorderThickness="1" MinHeight="130"
                                                                                         Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
-                                                                                    <StackPanel>
-                                                                                        <Grid>
+                                                                                    <DockPanel>
+                                                                                        <Grid DockPanel.Dock="Top" Margin="0,0,0,8">
                                                                                             <Grid.ColumnDefinitions>
+                                                                                                <ColumnDefinition Width="Auto" />
                                                                                                 <ColumnDefinition Width="*" />
                                                                                                 <ColumnDefinition Width="Auto" />
                                                                                             </Grid.ColumnDefinitions>
-                                                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                                                                <TextBlock FontWeight="SemiBold" FontSize="13" Text="{x:Static res:Resources.Verify_ColPlan}" />
-                                                                                                <TextBlock Margin="8,0,0,0" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding TpText}" />
+                                                                                            <Border Width="26" Height="26" CornerRadius="6" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                                                                                <local:AppIcon Glyph="{x:Static local:AppIcons.Note}" FontSize="13" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                                                            </Border>
+                                                                                            <StackPanel Grid.Column="1" Margin="10,0,0,0" Orientation="Horizontal" VerticalAlignment="Center">
+                                                                                                <TextBlock FontWeight="SemiBold" FontSize="13.5" Text="{x:Static res:Resources.Verify_ColPlan}" />
+                                                                                                <Border Margin="8,0,0,0" Padding="7,0" CornerRadius="8" Background="{DynamicResource SubtleFillColorSecondaryBrush}" VerticalAlignment="Center"
+                                                                                                        Visibility="{Binding HasTp, Converter={StaticResource BoolToVis}}">
+                                                                                                    <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding TpText}" />
+                                                                                                </Border>
                                                                                             </StackPanel>
-                                                                                            <Button Grid.Column="1" Padding="8,2" Tag="{Binding}" Click="VerPlanOpen_Click" Visibility="{Binding HasPlan, Converter={StaticResource BoolToVis}}"
-                                                                                                    ToolTip="{x:Static res:Resources.Verify_PlanEditHint}">
-                                                                                                <StackPanel Orientation="Horizontal">
-                                                                                                    <local:AppIcon Glyph="{x:Static local:AppIcons.Edit}" FontSize="11" VerticalAlignment="Center" />
-                                                                                                    <TextBlock Margin="6,0,0,0" FontSize="12" Text="{x:Static res:Resources.Verify_Edit}" />
-                                                                                                </StackPanel>
+                                                                                            <Button Grid.Column="2" Padding="8,2" Style="{DynamicResource SubtleButtonStyle}" Tag="{Binding}" Click="VerPlanOpen_Click"
+                                                                                                    ToolTip="{x:Static res:Resources.Verify_PlanEditHint}" Visibility="{Binding HasPlan, Converter={StaticResource BoolToVis}}">
+                                                                                                <local:AppIcon Glyph="{x:Static local:AppIcons.Edit}" FontSize="12" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
                                                                                             </Button>
                                                                                         </Grid>
                                                                                         <StackPanel Visibility="{Binding HasPlan, Converter={StaticResource BoolToVis}}">
-                                                                                            <TextBlock Margin="0,5,0,0" FontSize="12.8" TextWrapping="Wrap" Text="{Binding PlanDescription}"
+                                                                                            <TextBlock FontSize="13.5" FontWeight="SemiBold" TextWrapping="Wrap" Text="{Binding PlanDescription}"
                                                                                                        Visibility="{Binding HasPlanDescription, Converter={StaticResource BoolToVis}}" />
-                                                                                            <TextBlock Margin="0,3,0,0" FontSize="12.8" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding PlanLine}" />
-                                                                                            <TextBlock Margin="0,3,0,0" FontSize="12.5" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding PlanNote}"
+                                                                                            <WrapPanel Margin="0,6,0,0">
+                                                                                                <Border Margin="0,0,6,4" Padding="8,1" CornerRadius="8" Background="{DynamicResource SubtleFillColorSecondaryBrush}"
+                                                                                                        Visibility="{Binding HasMethod, Converter={StaticResource BoolToVis}}">
+                                                                                                    <StackPanel Orientation="Horizontal">
+                                                                                                        <Ellipse x:Name="PlanMethodDot" Width="8" Height="8" Margin="0,0,6,0" VerticalAlignment="Center" Fill="{DynamicResource TextTertiaryBrush}" />
+                                                                                                        <TextBlock FontSize="12" Text="{Binding Method}" />
+                                                                                                    </StackPanel>
+                                                                                                </Border>
+                                                                                                <Border Margin="0,0,6,4" Padding="8,1" CornerRadius="8" Background="{DynamicResource SubtleFillColorSecondaryBrush}"
+                                                                                                        Visibility="{Binding HasFacility, Converter={StaticResource BoolToVis}}">
+                                                                                                    <TextBlock FontSize="12" Text="{Binding Facility}" />
+                                                                                                </Border>
+                                                                                            </WrapPanel>
+                                                                                            <TextBlock Margin="0,2,0,0" FontSize="12.5" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding PlanNote}"
                                                                                                        Visibility="{Binding HasPlanNote, Converter={StaticResource BoolToVis}}" />
                                                                                         </StackPanel>
-                                                                                        <Button Margin="0,8,0,0" HorizontalAlignment="Left" Padding="10,4" Tag="{Binding}" Click="VerPlanOpen_Click"
+                                                                                        <Border Padding="12" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
                                                                                                 Visibility="{Binding HasPlan, Converter={StaticResource InverseBoolToVis}}">
-                                                                                            <StackPanel Orientation="Horizontal">
-                                                                                                <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
-                                                                                                <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Verify_PlanAdd}" />
+                                                                                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                                                                <TextBlock HorizontalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_PlanNone}" />
+                                                                                                <Button Margin="0,8,0,0" HorizontalAlignment="Center" Padding="12,4" Tag="{Binding}" Click="VerPlanOpen_Click">
+                                                                                                    <StackPanel Orientation="Horizontal">
+                                                                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
+                                                                                                        <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Verify_PlanAdd}" />
+                                                                                                    </StackPanel>
+                                                                                                </Button>
                                                                                             </StackPanel>
-                                                                                        </Button>
-                                                                                    </StackPanel>
+                                                                                        </Border>
+                                                                                    </DockPanel>
                                                                                 </Border>
-                                                                                <Border Padding="12,9" CornerRadius="9" BorderThickness="1"
+                                                                                <!-- Test raporu -->
+                                                                                <Border Margin="7,0,0,0" Padding="14,12" CornerRadius="10" BorderThickness="1" MinHeight="130"
                                                                                         Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
-                                                                                    <StackPanel>
-                                                                                        <StackPanel Orientation="Horizontal">
-                                                                                            <TextBlock FontWeight="SemiBold" FontSize="13" Text="{x:Static res:Resources.Verify_ColReport}" />
-                                                                                            <TextBlock Margin="8,0,0,0" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding TrText}" />
+                                                                                    <DockPanel>
+                                                                                        <Grid DockPanel.Dock="Top" Margin="0,0,0,8">
+                                                                                            <Grid.ColumnDefinitions>
+                                                                                                <ColumnDefinition Width="Auto" />
+                                                                                                <ColumnDefinition Width="*" />
+                                                                                                <ColumnDefinition Width="Auto" />
+                                                                                            </Grid.ColumnDefinitions>
+                                                                                            <Border Width="26" Height="26" CornerRadius="6" Background="{DynamicResource SystemFillColorSuccessBackgroundBrush}">
+                                                                                                <local:AppIcon Glyph="{x:Static local:AppIcons.Check}" FontSize="13" Foreground="{DynamicResource SystemFillColorSuccessBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                                                            </Border>
+                                                                                            <StackPanel Grid.Column="1" Margin="10,0,0,0" Orientation="Horizontal" VerticalAlignment="Center">
+                                                                                                <TextBlock FontWeight="SemiBold" FontSize="13.5" Text="{x:Static res:Resources.Verify_ColReport}" />
+                                                                                                <Border Margin="8,0,0,0" Padding="7,0" CornerRadius="8" Background="{DynamicResource SubtleFillColorSecondaryBrush}" VerticalAlignment="Center"
+                                                                                                        Visibility="{Binding HasTr, Converter={StaticResource BoolToVis}}">
+                                                                                                    <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding TrText}" />
+                                                                                                </Border>
+                                                                                            </StackPanel>
+                                                                                            <Button Grid.Column="2" Padding="8,2" Style="{DynamicResource SubtleButtonStyle}" Tag="{Binding}" Click="VerReportOpen_Click"
+                                                                                                    ToolTip="{x:Static res:Resources.Verify_ReportEditHint}" Visibility="{Binding HasReport, Converter={StaticResource BoolToVis}}">
+                                                                                                <local:AppIcon Glyph="{x:Static local:AppIcons.Edit}" FontSize="12" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                                                                            </Button>
+                                                                                        </Grid>
+                                                                                        <StackPanel Visibility="{Binding HasReport, Converter={StaticResource BoolToVis}}">
+                                                                                            <StackPanel Orientation="Horizontal">
+                                                                                                <Border x:Name="ResultPill" Margin="0,0,8,0" Padding="9,1" CornerRadius="9" Background="{DynamicResource SubtleFillColorSecondaryBrush}" VerticalAlignment="Center"
+                                                                                                        Visibility="{Binding HasReportResult, Converter={StaticResource BoolToVis}}">
+                                                                                                    <StackPanel Orientation="Horizontal">
+                                                                                                        <Ellipse x:Name="ResultDot" Width="8" Height="8" Margin="0,0,6,0" VerticalAlignment="Center" Fill="{DynamicResource TextTertiaryBrush}" />
+                                                                                                        <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding ReportResult}" />
+                                                                                                    </StackPanel>
+                                                                                                </Border>
+                                                                                                <TextBlock FontSize="13.5" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding ReportDescription}"
+                                                                                                           Visibility="{Binding HasReportDescription, Converter={StaticResource BoolToVis}}" />
+                                                                                            </StackPanel>
+                                                                                            <TextBlock Margin="0,6,0,0" FontSize="12.5" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding ReportNote}"
+                                                                                                       Visibility="{Binding HasReportNote, Converter={StaticResource BoolToVis}}" />
+                                                                                            <Border Margin="0,8,0,0" Padding="9,4" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                                                                                    Background="{DynamicResource SubtleFillColorSecondaryBrush}" Visibility="{Binding HasResultPath, Converter={StaticResource BoolToVis}}">
+                                                                                                <Grid>
+                                                                                                    <Grid.ColumnDefinitions>
+                                                                                                        <ColumnDefinition Width="Auto" />
+                                                                                                        <ColumnDefinition Width="*" />
+                                                                                                        <ColumnDefinition Width="Auto" />
+                                                                                                    </Grid.ColumnDefinitions>
+                                                                                                    <local:AppIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="12" Foreground="{DynamicResource SystemFillColorCautionBrush}" VerticalAlignment="Center" />
+                                                                                                    <TextBlock Grid.Column="1" Margin="8,0" FontSize="12" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Text="{Binding ResultPath}" ToolTip="{Binding ResultPath}" />
+                                                                                                    <Button Grid.Column="2" Padding="8,1" Style="{DynamicResource SubtleButtonStyle}" Tag="{Binding}" Click="VerResultOpen_Click">
+                                                                                                        <TextBlock FontSize="12" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="{x:Static res:Resources.Verify_ResultOpen}" />
+                                                                                                    </Button>
+                                                                                                </Grid>
+                                                                                            </Border>
                                                                                         </StackPanel>
-                                                                                        <TextBlock Margin="0,5,0,0" FontSize="12.8" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding ReportLine}" />
-                                                                                    </StackPanel>
+                                                                                        <Border Padding="12" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                                                                                Visibility="{Binding HasReport, Converter={StaticResource InverseBoolToVis}}">
+                                                                                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                                                                <TextBlock HorizontalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_ReportNone}" />
+                                                                                                <Button Margin="0,8,0,0" HorizontalAlignment="Center" Padding="12,4" Tag="{Binding}" Click="VerReportOpen_Click">
+                                                                                                    <StackPanel Orientation="Horizontal">
+                                                                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
+                                                                                                        <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Verify_ReportAdd}" />
+                                                                                                    </StackPanel>
+                                                                                                </Button>
+                                                                                            </StackPanel>
+                                                                                        </Border>
+                                                                                    </DockPanel>
                                                                                 </Border>
                                                                             </UniformGrid>
                                                                         </StackPanel>
@@ -2753,6 +2808,18 @@
                                                                             </DataTrigger>
                                                                             <DataTrigger Binding="{Binding HasTp}" Value="False"><Setter TargetName="TpText" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" /></DataTrigger>
                                                                             <DataTrigger Binding="{Binding HasTr}" Value="False"><Setter TargetName="TrText" Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" /></DataTrigger>
+                                                                            <DataTrigger Binding="{Binding MethodTone}" Value="1"><Setter TargetName="PlanMethodDot" Property="Fill" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
+                                                                            <DataTrigger Binding="{Binding MethodTone}" Value="2"><Setter TargetName="PlanMethodDot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
+                                                                            <DataTrigger Binding="{Binding MethodTone}" Value="3"><Setter TargetName="PlanMethodDot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
+                                                                            <DataTrigger Binding="{Binding MethodTone}" Value="4"><Setter TargetName="PlanMethodDot" Property="Fill" Value="{DynamicResource TextPrimaryBrush}" /></DataTrigger>
+                                                                            <DataTrigger Binding="{Binding ReportResultKind}" Value="1">
+                                                                                <Setter TargetName="ResultPill" Property="Background" Value="{DynamicResource SystemFillColorSuccessBackgroundBrush}" />
+                                                                                <Setter TargetName="ResultDot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                                                                            </DataTrigger>
+                                                                            <DataTrigger Binding="{Binding ReportResultKind}" Value="2">
+                                                                                <Setter TargetName="ResultPill" Property="Background" Value="{DynamicResource SystemFillColorCriticalBackgroundBrush}" />
+                                                                                <Setter TargetName="ResultDot" Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                                                                            </DataTrigger>
                                                                             <DataTrigger Binding="{Binding KindTone}" Value="1"><Setter TargetName="KindDot" Property="Fill" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
                                                                             <DataTrigger Binding="{Binding KindTone}" Value="2"><Setter TargetName="KindDot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
                                                                             <DataTrigger Binding="{Binding MethodTone}" Value="1"><Setter TargetName="MethodText" Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
@@ -3544,6 +3611,43 @@
                     <TextBox Text="{Binding PlanNote, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" MinLines="2" MaxLines="5" VerticalScrollBarVisibility="Auto" />
                 </controls:FormField>
                 <TextBlock Margin="0,12,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" TextWrapping="Wrap" Text="{x:Static res:Resources.Verify_PlanHint}" />
+            </StackPanel>
+        </controls:ContentDialog>
+
+        <!-- Test raporu (satırdaki Test raporu kartı): TR no, açıklama, sonuç, sonucun yeri, not; Geçti / Kaldı durumu da değiştirir -->
+        <controls:ContentDialog Grid.RowSpan="3"
+                                IsOpen="{Binding IsVerReportOpen, Mode=TwoWay}"
+                                DialogWidth="640"
+                                Title="{Binding VerReportTitle}"
+                                PrimaryButtonText="{x:Static res:Resources.Verify_Save}"
+                                CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                PrimaryButtonClick="VerReport_PrimaryButtonClick">
+            <StackPanel>
+                <TextBlock Margin="0,0,0,14" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding VerificationFileText}" TextTrimming="CharacterEllipsis" />
+                <controls:FormField Header="{x:Static res:Resources.Verify_ReportNo}" LabelWidth="120">
+                    <TextBox Width="200" HorizontalAlignment="Left" Text="{Binding ReportTrNo, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible"
+                             controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderTr}" />
+                </controls:FormField>
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_PlanDescription}" LabelWidth="120" ErrorText="{Binding ReportError}">
+                    <TextBox Text="{Binding ReportDescription, UpdateSourceTrigger=PropertyChanged}" />
+                </controls:FormField>
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_ReportResult}" LabelWidth="120">
+                    <ComboBox Width="240" HorizontalAlignment="Left" ItemsSource="{Binding VerificationResults}" SelectedItem="{Binding ReportResult, Mode=TwoWay}"
+                              ItemTemplate="{StaticResource VerStatusItemTemplate}" />
+                </controls:FormField>
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_ResultPath}" LabelWidth="120">
+                    <StackPanel>
+                        <controls:FilePickerRow Mode="Folder" SelectedPath="{Binding ReportPath, Mode=TwoWay}"
+                                                PlaceholderText="{x:Static res:Resources.Verify_ResultPathPlaceholder}"
+                                                BrowseText="{x:Static res:Resources.Root_Browse}"
+                                                DialogTitle="{x:Static res:Resources.Verify_ResultPath}" />
+                        <TextBlock Margin="0,4,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_ResultPathHint}" />
+                    </StackPanel>
+                </controls:FormField>
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_PlanNote}" LabelWidth="120">
+                    <TextBox Text="{Binding ReportNote, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" MinLines="2" MaxLines="5" VerticalScrollBarVisibility="Auto" />
+                </controls:FormField>
+                <TextBlock Margin="0,12,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" TextWrapping="Wrap" Text="{x:Static res:Resources.Verify_ReportHint}" />
             </StackPanel>
         </controls:ContentDialog>
 

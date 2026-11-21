@@ -125,6 +125,13 @@ AB-7000-0002\
   rapor sonra, seçilen maddelere toplu "Planla…" / "Raporla…" ile (mock: `docs/mock/planla_raporla.png`; henüz kodlanmadı).
   Test sonucu türleri (rapor): Geçti · Kaldı · Hazırlanmadı. Kaldıysa bildirim no TR notuna yazılır. Hepsi test değil
   (ör. kütle tartılır = Muayene); ad "Doğrulama" kalır.
+- 21.11.2026 (kodlandı): tablo 21 sütun (+ TR sonuç, Sonuç yeri). Açık satır: gereksinim üstte, altında Test planı ve
+  Test raporu kartları (denemeler kaldırıldı; sonuç raporda). Plan penceresi: TP no, açıklama, yöntem, altyapı, not
+  (Bekliyor → Planlandı). Rapor penceresi: TR no, açıklama, sonuç, sonucun yeri (stok içindeyse göreli), not (Geçti /
+  Kaldı durumu da değiştirir). Yöntem ve altyapı madde penceresinden plana taşındı.
+- **Sıradaki (kullanıcı isteği):** her şey md'de okunur olsun: "## Plan" ve "## Sonuç" altında madde başına
+  "### DGÖ-1" bölümü uygulamaca yazılsın (başkaları Obsidian'da okusun); altına elle yazılan ayrıntıya dokunulmasın.
+  Ardından Excel'e otomatik verme.
 - TG no = DOORS'taki test gereksinimi dokümanının madde no'su. Tasarımcının yayınlamadığı Word dokümanındaki maddelerde no
   yoktur; Kaynak sütununa doküman no yazılır.
 - Tür: Temel (şartnamede) / Türetilmiş (temelin sağlanması için tasarımcının koyduğu; Bağlı = temel TG no); boş olabilir.

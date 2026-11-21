@@ -278,6 +278,85 @@ namespace Pusula.Wpf.ViewModels
             get { return Item.TrNo.Length > 0; }
         }
 
+        /// <summary>Test sonucu seçenekleri (rapor): Geçti · Kaldı · Hazırlanmadı.</summary>
+        public static string[] Results
+        {
+            get { return new[] { Resources.Verify_StatusPassed, Resources.Verify_StatusFailed, Resources.Verify_ResultNotReady }; }
+        }
+
+        /// <summary>Raporu var mı (TR no, sonuç, açıklama, yer ya da not yazılı); yoksa kartta "Rapor ekle".</summary>
+        public bool HasReport
+        {
+            get { return Item.TrNo.Length > 0 || Item.TrResult.Length > 0 || Item.TrDescription.Length > 0 || Item.ResultPath.Length > 0 || Item.TrNote.Length > 0; }
+        }
+
+        /// <summary>Rapordaki sonuç.</summary>
+        public string ReportResult
+        {
+            get { return Item.TrResult; }
+        }
+
+        /// <summary>Sonucun rengi: 1 geçti, 2 kaldı, 3 hazırlanmadı, 0 boş.</summary>
+        public int ReportResultKind
+        {
+            get
+            {
+                if (string.Equals(Item.TrResult, Resources.Verify_StatusPassed, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return 1;
+                }
+
+                if (string.Equals(Item.TrResult, Resources.Verify_StatusFailed, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return 2;
+                }
+
+                return Item.TrResult.Length > 0 ? 3 : 0;
+            }
+        }
+
+        /// <summary>Sonuç yazılı mı.</summary>
+        public bool HasReportResult
+        {
+            get { return Item.TrResult.Length > 0; }
+        }
+
+        /// <summary>Rapordaki açıklama.</summary>
+        public string ReportDescription
+        {
+            get { return Item.TrDescription; }
+        }
+
+        /// <summary>Rapor açıklaması yazılı mı.</summary>
+        public bool HasReportDescription
+        {
+            get { return Item.TrDescription.Length > 0; }
+        }
+
+        /// <summary>Rapor notu.</summary>
+        public string ReportNote
+        {
+            get { return Item.TrNote; }
+        }
+
+        /// <summary>Rapor notu yazılı mı.</summary>
+        public bool HasReportNote
+        {
+            get { return Item.TrNote.Length > 0; }
+        }
+
+        /// <summary>Sonucun yeri (md'de yazıldığı gibi).</summary>
+        public string ResultPath
+        {
+            get { return Item.ResultPath; }
+        }
+
+        /// <summary>Sonucun yeri yazılı mı.</summary>
+        public bool HasResultPath
+        {
+            get { return Item.ResultPath.Length > 0; }
+        }
+
         /// <summary>Planı var mı (TP no, plan açıklaması, yöntem ya da plan notu yazılı); yoksa kartta "Test planı ekle".</summary>
         public bool HasPlan
         {
@@ -1069,6 +1148,191 @@ namespace Pusula.Wpf.ViewModels
             IsVerificationDialogOpen = true;
         }
 
+        #region Test raporu penceresi (satırdaki Test raporu kartı)
+
+        private VerificationItem? reportItem;
+        private bool isVerReportOpen;
+        private string reportTrNo = string.Empty;
+        private string reportDescription = string.Empty;
+        private string reportResult = string.Empty;
+        private string reportPath = string.Empty;
+        private string reportNote = string.Empty;
+        private string reportError = string.Empty;
+
+        /// <summary>Test raporu penceresi açık mı.</summary>
+        public bool IsVerReportOpen
+        {
+            get { return isVerReportOpen; }
+            set { SetDialogOpen(ref isVerReportOpen, value); }
+        }
+
+        /// <summary>Pencere başlığı: "Test raporu · DGÖ-1".</summary>
+        public string VerReportTitle
+        {
+            get { return reportItem == null ? string.Empty : string.Format(CultureInfo.CurrentCulture, Resources.Verify_ReportTitle, VerificationList.KeyOf(reportItem)); }
+        }
+
+        /// <summary>Test sonucu seçenekleri: Geçti · Kaldı · Hazırlanmadı.</summary>
+        public IList<string> VerificationResults
+        {
+            get { return VerificationRow.Results; }
+        }
+
+        /// <summary>Rapor madde no (TR).</summary>
+        public string ReportTrNo
+        {
+            get { return reportTrNo; }
+            set { SetProperty(ref reportTrNo, value ?? string.Empty); }
+        }
+
+        /// <summary>Rapordaki açıklama.</summary>
+        public string ReportDescription
+        {
+            get { return reportDescription; }
+            set { SetProperty(ref reportDescription, value ?? string.Empty); }
+        }
+
+        /// <summary>Test sonucu (Geçti · Kaldı · Hazırlanmadı); boş olabilir.</summary>
+        public string ReportResult
+        {
+            get { return reportResult; }
+            set { SetProperty(ref reportResult, value ?? string.Empty); }
+        }
+
+        /// <summary>Sonucun yeri: tam yol (penceredeki seçici); kaydedince stok içindeyse göreli yazılır.</summary>
+        public string ReportPath
+        {
+            get { return reportPath; }
+            set { SetProperty(ref reportPath, value ?? string.Empty); }
+        }
+
+        /// <summary>Rapor notu (ölçülen değer, kaldıysa bildirim no).</summary>
+        public string ReportNote
+        {
+            get { return reportNote; }
+            set { SetProperty(ref reportNote, value ?? string.Empty); }
+        }
+
+        /// <summary>Penceredeki hata; boşsa gizli.</summary>
+        public string ReportError
+        {
+            get { return reportError; }
+            private set { SetProperty(ref reportError, value); }
+        }
+
+        /// <summary>Satırın test raporunu düzenleme penceresinde açar (yoksa boş: "Rapor ekle").</summary>
+        public void OpenVerReport(VerificationRow row)
+        {
+            if (row == null || verificationStock.Length == 0)
+            {
+                return;
+            }
+
+            reportItem = row.Item;
+            ReportTrNo = reportItem.TrNo;
+            ReportDescription = reportItem.TrDescription;
+            ReportResult = reportItem.TrResult;
+            ReportPath = FullResultPath(verificationStock, reportItem.ResultPath);
+            ReportNote = reportItem.TrNote;
+            ReportError = string.Empty;
+            OnPropertyChanged(nameof(VerReportTitle));
+            IsVerReportOpen = true;
+        }
+
+        /// <summary>
+        /// Raporu satıra yazar (TR no, açıklama, sonuç, sonucun yeri, not). Sonuç Geçti ya da Kaldı ise maddenin durumu da
+        /// o olur; Hazırlanmadı ya da boşsa durum değişmez. Sonucun yeri stok klasörünün içindeyse göreli yazılır.
+        /// </summary>
+        public bool ConfirmVerReport()
+        {
+            if (reportItem == null || verificationStock.Length == 0)
+            {
+                return true;
+            }
+
+            var item = VerificationList.Read(verificationStock).FirstOrDefault(v => v.Number == reportItem.Number);
+            if (item == null)
+            {
+                ReportError = Resources.Verify_Missing;
+                return false;
+            }
+
+            item.TrNo = ReportTrNo.Trim();
+            item.TrDescription = ReportDescription.Trim();
+            item.TrResult = ReportResult.Trim();
+            item.ResultPath = RelativeResultPath(verificationStock, ReportPath.Trim());
+            item.TrNote = ReportNote.Trim();
+            if (string.Equals(item.TrResult, Resources.Verify_StatusPassed, StringComparison.CurrentCultureIgnoreCase)
+                || string.Equals(item.TrResult, Resources.Verify_StatusFailed, StringComparison.CurrentCultureIgnoreCase))
+            {
+                item.Status = item.TrResult;
+            }
+
+            var error = VerificationList.Update(verificationStock, item);
+            if (error.Length > 0 && error != "missing")
+            {
+                ReportError = string.Format(CultureInfo.CurrentCulture, Resources.Verify_WriteFailed, error);
+                return false;
+            }
+
+            var number = item.Number;
+            reportItem = null;
+            if (WriteVerification(error))
+            {
+                Status = string.Format(CultureInfo.CurrentCulture, Resources.Verify_ReportSaved, VerificationList.KeyOf(item));
+                var row = VerificationGroups.SelectMany(g => g.Rows).FirstOrDefault(r => r.Item.Number == number);
+                if (row != null)
+                {
+                    row.IsExpanded = true;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>Satırdaki "Aç": sonucun yerini (klasör ya da dosya) açar.</summary>
+        public void OpenResultPath(VerificationRow row)
+        {
+            if (row == null || verificationStock.Length == 0 || row.Item.ResultPath.Length == 0)
+            {
+                return;
+            }
+
+            var full = FullResultPath(verificationStock, row.Item.ResultPath);
+            if (Directory.Exists(full) || File.Exists(full))
+            {
+                OpenPath(full);
+            }
+            else
+            {
+                Status = string.Format(CultureInfo.CurrentCulture, Resources.Verify_ResultPathMissing, row.Item.ResultPath);
+            }
+        }
+
+        /// <summary>Md'deki yol (göreli ya da tam) → tam yol.</summary>
+        public static string FullResultPath(string stockFolder, string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return string.Empty;
+            }
+
+            return Path.IsPathRooted(path) ? path : Path.Combine(stockFolder, path);
+        }
+
+        /// <summary>Tam yol stok klasörünün içindeyse göreli (03_Testler\…), değilse olduğu gibi.</summary>
+        public static string RelativeResultPath(string stockFolder, string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return string.Empty;
+            }
+
+            var root = stockFolder.TrimEnd('\\') + "\\";
+            return path.StartsWith(root, StringComparison.OrdinalIgnoreCase) ? path.Substring(root.Length) : path;
+        }
+
+        #endregion
         #region Test planı penceresi (satırdaki Test planı kartı)
 
         private VerificationItem? planItem;
@@ -1300,6 +1564,8 @@ namespace Pusula.Wpf.ViewModels
                 TpNote = item.TpNote,
                 TrDescription = item.TrDescription,
                 TrNote = item.TrNote,
+                TrResult = item.TrResult,
+                ResultPath = item.ResultPath,
                 Status = item.Status,
             };
             foreach (var pair in item.Extra)
@@ -1883,6 +2149,8 @@ namespace Pusula.Wpf.ViewModels
                 TpNote = onDisk?.TpNote ?? string.Empty,
                 TrDescription = onDisk?.TrDescription ?? string.Empty,
                 TrNote = onDisk?.TrNote ?? string.Empty,
+                TrResult = onDisk?.TrResult ?? string.Empty,
+                ResultPath = onDisk?.ResultPath ?? string.Empty,
                 Status = NewVerStatus.Trim(),
             };
 

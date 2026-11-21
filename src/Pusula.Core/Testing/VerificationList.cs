@@ -65,6 +65,12 @@ namespace Pusula.Core.Testing
         /// <summary>Test raporu notu (ölçülen değer, kaldıysa bildirim no); isteğe bağlı.</summary>
         public string TrNote { get; set; } = string.Empty;
 
+        /// <summary>Test raporundaki sonuç: Geçti, Kaldı ya da Hazırlanmadı; boş olabilir.</summary>
+        public string TrResult { get; set; } = string.Empty;
+
+        /// <summary>Sonucun yeri: ölçüm klasörü ya da dosya (stok klasörüne göre göreli ya da tam yol); boş olabilir.</summary>
+        public string ResultPath { get; set; } = string.Empty;
+
         /// <summary>Durum metni: Bekliyor, Planlandı, Hazırlık yapılıyor, Yapılıyor, Değerlendiriliyor, Geçti, Kaldı, Şartlı kabul, Tekrarlanacak, Kapsam dışı.</summary>
         public string Status { get; set; } = string.Empty;
 
@@ -75,7 +81,7 @@ namespace Pusula.Core.Testing
     /// <summary>
     /// Stokun doğrulama listesi: <c>03_Testler\&lt;stok&gt;_Test_Gereksinimleri.md</c> içindeki ilk tablo.
     /// Sütunlar başlıklarından tanınır: # · TG no · kaynak · başlık · kısa not · gereksinim · grup · alt grup · tür · bağlı ·
-    /// yöntem · altyapı · TP no · TP açıklama · TP not · TR no · TR açıklama · TR not · durum (sıra serbest, tanınmayan sütunlar korunur). Eski tablolarda eksik sütunlar
+    /// yöntem · altyapı · TP no · TP açıklama · TP not · TR no · TR açıklama · TR not · TR sonuç · sonuç yeri · durum (sıra serbest, tanınmayan sütunlar korunur). Eski tablolarda eksik sütunlar
     /// ilk yazımda eklenir. Uygulama tabloya satır
     /// ekler, satırı değiştirir ya da kaldırır (16.11.2026 kullanıcı kararı); dosyanın geri kalanına dokunmaz.
     /// </summary>
@@ -109,11 +115,13 @@ namespace Pusula.Core.Testing
         private const int ColTr = 15;
         private const int ColTrDescription = 16;
         private const int ColTrNote = 17;
-        private const int ColStatus = 18;
-        private const int KnownCount = 19;
+        private const int ColTrResult = 18;
+        private const int ColResultPath = 19;
+        private const int ColStatus = 20;
+        private const int KnownCount = 21;
 
         /// <summary>Yeni ya da yükseltilen tablonun başlıkları (sırasıyla).</summary>
-        public static readonly string[] Headers = { "#", "TG no", "Kaynak", "Başlık", "Kısa not", "Gereksinim", "Grup", "Alt grup", "Tür", "Bağlı", "Yöntem", "Altyapı", "TP no", "TP açıklama", "TP not", "TR no", "TR açıklama", "TR not", "Durum" };
+        public static readonly string[] Headers = { "#", "TG no", "Kaynak", "Başlık", "Kısa not", "Gereksinim", "Grup", "Alt grup", "Tür", "Bağlı", "Yöntem", "Altyapı", "TP no", "TP açıklama", "TP not", "TR no", "TR açıklama", "TR not", "TR sonuç", "Sonuç yeri", "Durum" };
 
         // Eski (16.11.2026 öncesi) 7 sütunlu tablonun sırası; başlık tanınmazsa kullanılır.
         private static readonly int[] LegacyOrder = { ColNumber, ColText, ColGroup, ColSubGroup, ColFacility, ColTg, ColStatus };
@@ -468,6 +476,13 @@ namespace Pusula.Core.Testing
                     return ColTrDescription;
                 case "trnot":
                     return ColTrNote;
+                case "trsonuç":
+                case "trsonuc":
+                case "testsonucu":
+                    return ColTrResult;
+                case "sonuçyeri":
+                case "sonucyeri":
+                    return ColResultPath;
                 case "durum":
                     return ColStatus;
                 default:
@@ -585,6 +600,8 @@ namespace Pusula.Core.Testing
                 item.TpNote = values[ColTpNote] ?? string.Empty;
                 item.TrDescription = values[ColTrDescription] ?? string.Empty;
                 item.TrNote = values[ColTrNote] ?? string.Empty;
+                item.TrResult = values[ColTrResult] ?? string.Empty;
+                item.ResultPath = values[ColResultPath] ?? string.Empty;
                 item.Status = values[ColStatus] ?? string.Empty;
                 return item;
             }
@@ -650,6 +667,12 @@ namespace Pusula.Core.Testing
                             break;
                         case ColTrNote:
                             value = item.TrNote;
+                            break;
+                        case ColTrResult:
+                            value = item.TrResult;
+                            break;
+                        case ColResultPath:
+                            value = item.ResultPath;
                             break;
                         case ColStatus:
                             value = item.Status;

@@ -2142,8 +2142,8 @@ stok: {0}
 
 ## Gereksinimler
 
-| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | TP no | TP açıklama | TP not | TR no | TR açıklama | TR not | Durum |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | TP no | TP açıklama | TP not | TR no | TR açıklama | TR not | TR sonuç | Sonuç yeri | Durum |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 ## Plan
 
@@ -3051,5 +3051,56 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   </data>
   <data name="Verify_PlanMenu" xml:space="preserve">
     <value>Test planı…</value>
+  </data>
+  <data name="Verify_EditItem" xml:space="preserve">
+    <value>Maddeyi düzenle</value>
+  </data>
+  <data name="Verify_PlanNone" xml:space="preserve">
+    <value>Henüz plan yok</value>
+  </data>
+  <data name="Verify_ReportNone" xml:space="preserve">
+    <value>Henüz rapor yok</value>
+  </data>
+  <data name="Verify_ReportAdd" xml:space="preserve">
+    <value>Rapor ekle</value>
+  </data>
+  <data name="Verify_ReportEditHint" xml:space="preserve">
+    <value>Test raporunu düzenle</value>
+  </data>
+  <data name="Verify_ResultOpen" xml:space="preserve">
+    <value>Aç</value>
+  </data>
+  <data name="Verify_ReportTitle" xml:space="preserve">
+    <value>Test raporu · {0}</value>
+  </data>
+  <data name="Verify_ResultNotReady" xml:space="preserve">
+    <value>Hazırlanmadı</value>
+  </data>
+  <data name="Verify_ReportSaved" xml:space="preserve">
+    <value>{0}: test raporu kaydedildi</value>
+  </data>
+  <data name="Verify_ResultPathMissing" xml:space="preserve">
+    <value>Sonucun yeri bulunamadı: {0}</value>
+  </data>
+  <data name="Verify_ReportNo" xml:space="preserve">
+    <value>TR no</value>
+  </data>
+  <data name="Verify_ReportResult" xml:space="preserve">
+    <value>Sonuç</value>
+  </data>
+  <data name="Verify_ResultPath" xml:space="preserve">
+    <value>Sonucun yeri</value>
+  </data>
+  <data name="Verify_ResultPathPlaceholder" xml:space="preserve">
+    <value>Ölçüm klasörü (ör. 03_Testler\01_Islevsel\…\SNP1_T2)</value>
+  </data>
+  <data name="Verify_ResultPathHint" xml:space="preserve">
+    <value>Stok klasörünün içindeyse göreli yazılır. Dosya yolu da elle yazılabilir.</value>
+  </data>
+  <data name="Verify_ReportHint" xml:space="preserve">
+    <value>Sonuç Geçti ya da Kaldı ise maddenin durumu da o olur; Hazırlanmadı durumu değiştirmez. Yalnız bu maddenin satırı yazılır.</value>
+  </data>
+  <data name="Verify_ReportMenu" xml:space="preserve">
+    <value>Test raporu…</value>
   </data>
 </root>

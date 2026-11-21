@@ -3259,6 +3259,57 @@ namespace Pusula.Wpf.Properties
         /// <summary>Satır menüsü: test planı penceresini açar.</summary>
         public static string Verify_PlanMenu { get { return Get("Verify_PlanMenu"); } }
 
+        /// <summary>Açık satır: madde penceresini açar.</summary>
+        public static string Verify_EditItem { get { return Get("Verify_EditItem"); } }
+
+        /// <summary>Test planı kartı: plan yokken.</summary>
+        public static string Verify_PlanNone { get { return Get("Verify_PlanNone"); } }
+
+        /// <summary>Test raporu kartı: rapor yokken.</summary>
+        public static string Verify_ReportNone { get { return Get("Verify_ReportNone"); } }
+
+        /// <summary>Test raporu kartı: rapor yokken düğme.</summary>
+        public static string Verify_ReportAdd { get { return Get("Verify_ReportAdd"); } }
+
+        /// <summary>Test raporu kartı: düzenle ipucu.</summary>
+        public static string Verify_ReportEditHint { get { return Get("Verify_ReportEditHint"); } }
+
+        /// <summary>Test raporu kartı: sonucun yerini açar.</summary>
+        public static string Verify_ResultOpen { get { return Get("Verify_ResultOpen"); } }
+
+        /// <summary>Test raporu penceresi başlığı; {0} madde.</summary>
+        public static string Verify_ReportTitle { get { return Get("Verify_ReportTitle"); } }
+
+        /// <summary>Test sonucu: rapor / sonuç hazırlanmadı (durumu değiştirmez).</summary>
+        public static string Verify_ResultNotReady { get { return Get("Verify_ResultNotReady"); } }
+
+        /// <summary>Durum çubuğu: rapor kaydedildi; {0} madde.</summary>
+        public static string Verify_ReportSaved { get { return Get("Verify_ReportSaved"); } }
+
+        /// <summary>Durum çubuğu: sonuç klasörü / dosyası yok; {0} yol.</summary>
+        public static string Verify_ResultPathMissing { get { return Get("Verify_ResultPathMissing"); } }
+
+        /// <summary>Test raporu penceresi: rapor madde numarası.</summary>
+        public static string Verify_ReportNo { get { return Get("Verify_ReportNo"); } }
+
+        /// <summary>Test raporu penceresi: test sonucu.</summary>
+        public static string Verify_ReportResult { get { return Get("Verify_ReportResult"); } }
+
+        /// <summary>Test raporu penceresi: ölçüm klasörü ya da dosya.</summary>
+        public static string Verify_ResultPath { get { return Get("Verify_ResultPath"); } }
+
+        /// <summary>Sonucun yeri kutusu ipucu.</summary>
+        public static string Verify_ResultPathPlaceholder { get { return Get("Verify_ResultPathPlaceholder"); } }
+
+        /// <summary>Sonucun yeri: alt ipucu.</summary>
+        public static string Verify_ResultPathHint { get { return Get("Verify_ResultPathHint"); } }
+
+        /// <summary>Test raporu penceresi: alt ipucu.</summary>
+        public static string Verify_ReportHint { get { return Get("Verify_ReportHint"); } }
+
+        /// <summary>Satır menüsü: test raporu penceresini açar.</summary>
+        public static string Verify_ReportMenu { get { return Get("Verify_ReportMenu"); } }
+
         #endregion
     }
 }

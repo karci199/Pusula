@@ -26,8 +26,8 @@ Check 'eklenir, pencere kapanabilir' ($vm.ConfirmNewVerification())
 $vm.IsVerificationDialogOpen = $false; Wait
 Check 'dosya oluştu' (Test-Path $file)
 $text = [IO.File]::ReadAllText($file)
-Check 'dosyada 19 sütunlu başlık' ($text -like '*| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | TP no | TP açıklama | TP not | TR no | TR açıklama | TR not | Durum |*') $text
-Check 'dosyada satır' ($text -like '*| 1 | TG-012 |  | Kazanç ≥ 5 dBi @ 2,4 GHz |  |  | İşlevsel | Anten örüntü |  |  |  | SATIMO |  |  |  |  |  |  | Bekliyor |*') $text
+Check 'dosyada 21 sütunlu başlık' ($text -like '*| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | TP no | TP açıklama | TP not | TR no | TR açıklama | TR not | TR sonuç | Sonuç yeri | Durum |*') $text
+Check 'dosyada satır' ($text -like '*| 1 | TG-012 |  | Kazanç ≥ 5 dBi @ 2,4 GHz |  |  | İşlevsel | Anten örüntü |  |  |  | SATIMO |  |  |  |  |  |  |  |  | Bekliyor |*') $text
 Check 'dosyada Plan ve Sonuç kısımları' ($text -like '*## Plan*' -and $text -like '*## Sonuç*')
 Check 'altyapı ortak listede' ((Test-Path $facilities) -and ([IO.File]::ReadAllText($facilities) -like '*- SATIMO*'))
 Check 'listede 1 madde' ($vm.VerificationCount -eq 1 -and $vm.VerificationGroups.Count -eq 1)
@@ -65,7 +65,7 @@ $row = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Row
 Check 'durum seçenekleri 10 (Planlandı, Hazırlık yapılıyor, Değerlendiriliyor, Şartlı kabul dahil)' (@($vm.VerificationStatuses).Count -eq 10 -and @($vm.VerificationStatuses)[2] -eq 'Hazırlık yapılıyor' -and @($vm.VerificationStatuses)[1] -eq 'Planlandı') (@($vm.VerificationStatuses) -join ',')
 $vm.SetVerificationStatus($row, 'Yapılıyor'); Wait
 $text = [IO.File]::ReadAllText($file)
-Check 'yalnız durum hücresi değişti' ($text -like '*| 1 | TG-012 |  | Kazanç ≥ 5 dBi @ 2,4 GHz |  |  | İşlevsel | Anten örüntü |  |  |  | SATIMO |  |  |  |  |  |  | Yapılıyor |*' -and $text -like '*| 2 |  |  | RE102 \| CE102 sınır içinde |  |  | ÇK/EMC |*') $text
+Check 'yalnız durum hücresi değişti' ($text -like '*| 1 | TG-012 |  | Kazanç ≥ 5 dBi @ 2,4 GHz |  |  | İşlevsel | Anten örüntü |  |  |  | SATIMO |  |  |  |  |  |  |  |  | Yapılıyor |*' -and $text -like '*| 2 |  |  | RE102 \| CE102 sınır içinde |  |  | ÇK/EMC |*') $text
 $row = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows[0]
 Check 'yapılıyor türü' ($row.StatusKind -eq 3 -and $row.StatusText -eq 'Yapılıyor')
 
@@ -76,7 +76,7 @@ $vm.NewVerText = 'Kazanç ≥ 6 dBi @ 2,4 GHz'; $vm.NewVerDescription = '≥ 6 d
 Check 'kaydedilir' ($vm.ConfirmNewVerification())
 $vm.IsVerificationDialogOpen = $false; Wait
 $text = [IO.File]::ReadAllText($file)
-Check 'satır yerinde değişti, numara aynı' ($text -like '*| 1 | TG-013 |  | Kazanç ≥ 6 dBi @ 2,4 GHz | ≥ 6 dBi ana yönde | Anten 2,4 GHz''de ana yönde en az 6 dBi kazanç sağlamalıdır. | İşlevsel | Anten örüntü | Temel |  | Test | SATIMO | TP-004 |  |  | TR-009 |  |  | Yapılıyor |*' -and $text -notlike '*5 dBi*' -and $vm.VerificationCount -eq 2) $text
+Check 'satır yerinde değişti, numara aynı' ($text -like '*| 1 | TG-013 |  | Kazanç ≥ 6 dBi @ 2,4 GHz | ≥ 6 dBi ana yönde | Anten 2,4 GHz''de ana yönde en az 6 dBi kazanç sağlamalıdır. | İşlevsel | Anten örüntü | Temel |  | Test | SATIMO | TP-004 |  |  | TR-009 |  |  |  |  | Yapılıyor |*' -and $text -notlike '*5 dBi*' -and $vm.VerificationCount -eq 2) $text
 
 "--- plan / rapor açıklama ve not sütunları (madde penceresinde yok, düzenlemede korunur)"
 $items = [Pusula.Core.Testing.VerificationList]::Read($stock)
@@ -84,7 +84,7 @@ $it = @($items | Where-Object { $_.TgNo -eq 'TG-013' })[0]
 $it.TpDescription = 'SATIMO kazanç ölçümü'; $it.TpNote = 'Jig JT-1000-0009'; $it.TrDescription = 'Kazanç sonuçları'; $it.TrNote = 'BN-2026-014'
 Check 'yazılır' ([Pusula.Core.Testing.VerificationList]::Update($stock, $it) -eq '')
 $text = [IO.File]::ReadAllText($file)
-Check 'dosyada yeni hücreler' ($text -like '*| SATIMO | TP-004 | SATIMO kazanç ölçümü | Jig JT-1000-0009 | TR-009 | Kazanç sonuçları | BN-2026-014 | Yapılıyor |*') $text
+Check 'dosyada yeni hücreler' ($text -like '*| SATIMO | TP-004 | SATIMO kazanç ölçümü | Jig JT-1000-0009 | TR-009 | Kazanç sonuçları | BN-2026-014 |  |  | Yapılıyor |*') $text
 $back = @([Pusula.Core.Testing.VerificationList]::Read($stock) | Where-Object { $_.TgNo -eq 'TG-013' })[0]
 Check 'geri okunur' ($back.TpDescription -eq 'SATIMO kazanç ölçümü' -and $back.TrNote -eq 'BN-2026-014')
 $row1 = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows[0]
@@ -93,7 +93,7 @@ $vm.NewVerDescription = '≥ 6 dBi ana yönde (güncel)'
 Check 'pencereden kaydedilir' ($vm.ConfirmNewVerification())
 $vm.IsVerificationDialogOpen = $false; Wait
 $text = [IO.File]::ReadAllText($file)
-Check 'düzenlemede plan / rapor açıklama ve not korunur' ($text -like '*(güncel)*| SATIMO | TP-004 | SATIMO kazanç ölçümü | Jig JT-1000-0009 | TR-009 | Kazanç sonuçları | BN-2026-014 | Yapılıyor |*') $text
+Check 'düzenlemede plan / rapor açıklama ve not korunur' ($text -like '*(güncel)*| SATIMO | TP-004 | SATIMO kazanç ölçümü | Jig JT-1000-0009 | TR-009 | Kazanç sonuçları | BN-2026-014 |  |  | Yapılıyor |*') $text
 $row1 = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows[0]
 Check 'satır: TG no, kısa not, tür, yöntem, plan / rapor' ($row1.Id -eq 'TG-013' -and $row1.Description -like '≥ 6 dBi ana yönde*' -and $row1.KindText -eq 'Temel' -and $row1.MethodTone -eq 1 -and $row1.TpText -eq 'TP-004' -and $row1.TrText -eq 'TR-009') ($row1.Id + ' ' + $row1.KindText)
 $vm.ToggleVerification($row1)
@@ -203,6 +203,31 @@ Check 'ileri durum değişmez (Değerlendiriliyor)' ($vm.ConfirmVerPlan() -and (
 $vm.IsVerPlanOpen = $false; Wait
 $vm.SetVerificationStatus((RowOf 'S11'), 'Yapılıyor'); Wait
 Check 'durum değişince plan açıklaması silinmez' ([IO.File]::ReadAllText($file) -like '*| 4.1 | VNA S11 ölçümü | Kalibrasyon kiti 3,5 mm |*| Yapılıyor |*')
+"--- test raporu kartı"
+$s11 = RowOf 'S11'
+Check 'rapor yok: kartta Rapor ekle' (-not $s11.HasReport)
+$vm.OpenVerReport($s11); Wait
+Check 'rapor penceresi açılır' ($vm.IsVerReportOpen -and $vm.VerReportTitle -like 'Test raporu · *' -and @($vm.VerificationResults).Count -eq 3) $vm.VerReportTitle
+$measure = Join-Path $stock '03_Testler\01_Islevsel\S11\SNP1_T1'
+New-Item -ItemType Directory -Force $measure | Out-Null
+$vm.ReportTrNo = '5.3'; $vm.ReportDescription = 'S11 sonuçları'; $vm.ReportResult = 'Kaldı'; $vm.ReportPath = $measure; $vm.ReportNote = '−8 dB · BN-2026-020'
+for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 }
+$dlg = Find-Open $win
+if ($dlg) {
+    $pop = Find-Popup $dlg; if ($pop -and $pop.Child) { $dlg = $pop.Child; $sz = New-Object System.Windows.Size($win.ActualWidth, $win.ActualHeight); $dlg.Measure($sz); $dlg.Arrange((New-Object System.Windows.Rect($sz))); $dlg.UpdateLayout(); for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 } }
+    $bmp = New-Object System.Windows.Media.Imaging.RenderTargetBitmap([int]$dlg.ActualWidth, [int]$dlg.ActualHeight, 96, 96, [System.Windows.Media.PixelFormats]::Pbgra32)
+    $bmp.Render($dlg); $enc = New-Object System.Windows.Media.Imaging.PngBitmapEncoder; $enc.Frames.Add([System.Windows.Media.Imaging.BitmapFrame]::Create($bmp))
+    $fs = [IO.File]::Create("$Out\verification-report.png"); $enc.Save($fs); $fs.Close()
+}
+Check 'kaydedilir' ($vm.ConfirmVerReport())
+$vm.IsVerReportOpen = $false; Wait
+$s11 = RowOf 'S11'
+Check 'satır: rapor, Kaldı → durum Kaldı, yer göreli' ($s11.HasReport -and $s11.TrText -eq '5.3' -and $s11.ReportResult -eq 'Kaldı' -and $s11.ReportResultKind -eq 2 -and $s11.StatusText -eq 'Kaldı' -and $s11.ResultPath -eq '03_Testler\01_Islevsel\S11\SNP1_T1' -and $s11.IsExpanded) ($s11.StatusText + ' | ' + $s11.ResultPath)
+Check 'dosyada rapor hücreleri' ([IO.File]::ReadAllText($file) -like '*| 5.3 | S11 sonuçları | −8 dB · BN-2026-020 | Kaldı | 03_Testler\01_Islevsel\S11\SNP1_T1 | Kaldı |*') ([IO.File]::ReadAllText($file))
+$vm.OpenVerReport($s11); $vm.ReportResult = 'Hazırlanmadı'
+Check 'Hazırlanmadı durumu değiştirmez' ($vm.ConfirmVerReport() -and (RowOf 'S11').StatusText -eq 'Kaldı')
+$vm.IsVerReportOpen = $false; Wait
+Check 'yol yardımcıları' ([Pusula.Wpf.ViewModels.MainViewModel]::RelativeResultPath('C:\a\b', 'C:\a\b\c\d') -eq 'c\d' -and [Pusula.Wpf.ViewModels.MainViewModel]::RelativeResultPath('C:\a\b', 'D:\x') -eq 'D:\x' -and [Pusula.Wpf.ViewModels.MainViewModel]::FullResultPath('C:\a\b', 'c\d') -eq 'C:\a\b\c\d')
 $s11 = RowOf 'S11'; $s11.IsExpanded = $true; Wait
 Snap $win "$Out\verification-plan-card.png"
 "--- elle yazılmış dosya: başka satırlara dokunulmaz"
@@ -218,7 +243,7 @@ $vm.NewVerText = 'Boyut 100x50 mm'
 Check 'eklenir' ($vm.ConfirmNewVerification())
 $vm.IsVerificationDialogOpen = $false; Wait
 $after = [IO.File]::ReadAllText($md)
-Check 'eski 7 sütunlu tablo 19 sütuna yükseldi, numara 8 sonda' ($after -like "*| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | TP no | TP açıklama | TP not | TR no | TR açıklama | TR not | Durum |`n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|`n| 7 |  |  | Ağırlık ≤ 1,2 kg |  |  | Özellik |  |  |  |  |  |  |  |  |  |  |  | Geçti |`n| 8 |  |  | Boyut 100x50 mm |  |  | İşlevsel |  |  |  |  |  |  |  |  |  |  |  | Bekliyor |`n`nSon not.*") $after
+Check 'eski 7 sütunlu tablo 21 sütuna yükseldi, numara 8 sonda' ($after -like "*| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | TP no | TP açıklama | TP not | TR no | TR açıklama | TR not | TR sonuç | Sonuç yeri | Durum |`n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|`n| 7 |  |  | Ağırlık ≤ 1,2 kg |  |  | Özellik |  |  |  |  |  |  |  |  |  |  |  |  |  | Geçti |`n| 8 |  |  | Boyut 100x50 mm |  |  | İşlevsel |  |  |  |  |  |  |  |  |  |  |  |  |  | Bekliyor |`n`nSon not.*") $after
 Check 'giriş ve son not korunur, LF korunur' ($after.StartsWith("# Elle`n`nGiriş metni.") -and $after -notlike "*`r`n*")
 Check 'yeni dosya açılmadı' (@(Get-ChildItem (Split-Path $md) -Filter *.md).Count -eq 1)
 

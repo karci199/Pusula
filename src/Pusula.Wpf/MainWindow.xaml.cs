@@ -139,6 +139,41 @@ namespace Pusula.Wpf
             }
         }
 
+        private void VerReport_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (!viewModel.ConfirmVerReport())
+            {
+                Dispatcher.BeginInvoke(new Action(() => viewModel.IsVerReportOpen = true));
+            }
+        }
+
+        // Satırdaki Test raporu kartı: Rapor ekle / Düzenle.
+        private void VerReportOpen_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is VerificationRow row)
+            {
+                viewModel.OpenVerReport(row);
+            }
+        }
+
+        // Rapor kartındaki sonucun yeri: Aç.
+        private void VerResultOpen_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is VerificationRow row)
+            {
+                viewModel.OpenResultPath(row);
+            }
+        }
+
+        // Açık satırdaki Maddeyi düzenle.
+        private void VerEditRow_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is VerificationRow row)
+            {
+                viewModel.EditVerification(row);
+            }
+        }
+
         // Satırdaki Test planı kartı: Test planı ekle / Düzenle.
         private void VerPlanOpen_Click(object sender, RoutedEventArgs e)
         {
@@ -459,6 +494,9 @@ namespace Pusula.Wpf
             plan.Click += (s, a) => viewModel.OpenVerPlan(row);
             menu.Items.Add(edit);
             menu.Items.Add(plan);
+            var report = new MenuItem { Header = Properties.Resources.Verify_ReportMenu, Icon = new AppIcon { Glyph = AppIcons.Check } };
+            report.Click += (s, a) => viewModel.OpenVerReport(row);
+            menu.Items.Add(report);
             menu.Items.Add(delete);
         }
 
