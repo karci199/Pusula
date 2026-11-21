@@ -3232,6 +3232,33 @@ namespace Pusula.Wpf.Properties
         /// <summary>Durum süzgeci: bütün işaretleri kaldırır.</summary>
         public static string Verify_FilterClear { get { return Get("Verify_FilterClear"); } }
 
+        /// <summary>Test planı penceresi başlığı; {0} madde (TG no).</summary>
+        public static string Verify_PlanTitle { get { return Get("Verify_PlanTitle"); } }
+
+        /// <summary>Test planı penceresi: plan madde numarası.</summary>
+        public static string Verify_PlanNo { get { return Get("Verify_PlanNo"); } }
+
+        /// <summary>Test planı penceresi: plandaki açıklama.</summary>
+        public static string Verify_PlanDescription { get { return Get("Verify_PlanDescription"); } }
+
+        /// <summary>Test planı penceresi: not (jig, SN, dikkat edilecekler).</summary>
+        public static string Verify_PlanNote { get { return Get("Verify_PlanNote"); } }
+
+        /// <summary>Test planı penceresi: alt ipucu.</summary>
+        public static string Verify_PlanHint { get { return Get("Verify_PlanHint"); } }
+
+        /// <summary>Test planı kartı: Düzenle ipucu.</summary>
+        public static string Verify_PlanEditHint { get { return Get("Verify_PlanEditHint"); } }
+
+        /// <summary>Test planı kartı: plan yokken düğme.</summary>
+        public static string Verify_PlanAdd { get { return Get("Verify_PlanAdd"); } }
+
+        /// <summary>Durum çubuğu: plan kaydedildi; {0} madde.</summary>
+        public static string Verify_PlanSaved { get { return Get("Verify_PlanSaved"); } }
+
+        /// <summary>Satır menüsü: test planı penceresini açar.</summary>
+        public static string Verify_PlanMenu { get { return Get("Verify_PlanMenu"); } }
+
         #endregion
     }
 }

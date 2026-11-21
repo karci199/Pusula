@@ -131,6 +131,23 @@ namespace Pusula.Wpf
             }
         }
 
+        private void VerPlan_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (!viewModel.ConfirmVerPlan())
+            {
+                Dispatcher.BeginInvoke(new Action(() => viewModel.IsVerPlanOpen = true));
+            }
+        }
+
+        // Satırdaki Test planı kartı: Test planı ekle / Düzenle.
+        private void VerPlanOpen_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is VerificationRow row)
+            {
+                viewModel.OpenVerPlan(row);
+            }
+        }
+
         private void VerificationDelete_PrimaryButtonClick(object sender, RoutedEventArgs e)
         {
             viewModel.ConfirmDeleteVerification();
@@ -438,7 +455,10 @@ namespace Pusula.Wpf
             edit.Click += (s, a) => viewModel.EditVerification(row);
             var delete = new MenuItem { Header = Properties.Resources.Verify_Delete, Icon = new AppIcon { Glyph = AppIcons.Delete } };
             delete.Click += (s, a) => viewModel.RequestDeleteVerification(row);
+            var plan = new MenuItem { Header = Properties.Resources.Verify_PlanMenu, Icon = new AppIcon { Glyph = AppIcons.Edit } };
+            plan.Click += (s, a) => viewModel.OpenVerPlan(row);
             menu.Items.Add(edit);
+            menu.Items.Add(plan);
             menu.Items.Add(delete);
         }
 

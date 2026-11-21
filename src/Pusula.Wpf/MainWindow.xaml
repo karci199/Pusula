@@ -2688,11 +2688,37 @@
                                                                                 <Border Margin="0,0,10,0" Padding="12,9" CornerRadius="9" BorderThickness="1"
                                                                                         Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
                                                                                     <StackPanel>
-                                                                                        <StackPanel Orientation="Horizontal">
-                                                                                            <TextBlock FontWeight="SemiBold" FontSize="13" Text="{x:Static res:Resources.Verify_ColPlan}" />
-                                                                                            <TextBlock Margin="8,0,0,0" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding TpText}" />
+                                                                                        <Grid>
+                                                                                            <Grid.ColumnDefinitions>
+                                                                                                <ColumnDefinition Width="*" />
+                                                                                                <ColumnDefinition Width="Auto" />
+                                                                                            </Grid.ColumnDefinitions>
+                                                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                                                                <TextBlock FontWeight="SemiBold" FontSize="13" Text="{x:Static res:Resources.Verify_ColPlan}" />
+                                                                                                <TextBlock Margin="8,0,0,0" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding TpText}" />
+                                                                                            </StackPanel>
+                                                                                            <Button Grid.Column="1" Padding="8,2" Tag="{Binding}" Click="VerPlanOpen_Click" Visibility="{Binding HasPlan, Converter={StaticResource BoolToVis}}"
+                                                                                                    ToolTip="{x:Static res:Resources.Verify_PlanEditHint}">
+                                                                                                <StackPanel Orientation="Horizontal">
+                                                                                                    <local:AppIcon Glyph="{x:Static local:AppIcons.Edit}" FontSize="11" VerticalAlignment="Center" />
+                                                                                                    <TextBlock Margin="6,0,0,0" FontSize="12" Text="{x:Static res:Resources.Verify_Edit}" />
+                                                                                                </StackPanel>
+                                                                                            </Button>
+                                                                                        </Grid>
+                                                                                        <StackPanel Visibility="{Binding HasPlan, Converter={StaticResource BoolToVis}}">
+                                                                                            <TextBlock Margin="0,5,0,0" FontSize="12.8" TextWrapping="Wrap" Text="{Binding PlanDescription}"
+                                                                                                       Visibility="{Binding HasPlanDescription, Converter={StaticResource BoolToVis}}" />
+                                                                                            <TextBlock Margin="0,3,0,0" FontSize="12.8" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding PlanLine}" />
+                                                                                            <TextBlock Margin="0,3,0,0" FontSize="12.5" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding PlanNote}"
+                                                                                                       Visibility="{Binding HasPlanNote, Converter={StaticResource BoolToVis}}" />
                                                                                         </StackPanel>
-                                                                                        <TextBlock Margin="0,5,0,0" FontSize="12.8" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding PlanLine}" />
+                                                                                        <Button Margin="0,8,0,0" HorizontalAlignment="Left" Padding="10,4" Tag="{Binding}" Click="VerPlanOpen_Click"
+                                                                                                Visibility="{Binding HasPlan, Converter={StaticResource InverseBoolToVis}}">
+                                                                                            <StackPanel Orientation="Horizontal">
+                                                                                                <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="12" VerticalAlignment="Center" />
+                                                                                                <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.Verify_PlanAdd}" />
+                                                                                            </StackPanel>
+                                                                                        </Button>
                                                                                     </StackPanel>
                                                                                 </Border>
                                                                                 <Border Padding="12,9" CornerRadius="9" BorderThickness="1"
@@ -3477,25 +3503,48 @@
                                         Visibility="{Binding IsNewVerDerived, Converter={StaticResource BoolToVis}}">
                         <ComboBox ItemsSource="{Binding VerificationParents}" SelectedItem="{Binding NewVerParent, Mode=TwoWay}" />
                     </controls:FormField>
-                    <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldMethod}" LabelWidth="150">
-                        <ComboBox ItemsSource="{Binding VerificationMethods}" SelectedItem="{Binding NewVerMethod, Mode=TwoWay}" ItemTemplate="{StaticResource VerMethodItemTemplate}" />
-                    </controls:FormField>
-                    <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldFacility}" LabelWidth="150">
-                        <StackPanel>
-                            <ComboBox ItemsSource="{Binding FacilityPick.Options}" SelectedItem="{Binding FacilityPick.Selected, Mode=TwoWay}" />
-                            <StackPanel Visibility="{Binding FacilityPick.IsNew, Converter={StaticResource BoolToVis}}">
-                                <TextBox Margin="0,6,0,0" Text="{Binding FacilityPick.NewText, UpdateSourceTrigger=PropertyChanged}"
-                                         controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderFacility}" IsVisibleChanged="FocusWhenVisible" />
-                                <TextBlock Margin="0,4,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_FacilityHint}" />
-                            </StackPanel>
-                        </StackPanel>
-                    </controls:FormField>
+                    <!-- Yöntem ve altyapı plana ait (21.11.2026): satırdaki Test planı kartından girilir; düzenlemede korunur. -->
                     <!-- TP / TR no pencerede yok (21.11.2026): madde önce yalnız gereksinimle girilir; plan ve rapor sonra ayrı adımda. Var olan değerler düzenlemede korunur. -->
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldStatus}" LabelWidth="150">
                         <ComboBox ItemsSource="{Binding VerificationStatuses}" SelectedItem="{Binding NewVerStatus, Mode=TwoWay}" ItemTemplate="{StaticResource VerStatusItemTemplate}" />
                     </controls:FormField>
                 </StackPanel>
             </ScrollViewer>
+        </controls:ContentDialog>
+
+        <!-- Test planı (satırdaki Test planı kartı): TP no, açıklama, yöntem, altyapı, not; yalnız o satırın hücreleri yazılır -->
+        <controls:ContentDialog Grid.RowSpan="3"
+                                IsOpen="{Binding IsVerPlanOpen, Mode=TwoWay}"
+                                DialogWidth="600"
+                                Title="{Binding VerPlanTitle}"
+                                PrimaryButtonText="{x:Static res:Resources.Verify_Save}"
+                                CloseButtonText="{x:Static res:Resources.Dialog_Cancel}"
+                                PrimaryButtonClick="VerPlan_PrimaryButtonClick">
+            <StackPanel>
+                <TextBlock Margin="0,0,0,14" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding VerificationFileText}" TextTrimming="CharacterEllipsis" />
+                <controls:FormField Header="{x:Static res:Resources.Verify_PlanNo}" LabelWidth="120">
+                    <TextBox Width="200" HorizontalAlignment="Left" Text="{Binding PlanTpNo, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible"
+                             controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderTp}" />
+                </controls:FormField>
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_PlanDescription}" LabelWidth="120" ErrorText="{Binding PlanError}">
+                    <TextBox Text="{Binding PlanDescription, UpdateSourceTrigger=PropertyChanged}" />
+                </controls:FormField>
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldMethod}" LabelWidth="120">
+                    <ComboBox Width="240" HorizontalAlignment="Left" ItemsSource="{Binding VerificationMethods}" SelectedItem="{Binding PlanMethod, Mode=TwoWay}" ItemTemplate="{StaticResource VerMethodItemTemplate}" />
+                </controls:FormField>
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldFacility}" LabelWidth="120">
+                    <StackPanel>
+                        <ComboBox Width="240" HorizontalAlignment="Left" ItemsSource="{Binding PlanFacilityPick.Options}" SelectedItem="{Binding PlanFacilityPick.Selected, Mode=TwoWay}" />
+                        <TextBox Margin="0,6,0,0" Width="240" HorizontalAlignment="Left" Text="{Binding PlanFacilityPick.NewText, UpdateSourceTrigger=PropertyChanged}"
+                                 controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderFacility}"
+                                 Visibility="{Binding PlanFacilityPick.IsNew, Converter={StaticResource BoolToVis}}" />
+                    </StackPanel>
+                </controls:FormField>
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_PlanNote}" LabelWidth="120">
+                    <TextBox Text="{Binding PlanNote, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" MinLines="2" MaxLines="5" VerticalScrollBarVisibility="Auto" />
+                </controls:FormField>
+                <TextBlock Margin="0,12,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" TextWrapping="Wrap" Text="{x:Static res:Resources.Verify_PlanHint}" />
+            </StackPanel>
         </controls:ContentDialog>
 
         <!-- Doğrulama maddesini sil: satır tablodan kalkar, diğer numaralar değişmez; önce sorulur -->

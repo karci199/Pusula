@@ -3025,4 +3025,31 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Verify_FilterClear" xml:space="preserve">
     <value>Temizle</value>
   </data>
+  <data name="Verify_PlanTitle" xml:space="preserve">
+    <value>Test planı · {0}</value>
+  </data>
+  <data name="Verify_PlanNo" xml:space="preserve">
+    <value>TP no</value>
+  </data>
+  <data name="Verify_PlanDescription" xml:space="preserve">
+    <value>Açıklama</value>
+  </data>
+  <data name="Verify_PlanNote" xml:space="preserve">
+    <value>Not</value>
+  </data>
+  <data name="Verify_PlanHint" xml:space="preserve">
+    <value>Plan kaydedilince durum Bekliyor ise Planlandı olur; daha ilerideyse değişmez. Yalnız bu maddenin satırı yazılır.</value>
+  </data>
+  <data name="Verify_PlanEditHint" xml:space="preserve">
+    <value>Test planını düzenle</value>
+  </data>
+  <data name="Verify_PlanAdd" xml:space="preserve">
+    <value>Test planı ekle</value>
+  </data>
+  <data name="Verify_PlanSaved" xml:space="preserve">
+    <value>{0}: test planı kaydedildi</value>
+  </data>
+  <data name="Verify_PlanMenu" xml:space="preserve">
+    <value>Test planı…</value>
+  </data>
 </root>

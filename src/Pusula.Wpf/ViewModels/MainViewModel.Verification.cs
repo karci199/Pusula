@@ -278,6 +278,36 @@ namespace Pusula.Wpf.ViewModels
             get { return Item.TrNo.Length > 0; }
         }
 
+        /// <summary>Planı var mı (TP no, plan açıklaması, yöntem ya da plan notu yazılı); yoksa kartta "Test planı ekle".</summary>
+        public bool HasPlan
+        {
+            get { return Item.TpNo.Length > 0 || Item.TpDescription.Length > 0 || Item.Method.Length > 0 || Item.TpNote.Length > 0; }
+        }
+
+        /// <summary>Plandaki açıklama.</summary>
+        public string PlanDescription
+        {
+            get { return Item.TpDescription; }
+        }
+
+        /// <summary>Plan notu.</summary>
+        public string PlanNote
+        {
+            get { return Item.TpNote; }
+        }
+
+        /// <summary>Plan açıklaması yazılı mı.</summary>
+        public bool HasPlanDescription
+        {
+            get { return Item.TpDescription.Length > 0; }
+        }
+
+        /// <summary>Plan notu yazılı mı.</summary>
+        public bool HasPlanNote
+        {
+            get { return Item.TpNote.Length > 0; }
+        }
+
         /// <summary>Açılan satırda plan özeti: "TP-5.2 · Altyapı SATIMO" (boş olanlar atlanır).</summary>
         public string PlanLine
         {
@@ -294,7 +324,7 @@ namespace Pusula.Wpf.ViewModels
                     parts.Add(string.Format(CultureInfo.CurrentCulture, Resources.Verify_PlanFacility, Item.Facility));
                 }
 
-                return parts.Count == 0 ? Resources.Verify_PlanEmpty : string.Join(" · ", parts);
+                return parts.Count == 0 ? (HasPlan ? string.Empty : Resources.Verify_PlanEmpty) : string.Join(" · ", parts);
             }
         }
 
@@ -1039,6 +1069,155 @@ namespace Pusula.Wpf.ViewModels
             IsVerificationDialogOpen = true;
         }
 
+        #region Test planı penceresi (satırdaki Test planı kartı)
+
+        private VerificationItem? planItem;
+        private bool isVerPlanOpen;
+        private string planTpNo = string.Empty;
+        private string planDescription = string.Empty;
+        private string planMethod = string.Empty;
+        private string planNote = string.Empty;
+        private string planError = string.Empty;
+
+        /// <summary>Test planı penceresi açık mı.</summary>
+        public bool IsVerPlanOpen
+        {
+            get { return isVerPlanOpen; }
+            set { SetDialogOpen(ref isVerPlanOpen, value); }
+        }
+
+        /// <summary>Pencere başlığı: "Test planı · DGÖ-1".</summary>
+        public string VerPlanTitle
+        {
+            get { return planItem == null ? string.Empty : string.Format(CultureInfo.CurrentCulture, Resources.Verify_PlanTitle, VerificationList.KeyOf(planItem)); }
+        }
+
+        /// <summary>Plan madde no (TP).</summary>
+        public string PlanTpNo
+        {
+            get { return planTpNo; }
+            set { SetProperty(ref planTpNo, value ?? string.Empty); }
+        }
+
+        /// <summary>Plandaki açıklama.</summary>
+        public string PlanDescription
+        {
+            get { return planDescription; }
+            set { SetProperty(ref planDescription, value ?? string.Empty); }
+        }
+
+        /// <summary>Doğrulama yöntemi ("—" boş).</summary>
+        public string PlanMethod
+        {
+            get { return planMethod.Length == 0 ? Resources.Verify_None : planMethod; }
+            set { var v = value ?? string.Empty; SetProperty(ref planMethod, v == Resources.Verify_None ? string.Empty : v); }
+        }
+
+        /// <summary>Altyapı seçimi (ortak liste; yenisi yazılabilir).</summary>
+        public PickOrNew PlanFacilityPick { get; } = new PickOrNew(Resources.Verify_NewFacility);
+
+        /// <summary>Plan notu (jig, SN, dikkat edilecekler).</summary>
+        public string PlanNote
+        {
+            get { return planNote; }
+            set { SetProperty(ref planNote, value ?? string.Empty); }
+        }
+
+        /// <summary>Penceredeki hata; boşsa gizli.</summary>
+        public string PlanError
+        {
+            get { return planError; }
+            private set { SetProperty(ref planError, value); }
+        }
+
+        /// <summary>Satırın test planını düzenleme penceresinde açar (yoksa boş: "Test planı ekle").</summary>
+        public void OpenVerPlan(VerificationRow row)
+        {
+            if (row == null || verificationStock.Length == 0)
+            {
+                return;
+            }
+
+            planItem = row.Item;
+            PlanTpNo = planItem.TpNo;
+            PlanDescription = planItem.TpDescription;
+            PlanMethod = planItem.Method;
+            var facilities = FacilityList.Read(rootPath).ToList();
+            foreach (var used in verificationItems.Select(i => i.Facility).Where(f => f.Length > 0))
+            {
+                if (!facilities.Contains(used, StringComparer.CurrentCultureIgnoreCase))
+                {
+                    facilities.Add(used);
+                }
+            }
+
+            PlanFacilityPick.SetNames(facilities);
+            PlanFacilityPick.Value = planItem.Facility;
+            PlanNote = planItem.TpNote;
+            PlanError = string.Empty;
+            OnPropertyChanged(nameof(VerPlanTitle));
+            IsVerPlanOpen = true;
+        }
+
+        /// <summary>
+        /// Planı satıra yazar (TP no, açıklama, yöntem, altyapı, not; diskteki güncel satırın üstüne). Durum Bekliyor ya da
+        /// boşsa Planlandı olur; daha ilerideyse dokunulmaz. Başarısızsa <c>false</c> ve hata metni.
+        /// </summary>
+        public bool ConfirmVerPlan()
+        {
+            if (planItem == null || verificationStock.Length == 0)
+            {
+                return true;
+            }
+
+            var item = VerificationList.Read(verificationStock).FirstOrDefault(v => v.Number == planItem.Number);
+            if (item == null)
+            {
+                PlanError = Resources.Verify_Missing;
+                return false;
+            }
+
+            item.TpNo = PlanTpNo.Trim();
+            item.TpDescription = PlanDescription.Trim();
+            item.Method = planMethod.Trim();
+            item.Facility = PlanFacilityPick.Value.Trim();
+            item.TpNote = PlanNote.Trim();
+            var planned = item.TpNo.Length > 0 || item.TpDescription.Length > 0 || item.Method.Length > 0;
+            if (planned && VerificationRow.KindOf(item.Status) == 0)
+            {
+                item.Status = Resources.Verify_StatusPlanned;
+            }
+
+            var error = VerificationList.Update(verificationStock, item);
+            if (error.Length > 0 && error != "missing")
+            {
+                PlanError = string.Format(CultureInfo.CurrentCulture, Resources.Verify_WriteFailed, error);
+                return false;
+            }
+
+            if (error.Length == 0 && item.Facility.Length > 0 && rootPath.Length > 0)
+            {
+                FacilityList.Add(rootPath, item.Facility, Resources.Verify_FacilityTemplate);
+            }
+
+            var number = item.Number;
+            planItem = null;
+            if (WriteVerification(error))
+            {
+                Status = string.Format(CultureInfo.CurrentCulture, Resources.Verify_PlanSaved, VerificationList.KeyOf(item));
+                // Satır açık kalsın: kart yeni planla görünür.
+                var row = VerificationGroups.SelectMany(g => g.Rows).FirstOrDefault(r => r.Item.Number == number);
+                if (row != null)
+                {
+                    row.IsExpanded = true;
+                }
+            }
+
+            return true;
+        }
+
+        #endregion
+
         /// <summary>Satırın durumunu değiştirir (yalnız o satırın durum hücresi yazılır).</summary>
         public void SetVerificationStatus(VerificationRow row, string status)
         {
@@ -1117,6 +1296,10 @@ namespace Pusula.Wpf.ViewModels
                 TgNo = item.TgNo,
                 TpNo = item.TpNo,
                 TrNo = item.TrNo,
+                TpDescription = item.TpDescription,
+                TpNote = item.TpNote,
+                TrDescription = item.TrDescription,
+                TrNote = item.TrNote,
                 Status = item.Status,
             };
             foreach (var pair in item.Extra)

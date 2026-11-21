@@ -174,6 +174,37 @@ if ($dlg) {
 }
 $vm.IsVerificationDialogOpen = $false; Wait
 Snap $win "$Out\verification-filter.png"
+"--- test planı kartı"
+function RowOf([string]$sub) { @($vm.VerificationGroups | ForEach-Object { $_.Rows } | Where-Object { $_.SubGroup -eq $sub -or $_.Text -eq $sub })[0] }
+$s11 = RowOf 'S11'
+$vm.SetVerificationStatus($s11, 'Bekliyor'); Wait
+$s11 = RowOf 'S11'
+Check 'plan yok: kartta Test planı ekle' (-not $s11.HasPlan)
+$vm.OpenVerPlan($s11); Wait
+Check 'plan penceresi açılır, başlık' ($vm.IsVerPlanOpen -and $vm.VerPlanTitle -like 'Test planı · *') $vm.VerPlanTitle
+$vm.PlanTpNo = '4.1'; $vm.PlanDescription = 'VNA S11 ölçümü'; $vm.PlanMethod = 'Test'; $vm.PlanFacilityPick.Value = 'VNA'; $vm.PlanNote = 'Kalibrasyon kiti 3,5 mm'
+for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 }
+$dlg = Find-Open $win
+if ($dlg) {
+    $pop = Find-Popup $dlg; if ($pop -and $pop.Child) { $dlg = $pop.Child; $sz = New-Object System.Windows.Size($win.ActualWidth, $win.ActualHeight); $dlg.Measure($sz); $dlg.Arrange((New-Object System.Windows.Rect($sz))); $dlg.UpdateLayout(); for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 } }
+    $bmp = New-Object System.Windows.Media.Imaging.RenderTargetBitmap([int]$dlg.ActualWidth, [int]$dlg.ActualHeight, 96, 96, [System.Windows.Media.PixelFormats]::Pbgra32)
+    $bmp.Render($dlg); $enc = New-Object System.Windows.Media.Imaging.PngBitmapEncoder; $enc.Frames.Add([System.Windows.Media.Imaging.BitmapFrame]::Create($bmp))
+    $fs = [IO.File]::Create("$Out\verification-plan.png"); $enc.Save($fs); $fs.Close()
+}
+Check 'kaydedilir' ($vm.ConfirmVerPlan())
+$vm.IsVerPlanOpen = $false; Wait
+$text = [IO.File]::ReadAllText($file)
+$s11 = RowOf 'S11'
+Check 'satır: plan yazıldı, Bekliyor → Planlandı, açık' ($s11.HasPlan -and $s11.TpText -eq '4.1' -and $s11.PlanDescription -eq 'VNA S11 ölçümü' -and $s11.Method -eq 'Test' -and $s11.Facility -eq 'VNA' -and $s11.StatusText -eq 'Planlandı' -and $s11.IsExpanded) ($s11.StatusText)
+Check 'dosyada plan hücreleri' ($text -like '*| Test | VNA | 4.1 | VNA S11 ölçümü | Kalibrasyon kiti 3,5 mm |*| Planlandı |*') $text
+$yan = RowOf 'Yan lob seviyesi'
+$vm.OpenVerPlan($yan); $vm.PlanTpNo = '4.2'
+Check 'ileri durum değişmez (Değerlendiriliyor)' ($vm.ConfirmVerPlan() -and (RowOf 'Yan lob seviyesi').StatusText -eq 'Değerlendiriliyor')
+$vm.IsVerPlanOpen = $false; Wait
+$vm.SetVerificationStatus((RowOf 'S11'), 'Yapılıyor'); Wait
+Check 'durum değişince plan açıklaması silinmez' ([IO.File]::ReadAllText($file) -like '*| 4.1 | VNA S11 ölçümü | Kalibrasyon kiti 3,5 mm |*| Yapılıyor |*')
+$s11 = RowOf 'S11'; $s11.IsExpanded = $true; Wait
+Snap $win "$Out\verification-plan-card.png"
 "--- elle yazılmış dosya: başka satırlara dokunulmaz"
 $other = Join-Path $Data '7000_MILKON\AB-7000-0003'
 $md = Join-Path $other '03_Testler\AB-7000-0003_Test_Gereksinimleri_AA.md'
