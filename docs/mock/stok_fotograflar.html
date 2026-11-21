@@ -1,0 +1,94 @@
+﻿<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Stok · fotoğraflar</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1f1f1f;font-family:"Segoe UI",Arial,sans-serif;color:#e6e6e6;font-size:14px}
+.page{width:1500px;padding:26px 30px 30px;background:#202020;display:grid;grid-template-columns:380px 380px 1fr;gap:28px 30px}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin:0 0 10px}
+.cap b{color:#4cc2ff;margin-right:6px}
+.mut{color:#9a9a9a;font-size:12.5px}
+.box{background:#272727;border:1px solid #363636;border-radius:10px;padding:10px 12px 12px}
+.hd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.hd .t{font-weight:600}
+.hd .n{color:#8a8a8a}
+.btn{margin-left:auto;font-size:12px;padding:3px 10px;border-radius:5px;background:#3a3a3a;border:1px solid #4a4a4a;color:#ddd}
+.big{height:250px;border-radius:8px;background:#2e3440;display:flex;align-items:center;justify-content:center;position:relative}
+.big .lbl{position:absolute;left:8px;bottom:8px;font-size:11.5px;background:#000a;padding:2px 8px;border-radius:5px}
+.strip{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
+.th{border-radius:6px;background:#2e3440;height:52px;display:flex;align-items:center;justify-content:center;border:2px solid transparent}
+.th.sel{border-color:#4cc2ff}
+.tl{font-size:11px;color:#bdbdbd;text-align:center;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.more{background:#333;color:#ddd;font-weight:600;font-size:13px}
+.empty{height:330px;border-radius:8px;border:1px dashed #4a4a4a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;color:#8a8a8a;padding:20px;line-height:1.5}
+.empty code{color:#8fd0ff;font-family:Consolas,monospace;font-size:12.5px}
+.md{font-family:Consolas,monospace;font-size:12.5px;background:#1b1b1b;border:1px solid #333;border-radius:8px;padding:12px 14px;color:#cfcfcf;line-height:1.65;white-space:pre}
+.md .k{color:#8fd0ff}.md .y{color:#f6c46f}.md .g{color:#8a8a8a}
+table{border-collapse:collapse;width:100%;font-size:13px;margin-top:12px}
+td,th{padding:5px 8px;border-bottom:1px solid #333;text-align:left}
+th{color:#8a8a8a;font-weight:600;font-size:11.5px}
+td code{color:#f6c46f;font-family:Consolas,monospace}
+.note{grid-column:1/4;font-size:12.5px;color:#9a9a9a;line-height:1.65;background:#262626;border:1px solid #333;border-radius:10px;padding:12px 16px}
+.note b{color:#ddd}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="ant" viewBox="0 0 120 80"><circle cx="16" cy="40" r="7" fill="#e8b84a"/><rect x="22" y="28" width="20" height="24" fill="#9aa3ad"/><polygon points="42,28 104,10 104,70 42,52" fill="#c9ced4"/></symbol>
+<symbol id="back" viewBox="0 0 120 80"><rect x="30" y="14" width="60" height="52" rx="4" fill="#9aa3ad"/><circle cx="60" cy="40" r="9" fill="#e8b84a"/></symbol>
+<symbol id="mont" viewBox="0 0 120 80"><rect x="10" y="52" width="100" height="10" fill="#6d7680"/><rect x="40" y="22" width="40" height="30" fill="#c9ced4"/><rect x="56" y="10" width="8" height="12" fill="#e8b84a"/></symbol>
+<symbol id="lab" viewBox="0 0 120 80"><rect x="22" y="18" width="76" height="44" rx="3" fill="#e6e6e6"/><rect x="30" y="28" width="44" height="5" fill="#555"/><rect x="30" y="38" width="56" height="4" fill="#888"/><rect x="30" y="47" width="36" height="4" fill="#888"/></symbol>
+</defs></svg>
+<div class="page">
+  <div>
+    <div class="cap"><b>1</b>STOK SAYFASI · TEÜ GÖRÜNÜMÜ</div>
+    <div class="box">
+      <div class="hd"><span class="t">Fotoğraflar</span><span class="n">· 6</span><span class="btn">📁 Klasör</span></div>
+      <div class="big"><svg width="300" height="200"><use href="#ant"/></svg><span class="lbl">Kapak</span></div>
+      <div class="strip">
+        <div><div class="th sel"><svg width="60" height="40"><use href="#ant"/></svg></div><div class="tl">Kapak</div></div>
+        <div><div class="th"><svg width="60" height="40"><use href="#back"/></svg></div><div class="tl">Ön</div></div>
+        <div><div class="th"><svg width="60" height="40"><use href="#back"/></svg></div><div class="tl">Arka</div></div>
+        <div><div class="th"><svg width="60" height="40"><use href="#mont"/></svg></div><div class="tl">Montaj</div></div>
+        <div><div class="th more">+2</div><div class="tl">Etiket, …</div></div>
+      </div>
+    </div>
+    <div class="mut" style="margin-top:8px">Küçük resme tıkla → büyükte görünür · büyüğe tıkla → tam boy açılır · 📁 klasörü açar.</div>
+  </div>
+
+  <div>
+    <div class="cap"><b>2</b>FOTOĞRAF YOKKEN</div>
+    <div class="box">
+      <div class="hd"><span class="t">Fotoğraflar</span><span class="n">· 0</span><span class="btn">📁 Klasör</span></div>
+      <div class="empty">Fotoğraf yok.<br><code>01_Ortak\Fotograflar</code> klasörüne koyun;<br>adında "kapak" geçen kapak olur.</div>
+    </div>
+    <div class="mut" style="margin-top:8px">Klasör yeni stokta boş açılır; eski stokta yoksa 📁 ile açılır.</div>
+  </div>
+
+  <div>
+    <div class="cap"><b>3</b>KLASÖR VE ADLAR</div>
+    <div class="md"><span class="k">AB-7000-0002\</span>
+  01_Ortak\
+    <span class="y">Fotograflar\</span>
+      AB-7000-0002_kapak.jpg
+      AB-7000-0002_on.jpg
+      AB-7000-0002_arka.jpg
+      AB-7000-0002_montaj.jpg
+      AB-7000-0002_etiket.jpg
+      IMG_2041.jpg           <span class="g">← kurala uymuyor, sona düşer</span>
+    Spek.pdf · Cizim.png     <span class="g">← fotoğraf sayılmaz</span>
+  02_Test_Araclari\ …
+  03_Testler\ …</div>
+    <table>
+      <tr><th>Adın sonu</th><th>Görünüş</th><th>Sıra</th></tr>
+      <tr><td><code>_kapak</code></td><td>Kapak</td><td>1</td></tr>
+      <tr><td><code>_on</code> · <code>_arka</code> · <code>_yan</code> · <code>_ust</code></td><td>Ön · Arka · Yan · Üst</td><td>2–5</td></tr>
+      <tr><td><code>_montaj</code> · <code>_ic</code> · <code>_etiket</code></td><td>Montaj · İç · Etiket</td><td>6–8</td></tr>
+      <tr><td><code>_on_2</code></td><td>Ön 2</td><td>Ön'den sonra</td></tr>
+      <tr><td>diğer</td><td>dosya adı</td><td>sonda, ada göre</td></tr>
+    </table>
+  </div>
+
+  <div class="note">
+    <b>Fotoğraflar yalnız <code>01_Ortak\Fotograflar</code></b> içinden okunur; Ortak'taki çizim / şema resimleri karışmaz. Kapak yoksa ilk fotoğraf kapak olur.
+    Ad kuralı zorunlu değil, yalnız sırayı ve altındaki yazıyı belirler. <b>Eski stoklar:</b> <code>07_Fotograflar</code> ve Ortak'taki "kapak" resmi okunmaya devam eder; hiçbir dosya taşınmaz.
+  </div>
+</div>
+</body></html>

@@ -3088,6 +3088,33 @@ namespace Pusula.Wpf.Properties
         /// <summary>Çözüm: çözdüğü sorun alanının açıklaması.</summary>
         public static string Solution_Hint { get { return Get("Solution_Hint"); } }
 
+        /// <summary>Fotoğraf görünüşü: kapak.</summary>
+        public static string Photo_Cover { get { return Get("Photo_Cover"); } }
+
+        /// <summary>Fotoğraf görünüşü: ön (_on).</summary>
+        public static string Photo_Front { get { return Get("Photo_Front"); } }
+
+        /// <summary>Fotoğraf görünüşü: arka (_arka).</summary>
+        public static string Photo_Back { get { return Get("Photo_Back"); } }
+
+        /// <summary>Fotoğraf görünüşü: yan (_yan).</summary>
+        public static string Photo_Side { get { return Get("Photo_Side"); } }
+
+        /// <summary>Fotoğraf görünüşü: üst (_ust).</summary>
+        public static string Photo_Top { get { return Get("Photo_Top"); } }
+
+        /// <summary>Fotoğraf görünüşü: montaj (_montaj).</summary>
+        public static string Photo_Assembly { get { return Get("Photo_Assembly"); } }
+
+        /// <summary>Fotoğraf görünüşü: iç (_ic).</summary>
+        public static string Photo_Inside { get { return Get("Photo_Inside"); } }
+
+        /// <summary>Fotoğraf görünüşü: etiket (_etiket).</summary>
+        public static string Photo_Label { get { return Get("Photo_Label"); } }
+
+        /// <summary>TEÜ görünümünde fotoğraf klasörünü açan düğme.</summary>
+        public static string Photo_Folder { get { return Get("Photo_Folder"); } }
+
         #endregion
     }
 }

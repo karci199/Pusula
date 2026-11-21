@@ -2,7 +2,7 @@
 . (Join-Path $PSScriptRoot '..\_Ortak.ps1')
 "--- 1. Eski dosya cevirme (deneme verisi)"
 $old = [Pusula.Core.Templates.TemplateStore]::LoadOrCreate($Data)
-Check 'surum 4 (yeni klasor duzeni)' ($old.SchemaVersion -eq 4)
+Check 'surum 5 (yeni klasor duzeni, Ortak\Fotograflar)' ($old.SchemaVersion -eq 5)
 $pasif = $old.Templates | Where-Object Name -eq 'Pasif anten'
 Check 'Pasif anten eski modulleri yeni duzene cevrildi' ((@($pasif.Modules) -join ',') -eq 'common,tests,_ARSIV') ("sayi=" + $pasif.Modules.Count)
 $names = ($old.Modules | ForEach-Object Name) -join ', '

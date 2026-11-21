@@ -98,7 +98,9 @@ Son güncelleme: 08.11.2026. Dal: `claude/pusula-project-setup-c6ce02` (push edi
 ```
 AB-7000-0002\
   AB-7000-0002.md        Birim bilgisi (her stokta; YAML'da test_gereksinimleri: "[[…_Test_Gereksinimleri]]")
-  01_Ortak\              her stokta: spek, DM, çizim, ÇK/EMC gerekleri, kapak (adında "kapak"), sınıflandırılamayanlar
+  01_Ortak\              her stokta: spek, DM, çizim, ÇK/EMC gerekleri, sınıflandırılamayanlar
+     Fotograflar\        (21.11.2026) bütün fotoğraflar: <stok>_kapak, _on, _arka, _yan, _ust, _montaj, _ic, _etiket (_on_2 …);
+                         bu sırayla gösterilir, uymayanlar sonda. Kapak yoksa ilk fotoğraf. Şablon sürüm 5 boş açar.
   02_Test_Araclari\      şablona göre: Jig\ Kablo\ Yazilim\ Diger\  — kayıt klasörü yalnız numara (JY-7000-0005)
   03_Testler\            şablona göre: 01_Islevsel\ 02_Ozellik\ 03_CK_EMC\ 04_Diger\
      AB-7000-0002_Test_Gereksinimleri.md     doğrulama tablosu

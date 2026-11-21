@@ -15,7 +15,10 @@ namespace Pusula.Core.Templates
     public sealed class TemplateSet
     {
         /// <summary>Geçerli dosya biçimi sürümü.</summary>
-        public const int CurrentSchemaVersion = 4;
+        public const int CurrentSchemaVersion = 5;
+
+        /// <summary>Ortak klasörün içindeki fotoğraf klasörü (<c>01_Ortak\Fotograflar</c>).</summary>
+        public const string PhotosFolder = "Fotograflar";
 
         /// <summary>Yeni şablonda hazır gelen temel modüllerin anahtarları.</summary>
         public static readonly string[] BasicModuleKeys = { "common", "tests" };
@@ -164,6 +167,16 @@ namespace Pusula.Core.Templates
                 }
             }
 
+            // Sürüm 5 (21.11.2026): fotoğraflar 01_Ortak\Fotograflar'da; Ortak modülüne boş alt klasör olarak eklenir.
+            if (SchemaVersion < 5)
+            {
+                var common = Modules.FirstOrDefault(m => string.Equals(m.Key, "common", StringComparison.OrdinalIgnoreCase));
+                if (common != null && !common.SubFolders.Contains(PhotosFolder, StringComparer.OrdinalIgnoreCase))
+                {
+                    common.SubFolders.Add(PhotosFolder);
+                }
+            }
+
             foreach (var module in Modules)
             {
                 module.Core = false;
@@ -180,7 +193,7 @@ namespace Pusula.Core.Templates
             set.ProjectFolders.Add("00_Proje_Geneli");
             // 15.11.2026 klasör düzeni: 01_Ortak her stokta açılır (şablondan bağımsız); test araçları ve testler şablona göre.
             // Test alt klasörleri (Anten_Oruntu …) iş tanımlanınca, koşum klasörleri (SNP1_T1) koşum eklenince açılır.
-            set.Modules.Add(new ModuleDefinition { Key = "common", Name = "Ortak", Folder = "01_Ortak" });
+            set.Modules.Add(new ModuleDefinition { Key = "common", Name = "Ortak", Folder = "01_Ortak", SubFolders = new List<string> { PhotosFolder } });
             set.Modules.Add(new ModuleDefinition
             {
                 Key = "testTools",

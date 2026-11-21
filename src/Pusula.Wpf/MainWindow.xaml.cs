@@ -758,17 +758,13 @@ namespace Pusula.Wpf
             viewModel.GoHome();
         }
 
-        // Stok sayfası: TEÜ görünümüne tıklayınca fotoğraf tam boy açılır (yoksa fotoğraflar / stok klasörü).
+        // Stok sayfası: TEÜ görünümündeki büyük fotoğrafa tıklayınca tam boy açılır.
         private void StockCover_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             var cover = viewModel.Detail.Cover;
-            if (cover.HasCover)
+            if (cover.SelectedPhoto.Length > 0)
             {
-                viewModel.OpenNoteOrFolder(cover.CoverPhoto, cover.HasPhotosFolder ? cover.PhotosFolder : cover.StockFolder);
-            }
-            else
-            {
-                viewModel.OpenPath(cover.StockFolder);
+                viewModel.OpenNoteOrFolder(cover.SelectedPhoto, cover.HasPhotosFolder ? cover.PhotosFolder : cover.StockFolder);
             }
         }
 
@@ -869,31 +865,33 @@ namespace Pusula.Wpf
             viewModel.CreateStockNote();
         }
 
-        // Kapağa tıklayınca fotoğraf varsayılan görüntüleyicide tam boy açılır.
-        private void CoverPhoto_Click(object sender, RoutedEventArgs e)
-        {
-            var cover = viewModel.Detail.Cover;
-            viewModel.OpenNoteOrFolder(cover.CoverPhoto, cover.HasPhotosFolder ? cover.PhotosFolder : cover.StockFolder);
-        }
-
+        // TEÜ görünümünde 📁: 01_Ortak\Fotograflar açılır (yoksa boş olarak oluşturulur).
         private void StockPhotos_Click(object sender, RoutedEventArgs e)
         {
-            var cover = viewModel.Detail.Cover;
-            viewModel.OpenPath(cover.HasPhotosFolder ? cover.PhotosFolder : cover.StockFolder);
+            viewModel.OpenStockPhotosFolder();
+        }
+
+        // Şeritteki küçük resim: büyükte gösterilir; "+N" klasörü açar.
+        private void PhotoThumb_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is PhotoThumb thumb)
+            {
+                e.Handled = true;
+                if (thumb.IsMore)
+                {
+                    viewModel.OpenStockPhotosFolder();
+                }
+                else
+                {
+                    viewModel.Detail.Cover.Select(thumb);
+                }
+            }
         }
 
         private void StockDocuments_Click(object sender, RoutedEventArgs e)
         {
             var cover = viewModel.Detail.Cover;
             viewModel.OpenPath(cover.HasDocumentsFolder ? cover.DocumentsFolder : cover.StockFolder);
-        }
-
-        private void StockPhoto_Click(object sender, RoutedEventArgs e)
-        {
-            if ((sender as FrameworkElement)?.Tag is string path)
-            {
-                viewModel.OpenNoteOrFolder(path, viewModel.Detail.Cover.PhotosFolder);
-            }
         }
 
         private void EditTemplates_Click(object sender, RoutedEventArgs e)

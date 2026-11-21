@@ -475,7 +475,8 @@
     <value>İşler ve maddeler 03_Testler\&lt;stok&gt;_Test_Gereksinimleri.md dosyasından okunacak (iş · DM no · yöntem · altyapı · durum · hazırlık). Bu bölüm sıradaki adımda bağlanacak.</value>
   </data>
   <data name="Stock_NoCover" xml:space="preserve">
-    <value>TEÜ fotoğrafı yok · stok klasörüne adında "kapak" geçen bir resim koyun</value>
+    <value>Fotoğraf yok.
+01_Ortak\Fotograflar klasörüne koyun; adında "kapak" geçen kapak olur.</value>
   </data>
   <data name="Card_Stocks" xml:space="preserve">
     <value>{0} stok</value>
@@ -2879,5 +2880,32 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   </data>
   <data name="Solution_Hint" xml:space="preserve">
     <value>İsteğe bağlı. Seçilirse sorun "Çözüldü" olur; "Yok" ile çözüm tek başına yazılır.</value>
+  </data>
+  <data name="Photo_Cover" xml:space="preserve">
+    <value>Kapak</value>
+  </data>
+  <data name="Photo_Front" xml:space="preserve">
+    <value>Ön</value>
+  </data>
+  <data name="Photo_Back" xml:space="preserve">
+    <value>Arka</value>
+  </data>
+  <data name="Photo_Side" xml:space="preserve">
+    <value>Yan</value>
+  </data>
+  <data name="Photo_Top" xml:space="preserve">
+    <value>Üst</value>
+  </data>
+  <data name="Photo_Assembly" xml:space="preserve">
+    <value>Montaj</value>
+  </data>
+  <data name="Photo_Inside" xml:space="preserve">
+    <value>İç</value>
+  </data>
+  <data name="Photo_Label" xml:space="preserve">
+    <value>Etiket</value>
+  </data>
+  <data name="Photo_Folder" xml:space="preserve">
+    <value>Klasör</value>
   </data>
 </root>

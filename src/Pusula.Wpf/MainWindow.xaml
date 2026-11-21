@@ -2098,14 +2098,69 @@
                             <ColumnDefinition Width="18" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Border CornerRadius="10" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource LayerBrush}"
-                                Cursor="Hand" MouseLeftButtonUp="StockCover_MouseLeftButtonUp" ToolTip="{Binding Detail.Cover.CoverPhoto}">
+                        <!-- TEÜ görünümü: 01_Ortak\Fotograflar; büyükte kapak (ya da şeritten seçilen), altında görünüş adlı şerit -->
+                        <Border CornerRadius="10" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource LayerBrush}" Padding="10,8,10,10">
                             <Grid>
-                                <Image Margin="10" Stretch="Uniform" Source="{Binding Detail.Cover.CoverPhoto, Converter={StaticResource PathToImage}}"
-                                       Visibility="{Binding Detail.Cover.HasCover, Converter={StaticResource BoolToVis}}" />
-                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Margin="24" FontSize="14" LineHeight="21"
-                                           Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Stock_NoCover}"
-                                           Visibility="{Binding Detail.Cover.HasCover, Converter={StaticResource InverseBoolToVis}}" />
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <DockPanel Margin="2,0,0,8">
+                                    <Button DockPanel.Dock="Right" Padding="9,2" Click="StockPhotos_Click" ToolTip="{Binding Detail.Cover.PhotosHome}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="12" VerticalAlignment="Center" Foreground="{DynamicResource SystemFillColorCautionBrush}" />
+                                            <TextBlock Margin="5,0,0,0" FontSize="12" VerticalAlignment="Center" Text="{x:Static res:Resources.Photo_Folder}" />
+                                        </StackPanel>
+                                    </Button>
+                                    <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="{Binding Detail.Cover.PhotosText}" />
+                                </DockPanel>
+                                <Border Grid.Row="1" CornerRadius="8" Background="{DynamicResource SubtleFillColorSecondaryBrush}" Cursor="Hand"
+                                        MouseLeftButtonUp="StockCover_MouseLeftButtonUp" ToolTip="{Binding Detail.Cover.SelectedPhoto}"
+                                        Visibility="{Binding Detail.Cover.HasCover, Converter={StaticResource BoolToVis}}">
+                                    <Grid>
+                                        <Image Margin="6" Stretch="Uniform" Source="{Binding Detail.Cover.SelectedPhoto, Converter={StaticResource PathToImage}}" />
+                                        <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8" Padding="8,2" CornerRadius="5" Background="#99000000">
+                                            <TextBlock FontSize="11.5" Foreground="White" Text="{Binding Detail.Cover.SelectedLabel}" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                                <Border Grid.Row="1" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                        Visibility="{Binding Detail.Cover.HasCover, Converter={StaticResource InverseBoolToVis}}">
+                                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Margin="20" FontSize="13.5" LineHeight="21"
+                                               Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Stock_NoCover}" />
+                                </Border>
+                                <ItemsControl Grid.Row="2" Margin="0,8,-6,0" ItemsSource="{Binding Detail.Cover.Thumbs}" Focusable="False"
+                                              Visibility="{Binding Detail.Cover.HasStrip, Converter={StaticResource BoolToVis}}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Rows="1" Columns="5" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="0,0,6,0" Cursor="Hand" Background="Transparent" MouseLeftButtonUp="PhotoThumb_MouseLeftButtonUp" ToolTip="{Binding Path}">
+                                                <Border x:Name="Frame" Height="48" CornerRadius="6" BorderThickness="2" BorderBrush="Transparent" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                                    <Grid>
+                                                        <Image x:Name="Pic" Margin="2" Stretch="Uniform" Source="{Binding Path, Converter={StaticResource PathToImage}}" />
+                                                        <TextBlock x:Name="More" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold" Text="{Binding Label}" Visibility="Collapsed" />
+                                                    </Grid>
+                                                </Border>
+                                                <TextBlock x:Name="Caption" Margin="0,3,0,0" FontSize="11" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Label}" />
+                                            </StackPanel>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter TargetName="Frame" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsMore}" Value="True">
+                                                    <Setter TargetName="Pic" Property="Visibility" Value="Collapsed" />
+                                                    <Setter TargetName="More" Property="Visibility" Value="Visible" />
+                                                    <Setter TargetName="Caption" Property="Visibility" Value="Hidden" />
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </Grid>
                         </Border>
                         <Border Grid.Column="2" CornerRadius="10" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
