@@ -78,6 +78,16 @@ try {
         $fs = [IO.File]::Create("$Out\mail-dialog.png"); $enc.Save($fs); $fs.Close()
     }
     $vm.IsJournalOpen = $false; Pump
+    [void]$vm.OpenJournalHere(); $vm.JournalKind = 'Karar'; $vm.JournalDecidedBy = '@Ayşe_Kaya'; [void]$vm.SetJournalMail($msg); $vm.JournalHeading = 'Mailde alınan karar'
+    for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 }
+    $dlg = Find-Open $win
+    if ($dlg) {
+        $pop = Find-Popup $dlg; if ($pop -and $pop.Child) { $dlg = $pop.Child; $sz = New-Object System.Windows.Size($win.ActualWidth, $win.ActualHeight); $dlg.Measure($sz); $dlg.Arrange((New-Object System.Windows.Rect($sz))); $dlg.UpdateLayout(); for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 } }
+        $bmp = New-Object System.Windows.Media.Imaging.RenderTargetBitmap([int]$dlg.ActualWidth, [int]$dlg.ActualHeight, 96, 96, [System.Windows.Media.PixelFormats]::Pbgra32)
+        $bmp.Render($dlg); $enc = New-Object System.Windows.Media.Imaging.PngBitmapEncoder; $enc.Frames.Add([System.Windows.Media.Imaging.BitmapFrame]::Create($bmp))
+        $fs = [IO.File]::Create("$Out\decision-mail.png"); $enc.Save($fs); $fs.Close()
+    }
+    $vm.IsJournalOpen = $false; Pump
     Snap $win "$Out\mail.png"
 } finally {
     if ($savedSettings -ne $null) { [IO.File]::WriteAllText($settingsFile, $savedSettings) }
