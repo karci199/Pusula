@@ -12,9 +12,9 @@ try {
     "--- 1. Ağaç araması"
     $vm.SearchText = '0009'
     $v = @(Visible $vm.Nodes)
-    Check '0009: Envanter > Jigler > JIG-1000-0009' (($v -join ',') -eq 'Envanter,Jigler,JIG-1000-0009') ($v -join ',')
-    $jt = ($vm.Nodes | Where-Object { $_.Kind -eq 'InventoryGroup' }).Children | Where-Object Title -eq 'Jigler'
-    Check 'arama sayısı: Jigler 1' ($jt.DisplaySubtitle -eq '1') $jt.DisplaySubtitle
+    Check '0009: Envanter > Mekanik jigler > JIG-1000-0009' (($v -join ',') -eq 'Envanter,Mekanik jigler,JIG-1000-0009') ($v -join ',')
+    $jt = ($vm.Nodes | Where-Object { $_.Kind -eq 'InventoryGroup' }).Children | Where-Object Title -eq 'Mekanik jigler'
+    Check 'arama sayısı: Mekanik jigler 1' ($jt.DisplaySubtitle -eq '1') $jt.DisplaySubtitle
     $vm.SearchText = 'satimo'
     $v = @(Visible $vm.Nodes)
     Check 'satimo: tanımdan bulur (JIG-1000-0009, JT-0001-0001)' (($v -contains 'JIG-1000-0009') -and ($v -contains 'JT-0001-0001') -and -not ($v -contains '7000_MILKON')) ($v -join ',')
@@ -29,9 +29,9 @@ try {
     $group = $vm.Nodes | Where-Object { $_.Kind -eq 'InventoryGroup' }
     $vm.SelectedNode = $group; Wait
     $inv = $vm.Inventory
-    Check 'seçenekler: Tümü, Jig, Kablo' ((($inv.TypeOptions) -join ',') -eq 'Tümü,Jig,Kablo') (($inv.TypeOptions) -join ',')
+    Check 'seçenekler: Tümü, Kablaj, Mekanik jig' ((($inv.TypeOptions) -join ',') -eq 'Tümü,Kablaj,Mekanik jig') (($inv.TypeOptions) -join ',')
     Check 'hepsi: 8 kayıt' ($inv.Rows.Count -eq 8 -and $inv.FilterSummary -eq '8 kayıt') $inv.FilterSummary
-    $inv.FilterType = 'Jig'
+    $inv.FilterType = 'Mekanik jig'
     Check 'Jig: 3, alt türler jiginkiler' ($inv.Rows.Count -eq 3 -and (($inv.SubTypeOptions) -join ',') -eq 'Tümü,Mekanik,Montaj,Ölçüm adaptörü') (($inv.SubTypeOptions) -join ',')
     $inv.FilterSubType = 'Mekanik'
     Check 'Jig + Mekanik: 1' ($inv.Rows.Count -eq 1 -and $inv.FilterSummary -eq '8 kayıttan 1 tanesi') $inv.FilterSummary
@@ -41,9 +41,9 @@ try {
     Check 'durum Talep: 2' ($inv.Rows.Count -eq 2)
     $inv.FilterStatus = 'Tümü'; $inv.FilterLevel = 'Stok'
     Check 'düzey Stok: 2 (stoka özgü)' ($inv.Rows.Count -eq 2) (($inv.Rows | ForEach-Object Number) -join ',')
-    $inv.FilterLevel = 'Tümü'; $inv.FilterType = 'Kablo'; $inv.FilterSubType = 'RF'
+    $inv.FilterLevel = 'Tümü'; $inv.FilterType = 'Kablaj'; $inv.FilterSubType = 'RF'
     Snap $win "$Out\inventory-filter.png"
-    $cables = $group.Children | Where-Object { $_.Title -eq 'Kablolar' }
+    $cables = $group.Children | Where-Object { $_.Title -eq 'Kablajlar' }
     $vm.SelectedNode = $cables; Wait
     Check 'tür düğümünde tür süzgeci ve sütunu gizli' (-not $inv.ShowTypeFilter -and $inv.Rows.Count -eq 5 -and $inv.TypeColumnWidth -eq 0)
     $lv = $win.FindName('InventoryList'); $col = $lv.View.Columns | Where-Object { $_.Header -eq 'Tür' }

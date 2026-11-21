@@ -52,7 +52,7 @@ Check 'dokümanlar 01_Ortak' ($cover.DocumentsFolder -like '*\01_Ortak')
 "--- test araçları: 02_Test_Araclari, klasör adı yalnız numara"
 $types = [Pusula.Core.Types.TypeSet]::CreateDefault()
 $jig = $types.Find('jig'); $sw = $types.Find('software'); $eq = $types.Find('equipment')
-Check 'stok klasörleri 02_Test_Araclari altında' ($jig.StockFolder -eq '02_Test_Araclari\Jig' -and $sw.StockFolder -eq '02_Test_Araclari\Yazilim' -and $eq.StockFolder -eq '02_Test_Araclari\Diger' -and $types.Find('cable').StockFolder -eq '02_Test_Araclari\Kablo')
+Check 'stok klasörleri 02_Test_Araclari altında' ($jig.StockFolder -eq '02_Test_Araclari\Jig' -and $sw.StockFolder -eq '02_Test_Araclari\Yazilim' -and $eq.StockFolder -eq '02_Test_Araclari\Cihaz' -and $types.Find('other').StockFolder -eq '02_Test_Araclari\Diger' -and $types.Find('cable').StockFolder -eq '02_Test_Araclari\Kablo')
 Check 'yazılım numarası JY-####-####' ($sw.AcceptsNumber('JY-7000-0005') -and -not $sw.AcceptsNumber('YZ-7000-0005'))
 $made = [Pusula.Core.Inventory.InventoryService]::Create($Data, $jig, [Pusula.Core.Inventory.InventoryLevel]::Stock, $stock, 'JIG-7000-0001', 'Adaptör plakası', '', '', 'deneme', $null)
 Check 'jig açıldı: klasör adı yalnız numara' ($made.Succeeded -and $made.Folder -eq (Join-Path $stock '02_Test_Araclari\Jig\JIG-7000-0001')) ([string]$made.Folder)

@@ -21,13 +21,19 @@ Check 'varsayılan kullanım yeri: seçili stok' ($vm.NewInventoryLevel.Level -e
 Check 'stok satırında ad' ($vm.NewInventoryLevel.Detail.Length -gt 0) $vm.NewInventoryLevel.Detail
 
 $jig = @($vm.InventoryTypeOptions | Where-Object Key -eq 'jig')[0]
+$names = @($vm.InventoryTypeOptions | ForEach-Object { $_.Name })
+Check 'tür sırası ve adları' (($names[0..4] -join ',') -eq 'Mekanik jig,Kablaj,Yazılım,Cihaz,Diğer') ($names -join ',')
+$equipment = @($vm.InventoryTypeOptions | Where-Object Key -eq 'equipment')[0]
+Check 'cihaz stok klasörü 02_Test_Araclari\Cihaz' ($equipment.StockFolder -eq '02_Test_Araclari\Cihaz') $equipment.StockFolder
+Check 'jig: eski JIG numarası da geçerli' ($jig.AcceptsNumber('JIG-1000-0009') -and $jig.AcceptsNumber('JT-1000-0009'))
+
 $cable = @($vm.InventoryTypeOptions | Where-Object Key -eq 'cable')[0]
 $vm.InventoryTypeChoice = $cable
 $vm.NewInventoryName = 'Yazılan tanım'
 $vm.InventoryTypeChoice = $jig
 Check 'tür değişince alt türler o türün' ((@($vm.InventorySubTypes) -join ',') -eq ($jig.SubTypes -join ',') -and $vm.NewInventorySubType -eq $jig.SubTypes[0]) (@($vm.InventorySubTypes) -join ',')
 Check 'tür değişince tanım korunur' ($vm.NewInventoryName -eq 'Yazılan tanım')
-Check 'numara ipucu türden' ($vm.InventoryNumberHint -like 'JIG-*') $vm.InventoryNumberHint
+Check 'numara ipucu türden (JT)' ($vm.InventoryNumberHint -like 'JT-*') $vm.InventoryNumberHint
 $vm.InventoryTypeChoice = $null
 Check 'boş değer seçimi silmez' ($vm.InventoryTypeChoice.Key -eq 'jig')
 
@@ -44,7 +50,7 @@ Check 'boş ad eklenmez' (-not $vm.AddSubType() -and $jig.SubTypes.Count -eq $be
 $vm.IsAddingSubType = $false
 $vm.NewInventorySubType = 'Anten tutucu'
 
-$vm.NewInventoryName = 'TEST MEKANIK SATIMO AB-7000-0002'; $vm.NewInventoryNumber = 'JIG-7000-0011'
+$vm.NewInventoryName = 'TEST MEKANIK SATIMO AB-7000-0002'; $vm.NewInventoryNumber = 'JT-7000-0011'
 $vm.NewInventoryNote = "Satır 1`r`nSatır 2"; $vm.NewInventoryTags = '#satimo'
 # Pencere görüntüsü: açık ContentDialog'un açılır katmanı ayrıca çizilir (Snap onu yakalamaz).
 function Find-Open($node) { if ($node -eq $null) { return $null }; if ($node.GetType().Name -eq 'ContentDialog' -and $node.IsOpen) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Open ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }
@@ -57,8 +63,8 @@ if ($dlg) {
     $bmp.Render($dlg); $enc = New-Object System.Windows.Media.Imaging.PngBitmapEncoder; $enc.Frames.Add([System.Windows.Media.Imaging.BitmapFrame]::Create($bmp))
     $fs = [IO.File]::Create("$Out\tool-dialog.png"); $enc.Save($fs); $fs.Close()
 }
-Check 'stoka açılır: 02_Test_Araclari\Jig' ($vm.ConfirmNewInventory() -and (Test-Path "$Data\7000_MILKON\AB-7000-0002\02_Test_Araclari\Jig\JIG-7000-0011\_TAKIP\kayit.json"))
-$rec = [IO.File]::ReadAllText("$Data\7000_MILKON\AB-7000-0002\02_Test_Araclari\Jig\JIG-7000-0011\_TAKIP\kayit.json")
+Check 'stoka açılır: 02_Test_Araclari\Jig' ($vm.ConfirmNewInventory() -and (Test-Path "$Data\7000_MILKON\AB-7000-0002\02_Test_Araclari\Jig\JT-7000-0011\_TAKIP\kayit.json"))
+$rec = [IO.File]::ReadAllText("$Data\7000_MILKON\AB-7000-0002\02_Test_Araclari\Jig\JT-7000-0011\_TAKIP\kayit.json")
 Check 'kayıtta tanım ve çok satırlı not' ($rec.Contains('TEST MEKANIK SATIMO AB-7000-0002') -and $rec.Contains('Satır 2'))
 
 "--- Proje seçiliyken; Genel"

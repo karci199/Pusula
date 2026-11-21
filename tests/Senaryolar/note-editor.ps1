@@ -145,7 +145,7 @@ Check 'başlıksız → # (döngü)' ($ed.Text -match '(?m)^# DA400 Döner Anten
 "--- 4. Öneriler (@ ve [[)"
 $ed.Select($ed.Text.Length, 0); $ed.SelectedText = "`r`nKullanılan @JIG-1000-00"; $ed.Select($ed.Text.Length, 0); Pump
 Check '@ yazınca liste açılır' ($nw.IsSuggesting -and @($nw.SuggestionItems | Where-Object { $_.Key -eq 'JIG-1000-0009' }).Count -eq 1) ((@($nw.SuggestionItems) | % Key) -join ',')
-Check 'jig adı ve türü görünür' (@($nw.SuggestionItems | Where-Object { $_.Key -eq 'JIG-1000-0009' -and $_.Kind -eq 'Jig' -and $_.Title -match 'SATIMO' }).Count -eq 1)
+Check 'jig adı ve türü görünür' (@($nw.SuggestionItems | Where-Object { $_.Key -eq 'JIG-1000-0009' -and $_.Kind -eq 'Mekanik jig' -and $_.Title -match 'SATIMO' }).Count -eq 1)
 $nw.FindName('SuggestList').SelectedItem = @($nw.SuggestionItems | Where-Object { $_.Key -eq 'JIG-1000-0009' })[0]
 SnapElement $nw.FindName('SuggestPopup').Child "$Out\note-suggest.png"
 Check 'seçince [[…]] yazılır, liste kapanır' ($nw.AcceptSuggestion() -and $ed.Text.EndsWith('Kullanılan [[JIG-1000-0009]]') -and -not $nw.IsSuggesting)

@@ -20,7 +20,7 @@ try {
     "--- 1. Ağaç"
     $group = $vm.Nodes | Where-Object { $_.Kind -eq 'InventoryGroup' }
     Check 'Envanter bölümü var' ($group -ne $null)
-    Check 'türler: Kablolar, Jigler, Yazılımlar, Test gereçleri' ((($group.Children | ForEach-Object Title) -join ',') -eq 'Kablolar,Jigler,Yazılımlar,Test gereçleri') (($group.Children | ForEach-Object Title) -join ',')
+    Check 'türler: Kablajlar, Mekanik jigler, Yazılımlar, Cihazlar, Diğer araçlar' ((($group.Children | ForEach-Object Title) -join ',') -eq 'Kablajlar,Mekanik jigler,Yazılımlar,Cihazlar,Diğer araçlar') (($group.Children | ForEach-Object Title) -join ',')
     Check 'ENVANTER klasörü proje gibi görünmüyor' (-not ($vm.Nodes | Where-Object { $_.Title -ceq 'ENVANTER' }))
 
     "--- 2. Yeni kablo"
@@ -66,7 +66,7 @@ try {
     Check 'işaretsiz düğüm görünür' ($un -ne $null -and $un.IsUnmarkedInventory -and $un.Subtitle -eq 'işaretsiz')
     Check 'numarasız klasör eklenmez' ((FindNode $vm.Nodes 'Mekanik') -eq $null)
     $vm.SelectedNode = $un; Pump
-    Check 'menü: Jig olarak işaretle' ($vm.CanMarkAsInventory -and -not $vm.CanMarkAsStock -and $vm.MarkInventoryMenuText -eq 'Jig olarak işaretle') $vm.MarkInventoryMenuText
+    Check 'menü: Mekanik jig olarak işaretle' ($vm.CanMarkAsInventory -and -not $vm.CanMarkAsStock -and $vm.MarkInventoryMenuText -eq 'Mekanik jig olarak işaretle') $vm.MarkInventoryMenuText
     Snap $win "$Out\inv-unmarked.png"
     $vm.MarkAsInventoryCommand.Execute($null); Pump
     Check 'diyalog ad ve numarayı önerir' ($vm.IsInventoryMarkMode -and $vm.NewInventoryNumber -eq 'JIG-1000-0030' -and $vm.NewInventoryName -eq 'Test Aparati' -and $vm.NewInventoryStatus -eq 'Kullanımda') ($vm.NewInventoryNumber + '|' + $vm.NewInventoryName + '|' + $vm.NewInventoryStatus)

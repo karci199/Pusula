@@ -11,8 +11,8 @@ try {
     $app = New-Object Pusula.Wpf.App; $app.InitializeComponent(); $app.ShutdownMode = 'OnExplicitShutdown'
     $vm = New-Object Pusula.Wpf.ViewModels.TypeEditor.TypeEditorViewModel($root, $set)
     "--- 2. Düzenleme"
-    Check 'türler: Kablo, Jig, Yazılım, Test gereci, Kişi' ((($vm.Types | ForEach-Object Name) -join ',') -eq 'Kablo,Jig,Yazılım,Test gereci,Kişi')
-    $jig = $vm.Types | Where-Object Name -eq 'Jig'; $vm.Selected = $jig
+    Check 'türler: Kablaj, Mekanik jig, Yazılım, Cihaz, Diğer, Kişi' ((($vm.Types | ForEach-Object Name) -join ',') -eq 'Kablaj,Mekanik jig,Yazılım,Cihaz,Diğer,Kişi')
+    $jig = $vm.Types | Where-Object Name -eq 'Mekanik jig'; $jig.Formats.Remove(@($jig.Formats | Where-Object Pattern -eq 'JT-####-####')[0]) | Out-Null; $vm.Selected = $jig
     Check 'jigin hazır alanları gelir' ($jig.Fields.Count -eq 6)
     $jig.Fields.Clear()
     $f = New-Object Pusula.Wpf.ViewModels.TypeEditor.FormatRow; $f.Pattern = 'JT-####-####'; $f.Label = 'Test jigi'; $jig.Formats.Add($f)
@@ -25,8 +25,8 @@ try {
     $fr = New-Object Pusula.Wpf.ViewModels.TypeEditor.FieldRow; $fr.Name = 'Tork'; $fr.Kind = 'number'; $fr.Unit = 'Nm'; $fr.SubTypes = 'Montaj'; $jig.Fields.Add($fr)
     "--- 2b. Etiketler"
     $faz = $vm.Tags | Where-Object Name -eq 'faz_kararli'
-    Check 'etiketler yüklendi, kapsam metni' ($vm.Tags.Count -eq $set.TagList.Count -and $faz.Scope -eq 'Kablo · RF kablo' -and ($vm.Tags | Where-Object Name -eq 'SATIMO').Scope -eq '') ("$($vm.Tags.Count) / $($faz.Scope)")
-    $tr = New-Object Pusula.Wpf.ViewModels.TypeEditor.TagRow; $tr.Name = '#yeni etiket'; $tr.Scope = 'Jig, Kablo · Güç'; $vm.Tags.Add($tr)
+    Check 'etiketler yüklendi, kapsam metni' ($vm.Tags.Count -eq $set.TagList.Count -and $faz.Scope -eq 'Kablaj · RF kablo' -and ($vm.Tags | Where-Object Name -eq 'SATIMO').Scope -eq '') ("$($vm.Tags.Count) / $($faz.Scope)")
+    $tr = New-Object Pusula.Wpf.ViewModels.TypeEditor.TagRow; $tr.Name = '#yeni etiket'; $tr.Scope = 'Mekanik jig, Kablaj · Güç'; $vm.Tags.Add($tr)
     $fileTypes = $set.FileTypes.Count
     $st = New-Object Pusula.Wpf.ViewModels.TypeEditor.StatusRow; $st.Name = 'Kalibrasyonda'; $st.Tone = 'waiting'; $st.IsSide = $true; $jig.Statuses.Add($st)
     Check 'var olan durum kilitli' (($jig.Statuses | Where-Object Name -eq 'Talep').IsExisting -and $jig.AreFoldersLocked)
@@ -68,7 +68,7 @@ $grid.CancelEdit() | Out-Null
     Check 'yeni tür: anahtar ve klasör son addan, stok/proje korunur' ($re.Find('olcum_cihazi').Name -eq 'Ölçüm cihazı' -and $re.Find('olcum_cihazi').GeneralFolder -eq 'ENVANTER\Olcum_cihazlari' -and $re.Find('stock') -ne $null -and $re.Find('project') -ne $null)
     $old10 = [Pusula.Core.Types.TypeSet]::CreateDefault(); $old10.Types.RemoveAll([Predicate[Pusula.Core.Types.TypeDefinition]]{ param($x) $x.Key -eq 'equipment' }) | Out-Null; $old10.SchemaVersion = 10; $old10.Normalize()
     $eq = $old10.Find('equipment')
-    Check 'sürüm 10 → 12: Test gereci eklendi (02_Test_Araclari\Diger)' ($eq -ne $null -and $eq.IsInventory -and $eq.SubTypes -contains 'Adaptör' -and @($eq.Fields | % Key) -contains 'seri_no' -and $eq.StockFolder -eq '02_Test_Araclari\Diger') (@($eq.Fields | % Key) -join ',')
+    Check 'sürüm 10 → 13: Cihaz eklendi (02_Test_Araclari\Cihaz)' ($eq -ne $null -and $eq.IsInventory -and $eq.SubTypes -contains 'Adaptör' -and @($eq.Fields | % Key) -contains 'seri_no' -and $eq.StockFolder -eq '02_Test_Araclari\Cihaz') (@($eq.Fields | % Key) -join ',')
     $kept = [Pusula.Core.Types.TypeSet]::CreateDefault(); $kept.Types.RemoveAll([Predicate[Pusula.Core.Types.TypeDefinition]]{ param($x) $x.Key -eq 'equipment' }) | Out-Null; $kept.SchemaVersion = 11; $kept.Normalize()
     Check 'sürüm 11 dosyada silinen Test gereci geri gelmez' ($kept.Find('equipment') -eq $null)
 } finally { Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue }

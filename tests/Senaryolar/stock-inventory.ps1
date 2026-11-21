@@ -48,7 +48,7 @@ try {
     $jg = $groups | Where-Object { $_.Type.Key -eq 'jig' }; $cg = $groups | Where-Object { $_.Type.Key -eq 'cable' }
     Check 'jigler: 3 (1 stok + 2 bağ)' ($jg.Rows.Count -eq 3 -and @($jg.Rows | Where-Object IsLinked).Count -eq 2) (($jg.Rows | ForEach-Object Number) -join ',')
     Check 'kablolar: 2' ($cg.Rows.Count -eq 2) (($cg.Rows | ForEach-Object Number) -join ',')
-    Check 'özet: Jig 3 · 1 dikkat' ($jg.Summary -eq 'Jig 3 · 1 dikkat' -and $jg.HasWarning) $jg.Summary
+    Check 'özet: Mekanik jig 3 · 1 dikkat' ($jg.Summary -eq 'Mekanik jig 3 · 1 dikkat' -and $jg.HasWarning) $jg.Summary
     Check 'dikkat kartı: onarımdaki jig' (@($vm.Detail.Alerts | Where-Object { $_.Detail -match 'JIG-1000-0009 · Onarım' }).Count -eq 1)
     Check 'aday listesinden bağlılar düşer' (@($vm.LinkCandidates($jig)).Count -eq 0)
     $inv = @($vm.Detail.Timeline | Where-Object IsInventory)
@@ -58,7 +58,7 @@ try {
     Check 'olayda konum ayrıntısı' (@($inv | Where-Object { $_.Detail -eq 'Konum: Lab-A raf 3' }).Count -ge 1)
     function InvTitles() { @($vm.Detail.Timeline | Where-Object IsInventory | ForEach-Object { ($_.Title -split ' ')[0] } | Sort-Object -Unique) -join ',' }
     Check 'kaynaklar: stok jigi, bağlı jigler, stok kablosu, bağlı kablo' ((InvTitles) -eq 'JIG-1000-0009,JIG-1000-0014,JIG-1000-0020,JT-0001-0002,JT-0001-0102') (InvTitles)
-    Check 'meta: tür · tarih · kişi' (@($inv | Where-Object { $_.Meta -match '^(Jig|Kablo) · \d\d\.\d\d\.\d{4}' }).Count -eq $inv.Count)
+    Check 'meta: tür · tarih · kişi' (@($inv | Where-Object { $_.Meta -match '^(Mekanik jig|Kablaj) · \d\d\.\d\d\.\d{4}' }).Count -eq $inv.Count)
     Check 'not düğmesi kaydın notunu açar' (@($inv | Where-Object { $_.Title -like 'JIG-1000-0009*' -and $_.NotePath -like '*JIG-1000-0009.md' }).Count -eq 5)
     Check 'test koşuları ve olaylar da duruyor' (@($vm.Detail.Timeline | Where-Object { -not $_.IsInventory }).Count -ge 4)
     Snap $win "$Out\stock-general.png"

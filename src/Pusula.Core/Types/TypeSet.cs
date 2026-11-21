@@ -18,8 +18,11 @@ namespace Pusula.Core.Types
         /// <summary>Proje türünün anahtarı.</summary>
         public const string ProjectKey = "project";
 
-        /// <summary>Test gereci türünün anahtarı.</summary>
+        /// <summary>Cihaz (eski adı test gereci) türünün anahtarı.</summary>
         public const string EquipmentKey = "equipment";
+
+        /// <summary>Diğer test yardımcı araçları türünün anahtarı.</summary>
+        public const string OtherKey = "other";
 
         /// <summary>Kişi türünün anahtarı.</summary>
         public const string PersonKey = "person";
@@ -41,7 +44,7 @@ namespace Pusula.Core.Types
 
         /// <summary>Dosya biçiminin sürümü.</summary>
         [DataMember(Name = "schemaVersion", Order = 0)]
-        public int SchemaVersion { get; set; } = 12;
+        public int SchemaVersion { get; set; } = 13;
 
         /// <summary>Kayıt türleri.</summary>
         [DataMember(Name = "types", Order = 1)]
@@ -382,7 +385,66 @@ namespace Pusula.Core.Types
                 }
             }
 
-            SchemaVersion = 12;
+            // Sürüm 13 (21.11.2026): ortak ekleme penceresi. Adlar Mekanik jig · Kablaj · Cihaz; jig ve cihaz numarası
+            // JT-####-#### (eski JIG / TG numaraları geçerli kalır, ikinci biçim olarak durur); cihazın stok klasörü
+            // 02_Test_Araclari\Cihaz (Diger'deki eski kayıtlar okunmaya devam eder); yeni tür Diğer (02_Test_Araclari\Diger).
+            // Kullanıcının değiştirdiği adlara ve klasörlere dokunulmaz.
+            if (SchemaVersion < 13)
+            {
+                RenameDefault("cable", "Kablo", "Kablolar", "Kablaj", "Kablajlar");
+                RenameDefault("jig", "Jig", "Jigler", "Mekanik jig", "Mekanik jigler");
+                RenameDefault(EquipmentKey, "Test gereci", "Test gereçleri", "Cihaz", "Cihazlar");
+                foreach (var key in new[] { "jig", EquipmentKey })
+                {
+                    var type = Find(key);
+                    if (type != null && !type.NumberFormats.Any(n => n.Pattern == "JT-####-####"))
+                    {
+                        type.NumberFormats.Insert(0, new NumberFormat { Pattern = "JT-####-####", Label = defaults.Find(key)?.NumberFormats[0].Label ?? string.Empty });
+                    }
+                }
+
+                var equipment = Find(EquipmentKey);
+                if (equipment != null && string.Equals(equipment.StockFolder, @"02_Test_Araclari\Diger", StringComparison.OrdinalIgnoreCase))
+                {
+                    equipment.StockFolder = defaults.Find(EquipmentKey)!.StockFolder;
+                }
+
+                if (Find(OtherKey) == null)
+                {
+                    var person = Types.FindIndex(t => t.Key == PersonKey);
+                    var other = defaults.Find(OtherKey)!;
+                    if (person >= 0)
+                    {
+                        Types.Insert(person, other);
+                    }
+                    else
+                    {
+                        Types.Add(other);
+                    }
+                }
+            }
+
+            SchemaVersion = 13;
+        }
+
+        // Varsayılan adı değiştirilmemiş türün adını yeniler (kullanıcı adı değiştirdiyse dokunulmaz).
+        private void RenameDefault(string key, string oldName, string oldPlural, string name, string plural)
+        {
+            var type = Find(key);
+            if (type == null)
+            {
+                return;
+            }
+
+            if (type.Name == oldName)
+            {
+                type.Name = name;
+            }
+
+            if (type.PluralName == oldPlural)
+            {
+                type.PluralName = plural;
+            }
         }
 
         /// <summary>
@@ -395,6 +457,24 @@ namespace Pusula.Core.Types
             { "software", "06_Yazilimlar" },
             { EquipmentKey, "07_Test_Gerecleri" },
         };
+
+        /// <summary>
+        /// Stok düzeyinde türün okunduğu bütün eski klasörler: <see cref="LegacyStockFolders"/> ve 21.11.2026 öncesi
+        /// cihazın (test gereci) <c>02_Test_Araclari\Diger</c> klasörü.
+        /// </summary>
+        public static IEnumerable<string> LegacyStockFoldersOf(string key)
+        {
+            string legacy;
+            if (LegacyStockFolders.TryGetValue(key, out legacy))
+            {
+                yield return legacy;
+            }
+
+            if (string.Equals(key, EquipmentKey, StringComparison.OrdinalIgnoreCase))
+            {
+                yield return @"02_Test_Araclari\Diger";
+            }
+        }
 
         private static bool SameSet(IEnumerable<string> a, IEnumerable<string> b)
         {
@@ -508,10 +588,13 @@ namespace Pusula.Core.Types
                 FileType("Arşiv", "Arşiv", "zip", "7z", "rar"),
             });
 
-            set.Types.Add(Inventory("cable", "Kablo", "Kablolar", "E703", "#F7A35C", "JT-####-####", "Kablo numarası", "Kablolar", @"02_Test_Araclari\Kablo",
+            set.Types.Add(Inventory("cable", "Kablaj", "Kablajlar", "E703", "#F7A35C", "JT-####-####", "Kablaj numarası", "Kablolar", @"02_Test_Araclari\Kablo",
                 CableSubTypes, new[] { "01_Belgeler", "02_Fotograflar" }));
-            set.Types.Add(Inventory("jig", "Jig", "Jigler", "E90F", "#B4A7F5", "JIG-####-####", "Jig numarası", "Jigler", @"02_Test_Araclari\Jig",
-                JigSubTypes, new[] { "01_Cizimler", "02_Belgeler", "03_Fotograflar" }));
+            // Jig ve cihazda 21.11.2026 öncesi numaralar (JIG-, TG-) ikinci biçim olarak geçerli kalır; yenisi JT-.
+            var jig = Inventory("jig", "Mekanik jig", "Mekanik jigler", "E90F", "#B4A7F5", "JT-####-####", "Jig numarası", "Jigler", @"02_Test_Araclari\Jig",
+                JigSubTypes, new[] { "01_Cizimler", "02_Belgeler", "03_Fotograflar" });
+            jig.NumberFormats.Add(new NumberFormat { Pattern = "JIG-####-####", Label = "Eski jig numarası" });
+            set.Types.Add(jig);
 
             var software = Inventory("software", "Yazılım", "Yazılımlar", "E943", "#4CC38A", "JY-####-####", "Yazılım numarası", "Yazilimlar", @"02_Test_Araclari\Yazilim",
                 new string[0], new[] { "01_Kaynak", "02_Belgeler" });
@@ -529,8 +612,13 @@ namespace Pusula.Core.Types
             set.Types.Add(software);
 
             // Test gereci: kablo ve jig dışındaki yardımcı araçlar (adaptör, zayıflatıcı, yük …); kablo / jig durumları.
-            set.Types.Add(Inventory(EquipmentKey, "Test gereci", "Test gereçleri", "E950", "#5FD4C4", "TG-####-####", "Test gereci numarası", "Test_Gerecleri", @"02_Test_Araclari\Diger",
-                EquipmentSubTypes, new[] { "01_Belgeler", "02_Fotograflar" }));
+            var equipment = Inventory(EquipmentKey, "Cihaz", "Cihazlar", "E950", "#5FD4C4", "JT-####-####", "Cihaz numarası", "Test_Gerecleri", @"02_Test_Araclari\Cihaz",
+                EquipmentSubTypes, new[] { "01_Belgeler", "02_Fotograflar" });
+            equipment.NumberFormats.Add(new NumberFormat { Pattern = "TG-####-####", Label = "Eski test gereci numarası" });
+            set.Types.Add(equipment);
+            // Diğer (21.11.2026): jig, kablaj, yazılım ve cihaz dışındaki test yardımcı araçları; alt türü kullanıcı ekler.
+            set.Types.Add(Inventory(OtherKey, "Diğer", "Diğer araçlar", "E712", "#A0A0A0", "JT-####-####", "Araç numarası", "Diger", @"02_Test_Araclari\Diger",
+                new string[0], new[] { "01_Belgeler", "02_Fotograflar" }));
             // Kişi: klasörsüz tür; alt türler roller, Ekip listeden (Türler penceresinden değiştirilir).
             var person = new TypeDefinition { Key = PersonKey, Name = "Kişi", PluralName = "Kişiler", Icon = "E77B", Color = "#F28CB1" };
             person.SubTypes.AddRange(new[] { "Mühendis", "Teknisyen" });

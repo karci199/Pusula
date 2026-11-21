@@ -241,7 +241,9 @@ namespace Pusula.Core.Inventory
                     foreach (var child in children)
                     {
                         var name = Path.GetFileName(child);
-                        if (name.StartsWith("_", StringComparison.Ordinal) || File.Exists(RecordFile(child)))
+                        // Aynı klasörü iki tür okuyabilir (Diğer ve eski cihaz klasörü 02_Test_Araclari\Diger): ilk tür alır.
+                        if (name.StartsWith("_", StringComparison.Ordinal) || File.Exists(RecordFile(child))
+                            || result.Any(r => string.Equals(r.Folder, child, StringComparison.OrdinalIgnoreCase)))
                         {
                             continue;
                         }
@@ -266,13 +268,12 @@ namespace Pusula.Core.Inventory
             return result.OrderBy(i => i.Record.Number, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
-        // Stok düzeyinde türün klasörü ve (varsa) 16.11.2026 öncesi eski klasörü (05_Jigler …).
+        // Stok düzeyinde türün klasörü ve (varsa) eski klasörleri (05_Jigler …; cihaz için 02_Test_Araclari\Diger).
         private static IEnumerable<string> StockFolders(TypeDefinition type, string root, string stock)
         {
             var current = LevelFolder(type, InventoryLevel.Stock, root, stock);
             yield return current;
-            string legacy;
-            if (TypeSet.LegacyStockFolders.TryGetValue(type.Key, out legacy))
+            foreach (var legacy in TypeSet.LegacyStockFoldersOf(type.Key))
             {
                 var old = Path.Combine(stock, legacy);
                 if (!string.Equals(old, current, StringComparison.OrdinalIgnoreCase) && Directory.Exists(old))

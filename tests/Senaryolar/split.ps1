@@ -13,7 +13,7 @@ try {
     "--- Bölmeler"
     Check 'üst ağaçta envanter yok' (-not ($vm.ProjectNodes | Where-Object { $_.Kind -eq 'InventoryGroup' }))
     Check 'alt bölmede Envanter' ($vm.InventoryNodes.Count -eq 1 -and $vm.HasInventory)
-    $jig = $vm.InventoryNodes[0].Children | Where-Object Title -eq 'Jigler'
+    $jig = $vm.InventoryNodes[0].Children | Where-Object Title -eq 'Mekanik jigler'
     $jig.IsSelected = $true; Pump
     Check 'envanterden seçim' ($vm.SelectedNode -eq $jig)
     $p = $vm.ProjectNodes[0]; $p.IsSelected = $true; Pump

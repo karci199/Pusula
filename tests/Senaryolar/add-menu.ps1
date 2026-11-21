@@ -15,7 +15,7 @@ try {
     $heads = @($menu.Items | ForEach-Object { if ($_ -is [System.Windows.Controls.Separator]) { '---' } else { [string]$_.Header } })
     Check 'sıra: proje, stok, envanter (çizgi yok)' ($heads[0] -eq 'Proje' -and $heads[1] -like 'Stok*' -and $heads[2] -eq 'Envanter' -and -not ($heads -contains '---')) ($heads -join ' | ')
     Check 'şablon / tür maddeleri yok' (-not ($heads -match 'Şablon|Türler'))
-    Check 'envanter türleri Türler''den' (($heads -contains 'Kablo') -and ($heads -contains 'Jig')) ($heads -join ' | ')
+    Check 'envanter türleri Türler''den' (($heads -contains 'Test yardımcı aracı') -and -not ($heads -contains 'Kablaj')) ($heads -join ' | ')
     Check 'alt çizgi korunur (7000_MILKON)' ($vm.AddStockMenuText -eq 'Stok · 7000__MILKON') $vm.AddStockMenuText
     $menu.IsOpen = $false
     $vm.SelectNodeByPath((Join-Path $Data 'ENVANTER\Kablolar\JT-0001-0001_SATIMO_RF_kablosu')); Wait

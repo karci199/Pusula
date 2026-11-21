@@ -561,7 +561,8 @@ namespace Pusula.Wpf.ViewModels
                     return string.Empty;
                 }
 
-                return string.Join(" · ", newInventoryType.NumberFormats.Select(f => NumberPattern.Example(f.Pattern)));
+                // Yalnız ilk (güncel) biçim gösterilir; eski biçimler (JIG-, TG-) geçerli kalır ama önerilmez.
+                return newInventoryType.NumberFormats.Count == 0 ? string.Empty : NumberPattern.Example(newInventoryType.NumberFormats[0].Pattern);
             }
         }
 
@@ -724,7 +725,9 @@ namespace Pusula.Wpf.ViewModels
             IsAddingSubType = false;
             BuildUsePlaces();
             InventoryTypeOptions.Clear();
-            foreach (var option in types.InventoryTypes)
+            // Sıra: Mekanik jig, Kablaj, Yazılım, Cihaz, Diğer; kullanıcının eklediği türler sonda.
+            var order = new[] { "jig", "cable", "software", TypeSet.EquipmentKey, TypeSet.OtherKey };
+            foreach (var option in types.InventoryTypes.OrderBy(t => { var i = Array.IndexOf(order, t.Key); return i < 0 ? order.Length : i; }))
             {
                 InventoryTypeOptions.Add(option);
             }
