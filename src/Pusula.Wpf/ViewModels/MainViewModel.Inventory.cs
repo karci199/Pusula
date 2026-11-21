@@ -77,6 +77,52 @@ namespace Pusula.Wpf.ViewModels
         }
     }
 
+    /// <summary>Kayıt sayfası, Kullanan stoklar kartında bir satır.</summary>
+    public sealed class UsingStockRow : Pusula.Wpf.Mvvm.ViewModelBase
+    {
+        private bool isConfirming;
+
+        /// <summary>Satırı oluşturur.</summary>
+        public UsingStockRow(string number, string name, string path, bool isOwner)
+        {
+            Number = number;
+            Name = name;
+            Path = path;
+            IsOwner = isOwner;
+        }
+
+        /// <summary>Stok numarası.</summary>
+        public string Number { get; }
+
+        /// <summary>Stokun adı (stok.json); yoksa boş.</summary>
+        public string Name { get; }
+
+        /// <summary>Stok klasörü.</summary>
+        public string Path { get; }
+
+        /// <summary>Aracın klasörü bu stokun içinde mi ("Klasörü burada"; bağı kaldırılamaz).</summary>
+        public bool IsOwner { get; }
+
+        /// <summary>Bağ (stok.json) üzerinden mi kullanıyor.</summary>
+        public bool IsLinked
+        {
+            get { return !IsOwner; }
+        }
+
+        /// <summary>Rozet metni: "Klasörü burada" ya da "Bağlı".</summary>
+        public string Badge
+        {
+            get { return IsOwner ? Resources.UsingStock_Owner : Resources.UsingStock_Linked; }
+        }
+
+        /// <summary>"Bağı kaldır" bir kez tıklandı, ikinci tıklama kaldırır.</summary>
+        public bool IsConfirming
+        {
+            get { return isConfirming; }
+            set { SetProperty(ref isConfirming, value); }
+        }
+    }
+
     /// <summary>Ana pencere: envanter (kablo, jig …) — ağaç düğümleri, kayıt sayfası, yeni kayıt ve durum olayı.</summary>
     public sealed partial class MainViewModel
     {
@@ -883,6 +929,152 @@ namespace Pusula.Wpf.ViewModels
             Status = string.Format(linked ? Resources.StockInv_Linked : Resources.StockInv_Unlinked, number, stock.Title);
             Detail.Reload();
         }
+
+        #region Kullanan stoklar
+
+        private bool isLinkingStock;
+
+        /// <summary>Kayıt sayfasında aracı kullanan stoklar: klasörü içinde olan stok ve stok.json'da bağı olanlar.</summary>
+        public ObservableCollection<UsingStockRow> UsingStocks { get; } = new ObservableCollection<UsingStockRow>();
+
+        /// <summary>Kart başlığındaki sayı: "· 3".</summary>
+        public string UsingStockCountText
+        {
+            get { return "· " + UsingStocks.Count.ToString(System.Globalization.CultureInfo.CurrentCulture); }
+        }
+
+        /// <summary>Hiçbir stok kullanmıyor mu (kartta "Henüz hiçbir stoka bağlı değil.").</summary>
+        public bool HasNoUsingStocks
+        {
+            get { return UsingStocks.Count == 0; }
+        }
+
+        /// <summary>"+ Stoka bağla" seçenekleri: henüz kullanmayan stoklar (numara · ad).</summary>
+        public ObservableCollection<LevelOption> StockLinkOptions { get; } = new ObservableCollection<LevelOption>();
+
+        /// <summary>Stok seçme kutusu açık mı.</summary>
+        public bool IsLinkingStock
+        {
+            get { return isLinkingStock; }
+            set { SetProperty(ref isLinkingStock, value); }
+        }
+
+        /// <summary>Kutudan seçilen stok: seçilince araç o stoka bağlanır ve kutu kapanır.</summary>
+        public LevelOption? StockLinkChoice
+        {
+            get { return null; }
+            set
+            {
+                if (value != null && LinkShownToStock(value.Owner))
+                {
+                    IsLinkingStock = false;
+                }
+
+                OnPropertyChanged();
+            }
+        }
+
+        // Ağaçtaki bütün stoklar (projelerin altındakiler ve kökteki stoklar).
+        private IEnumerable<TreeNodeViewModel> AllStockNodes()
+        {
+            return Nodes.Where(n => n.Kind == FolderKind.Stock)
+                .Concat(Nodes.Where(n => n.Kind == FolderKind.Project).SelectMany(p => p.Children).Where(c => c.Kind == FolderKind.Stock))
+                .OrderBy(n => n.Title, StringComparer.CurrentCultureIgnoreCase);
+        }
+
+        /// <summary>Gösterilen kaydı kullanan stokları ve bağlanabilecek stokları yeniden okur.</summary>
+        public void FillUsingStocks()
+        {
+            UsingStocks.Clear();
+            StockLinkOptions.Clear();
+            IsLinkingStock = false;
+            var shown = Inventory.Item;
+            if (shown != null)
+            {
+                foreach (var stock in AllStockNodes())
+                {
+                    var info = JsonFile.TryRead<StockInfo>(TrackingFiles.StockFile(stock.Path));
+                    var name = info?.Name ?? string.Empty;
+                    var isOwner = shown.Level == InventoryLevel.Stock
+                        && shown.Folder.StartsWith(stock.Path.TrimEnd('\\') + "\\", StringComparison.OrdinalIgnoreCase);
+                    var isLinked = info != null && info.Inventory.Contains(shown.Record.Number, StringComparer.OrdinalIgnoreCase);
+                    if (isOwner || isLinked)
+                    {
+                        UsingStocks.Add(new UsingStockRow(stock.Title, name, stock.Path, isOwner));
+                    }
+                    else
+                    {
+                        StockLinkOptions.Add(new LevelOption(stock.Title, InventoryLevel.Stock, stock.Path, name));
+                    }
+                }
+
+                // Klasörü içinde olan stok en üstte.
+                var owner = UsingStocks.FirstOrDefault(r => r.IsOwner);
+                if (owner != null && UsingStocks.IndexOf(owner) > 0)
+                {
+                    UsingStocks.Move(UsingStocks.IndexOf(owner), 0);
+                }
+            }
+
+            OnPropertyChanged(nameof(UsingStockCountText));
+            OnPropertyChanged(nameof(HasNoUsingStocks));
+        }
+
+        // Gösterilen kaydı stoka bağlar (stok.json); kaydın klasörüne dokunulmaz.
+        private bool LinkShownToStock(string stockPath)
+        {
+            var shown = Inventory.Item;
+            if (shown == null || stockPath.Length == 0)
+            {
+                return false;
+            }
+
+            if (!InventoryService.SetStockLink(stockPath, shown.Record.Number, true))
+            {
+                Status = Resources.StockInv_LinkFailed;
+                return false;
+            }
+
+            Status = string.Format(Resources.StockInv_Linked, shown.Record.Number, Path.GetFileName(stockPath));
+            FillUsingStocks();
+            return true;
+        }
+
+        /// <summary>
+        /// Satırdaki "Bağı kaldır": ilk tıklamada onay ister (satır "Kaldır?" olur), ikincide stok.json'daki bağı siler.
+        /// Klasörü stokun içinde olan araçta bir şey yapmaz. Aracın klasörüne ve stoka dokunulmaz.
+        /// </summary>
+        public bool UnlinkUsingStock(UsingStockRow row)
+        {
+            var shown = Inventory.Item;
+            if (shown == null || row == null || row.IsOwner)
+            {
+                return false;
+            }
+
+            if (!row.IsConfirming)
+            {
+                foreach (var other in UsingStocks)
+                {
+                    other.IsConfirming = false;
+                }
+
+                row.IsConfirming = true;
+                return false;
+            }
+
+            if (!InventoryService.SetStockLink(row.Path, shown.Record.Number, false))
+            {
+                Status = Resources.StockInv_LinkFailed;
+                return false;
+            }
+
+            Status = string.Format(Resources.StockInv_Unlinked, shown.Record.Number, row.Number);
+            FillUsingStocks();
+            return true;
+        }
+
+        #endregion
 
         /// <summary>Seçili stokun notunu (<c>&lt;stok no&gt;.md</c>) oluşturur ve açar; varsa yalnızca açar.</summary>
         public void CreateStockNote()

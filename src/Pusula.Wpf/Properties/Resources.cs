@@ -3178,6 +3178,30 @@ namespace Pusula.Wpf.Properties
         /// <summary>Ekleme penceresi: tanım kutusunun ipucu.</summary>
         public static string Inv_NamePlaceholderTool { get { return Get("Inv_NamePlaceholderTool"); } }
 
+        /// <summary>Kayıt sayfası: aracı kullanan stoklar kartının başlığı.</summary>
+        public static string UsingStock_Header { get { return Get("UsingStock_Header"); } }
+
+        /// <summary>Kayıt sayfası: stok seçme kutusunu açan düğme.</summary>
+        public static string UsingStock_Link { get { return Get("UsingStock_Link"); } }
+
+        /// <summary>Kayıt sayfası: Stoka bağla ipucu.</summary>
+        public static string UsingStock_LinkHint { get { return Get("UsingStock_LinkHint"); } }
+
+        /// <summary>Kullanan stoklar rozeti: aracın klasörü bu stokun içinde.</summary>
+        public static string UsingStock_Owner { get { return Get("UsingStock_Owner"); } }
+
+        /// <summary>Kullanan stoklar rozeti: stok.json ile bağlı.</summary>
+        public static string UsingStock_Linked { get { return Get("UsingStock_Linked"); } }
+
+        /// <summary>Kullanan stoklar: bağı kaldır ipucu.</summary>
+        public static string UsingStock_UnlinkHint { get { return Get("UsingStock_UnlinkHint"); } }
+
+        /// <summary>Kullanan stoklar: bağı kaldırmak için onay.</summary>
+        public static string UsingStock_UnlinkConfirm { get { return Get("UsingStock_UnlinkConfirm"); } }
+
+        /// <summary>Kullanan stoklar: boş kart.</summary>
+        public static string UsingStock_None { get { return Get("UsingStock_None"); } }
+
         #endregion
     }
 }

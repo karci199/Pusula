@@ -1126,6 +1126,37 @@ namespace Pusula.Wpf
             }
         }
 
+        // Kayıt sayfası, Kullanan stoklar: "+ Stoka bağla" stok kutusunu açar ve listeyi indirir.
+        private void UsingStockLinkToggle_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.IsLinkingStock = !viewModel.IsLinkingStock;
+            if (viewModel.IsLinkingStock)
+            {
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    StockLinkBox.Focus();
+                    StockLinkBox.IsDropDownOpen = true;
+                }), System.Windows.Threading.DispatcherPriority.Input);
+            }
+        }
+
+        // Satır: o stokun sayfasını açar.
+        private void UsingStockOpen_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is string path && path.Length > 0)
+            {
+                viewModel.SelectNodeByPath(path);
+            }
+        }
+
+        // ✕: ilk tık onay ister, ikinci tık bağı kaldırır.
+        private void UsingStockUnlink_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is ViewModels.UsingStockRow row)
+            {
+                viewModel.UnlinkUsingStock(row);
+            }
+        }
         // Stok sayfası, Test yardımcı araçları: "Ekle" ortak pencereyi açar; kullanım yeri bu stok gelir.
         private void StockToolAdd_Click(object sender, RoutedEventArgs e)
         {

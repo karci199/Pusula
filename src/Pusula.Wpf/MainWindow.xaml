@@ -2848,6 +2848,95 @@
                         </StackPanel>
                     </Border>
 
+                    <!-- Kullanan stoklar: klasörü içinde olan stok ve stok.json'da bağı olanlar; satır stoku açar, ✕ bağı kaldırır (iki tık) -->
+                    <Border Padding="16,12" Margin="0,0,0,16"
+                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                            CornerRadius="{DynamicResource OverlayCornerRadius}">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Style="{StaticResource PaneLabel}" Margin="0" Text="{x:Static res:Resources.UsingStock_Header}" />
+                                    <TextBlock Margin="6,0,0,0" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding UsingStockCountText}" VerticalAlignment="Center" />
+                                </StackPanel>
+                                <Button Grid.Column="1" Click="UsingStockLinkToggle_Click" ToolTip="{x:Static res:Resources.UsingStock_LinkHint}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="13" />
+                                        <TextBlock Margin="6,0,0,0" Text="{x:Static res:Resources.UsingStock_Link}" />
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                            <ComboBox x:Name="StockLinkBox" Margin="0,0,0,8" ItemsSource="{Binding StockLinkOptions}" SelectedItem="{Binding StockLinkChoice, Mode=TwoWay}"
+                                      IsTextSearchEnabled="True" TextSearch.TextPath="Label"
+                                      Visibility="{Binding IsLinkingStock, Converter={StaticResource BoolToVis}}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding Label}" FontWeight="SemiBold" />
+                                            <TextBlock Grid.Column="1" Margin="12,0,0,0" Text="{Binding Detail}" Foreground="{DynamicResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <ItemsControl ItemsSource="{Binding UsingStocks}" Focusable="False">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,1">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <Button Padding="6,6" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Background="Transparent" BorderThickness="0"
+                                                    Tag="{Binding Path}" Click="UsingStockOpen_Click">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="24" />
+                                                        <ColumnDefinition Width="120" />
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <local:AppIcon Glyph="{x:Static local:AppIcons.Stock}" FontSize="13" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" VerticalAlignment="Center" />
+                                                    <TextBlock Grid.Column="1" FontWeight="SemiBold" Text="{Binding Number}" VerticalAlignment="Center" />
+                                                    <TextBlock Grid.Column="2" Text="{Binding Name}" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                                    <Border x:Name="Badge" Grid.Column="3" CornerRadius="8" Padding="8,1" Margin="8,0,0,0" Background="{DynamicResource SubtleFillColorSecondaryBrush}" VerticalAlignment="Center">
+                                                        <TextBlock x:Name="BadgeText" Text="{Binding Badge}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                                    </Border>
+                                                </Grid>
+                                            </Button>
+                                            <Button x:Name="Unlink" Grid.Column="1" Margin="6,0,0,0" Padding="8,4" Tag="{Binding}" Click="UsingStockUnlink_Click"
+                                                    ToolTip="{x:Static res:Resources.UsingStock_UnlinkHint}" Visibility="{Binding IsLinked, Converter={StaticResource BoolToVis}}">
+                                                <Grid>
+                                                    <local:AppIcon x:Name="UnlinkIcon" Glyph="{x:Static local:AppIcons.Remove}" FontSize="11" />
+                                                    <TextBlock x:Name="UnlinkText" Text="{x:Static res:Resources.UsingStock_UnlinkConfirm}" Visibility="Collapsed" />
+                                                </Grid>
+                                            </Button>
+                                        </Grid>
+                                        <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding IsOwner}" Value="True">
+                                                <Setter TargetName="Badge" Property="Background" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                                                <Setter TargetName="BadgeText" Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsConfirming}" Value="True">
+                                                <Setter TargetName="UnlinkIcon" Property="Visibility" Value="Collapsed" />
+                                                <Setter TargetName="UnlinkText" Property="Visibility" Value="Visible" />
+                                                <Setter TargetName="Unlink" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                                            </DataTrigger>
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBlock Margin="6,2,0,0" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.UsingStock_None}"
+                                       Visibility="{Binding HasNoUsingStocks, Converter={StaticResource BoolToVis}}" />
+                        </StackPanel>
+                    </Border>
+
                     <!-- Özellikler: türe özel alanlar iki sütun; etiket üstte küçük, değer altta, ince çizgiyle ayrılır; boş olan soluk -->
                     <Border Padding="16,12" Margin="0,0,0,16" Visibility="{Binding Inventory.HasProperties, Converter={StaticResource BoolToVis}}"
                             Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"

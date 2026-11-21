@@ -2971,4 +2971,28 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Inv_NamePlaceholderTool" xml:space="preserve">
     <value>Ör. TEST MEKANİK SATIMO AB-7000-0002</value>
   </data>
+  <data name="UsingStock_Header" xml:space="preserve">
+    <value>Kullanan stoklar</value>
+  </data>
+  <data name="UsingStock_Link" xml:space="preserve">
+    <value>Stoka bağla</value>
+  </data>
+  <data name="UsingStock_LinkHint" xml:space="preserve">
+    <value>Bu aracı bir stoka bağla; klasörü yerinde kalır, bağ stokun stok.json dosyasına yazılır</value>
+  </data>
+  <data name="UsingStock_Owner" xml:space="preserve">
+    <value>Klasörü burada</value>
+  </data>
+  <data name="UsingStock_Linked" xml:space="preserve">
+    <value>Bağlı</value>
+  </data>
+  <data name="UsingStock_UnlinkHint" xml:space="preserve">
+    <value>Bağı kaldır (ikinci tıklamada); araca ve stoka dokunulmaz</value>
+  </data>
+  <data name="UsingStock_UnlinkConfirm" xml:space="preserve">
+    <value>Kaldır?</value>
+  </data>
+  <data name="UsingStock_None" xml:space="preserve">
+    <value>Henüz hiçbir stoka bağlı değil.</value>
+  </data>
 </root>

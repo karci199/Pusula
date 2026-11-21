@@ -159,6 +159,7 @@ namespace Pusula.Wpf.ViewModels
                     Detail.InventoryItems = inventoryItems;
                     Detail.Load(selectedNode, templates, types);
                     Inventory.Load(selectedNode, inventoryItems, types);
+                    FillUsingStocks();
                     LoadMentions(selectedNode);
                     RememberRecent(selectedNode);
                     SyncProjectScope();
