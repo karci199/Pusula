@@ -22,7 +22,7 @@ try {
     $tree = $win.FindName('FolderTree')
     $item = $tree.ItemContainerGenerator.ContainerFromItem($vm.ProjectNodes[0])
     $hover = @($item.Template.Triggers | Where-Object { $_ -is [System.Windows.Trigger] -and $_.Property.Name -eq 'IsMouseOver' })
-    Check 'hover tetikleyicisi satıra (Bd) bakar' ($hover.Count -eq 1 -and $hover[0].SourceName -eq 'Bd') (($hover | ForEach-Object { [string]$_.SourceName }) -join ',')
+    Check 'hover tetikleyicisi yalnız satıra (Bd) ve açma okuna (Expander) bakar' ($hover.Count -eq 2 -and @($hover | Where-Object { $_.SourceName -notin 'Bd','Expander' }).Count -eq 0) (($hover | ForEach-Object { [string]$_.SourceName }) -join ',')
     $inv = $win.FindName('InventoryTree').ItemContainerGenerator.ContainerFromItem($vm.InventoryNodes[0])
     Check 'envanter ağacında da aynı şablon' ($inv.Template -eq $item.Template)    $vm.SelectedNode = $null; Pump
     Snap $win "$Out\tree-split.png"

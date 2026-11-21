@@ -40,6 +40,9 @@ try {
     function Show([string]$n) { $vm.ShowInventory($folders[$n]); Wait }
     function Tiles { ($vm.Inventory.FolderTiles | ForEach-Object { $_.Label + '=' + $_.Value }) -join ', ' }
 
+    # git boş klasörleri saklamaz: örneklerin boş şablon klasörleri burada açılır (B: belgeler boş, C: hepsi boş).
+    foreach ($sub in '01_Belgeler') { New-Item -ItemType Directory -Force (Join-Path $folders['JT-0001-0001'] $sub) | Out-Null }
+    foreach ($sub in '01_Cizimler','02_Belgeler','03_Fotograflar') { New-Item -ItemType Directory -Force (Join-Path $folders['JIG-1000-0020'] $sub) | Out-Null }
     Show 'JIG-1000-0009'
     Check 'A: kutucuklar' ((Tiles) -eq 'Cizimler=3 · Rev AC, Belgeler=1, Fotograflar=5') (Tiles)
     Check 'A: 4 foto + "+1"' ($vm.Inventory.Photos.Count -eq 4 -and $vm.Inventory.MorePhotos -eq '+1')
