@@ -3112,4 +3112,10 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Stock_PhotosHiddenHint" xml:space="preserve">
     <value>Şeritte yalnız adı sayıyla başlayanlar görünür (1_on.jpg, 2_montaj.jpg …). Tıklayınca klasör açılır.</value>
   </data>
+  <data name="Verify_Detail" xml:space="preserve">
+    <value>Ayrıntı ↗</value>
+  </data>
+  <data name="Verify_DetailHint" xml:space="preserve">
+    <value>Ayrıntı md dosyasında: ## Plan / ## Sonuç altında bu maddenin bölümü (altına serbest yazılabilir)</value>
+  </data>
 </root>

@@ -132,6 +132,8 @@ AB-7000-0002\
 - **Sıradaki (kullanıcı isteği):** her şey md'de okunur olsun: "## Plan" ve "## Sonuç" altında madde başına
   "### DGÖ-1" bölümü uygulamaca yazılsın (başkaları Obsidian'da okusun); altına elle yazılan ayrıntıya dokunulmasın.
   Ardından Excel'e otomatik verme.
+- **Sonra (kullanıcı isteği, 21.11.2026):** stoktaki fotoğraf kuralı (kapak `<numara>_kapak`, numaralı şerit, numarasızlar
+  görünmez, kapak yoksa genel resim) test yardımcı araçlarının sayfasına da uygulanacak.
 - TG no = DOORS'taki test gereksinimi dokümanının madde no'su. Tasarımcının yayınlamadığı Word dokümanındaki maddelerde no
   yoktur; Kaynak sütununa doküman no yazılır.
 - Tür: Temel (şartnamede) / Türetilmiş (temelin sağlanması için tasarımcının koyduğu; Bağlı = temel TG no); boş olabilir.

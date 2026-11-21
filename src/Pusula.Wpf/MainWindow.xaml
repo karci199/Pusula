@@ -2689,7 +2689,8 @@
                                                                                                     <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding TpText}" />
                                                                                                 </Border>
                                                                                             </StackPanel>
-                                                                                            <Button Grid.Column="2" Padding="8,2" Style="{DynamicResource SubtleButtonStyle}" Tag="{Binding}" Click="VerPlanOpen_Click"
+                                                                                            <Button Grid.Column="2" Padding="8,2" Margin="0,0,34,0" Style="{DynamicResource SubtleButtonStyle}" Command="{Binding DataContext.OpenVerificationFileCommand, RelativeSource={RelativeSource AncestorType=Window}}" ToolTip="{x:Static res:Resources.Verify_DetailHint}" Visibility="{Binding HasPlan, Converter={StaticResource BoolToVis}}"><TextBlock FontSize="12" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="{x:Static res:Resources.Verify_Detail}" /></Button>
+                                                                                    <Button Grid.Column="2" Padding="8,2" Style="{DynamicResource SubtleButtonStyle}" Tag="{Binding}" Click="VerPlanOpen_Click"
                                                                                                     ToolTip="{x:Static res:Resources.Verify_PlanEditHint}" Visibility="{Binding HasPlan, Converter={StaticResource BoolToVis}}">
                                                                                                 <local:AppIcon Glyph="{x:Static local:AppIcons.Edit}" FontSize="12" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
                                                                                             </Button>
@@ -2747,7 +2748,8 @@
                                                                                                     <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding TrText}" />
                                                                                                 </Border>
                                                                                             </StackPanel>
-                                                                                            <Button Grid.Column="2" Padding="8,2" Style="{DynamicResource SubtleButtonStyle}" Tag="{Binding}" Click="VerReportOpen_Click"
+                                                                                            <Button Grid.Column="2" Padding="8,2" Margin="0,0,34,0" Style="{DynamicResource SubtleButtonStyle}" Command="{Binding DataContext.OpenVerificationFileCommand, RelativeSource={RelativeSource AncestorType=Window}}" ToolTip="{x:Static res:Resources.Verify_DetailHint}" Visibility="{Binding HasReport, Converter={StaticResource BoolToVis}}"><TextBlock FontSize="12" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="{x:Static res:Resources.Verify_Detail}" /></Button>
+                                                                                    <Button Grid.Column="2" Padding="8,2" Style="{DynamicResource SubtleButtonStyle}" Tag="{Binding}" Click="VerReportOpen_Click"
                                                                                                     ToolTip="{x:Static res:Resources.Verify_ReportEditHint}" Visibility="{Binding HasReport, Converter={StaticResource BoolToVis}}">
                                                                                                 <local:AppIcon Glyph="{x:Static local:AppIcons.Edit}" FontSize="12" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
                                                                                             </Button>

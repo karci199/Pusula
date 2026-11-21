@@ -1,0 +1,84 @@
+﻿<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Md bölümleri</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#202020}
+.page{width:1460px;padding:22px 26px 26px;background:#202020;color:#e6e6e6;font-family:"Segoe UI",Arial,sans-serif;font-size:13.5px;display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.cap{font-size:11.5px;color:#8a8a8a;letter-spacing:.3px;font-weight:600;margin:0 0 9px}
+.cap b{color:#4cc2ff;margin-right:6px}
+.src{background:#1e1e1e;border:1px solid #383838;border-radius:9px;padding:12px 14px;font-family:Consolas,monospace;font-size:12.3px;line-height:1.7;color:#cfcfcf;white-space:pre}
+.h{color:#8fd0ff;font-weight:700}.c{color:#5f6f5f}.m{color:#6ccb5f}.u{color:#f6c46f}.g{color:#777}
+.box{border-left:3px solid #4cc2ff;padding-left:8px;margin-left:-11px;display:block}
+.free{border-left:3px solid #f6c46f;padding-left:8px;margin-left:-11px;display:block}
+.ob{background:#1e1e1e;border:1px solid #383838;border-radius:9px;padding:16px 22px;font-family:Georgia,"Segoe UI",serif;line-height:1.6;color:#dcddde}
+.ob h2{font-size:20px;margin:6px 0 10px;border-bottom:1px solid #3a3a3a;padding-bottom:4px;color:#e6e6e6}
+.ob h3{font-size:16px;margin:14px 0 6px;color:#e6e6e6}
+.ob ul{margin:4px 0 6px 18px;padding:0;font-size:14px}
+.ob p{font-size:14px;margin:6px 0}
+.lnk{color:#a78bfa}
+.pass{color:#6ccb5f;font-weight:700}.fail{color:#ff99a4;font-weight:700}
+.note{grid-column:1/3;font-size:12.5px;color:#9a9a9a;line-height:1.75;background:#262626;border:1px solid #333;border-radius:10px;padding:12px 16px}
+.note b{color:#ddd}
+.leg{display:flex;gap:18px;margin-top:8px;font-size:12px;color:#9a9a9a}
+.leg span:before{content:"";display:inline-block;width:10px;height:10px;margin-right:6px;vertical-align:-1px}
+.l1:before{background:#4cc2ff}.l2:before{background:#f6c46f}
+</style></head><body><div class="page">
+<div>
+  <div class="cap"><b>1</b>MD DOSYASI (KAYNAK) · 03_Testler\AB-7000-0002_Test_Gereksinimleri.md</div>
+<div class="src"><span class="h">## Gereksinimler</span>
+<span class="g">| # | TG no | … | Durum |   ← tablo (bugünkü gibi, kısa)</span>
+
+<span class="h">## Plan</span>
+
+<span class="box"><span class="h">### DGÖ-1 · Yanca hüzme genişliği</span>
+<span class="c">%% pusula:plan DGÖ-1 %%</span>
+<span class="m">- **TP:** 4.1 · SATIMO hüzme ölçümü</span>
+<span class="m">- **Yöntem:** Test · **Altyapı:** SATIMO</span>
+<span class="m">- **Not:** Jig JT-1000-0009 · SN01, SN02</span>
+<span class="c">%% pusula:son %%</span></span>
+<span class="free"><span class="u">Ölçüm 3 tekrar; 8, 10, 12 GHz'de E ve H düzlemi.</span>
+<span class="u">Kurulum fotoğrafı: ![[1_kurulum.jpg]]</span></span>
+
+<span class="box"><span class="h">### DGÖ-3 · VSWR</span>
+<span class="c">%% pusula:plan DGÖ-3 %%</span>
+<span class="m">- **TP:** 4.3 · VNA S11 ölçümü</span>
+<span class="m">- **Yöntem:** Test · **Altyapı:** VNA</span>
+<span class="c">%% pusula:son %%</span></span>
+
+<span class="h">## Sonuç</span>
+
+<span class="box"><span class="h">### DGÖ-1 · Yanca hüzme genişliği</span>
+<span class="c">%% pusula:sonuc DGÖ-1 %%</span>
+<span class="m">- **TR:** 5.1 · Hüzme ölçüm sonuçları</span>
+<span class="m">- **Sonuç:** Geçti</span>
+<span class="m">- **Yer:** [[03_Testler/01_Islevsel/Anten_Oruntu/SNP1_T2]]</span>
+<span class="m">- **Not:** en düşük 31,2° (11 GHz)</span>
+<span class="c">%% pusula:son %%</span></span>
+<span class="free"><span class="u">11 GHz'de yan lob sınırda; Rev AC jig ile tekrarlandı.</span></span></div>
+  <div class="leg"><span class="l1">uygulama yazar (işaretler arası)</span><span class="l2">senin yazdığın ayrıntı (dokunulmaz)</span></div>
+</div>
+
+<div>
+  <div class="cap"><b>2</b>OBSİDİAN'DA OKUMA GÖRÜNÜMÜ (BAŞKALARI BÖYLE GÖRÜR)</div>
+  <div class="ob">
+    <h2>Plan</h2>
+    <h3>DGÖ-1 · Yanca hüzme genişliği</h3>
+    <ul><li><b>TP:</b> 4.1 · SATIMO hüzme ölçümü</li><li><b>Yöntem:</b> Test · <b>Altyapı:</b> SATIMO</li><li><b>Not:</b> Jig JT-1000-0009 · SN01, SN02</li></ul>
+    <p>Ölçüm 3 tekrar; 8, 10, 12 GHz'de E ve H düzlemi.</p>
+    <p style="color:#888">[kurulum fotoğrafı]</p>
+    <h3>DGÖ-3 · VSWR</h3>
+    <ul><li><b>TP:</b> 4.3 · VNA S11 ölçümü</li><li><b>Yöntem:</b> Test · <b>Altyapı:</b> VNA</li></ul>
+    <h2>Sonuç</h2>
+    <h3>DGÖ-1 · Yanca hüzme genişliği</h3>
+    <ul><li><b>TR:</b> 5.1 · Hüzme ölçüm sonuçları</li><li><b>Sonuç:</b> <span class="pass">Geçti</span></li><li><b>Yer:</b> <span class="lnk">03_Testler/01_Islevsel/Anten_Oruntu/SNP1_T2</span></li><li><b>Not:</b> en düşük 31,2° (11 GHz)</li></ul>
+    <p>11 GHz'de yan lob sınırda; Rev AC jig ile tekrarlandı.</p>
+  </div>
+</div>
+
+<div class="note">
+<b>Ne zaman yazılır:</b> plan ya da rapor penceresinde Kaydet'e basınca o maddenin bölümü açılır / güncellenir (yalnız <code style="color:#f6c46f">%% pusula: … %%</code> işaretlerinin arası). Bölüm yoksa başlığıyla eklenir; madde sırasıyla dizilir.
+<b>Dokunulmayan:</b> işaretlerin dışındaki her şey — başlığın altına senin yazdığın ayrıntı, resim, bağlantı. <code style="color:#f6c46f">%% … %%</code> Obsidian'da görünmez (yorum).
+<b>Kartta:</b> ayrıntının kendisi görünmez; Plan / Rapor kartında küçük <b>Ayrıntı ↗</b> notu o başlıkta açar.
+<b>Kural değişikliği:</b> bu dosyada şimdiye kadar yalnız ilk tablo yazılıyordu; "## Plan" ve "## Sonuç" altındaki madde bölümlerinin işaretli kısmı da uygulamaca yazılır (CLAUDE.md'ye istisna olarak eklenir).
+</div>
+</div></body></html>

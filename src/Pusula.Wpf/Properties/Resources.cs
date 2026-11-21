@@ -3319,6 +3319,12 @@ namespace Pusula.Wpf.Properties
         /// <summary>Fotoğraflar: görünmeyenler ipucu.</summary>
         public static string Stock_PhotosHiddenHint { get { return Get("Stock_PhotosHiddenHint"); } }
 
+        /// <summary>Plan / rapor kartı: md dosyasını açar (madde bölümü orada).</summary>
+        public static string Verify_Detail { get { return Get("Verify_Detail"); } }
+
+        /// <summary>Plan / rapor kartı: Ayrıntı ipucu.</summary>
+        public static string Verify_DetailHint { get { return Get("Verify_DetailHint"); } }
+
         #endregion
     }
 }

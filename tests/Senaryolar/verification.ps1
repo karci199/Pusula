@@ -227,6 +227,24 @@ Check 'dosyada rapor hücreleri' ([IO.File]::ReadAllText($file) -like '*| 5.3 | 
 $vm.OpenVerReport($s11); $vm.ReportResult = 'Hazırlanmadı'
 Check 'Hazırlanmadı durumu değiştirmez' ($vm.ConfirmVerReport() -and (RowOf 'S11').StatusText -eq 'Kaldı')
 $vm.IsVerReportOpen = $false; Wait
+"--- md'de okunur bölümler (## Plan / ## Sonuç)"
+$text = [IO.File]::ReadAllText($file)
+$key = [Pusula.Core.Testing.VerificationList]::KeyOf((RowOf 'S11').Item)
+Check 'Plan bölümünde madde başlığı ve işaretli bilgi' ($text -like "*## Plan*### $key*%% pusula:plan $key %%*- **TP:** 4.1 · VNA S11 ölçümü*- **Yöntem:** Test · **Altyapı:** VNA*- **Not:** Kalibrasyon kiti 3,5 mm*%% pusula:son %%*## Sonuç*") $text
+Check 'Sonuç bölümünde rapor' ($text -like "*## Sonuç*%% pusula:sonuc $key %%*- **TR:** 5.3 · S11 sonuçları*- **Sonuç:** Hazırlanmadı*%% pusula:son %%*" -and $text.Contains('- **Yer:** ' + [char]96 + '03_Testler\01_Islevsel\S11\SNP1_T1' + [char]96)) $text
+# Altına elle ayrıntı yazılır; plan yeniden kaydedilince işaretli kısım değişir, ayrıntı kalır.
+$lines = [IO.File]::ReadAllText($file) -split "`r?`n"
+$planIdx = [Array]::IndexOf($lines, "%% pusula:plan $key %%"); $endIdx = $planIdx; while ($lines[$endIdx] -ne '%% pusula:son %%') { $endIdx++ }
+$lines = $lines[0..$endIdx] + @('Elle yazılan ayrıntı: 3 tekrar.') + $lines[($endIdx + 1)..($lines.Length - 1)]
+[IO.File]::WriteAllText($file, ($lines -join "`r`n"), (New-Object System.Text.UTF8Encoding($true)))
+$vm.OpenVerPlan((RowOf 'S11')); $vm.PlanDescription = 'VNA S11 ve S22'
+Check 'plan yeniden kaydedilir' ($vm.ConfirmVerPlan())
+$vm.IsVerPlanOpen = $false; Wait
+$text = [IO.File]::ReadAllText($file)
+Check 'işaretli kısım güncellendi, elle yazılan ayrıntı kaldı, tek bölüm' ($text -like '*- **TP:** 4.1 · VNA S11 ve S22*%% pusula:son %%*Elle yazılan ayrıntı: 3 tekrar.*' -and ([regex]::Matches($text, [regex]::Escape("%% pusula:plan $key %%"))).Count -eq 1) $text
+$yanKey = [Pusula.Core.Testing.VerificationList]::KeyOf((RowOf 'Yan lob seviyesi').Item)
+Check 'madde sırası: önceki madde önce' ($text.IndexOf("%% pusula:plan $yanKey %%") -lt $text.IndexOf("%% pusula:plan $key %%") -and $text.IndexOf("%% pusula:plan $yanKey %%") -gt 0) $text
+Check 'tablo bozulmadı' ([Pusula.Core.Testing.VerificationList]::Read($stock).Count -eq $vm.VerificationCount)
 Check 'yol yardımcıları' ([Pusula.Wpf.ViewModels.MainViewModel]::RelativeResultPath('C:\a\b', 'C:\a\b\c\d') -eq 'c\d' -and [Pusula.Wpf.ViewModels.MainViewModel]::RelativeResultPath('C:\a\b', 'D:\x') -eq 'D:\x' -and [Pusula.Wpf.ViewModels.MainViewModel]::FullResultPath('C:\a\b', 'c\d') -eq 'C:\a\b\c\d')
 $s11 = RowOf 'S11'; $s11.IsExpanded = $true; Wait
 Snap $win "$Out\verification-plan-card.png"

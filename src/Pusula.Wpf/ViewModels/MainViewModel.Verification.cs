@@ -1275,6 +1275,7 @@ namespace Pusula.Wpf.ViewModels
                 return false;
             }
 
+            WriteVerificationSections(item);
             var number = item.Number;
             reportItem = null;
             if (WriteVerification(error))
@@ -1288,6 +1289,22 @@ namespace Pusula.Wpf.ViewModels
             }
 
             return true;
+        }
+
+        // Md'deki okunur bölümler (## Plan / ## Sonuç altında madde başlığı); yazılamazsa durum çubuğunda söylenir.
+        private void WriteVerificationSections(VerificationItem item)
+        {
+            if (verificationStock.Length == 0 || item == null)
+            {
+                return;
+            }
+
+            var order = VerificationList.Read(verificationStock);
+            var error = VerificationList.WriteSections(verificationStock, item, order);
+            if (error.Length > 0 && error != "missing")
+            {
+                Status = string.Format(CultureInfo.CurrentCulture, Resources.Verify_WriteFailed, error);
+            }
         }
 
         /// <summary>Satırdaki "Aç": sonucun yerini (klasör ya da dosya) açar.</summary>
@@ -1464,6 +1481,7 @@ namespace Pusula.Wpf.ViewModels
                 FacilityList.Add(rootPath, item.Facility, Resources.Verify_FacilityTemplate);
             }
 
+            WriteVerificationSections(item);
             var number = item.Number;
             planItem = null;
             if (WriteVerification(error))
@@ -2166,6 +2184,11 @@ namespace Pusula.Wpf.ViewModels
                 }
 
                 editingVerification = null;
+                if (updateError.Length == 0)
+                {
+                    WriteVerificationSections(item);
+                }
+
                 if (updateError.Length == 0 && item.Facility.Length > 0 && rootPath.Length > 0)
                 {
                     FacilityList.Add(rootPath, item.Facility, Resources.Verify_FacilityTemplate);

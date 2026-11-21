@@ -344,6 +344,248 @@ namespace Pusula.Core.Testing
             return Journal.SetFrontMatter(notePath, new Dictionary<string, string> { { LinkKey, link } });
         }
 
+        /// <summary>Plan bölümünün başlığı (dosyada <c>## Plan</c>).</summary>
+        public const string PlanHeading = "Plan";
+
+        /// <summary>Sonuç bölümünün başlığı (dosyada <c>## Sonuç</c>).</summary>
+        public const string ResultHeading = "Sonuç";
+
+        /// <summary>
+        /// Maddenin okunur bölümlerini yazar (21.11.2026 kullanıcı kararı): <c>## Plan</c> ve <c>## Sonuç</c> altında
+        /// <c>### &lt;TG no&gt; · &lt;başlık&gt;</c> başlığı ve <c>%% pusula:plan TG %%</c> … <c>%% pusula:son %%</c> işaretleri
+        /// arasında plan / rapor bilgisi. Yalnız işaretlerin arası (ve bölümün başlık satırı) yazılır; altına elle yazılan
+        /// ayrıntıya dokunulmaz. Bölüm yoksa ve yazılacak bilgi varsa madde sırasıyla eklenir; <c>## Plan</c> /
+        /// <c>## Sonuç</c> başlığı yoksa dosyanın sonuna eklenir. Hata metni ya da boş döndürür.
+        /// </summary>
+        public static string WriteSections(string stockFolder, VerificationItem item, IList<VerificationItem> order)
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            var path = PathFor(stockFolder);
+            try
+            {
+                if (!File.Exists(path))
+                {
+                    return "missing";
+                }
+
+                var text = File.ReadAllText(path);
+                var newline = text.Contains("\r\n") ? "\r\n" : "\n";
+                var lines = text.Replace("\r\n", "\n").Split('\n').ToList();
+                var keys = (order ?? new List<VerificationItem>()).Select(KeyOf).ToList();
+                var changed = WriteSection(lines, PlanHeading, "plan", item, PlanLines(item), keys);
+                changed |= WriteSection(lines, ResultHeading, "sonuc", item, ResultLines(item), keys);
+                if (!changed)
+                {
+                    return string.Empty;
+                }
+
+                return WriteAtomic(path, string.Join(newline, lines), Journal.HasBom(path));
+            }
+            catch (IOException ex)
+            {
+                return ex.Message;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>Plan bölümünün satırları: TP · açıklama, yöntem · altyapı, not (boş olanlar atlanır).</summary>
+        public static List<string> PlanLines(VerificationItem item)
+        {
+            var lines = new List<string>();
+            var tp = Join(" · ", item.TpNo, item.TpDescription);
+            if (tp.Length > 0)
+            {
+                lines.Add("- **TP:** " + tp);
+            }
+
+            var parts = new List<string>();
+            if (item.Method.Length > 0)
+            {
+                parts.Add("**Yöntem:** " + item.Method);
+            }
+
+            if (item.Facility.Length > 0)
+            {
+                parts.Add("**Altyapı:** " + item.Facility);
+            }
+
+            if (parts.Count > 0)
+            {
+                lines.Add("- " + string.Join(" · ", parts));
+            }
+
+            if (item.TpNote.Length > 0)
+            {
+                lines.Add("- **Not:** " + item.TpNote);
+            }
+
+            return lines;
+        }
+
+        /// <summary>Sonuç bölümünün satırları: TR · açıklama, sonuç, yer, not (boş olanlar atlanır).</summary>
+        public static List<string> ResultLines(VerificationItem item)
+        {
+            var lines = new List<string>();
+            var tr = Join(" · ", item.TrNo, item.TrDescription);
+            if (tr.Length > 0)
+            {
+                lines.Add("- **TR:** " + tr);
+            }
+
+            if (item.TrResult.Length > 0)
+            {
+                lines.Add("- **Sonuç:** " + item.TrResult);
+            }
+
+            if (item.ResultPath.Length > 0)
+            {
+                lines.Add("- **Yer:** `" + item.ResultPath + "`");
+            }
+
+            if (item.TrNote.Length > 0)
+            {
+                lines.Add("- **Not:** " + item.TrNote);
+            }
+
+            return lines;
+        }
+
+        private static string Join(string separator, params string[] parts)
+        {
+            return string.Join(separator, parts.Where(p => !string.IsNullOrWhiteSpace(p)).Select(p => p.Trim()));
+        }
+
+        private const string EndMarker = "%% pusula:son %%";
+
+        private static string StartMarker(string kind, string key)
+        {
+            return "%% pusula:" + kind + " " + key + " %%";
+        }
+
+        // Bölüm başlığı ("## Plan") ve sonu (sonraki "## " ya da dosya sonu).
+        private static void FindSection(List<string> lines, string heading, out int start, out int end)
+        {
+            start = lines.FindIndex(l => l.StartsWith("## ", StringComparison.Ordinal)
+                && string.Equals(l.Substring(3).Trim(), heading, StringComparison.CurrentCultureIgnoreCase));
+            end = lines.Count;
+            if (start < 0)
+            {
+                return;
+            }
+
+            for (var i = start + 1; i < lines.Count; i++)
+            {
+                if (lines[i].StartsWith("## ", StringComparison.Ordinal) || lines[i].StartsWith("# ", StringComparison.Ordinal))
+                {
+                    end = i;
+                    break;
+                }
+            }
+        }
+
+        // Bir bölümde maddenin işaretli kısmını yazar; değişiklik olduysa true.
+        private static bool WriteSection(List<string> lines, string heading, string kind, VerificationItem item, List<string> body, List<string> order)
+        {
+            var key = KeyOf(item);
+            var title = "### " + key + (item.Text.Trim().Length > 0 ? " · " + item.Text.Trim() : string.Empty);
+            var marker = StartMarker(kind, key);
+            int start, end;
+            FindSection(lines, heading, out start, out end);
+            var at = start < 0 ? -1 : lines.FindIndex(start, end - start, l => string.Equals(l.Trim(), marker, StringComparison.Ordinal));
+            if (at >= 0)
+            {
+                var close = lines.FindIndex(at + 1, end - at - 1, l => string.Equals(l.Trim(), EndMarker, StringComparison.Ordinal));
+                if (close < 0)
+                {
+                    // Bitiş işareti silinmişse dokunulmaz (elle yazılanı ezmemek için).
+                    return false;
+                }
+
+                var old = lines.GetRange(at + 1, close - at - 1);
+                var headingChanged = at > 0 && lines[at - 1].StartsWith("### ", StringComparison.Ordinal) && lines[at - 1] != title;
+                if (old.SequenceEqual(body) && !headingChanged)
+                {
+                    return false;
+                }
+
+                lines.RemoveRange(at + 1, close - at - 1);
+                lines.InsertRange(at + 1, body);
+                if (headingChanged)
+                {
+                    lines[at - 1] = title;
+                }
+
+                return true;
+            }
+
+            if (body.Count == 0)
+            {
+                return false;
+            }
+
+            if (start < 0)
+            {
+                while (lines.Count > 0 && lines[lines.Count - 1].Trim().Length == 0)
+                {
+                    lines.RemoveAt(lines.Count - 1);
+                }
+
+                lines.Add(string.Empty);
+                lines.Add("## " + heading);
+                lines.Add(string.Empty);
+                FindSection(lines, heading, out start, out end);
+            }
+
+            // Madde sırasıyla: sıradaki maddelerden ilkinin bölüm başlığından önce; yoksa bölümün sonuna.
+            var mine = order.FindIndex(k => string.Equals(k, key, StringComparison.OrdinalIgnoreCase));
+            var insertAt = -1;
+            if (mine >= 0)
+            {
+                for (var i = start + 1; i < end && insertAt < 0; i++)
+                {
+                    var t = lines[i].Trim();
+                    if (!t.StartsWith("%% pusula:" + kind + " ", StringComparison.Ordinal))
+                    {
+                        continue;
+                    }
+
+                    var other = t.Substring(("%% pusula:" + kind + " ").Length).TrimEnd('%', ' ');
+                    var index = order.FindIndex(k => string.Equals(k, other, StringComparison.OrdinalIgnoreCase));
+                    if (index > mine)
+                    {
+                        insertAt = i > 0 && lines[i - 1].StartsWith("### ", StringComparison.Ordinal) ? i - 1 : i;
+                    }
+                }
+            }
+
+            if (insertAt < 0)
+            {
+                insertAt = end;
+                while (insertAt - 1 > start && lines[insertAt - 1].Trim().Length == 0)
+                {
+                    insertAt--;
+                }
+            }
+
+            var block = new List<string> { string.Empty, title, marker };
+            block.AddRange(body);
+            block.Add(EndMarker);
+            if (insertAt < lines.Count && lines[insertAt].Trim().Length > 0)
+            {
+                block.Add(string.Empty);
+            }
+
+            lines.InsertRange(insertAt, block);
+            return true;
+        }
+
         // Numarası verilen satırı değiştirir (item) ya da kaldırır (null); dosyanın geri kalanı, satır sonları ve BOM korunur.
         private static string EditRow(string stockFolder, int number, VerificationItem? item)
         {
