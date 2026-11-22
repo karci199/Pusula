@@ -1,6 +1,8 @@
 ﻿# Çalışma notları
 
-Son güncelleme: 08.11.2026. Dal: `claude/pusula-project-setup-c6ce02` (push edilmedi).
+Son güncelleme: 22.11.2026. Dallar: **`main`** (sağlam) ve **`gelistirme`** (çalışma dalı); iş `gelistirme`'de yapılır,
+sağlam olunca `main` ileri alınır (fast-forward). İkisi de pushlu. Eski dallar silindi; ilk gün dosyaları (ISIMLENDIRME.md,
+yazılım şablonu, eski mocklar) `C:\Projeler\Aktif\Pusula_ARSIV\pusula-projesi-2d07af` altında.
 
 ## Şu an çalışanlar
 
@@ -191,6 +193,12 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 
 ## Bekleyen işler
 
+- **Durum (22.11.2026 akşam, 9cc1279):** aşağıdaki 22.11 maddelerinin hepsi bitti (elle durum, ## Rapor, eski TP/TR,
+  plan / rapor ayrıntısı, rapor Tarih/Birim, kırpışma, geniş tablo), Excel'den gereksinim al + plan / rapor Excel'e aktar,
+  aramalı bağ seçimi, "Sonuç yok" durumu, ÇK/EMC standardı (gereksinimde test tipi · standart · yöntem · prosedür;
+  ortak liste `_TAKIP\Standartlar.md`, başlangıç 810F / 810G / 810G CHG1 / 810H / 461G — numaralar elle doğrulanmalı).
+  **Sıradaki:** test yardımcı araçları ayrıntısı (kapak + numaralı foto şeridi, not, olaylar), sonra istatistikler.
+  Küçükler: DOORS sütun adları (gerçek çıktı görülünce), plan penceresinde Yöntem "—" hizası, `mention-assist` eski hatası.
 - **Doğrulama, yarın (22.11.2026 kararları):**
   1. **Elle durum ile hesaplanan durum ayrılsın:** gereksinimde iki ayrı bilgi; bağlardan hesaplanan durum elle
      verileni ezmesin (ikisi de görünür, hangisinin hesap olduğu belli). Şu an plan / rapor kaydında hesap elle
