@@ -434,8 +434,19 @@ namespace Pusula.Wpf.Markdown
             return new BlockUIContainer(line) { Margin = margin };
         }
 
+        // Bu kadar sütundan geniş tablo ızgara olarak çizilir: sütun içeriğe göre genişler (en çok WideCellMax), sözcük
+        // ortasından kırılmaz, sığmazsa tablo yatay kayar (FlowDocument tablosu sütunları eşit bölüp harf harf kırıyordu).
+        private const int WideTableColumns = 6;
+        private const double WideCellMax = 320;
+
         private WpfBlock RenderTable(Markdig.Extensions.Tables.Table table)
         {
+            var rows = table.OfType<Markdig.Extensions.Tables.TableRow>().ToList();
+            if (rows.Select(r => r.Count).DefaultIfEmpty(0).Max() > WideTableColumns)
+            {
+                return RenderWideTable(table, rows);
+            }
+
             var wpf = new WpfTable { CellSpacing = 0, Margin = new Thickness(0, 0, 0, 14), BorderThickness = new Thickness(1, 1, 0, 0) };
             wpf.SetResourceReference(WpfTable.BorderBrushProperty, "CardStrokeColorDefaultBrush");
                         // Sütun sayısı hücrelerden (Markdig satır sonundaki "|" için fazladan tanım ekleyebilir).
@@ -494,6 +505,75 @@ namespace Pusula.Wpf.Markdown
 
             wpf.RowGroups.Add(group);
             return wpf;
+        }
+
+        private WpfBlock RenderWideTable(Markdig.Extensions.Tables.Table table, List<Markdig.Extensions.Tables.TableRow> rows)
+        {
+            var columns = rows.Select(r => r.Count).DefaultIfEmpty(0).Max();
+            var grid = new Grid();
+            for (var c = 0; c < columns; c++)
+            {
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            }
+
+            for (var r = 0; r < rows.Count; r++)
+            {
+                grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                var row = rows[r];
+                var cells = row.OfType<Markdig.Extensions.Tables.TableCell>().ToList();
+                for (var c = 0; c < columns; c++)
+                {
+                    var text = new TextBlock { TextWrapping = TextWrapping.Wrap, MaxWidth = WideCellMax };
+                    var alignment = c < table.ColumnDefinitions.Count ? table.ColumnDefinitions[c].Alignment : null;
+                    text.TextAlignment = alignment == TableColumnAlign.Center ? TextAlignment.Center : alignment == TableColumnAlign.Right ? TextAlignment.Right : TextAlignment.Left;
+                    if (c < cells.Count)
+                    {
+                        foreach (var child in cells[c])
+                        {
+                            if (RenderBlock(child) is Paragraph paragraph)
+                            {
+                                var inlines = paragraph.Inlines.ToList();
+                                paragraph.Inlines.Clear();
+                                if (text.Inlines.Count > 0)
+                                {
+                                    text.Inlines.Add(new LineBreak());
+                                }
+
+                                text.Inlines.AddRange(inlines);
+                            }
+                        }
+                    }
+
+                    var border = new Border { Padding = new Thickness(10, 5, 10, 5), BorderThickness = new Thickness(c == 0 ? 1 : 0, r == 0 ? 1 : 0, 1, 1), Child = text };
+                    border.SetResourceReference(Border.BorderBrushProperty, "CardStrokeColorDefaultBrush");
+                    if (row.IsHeader)
+                    {
+                        text.FontWeight = FontWeights.SemiBold;
+                        border.SetResourceReference(Border.BackgroundProperty, "SubtleFillColorSecondaryBrush");
+                    }
+
+                    Grid.SetRow(border, r);
+                    Grid.SetColumn(border, c);
+                    grid.Children.Add(border);
+                }
+            }
+
+            var scroll = new ScrollViewer
+            {
+                Content = grid,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            };
+
+            // Tekerlek dikey kaydırmayı dıştaki belgeye bırakır (iç kaydırıcı yalnız yatay).
+            scroll.PreviewMouseWheel += (sender, e) =>
+            {
+                e.Handled = true;
+                var forward = new System.Windows.Input.MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta) { RoutedEvent = UIElement.MouseWheelEvent, Source = sender };
+                (((FrameworkElement)sender).Parent as IInputElement)?.RaiseEvent(forward);
+            };
+
+            return new BlockUIContainer(scroll) { Margin = new Thickness(0, 0, 0, 14) };
         }
 
         private WpfBlock RenderFootnotes(FootnoteGroup footnotes)

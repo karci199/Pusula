@@ -134,6 +134,11 @@ $ctx = New-Object Pusula.Wpf.Markdown.MarkdownRenderContext
 $cdoc = [Pusula.Wpf.Markdown.MarkdownRenderer]::Render("Önce <!-- satır içi gizli --> sonra`r`n`r`n<!-- blok gizli -->`r`n`r`nOrta %%obsidian gizli%% son`r`n`r`n%%`r`nçok satır gizli`r`n%%`r`n`r`n- [ ] görev", $ctx)
 $ctext = (New-Object System.Windows.Documents.TextRange($cdoc.ContentStart, $cdoc.ContentEnd)).Text
 Check 'görünümde yorumlar gizli' (-not ($ctext -match 'gizli') -and $ctext -match 'Önce' -and $ctext -match 'sonra' -and $ctext -match 'Orta' -and $ctext -match 'son') $ctext
+$wdoc = [Pusula.Wpf.Markdown.MarkdownRenderer]::Render("| a | b | c | d | e | f | g | Uzun başlık |`r`n|---|---|---|---|---|---|---|---|`r`n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | **kalın** ve uzun bir açıklama metni |", $ctx)
+$wblock = @($wdoc.Blocks)[0]
+$wgrid = if ($wblock -is [System.Windows.Documents.BlockUIContainer]) { $wblock.Child.Content } else { $null }
+Check 'geniş tablo (8 sütun): yatay kayan ızgara, otomatik sütun, sözcük kırılmaz' ($wblock -is [System.Windows.Documents.BlockUIContainer] -and $wblock.Child -is [System.Windows.Controls.ScrollViewer] -and $wgrid.ColumnDefinitions.Count -eq 8 -and $wgrid.ColumnDefinitions[0].Width.IsAuto -and $wgrid.Children.Count -eq 16 -and $wgrid.Children[15].Child.TextWrapping -eq 'Wrap')
+Check 'geniş tablo: kalın yazı korunur' ((@($wgrid.Children[15].Child.Inlines) | Where-Object { $_.FontWeight -eq [System.Windows.FontWeights]::Bold -or $_ -is [System.Windows.Documents.Bold] }).Count -ge 1 -and @($wgrid.Children[15].Child.Inlines).Count -eq 3)
 $ed.Select($hpos + 3, 0)
 $nw.HandleKey($K::H, $true, $false) | Out-Null
 Check 'Ctrl+H: başlık düzeyi döner (# → ##)' ($ed.Text.Contains('## DA400 Döner Anten'))
