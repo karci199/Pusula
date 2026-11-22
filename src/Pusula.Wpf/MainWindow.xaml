@@ -3961,7 +3961,7 @@
         </StatusBar>
 
         <!-- Test koşusu: analiz tarihi ve kısa not -->
-        <controls:ContentDialog Grid.RowSpan="3"
+        <local:FormDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsAnalysisOpen, Mode=TwoWay}"
                                 Title="{x:Static res:Resources.Analysis_Title}"
                                 PrimaryButtonText="{x:Static res:Resources.Edit_Save}"
@@ -3977,10 +3977,10 @@
                 </controls:FormField>
                 <TextBlock Margin="0,12,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" Text="{x:Static res:Resources.Analysis_Hint}" />
             </StackPanel>
-        </controls:ContentDialog>
+        </local:FormDialog>
 
         <!-- Yeni proje -->
-        <controls:ContentDialog Grid.RowSpan="3"
+        <local:FormDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsProjectDialogOpen, Mode=TwoWay}"
                                                                 Title="{x:Static res:Resources.Dialog_NewProjectTitle}"
                                 PrimaryButtonText="{x:Static res:Resources.Dialog_Create}"
@@ -4004,10 +4004,10 @@
                              controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Placeholder_ProjectName}" />
                 </controls:FormField>
             </StackPanel>
-        </controls:ContentDialog>
+        </local:FormDialog>
 
         <!-- Yeni stok -->
-        <controls:ContentDialog Grid.RowSpan="3"
+        <local:FormDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsStockDialogOpen, Mode=TwoWay}"
                                                                 Title="{Binding StockDialogTitle}"
                                 PrimaryButtonText="{x:Static res:Resources.Dialog_Create}"
@@ -4035,10 +4035,10 @@
                     <ItemsControl ItemsSource="{Binding StockModules}" ItemTemplate="{StaticResource ModuleOptionTemplate}" />
                 </controls:FormField>
             </StackPanel>
-        </controls:ContentDialog>
+        </local:FormDialog>
 
         <!-- Doğrulama maddesi ekle / düzenle: 03_Testler\<stok>_Test_Gereksinimleri.md tablosuna satır; yeni altyapı ortak listeye -->
-        <controls:ContentDialog Grid.RowSpan="3"
+        <local:FormDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsVerificationDialogOpen, Mode=TwoWay}"
                                 DialogWidth="680"
                                 Title="{Binding VerificationDialogTitle}"
@@ -4107,10 +4107,10 @@
                     </controls:FormField>
                 </StackPanel>
             </ScrollViewer>
-        </controls:ContentDialog>
+        </local:FormDialog>
 
         <!-- Plan maddesi: TP no, açıklama, yöntem, altyapı, gereksinimler (çoklu seçim), not; yalnız ## Plan tablosu yazılır -->
-        <controls:ContentDialog Grid.RowSpan="3"
+        <local:FormDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsVerPlanOpen, Mode=TwoWay}"
                                 DialogWidth="640"
                                 Title="{Binding VerPlanTitle}"
@@ -4154,10 +4154,10 @@
                 </controls:FormField>
                 <TextBlock Margin="0,12,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" TextWrapping="Wrap" Text="{x:Static res:Resources.Verify_PlanItemHint}" />
             </StackPanel>
-        </controls:ContentDialog>
+        </local:FormDialog>
 
         <!-- Rapor maddesi: TR no, açıklama, sonuç, plan maddeleri (çoklu seçim), sonucun yeri, not; yalnız ## Rapor tablosu yazılır -->
-        <controls:ContentDialog Grid.RowSpan="3"
+        <local:FormDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsVerReportOpen, Mode=TwoWay}"
                                 DialogWidth="640"
                                 Title="{Binding VerReportTitle}"
@@ -4203,7 +4203,7 @@
                 </controls:FormField>
                 <TextBlock Margin="0,12,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" TextWrapping="Wrap" Text="{x:Static res:Resources.Verify_ReportItemHint}" />
             </StackPanel>
-        </controls:ContentDialog>
+        </local:FormDialog>
 
         <!-- Plan / rapor maddesini sil: yalnız kendi tablosundaki satır gider; önce sorulur -->
         <controls:ContentDialog Grid.RowSpan="3"
@@ -4226,7 +4226,7 @@
         </controls:ContentDialog>
 
         <!-- Elle açılmış klasörü proje / stok olarak işaretle -->
-        <controls:ContentDialog Grid.RowSpan="3"
+        <local:FormDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsMarkDialogOpen, Mode=TwoWay}"
                                                                 Title="{Binding MarkTitle}"
                                 PrimaryButtonText="{x:Static res:Resources.Mark_Confirm}"
@@ -4256,10 +4256,10 @@
                     <TextBox Text="{Binding MarkName, UpdateSourceTrigger=PropertyChanged}" />
                 </controls:FormField>
             </StackPanel>
-        </controls:ContentDialog>
+        </local:FormDialog>
 
         <!-- Yeni envanter kaydı (kablo, jig …): üstte genel bilgiler iki sütun, altta türe özel alanlar iki sütun -->
-        <controls:ContentDialog Grid.RowSpan="3"
+        <local:FormDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsInventoryDialogOpen, Mode=TwoWay}"
                                 DialogWidth="680"
                                 Title="{Binding InventoryDialogTitle}"
@@ -4358,7 +4358,7 @@
                            Text="{x:Static res:Resources.Inv_TemplateHint}"
                            Visibility="{Binding IsInventoryMarkMode, Converter={StaticResource InverseBoolToVis}}" />
             </StackPanel>
-        </controls:ContentDialog>
+        </local:FormDialog>
 
         <!-- Envanter durum olayı: tarih, kişi, konum, not -->
         <controls:ContentDialog Grid.RowSpan="3"
@@ -5065,7 +5065,7 @@
             </StackPanel>
         </controls:ContentDialog>
         <!-- Yapılacak iş ekle: iş, işlem, açıklama, kişiler, son tarih, ilgili madde, etiketler; kaydın ana notunun Yapılacaklar bölümüne -->
-        <controls:ContentDialog Grid.RowSpan="3"
+        <local:FormDialog Grid.RowSpan="3"
                                 IsOpen="{Binding IsTaskDialogOpen, Mode=TwoWay}"
                                 Title="{x:Static res:Resources.TaskDialog_Title}"
                                 PrimaryButtonText="{Binding TaskPrimaryText}"
@@ -5215,7 +5215,7 @@
                     <local:TagBox Tags="{Binding TaskTags, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Tag_Placeholder}" />
                 </controls:FormField>
             </StackPanel>
-        </controls:ContentDialog>
+        </local:FormDialog>
 
         <!-- Günlük olayını sil: yalnız o olayın satırları nottan kalkar -->
         <controls:ContentDialog Grid.RowSpan="3"

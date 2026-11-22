@@ -114,12 +114,12 @@ namespace Pusula.Wpf
             }
         }
 
-        // ContentDialog birincil düğmede kendiliğinden kapanır; hata varsa hata metniyle yeniden açılır.
+        // ContentDialog birincil düğmede kendiliğinden kapanır; hata varsa FormDialog.KeepOpen ile hiç kapanmaz.
         private void ProjectDialog_PrimaryButtonClick(object sender, RoutedEventArgs e)
         {
             if (!viewModel.ConfirmNewProject())
             {
-                Dispatcher.BeginInvoke(new Action(() => viewModel.IsProjectDialogOpen = true));
+                ((FormDialog)sender).KeepOpen();
             }
         }
 
@@ -128,7 +128,7 @@ namespace Pusula.Wpf
         {
             if (!viewModel.ConfirmNewVerification())
             {
-                Dispatcher.BeginInvoke(new Action(() => viewModel.IsVerificationDialogOpen = true));
+                ((FormDialog)sender).KeepOpen();
             }
         }
 
@@ -136,7 +136,7 @@ namespace Pusula.Wpf
         {
             if (!viewModel.ConfirmVerPlan())
             {
-                Dispatcher.BeginInvoke(new Action(() => viewModel.IsVerPlanOpen = true));
+                ((FormDialog)sender).KeepOpen();
             }
         }
 
@@ -144,7 +144,7 @@ namespace Pusula.Wpf
         {
             if (!viewModel.ConfirmVerReport())
             {
-                Dispatcher.BeginInvoke(new Action(() => viewModel.IsVerReportOpen = true));
+                ((FormDialog)sender).KeepOpen();
             }
         }
 
@@ -335,7 +335,7 @@ namespace Pusula.Wpf
         {
             if (!viewModel.ConfirmTaskDialog())
             {
-                Dispatcher.BeginInvoke(new Action(() => viewModel.IsTaskDialogOpen = true));
+                ((FormDialog)sender).KeepOpen();
             }
         }
         private void TimelineAdd_Click(object sender, RoutedEventArgs e)
@@ -671,7 +671,7 @@ namespace Pusula.Wpf
         {
             if (!viewModel.ConfirmMark())
             {
-                Dispatcher.BeginInvoke(new Action(() => viewModel.IsMarkDialogOpen = true));
+                ((FormDialog)sender).KeepOpen();
             }
         }
 
@@ -836,7 +836,7 @@ namespace Pusula.Wpf
         {
             if (!viewModel.ConfirmAnalysis())
             {
-                Dispatcher.BeginInvoke(new Action(() => viewModel.IsAnalysisOpen = true));
+                ((FormDialog)sender).KeepOpen();
             }
         }
 
@@ -1492,7 +1492,7 @@ namespace Pusula.Wpf
         {
             if (!viewModel.ConfirmNewInventory())
             {
-                Dispatcher.BeginInvoke(new Action(() => viewModel.IsInventoryDialogOpen = true));
+                ((FormDialog)sender).KeepOpen();
             }
         }
 
@@ -1876,7 +1876,7 @@ namespace Pusula.Wpf
         {
             if (!viewModel.ConfirmNewStock())
             {
-                Dispatcher.BeginInvoke(new Action(() => viewModel.IsStockDialogOpen = true));
+                ((FormDialog)sender).KeepOpen();
             }
         }
     }
