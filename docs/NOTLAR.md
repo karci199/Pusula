@@ -203,6 +203,25 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
      içe aktarma.
   5. `mention-assist` testinde eski hata (Günlük penceresinde etiket kutusu bulunamıyor) incelenecek.
   Testler artık `tests\GizliKos.ps1` ile görünmez masaüstünde koşar.
+- **Plan maddesi ayrıntılı görünümü (22.11.2026, manuel test sonunda yapılacak; mock → kod):** satıra tıklayınca
+  açılır (gereksinimdeki gibi). İçinde: (1) bağlı gereksinimler madde no ile, yer varsa açıklamasıyla, ölçüt ve
+  durum; (2) bağlı raporlar: sonuç + sonuç klasörü aç; (3) md'deki `### <TP no> · başlık` altındaki ayrıntı metni
+  (salt okunur, "md'de aç"). Yöntem kutusundaki "—" hizası düzeltilecek.
+- **Rapor tablosu düzeni (22.11.2026, onaylandı; manuel test sonunda):** sütun sırası TR no · Açıklama · Test planı ·
+  Tarih · Birim (seri no) · **Sonuç** (en sağda) · [📁 sonuç klasörü simgesi, ✎]. "Sonucun yeri" sütunu kalkar,
+  simgeye döner. md `## Rapor` tablosuna **Tarih** ve **Birim** sütunları eklenir (eski dosyalar ilk yazımda yükselir);
+  rapor penceresine iki alan; testler güncellenir.
+- **Pencere kırpışması (22.11.2026, manuel test):** plan / rapor penceresinde doğrulama hatasında (ör. "4.1 zaten
+  var.") pencere kapanıp yeniden açılıyor; hata varsa hiç kapanmasın (PrimaryButtonClick'te iptal). Diğer
+  pencerelerde de aynısı denetlenecek.
+- **Md önizlemede tablo (22.11.2026, manuel test):** geniş tabloda sütunlar harf harf kırılıyor. Önizlemede tablo
+  yatay kaydırılsın, hücreler en az bir kelime genişliğinde olsun (sözcük ortasından kırılmasın).
+- **Eski madde bölümleri (22.11.2026, manuel test):** `## Plan` / `## Sonuç` altındaki eski `### DGÖ-5 · Kütle`
+  (`%% pusula:plan … %%`) bölümleri artık tabloyla eşitlenmiyor; TP 4.6 → 4.7 sonrası bölümde hâlâ 4.6 yazıyor.
+  Tablolara geçişten kalan bu bölümler ne olacak (tabloya taşınıp işaretler mi kalkar, yoksa TP no'ya göre
+  ayrıntı bölümü mü olur — plan ayrıntılı görünümüyle birlikte karar).
+- **Standart kütüphanesi (22.11.2026, sonraya; kullanıcı isteği):** ÇK / EMC test maddeleri için standartlar
+  (MIL-STD-810G, MIL-STD-461G …) yüklenir; plan / gereksinim maddesinde doğrudan standart ve yöntem seçilebilir.
 - **Outlook'tan veri çekme (21.11.2026, sonraya bırakıldı; kullanıcı kararı):** klasik Outlook'a COM ile bağlanılır,
   Pusula ağa çıkmaz (Exchange'e Outlook gider). (1) Kayıt penceresinde Ortam = Outlook iken "Outlook'ta seçili maili al":
   konu → başlık, tarih, gönderen + alıcılar → katılımcı, gövde başı → notlar; mail `.msg` ve seçilen ekler
