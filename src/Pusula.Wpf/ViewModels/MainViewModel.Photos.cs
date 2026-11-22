@@ -18,6 +18,7 @@ namespace Pusula.Wpf.ViewModels
 
             try
             {
+                Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
                 Directory.CreateDirectory(folder);
                 return folder;
             }

@@ -119,6 +119,7 @@ namespace Pusula.Wpf.ViewModels
             try
             {
                 var folder = Path.Combine(record, MailFolderName);
+                Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
                 Directory.CreateDirectory(folder);
                 // Mail kendi adıyla saklanır; aynı ad varsa _2, _3 … (üzerine yazılmaz).
                 var name = Path.GetFileNameWithoutExtension(journalMailSource);
@@ -128,6 +129,7 @@ namespace Pusula.Wpf.ViewModels
                     target = Path.Combine(folder, name + "_" + n.ToString(CultureInfo.InvariantCulture) + ".msg");
                 }
 
+                Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
                 File.Copy(journalMailSource, target, false);
                 entry.Mail = MeasurementFiles.Relative(record, target);
                 journalMailSource = string.Empty;

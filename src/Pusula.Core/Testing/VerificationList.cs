@@ -235,7 +235,7 @@ namespace Pusula.Core.Testing
             string text;
             try
             {
-                text = File.ReadAllText(path);
+                text = VerificationText.Read(path) ?? string.Empty;
             }
             catch (IOException)
             {
@@ -458,7 +458,7 @@ namespace Pusula.Core.Testing
                     return false;
                 }
 
-                var table = Table.Parse(File.ReadAllText(path).Replace("\r\n", "\n").Split('\n').ToList());
+                var table = Table.Parse((VerificationText.Read(path) ?? string.Empty).Replace("\r\n", "\n").Split('\n').ToList());
                 return table != null && table.Keys.Contains(ColManualStatus);
             }
             catch (IOException)
@@ -967,6 +967,7 @@ namespace Pusula.Core.Testing
         internal static string WriteAtomic(string path, string content, bool bom)
         {
             var temp = path + ".tmp-" + Guid.NewGuid().ToString("N").Substring(0, 8);
+            VerificationText.Forget(path);
             DiskWatcher.MarkOwnWrite();
             File.WriteAllText(temp, content, new UTF8Encoding(bom));
             if (File.Exists(path))

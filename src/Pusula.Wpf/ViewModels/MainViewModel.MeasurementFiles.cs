@@ -57,6 +57,7 @@ namespace Pusula.Wpf.ViewModels
             if (note.Folder.Length > 0)
             {
                 var existing = MeasurementFiles.Resolve(record, note.Folder);
+                Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
                 Directory.CreateDirectory(existing);
                 ShowFolder(existing);
                 return true;
@@ -68,7 +69,7 @@ namespace Pusula.Wpf.ViewModels
             {
                 var entry = Journal.EntryOf(note);
                 entry.Folder = MeasurementFiles.Relative(record, path);
-                error = Journal.Replace(note.Path, note.SourceLine, entry);
+                error = Journal.Replace(note.Path, note.SourceLine, note.SourceOccurrence, entry);
             }
 
             if (error.Length > 0)

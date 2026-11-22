@@ -415,8 +415,8 @@ namespace Pusula.Wpf.ViewModels
             return string.Equals(result, Resources.Verify_StatusFailed, StringComparison.CurrentCultureIgnoreCase) ? 2 : 3;
         }
 
-        // Plan ve rapor tablolarını okur (tablo yoksa bir kez gereksinim satırlarından taşınır); satırları ve kapsamayı kurar.
-        private void LoadPlanReports()
+        // Eski düzenli dosyayı bir kez yeni düzene geçirir; gereksinimler okunmadan önce çağrılır (yoksa bellekte eski satırlar kalır).
+        private void RetireLegacyVerification()
         {
             var retireError = string.Empty;
             if (verificationStock.Length > 0 && PlanReportList.RetireLegacy(verificationStock, out retireError))
@@ -427,7 +427,11 @@ namespace Pusula.Wpf.ViewModels
             {
                 Status = string.Format(CultureInfo.CurrentCulture, Resources.Verify_WriteFailed, retireError);
             }
+        }
 
+        // Plan ve rapor tablolarını okur; satırları ve kapsamayı kurar.
+        private void LoadPlanReports()
+        {
             verificationPlans = verificationStock.Length == 0 ? new List<PlanItem>() : PlanReportList.ReadPlans(verificationStock);
             verificationReports = verificationStock.Length == 0 ? new List<ReportItem>() : PlanReportList.ReadReports(verificationStock);
             var keys = verificationItems.Select(VerificationList.KeyOf).ToList();

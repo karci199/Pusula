@@ -261,7 +261,7 @@ namespace Pusula.Wpf.ViewModels
                 return false;
             }
 
-            var error = Journal.Replace(note.Path, note.SourceLine, null);
+            var error = Journal.Replace(note.Path, note.SourceLine, note.SourceOccurrence, null);
             if (error.Length > 0)
             {
                 Status = string.Format(Resources.Error_Io, error);
@@ -443,7 +443,7 @@ namespace Pusula.Wpf.ViewModels
                 return false;
             }
 
-            var error = edited != null ? Journal.Replace(edited.Path, edited.SourceLine, entry) : Journal.Add(journalNotePath, entry);
+            var error = edited != null ? Journal.Replace(edited.Path, edited.SourceLine, edited.SourceOccurrence, entry) : Journal.Add(journalNotePath, entry);
             if (error.Length > 0)
             {
                 Status = string.Format(Resources.Error_Io, error);

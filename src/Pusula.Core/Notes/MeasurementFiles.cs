@@ -100,6 +100,7 @@ namespace Pusula.Core.Notes
             try
             {
                 var path = UniqueFolder(baseFolder, name);
+                Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
                 Directory.CreateDirectory(path);
                 return path;
             }

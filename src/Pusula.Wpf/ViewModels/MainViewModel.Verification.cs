@@ -1456,7 +1456,8 @@ namespace Pusula.Wpf.ViewModels
             }
 
             verificationStock = stock;
-            verificationItems = stock.Length == 0 ? new List<VerificationItem>() : VerificationList.Read(stock).ToList();
+            RetireLegacyVerification();
+            verificationItems =stock.Length == 0 ? new List<VerificationItem>() : VerificationList.Read(stock).ToList();
             verificationAttempts = stock.Length == 0 ? new List<EventNote>() : Journal.Read(TaskNotePath(stock)).Where(e => e.Item.Trim().Length > 0).OrderByDescending(e => e.Date).ToList();
 
             // Süzgeç: Hepsi + dört grup (+ dosyada başka grup adı varsa o da).

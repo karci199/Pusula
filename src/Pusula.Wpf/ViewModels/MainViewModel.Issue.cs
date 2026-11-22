@@ -249,7 +249,7 @@ namespace Pusula.Wpf.ViewModels
 
             var closed = Journal.EntryOf(issue);
             closed.IssueStatus = Resources.Issue_Solved + " " + entry.Date.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
-            var error = Journal.Replace(issue.Path, issue.SourceLine, closed);
+            var error = Journal.Replace(issue.Path, issue.SourceLine, issue.SourceOccurrence, closed);
             if (error.Length > 0)
             {
                 Status = string.Format(Resources.Error_Io, error);

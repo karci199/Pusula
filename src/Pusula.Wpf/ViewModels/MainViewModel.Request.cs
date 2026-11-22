@@ -264,7 +264,7 @@ namespace Pusula.Wpf.ViewModels
 
             var entry = Journal.EntryOf(note);
             entry.RequestStatus = Resources.Request_StatusDelivered;
-            var error = Journal.Replace(note.Path, note.SourceLine, entry);
+            var error = Journal.Replace(note.Path, note.SourceLine, note.SourceOccurrence, entry);
             if (error.Length == 0)
             {
                 var now = DateTime.Now;

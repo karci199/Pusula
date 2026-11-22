@@ -102,7 +102,7 @@
                 <TextBlock VerticalAlignment="Center" Text="{Binding}" />
             </StackPanel>
             <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_None}"><Setter TargetName="Dot" Property="Fill" Value="Transparent" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_None}"><Setter TargetName="Dot" Property="Visibility" Value="Collapsed" /></DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_StatusPlanned}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource TextPrimaryBrush}" /></DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_StatusPreparing}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_StatusInProgress}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
@@ -123,7 +123,7 @@
                 <TextBlock VerticalAlignment="Center" Text="{Binding}" />
             </StackPanel>
             <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_None}"><Setter TargetName="Dot" Property="Fill" Value="Transparent" /></DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_None}"><Setter TargetName="Dot" Property="Visibility" Value="Collapsed" /></DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_MethodTest}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_MethodInspection}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_MethodDocument}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
@@ -136,6 +136,7 @@
                 <TextBlock VerticalAlignment="Center" Text="{Binding}" />
             </StackPanel>
             <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_None}"><Setter TargetName="Dot" Property="Visibility" Value="Collapsed" /></DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_KindBasic}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" /></DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="{x:Static res:Resources.Verify_KindDerived}"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
             </DataTemplate.Triggers>

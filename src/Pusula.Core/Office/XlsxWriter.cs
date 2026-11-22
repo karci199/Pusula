@@ -21,6 +21,7 @@ namespace Pusula.Core.Office
             var temp = path + ".tmp-" + Guid.NewGuid().ToString("N").Substring(0, 8);
             try
             {
+                Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
                 using (var stream = new FileStream(temp, FileMode.CreateNew, FileAccess.Write))
                 using (var zip = new ZipArchive(stream, ZipArchiveMode.Create))
                 {
@@ -33,6 +34,7 @@ namespace Pusula.Core.Office
                     Put(zip, "xl/worksheets/sheet1.xml", Sheet(rows ?? new List<string[]>()));
                 }
 
+                Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
                 if (File.Exists(path))
                 {
                     File.Replace(temp, path, null);
@@ -88,7 +90,7 @@ namespace Pusula.Core.Office
                     }
 
                     sb.Append("<c r=\"").Append(ColumnName(c)).Append(r + 1).Append("\" t=\"inlineStr\" s=\"").Append(r == 0 ? 1 : 0).Append("\"><is><t xml:space=\"preserve\">")
-                        .Append(SecurityElement.Escape(text)).Append("</t></is></c>");
+                        .Append(SecurityElement.Escape(CellSafe(text))).Append("</t></is></c>");
                 }
 
                 sb.Append("</row>");
@@ -96,6 +98,25 @@ namespace Pusula.Core.Office
 
             sb.Append("</sheetData></worksheet>");
             return sb.ToString();
+        }
+
+        // Hücre metni: XML'de geçersiz denetim karakterleri (DOORS metnindeki \v gibi) atılır, Excel dosyayı bozuk saymasın;
+        // Excel'in hücre sınırı 32 767 karakter.
+        private static string CellSafe(string text)
+        {
+            var sb = new StringBuilder(text.Length);
+            foreach (var ch in text)
+            {
+                if (ch >= 0x20 || ch == '\t' || ch == '\n' || ch == '\r')
+                {
+                    if (ch != '￾' && ch != '￿')
+                    {
+                        sb.Append(ch);
+                    }
+                }
+            }
+
+            return sb.Length > 32767 ? sb.ToString(0, 32767) : sb.ToString();
         }
 
         // 0 → A, 25 → Z, 26 → AA.

@@ -241,7 +241,8 @@ namespace Pusula.Core.Testing
                 var no = (cut < 0 ? title : title.Substring(0, cut)).Trim();
                 var body = new List<string>();
                 var j = i + 1;
-                while (j < end && !lines[j].StartsWith("#", StringComparison.Ordinal))
+                // Yalnız aynı ya da üst düzey başlık (#, ##, ###) bitirir; #### alt başlık ve #etiket satırı ayrıntıya dahil.
+                while (j < end && !IsSectionHeading(lines[j]))
                 {
                     body.Add(lines[j]);
                     j++;
@@ -257,6 +258,17 @@ namespace Pusula.Core.Testing
             }
 
             return details;
+        }
+
+        private static bool IsSectionHeading(string line)
+        {
+            var hashes = 0;
+            while (hashes < line.Length && line[hashes] == '#')
+            {
+                hashes++;
+            }
+
+            return hashes >= 1 && hashes <= 3 && (hashes == line.Length || line[hashes] == ' ' || line[hashes] == '\t');
         }
 
         /// <summary>Eski düzenin yedeğinin konduğu klasör (stok klasöründe).</summary>
@@ -288,6 +300,7 @@ namespace Pusula.Core.Testing
             try
             {
                 var backupDir = Path.Combine(stockFolder, BackupFolder);
+                Pusula.Core.Scanning.DiskWatcher.MarkOwnWrite();
                 Directory.CreateDirectory(backupDir);
                 var stamp = DateTime.Now.ToString("yyyyMMdd-HHmmss", System.Globalization.CultureInfo.InvariantCulture);
                 var backup = Path.Combine(backupDir, Path.GetFileNameWithoutExtension(path) + "_" + stamp + ".md.yedek");
@@ -639,7 +652,7 @@ namespace Pusula.Core.Testing
 
             try
             {
-                return File.ReadAllText(path).Replace("\r\n", "\n").Split('\n').ToList();
+                return (VerificationText.Read(path) ?? string.Empty).Replace("\r\n", "\n").Split('\n').ToList();
             }
             catch (IOException)
             {
@@ -732,7 +745,7 @@ namespace Pusula.Core.Testing
                     }
                 }
 
-                var head = "| " + string.Join(" | ", headers.Concat(order)) + " |";
+                var head = "| " + string.Join(" | ", headers.Concat(order).Select(Escape)) + " |";
                 var sep = "|" + string.Join("|", Enumerable.Repeat("---", headers.Length + order.Count)) + "|";
                 var table = new List<string> { head, sep };
                 foreach (var item in items)

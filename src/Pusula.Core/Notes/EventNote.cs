@@ -55,6 +55,9 @@ namespace Pusula.Core.Notes
         /// <summary>Günlük girdisinin notta yazıldığı başlık satırı (<c>### …</c>); düzenleme / silmede girdiyi bulmak için.</summary>
         public string SourceLine { get; private set; } = string.Empty;
 
+        /// <summary>Aynı başlık satırlı girdilerden kaçıncısı (0: ilki); aynı gün aynı başlıklı iki girdi karışmasın diye.</summary>
+        public int SourceOccurrence { get; internal set; }
+
         /// <summary>Günlük girdisinin tam açıklaması (satır sonlarıyla).</summary>
         public string Body { get; private set; } = string.Empty;
 

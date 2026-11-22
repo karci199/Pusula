@@ -198,7 +198,13 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
   aramalı bağ seçimi, "Sonuç yok" durumu, ÇK/EMC standardı (gereksinimde test tipi · standart · yöntem · prosedür;
   ortak liste `_TAKIP\Standartlar.md`, başlangıç 810F / 810G / 810G CHG1 / 810H / 461G — numaralar elle doğrulanmalı).
   **Sıradaki:** test yardımcı araçları ayrıntısı (kapak + numaralı foto şeridi, not, olaylar), sonra istatistikler.
-  Küçükler: DOORS sütun adları (gerçek çıktı görülünce), plan penceresinde Yöntem "—" hizası, `mention-assist` eski hatası.
+  Küçükler: DOORS sütun adları (gerçek çıktı görülünce).
+- **Hata avı (22.11.2026 gece):** Yöntem "—" hizası; eski düzenli dosyada gereksinimler taşımadan sonra okunur; aynı
+  başlıklı iki Günlük girdisinde düzenle / sil doğru girdiyi bulur (`SourceOccurrence`); Excel okumada sayı artığı
+  (3.1000000000000001 → 3.1), yazımda XML-geçersiz denetim karakterleri atılır; plan / rapor ayrıntısı `####` ya da
+  `#etiket` satırında kesilmez; Excel aktarma, `_ARSIV` yedeği, mail kopyası, ölçüm / fotoğraf klasörü kendi yazımı
+  sayılır. Performans: doğrulama dosyası stok açılışında 6 kez yerine 1 kez okunur (`VerificationText` önbelleği).
+  Tam takım 67 senaryo geçti; eski 4 hata (mention-assist, record-files, split) artık görünmüyor. Senaryo: `bugfix-core`.
 - **Doğrulama, yarın (22.11.2026 kararları):**
   1. **Elle durum ile hesaplanan durum ayrılsın:** gereksinimde iki ayrı bilgi; bağlardan hesaplanan durum elle
      verileni ezmesin (ikisi de görünür, hangisinin hesap olduğu belli). Şu an plan / rapor kaydında hesap elle

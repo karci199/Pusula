@@ -121,6 +121,14 @@ namespace Pusula.Core.Office
                 return index >= 0 && index < shared.Count ? shared[index].Trim() : string.Empty;
             }
 
+            // Sayı hücresi: Excel ikili kayan nokta yazar (3.1 → 3.1000000000000001); 15 anlamlı basamakla Excel'de görüneni verir.
+            double number;
+            if ((type == null || type == "n") && value.IndexOf('E') < 0 && value.IndexOf('e') < 0
+                && double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out number))
+            {
+                return number.ToString("G15", CultureInfo.InvariantCulture);
+            }
+
             return value.Trim();
         }
 

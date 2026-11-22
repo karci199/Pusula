@@ -411,6 +411,7 @@ namespace Pusula.Core.Notes
                 return result;
             }
 
+            var occurrences = new Dictionary<string, int>(StringComparer.Ordinal);
             for (var i = start + 1; i < lines.Length; i++)
             {
                 var line = lines[i];
@@ -432,8 +433,12 @@ namespace Pusula.Core.Notes
                 }
 
                 var entry = Parse(notePath, line.Substring(4), body, line);
+                int seen;
+                seen = occurrences.TryGetValue(line, out seen) ? seen : 0;
+                occurrences[line] = seen + 1;
                 if (entry != null)
                 {
+                    entry.SourceOccurrence = seen;
                     result.Add(entry);
                 }
 
@@ -536,6 +541,15 @@ namespace Pusula.Core.Notes
         /// </summary>
         public static string Replace(string notePath, string sourceLine, JournalEntry? entry)
         {
+            return Replace(notePath, sourceLine, 0, entry);
+        }
+
+        /// <summary>
+        /// <see cref="Replace(string, string, JournalEntry)"/> gibi; aynı başlık satırlı girdilerden
+        /// <paramref name="occurrence"/>. olanı (0: ilki) değiştirir ya da siler.
+        /// </summary>
+        public static string Replace(string notePath, string sourceLine, int occurrence, JournalEntry? entry)
+        {
             string text;
             try
             {
@@ -553,7 +567,15 @@ namespace Pusula.Core.Notes
             var newline = text.Contains("\r\n") ? "\r\n" : "\n";
             var lines = text.Replace("\r\n", "\n").Split('\n').ToList();
             var heading = lines.FindIndex(IsHeading);
-            var start = heading < 0 ? -1 : lines.FindIndex(heading + 1, l => l == sourceLine.TrimEnd('\r'));
+            var wanted = sourceLine.TrimEnd('\r');
+            var start = heading < 0 ? -1 : lines.FindIndex(heading + 1, l => l == wanted);
+            for (var skip = Math.Max(0, occurrence); skip > 0 && start >= 0; skip--)
+            {
+                // Günlük bölümünün dışına (sonraki ## başlığı) taşmadan bir sonraki aynı satır.
+                var next = lines.FindIndex(start + 1, l => l == wanted || l.StartsWith("## ", StringComparison.Ordinal));
+                start = next >= 0 && lines[next] == wanted ? next : -1;
+            }
+
             if (start < 0)
             {
                 return "not found";
