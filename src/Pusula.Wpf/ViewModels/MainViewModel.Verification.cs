@@ -1811,7 +1811,7 @@ namespace Pusula.Wpf.ViewModels
                 }
 
                 var kinds = new HashSet<int>(verificationStatusFilter.Select(VerificationRow.KindOf));
-                var rows = SortVerification(verificationItems.Where(i => SameGroup(i, option.Key) && (kinds.Count == 0 || kinds.Contains(VerificationRow.KindOf(i.Status))) && PassesReqLinks(i))).Select(i => new VerificationRow(i) { SourceLine = SourceLineOf(i), Attempts = AttemptsOf(i), LinkedPlans = PlansOfRequirement(i), LinkedReports = ReportsOfRequirement(i), PlanItems = PlanRowsOf(i), ReportItems = ReportRowsOf(i), HasNoPlan = ReqPlanState(i) == 0 }).ToList();
+                var rows = SortVerification(verificationItems.Where(i => SameGroup(i, option.Key) && (kinds.Count == 0 || kinds.Contains(VerificationRow.KindOf(i.Status))) && PassesReqLinks(i) && PassesRequirementSearch(i))).Select(i => new VerificationRow(i) { SourceLine = SourceLineOf(i), Attempts = AttemptsOf(i), LinkedPlans = PlansOfRequirement(i), LinkedReports = ReportsOfRequirement(i), PlanItems = PlanRowsOf(i), ReportItems = ReportRowsOf(i), HasNoPlan = ReqPlanState(i) == 0 }).ToList();
                 if (rows.Count > 0)
                 {
                     VerificationGroups.Add(new VerificationGroup(option.Key, Math.Max(0, option.Tone), rows));

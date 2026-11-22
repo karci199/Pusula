@@ -77,6 +77,60 @@ namespace Pusula.Wpf.ViewModels
         }
     }
 
+    /// <summary>Bağ açılır kutusu: iki başlıklı çoklu seçim (ör. Test planı: Var/Yok, Test raporu: Geçti/Kaldı/Yok).</summary>
+    public sealed class LinkFilterBox : ViewModelBase
+    {
+        /// <summary>Kutuyu iki grupla kurar.</summary>
+        public LinkFilterBox(string firstTitle, ObservableCollection<LinkPill> first, string secondTitle, ObservableCollection<LinkPill> second)
+        {
+            FirstTitle = firstTitle;
+            First = first;
+            SecondTitle = secondTitle;
+            Second = second;
+        }
+
+        /// <summary>Birinci grubun başlığı.</summary>
+        public string FirstTitle { get; }
+
+        /// <summary>Birinci grubun seçenekleri.</summary>
+        public ObservableCollection<LinkPill> First { get; }
+
+        /// <summary>İkinci grubun başlığı.</summary>
+        public string SecondTitle { get; }
+
+        /// <summary>İkinci grubun seçenekleri.</summary>
+        public ObservableCollection<LinkPill> Second { get; }
+
+        /// <summary>Seçim var mı (kutu vurgulu).</summary>
+        public bool IsActive
+        {
+            get { return First.Concat(Second).Any(p => p.IsChecked); }
+        }
+
+        /// <summary>Kapalı kutunun yazısı: "Hepsi", tek seçimde "Test planı: Yok", birden çokta "2 seçim".</summary>
+        public string Text
+        {
+            get
+            {
+                var on = First.Where(p => p.IsChecked).Select(p => FirstTitle + ": " + p.Text)
+                    .Concat(Second.Where(p => p.IsChecked).Select(p => SecondTitle + ": " + p.Text)).ToList();
+                if (on.Count == 0)
+                {
+                    return Resources.Home_RangeAll;
+                }
+
+                return on.Count == 1 ? on[0] : string.Format(CultureInfo.CurrentCulture, Resources.Verify_LinkSelections, on.Count);
+            }
+        }
+
+        /// <summary>Yazıyı ve vurguyu yeniler.</summary>
+        public void Refresh()
+        {
+            OnPropertyChanged(nameof(Text));
+            OnPropertyChanged(nameof(IsActive));
+        }
+    }
+
     /// <summary>Kapsama uyarısının tıklanabilir bir parçası: metin ve uyguladığı süzgeç.</summary>
     public sealed class CoveragePart : ViewModelBase
     {
@@ -114,6 +168,102 @@ namespace Pusula.Wpf.ViewModels
         private List<ReportRow> allReportRows = new List<ReportRow>();
         private string planListSearch = string.Empty;
         private string reportListSearch = string.Empty;
+        private string requirementSearch = string.Empty;
+        private string planSort = string.Empty;
+        private string reportSort = string.Empty;
+        private LinkFilterBox? reqLinkBox;
+        private LinkFilterBox? planLinkBox;
+        private LinkFilterBox? reportLinkBox;
+
+        /// <summary>Gereksinimler: Bağ kutusu (Test planı · Test raporu).</summary>
+        public LinkFilterBox ReqLinkBox
+        {
+            get { return reqLinkBox ?? (reqLinkBox = new LinkFilterBox(Resources.Verify_PillPlan, ReqPlanPills, Resources.Verify_PillReport, ReqReportPills)); }
+        }
+
+        /// <summary>Test planı: Bağ kutusu (Gereksinim · Test raporu).</summary>
+        public LinkFilterBox PlanLinkBox
+        {
+            get { return planLinkBox ?? (planLinkBox = new LinkFilterBox(Resources.Verify_PillRequirement, PlanReqPills, Resources.Verify_PillReport, PlanReportPills)); }
+        }
+
+        /// <summary>Test raporu: Bağ kutusu (Test planı · Sonuç).</summary>
+        public LinkFilterBox ReportLinkBox
+        {
+            get { return reportLinkBox ?? (reportLinkBox = new LinkFilterBox(Resources.Verify_PillPlan, ReportPlanPills, Resources.Verify_PillResult, ReportResultPills)); }
+        }
+
+        /// <summary>Gereksinimlerde arama (TG no, başlık, kısa not, alt grup).</summary>
+        public string RequirementSearch
+        {
+            get { return requirementSearch; }
+            set
+            {
+                if (SetProperty(ref requirementSearch, value ?? string.Empty))
+                {
+                    FillVerificationGroups();
+                }
+            }
+        }
+
+        /// <summary>Test planı sıralama seçenekleri: TP no · Bağ durumu.</summary>
+        public IList<string> PlanSorts
+        {
+            get { return new[] { Resources.Verify_SortTp, Resources.Verify_SortLink }; }
+        }
+
+        /// <summary>Test planı sıralaması.</summary>
+        public string PlanSort
+        {
+            get { return planSort.Length == 0 ? Resources.Verify_SortTp : planSort; }
+            set
+            {
+                if (!string.IsNullOrEmpty(value) && value != PlanSort)
+                {
+                    planSort = value;
+                    OnPropertyChanged();
+                    FilterPlanRows();
+                }
+            }
+        }
+
+        /// <summary>Test raporu sıralama seçenekleri: TR no · Sonuç.</summary>
+        public IList<string> ReportSorts
+        {
+            get { return new[] { Resources.Verify_SortTr, Resources.Verify_SortResult }; }
+        }
+
+        /// <summary>Test raporu sıralaması.</summary>
+        public string ReportSort
+        {
+            get { return reportSort.Length == 0 ? Resources.Verify_SortTr : reportSort; }
+            set
+            {
+                if (!string.IsNullOrEmpty(value) && value != ReportSort)
+                {
+                    reportSort = value;
+                    OnPropertyChanged();
+                    FilterReportRows();
+                }
+            }
+        }
+
+        /// <summary>Gereksinim aramadan geçiyor mu.</summary>
+        public bool PassesRequirementSearch(VerificationItem item)
+        {
+            var text = requirementSearch.Trim();
+            return text.Length == 0
+                || VerificationList.KeyOf(item).IndexOf(text, StringComparison.CurrentCultureIgnoreCase) >= 0
+                || item.Text.IndexOf(text, StringComparison.CurrentCultureIgnoreCase) >= 0
+                || item.Description.IndexOf(text, StringComparison.CurrentCultureIgnoreCase) >= 0
+                || item.SubGroup.IndexOf(text, StringComparison.CurrentCultureIgnoreCase) >= 0;
+        }
+
+        // Kapsam dışı gereksinim bağ sayılarına, uyarıya ve bağ süzgecine girmez.
+        private static bool IsOutOfScope(VerificationItem item)
+        {
+            return VerificationRow.KindOf(item.Status) == 5;
+        }
 
         /// <summary>Gereksinimler: Test planı [Var · Yok].</summary>
         public ObservableCollection<LinkPill> ReqPlanPills { get; } = new ObservableCollection<LinkPill>();
@@ -139,7 +289,7 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Gereksinimlerde bağ süzgeci açık mı (Temizle görünür).</summary>
         public bool HasReqLinkFilter
         {
-            get { return AnyChecked(ReqPlanPills) || AnyChecked(ReqReportPills); }
+            get { return AnyChecked(ReqPlanPills) || AnyChecked(ReqReportPills) || requirementSearch.Trim().Length > 0 || HasVerificationStatusFilter; }
         }
 
         /// <summary>Test planında süzgeç ya da arama var mı.</summary>
@@ -285,9 +435,40 @@ namespace Pusula.Wpf.ViewModels
             reportListSearch = verificationView == 2 ? string.Empty : reportListSearch;
             OnPropertyChanged(nameof(PlanListSearch));
             OnPropertyChanged(nameof(ReportListSearch));
+            if (verificationView == 0)
+            {
+                requirementSearch = string.Empty;
+                OnPropertyChanged(nameof(RequirementSearch));
+                verificationStatusFilter.Clear();
+                BuildStatusFilters();
+            }
+
             RefilterView();
         }
 
+        /// <summary>Bağ kutusundaki "Temizle": yalnız o kutunun seçimleri kalkar (arama ve durum kalır).</summary>
+        public void ClearLinkBox(LinkFilterBox box)
+        {
+            if (box == null)
+            {
+                return;
+            }
+
+            SetPills(box.First, -1);
+            SetPills(box.Second, -1);
+            if (box == PlanLinkBox)
+            {
+                FilterPlanRows();
+            }
+            else if (box == ReportLinkBox)
+            {
+                FilterReportRows();
+            }
+            else
+            {
+                FillVerificationGroups();
+            }
+        }
         private Tuple<ObservableCollection<LinkPill>, ObservableCollection<LinkPill>> PillGroupsOfView()
         {
             if (verificationView == 1)
@@ -337,6 +518,11 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Gereksinim bağ süzgecinden geçiyor mu.</summary>
         public bool PassesReqLinks(VerificationItem item)
         {
+            if (IsOutOfScope(item) && (AnyChecked(ReqPlanPills) || AnyChecked(ReqReportPills)))
+            {
+                return false;
+            }
+
             return PassGroup(ReqPlanPills, ReqPlanState(item)) && PassGroup(ReqReportPills, ReqReportState(item));
         }
 
@@ -395,16 +581,19 @@ namespace Pusula.Wpf.ViewModels
 
             planListSearch = string.Empty;
             reportListSearch = string.Empty;
+            requirementSearch = string.Empty;
             OnPropertyChanged(nameof(PlanListSearch));
             OnPropertyChanged(nameof(ReportListSearch));
+            OnPropertyChanged(nameof(RequirementSearch));
         }
 
         // Hap sayıları ve uyarı parçaları (LoadPlanReports sonunda).
         private void UpdateLinkCounts()
         {
             EnsurePills();
-            var reqPlan = verificationItems.Select(ReqPlanState).ToList();
-            var reqReport = verificationItems.Select(ReqReportState).ToList();
+            var inScope = verificationItems.Where(i => !IsOutOfScope(i)).ToList();
+            var reqPlan = inScope.Select(ReqPlanState).ToList();
+            var reqReport = inScope.Select(ReqReportState).ToList();
             var planReq = verificationPlans.Select(PlanReqState).ToList();
             var planReport = verificationPlans.Select(PlanReportState).ToList();
             var reportPlan = verificationReports.Select(ReportPlanState).ToList();
@@ -416,7 +605,7 @@ namespace Pusula.Wpf.ViewModels
             Count(ReportPlanPills, reportPlan);
             Count(ReportResultPills, reportResult);
 
-            RequirementsWithoutReport = verificationItems.Where(i => ReqPlanState(i) == 1 && ReqReportState(i) == 0).Select(VerificationList.KeyOf).ToList();
+            RequirementsWithoutReport = inScope.Where(i => ReqPlanState(i) == 1 && ReqReportState(i) == 0).Select(VerificationList.KeyOf).ToList();
             PlansWithoutRequirement = verificationPlans.Where(p => PlanReqState(p) == 0).Select(p => p.TpNo).ToList();
             PlansWithoutResult = verificationPlans.Where(p => PlanReportState(p) == 0).Select(p => p.TpNo).ToList();
             ReportsWithoutResult = verificationReports.Where(r => ReportResultState(r) == 0).Select(r => r.TrNo).ToList();
@@ -488,6 +677,9 @@ namespace Pusula.Wpf.ViewModels
             OnPropertyChanged(nameof(HasReqLinkFilter));
             OnPropertyChanged(nameof(HasPlanLinkFilter));
             OnPropertyChanged(nameof(HasReportLinkFilter));
+            ReqLinkBox.Refresh();
+            PlanLinkBox.Refresh();
+            ReportLinkBox.Refresh();
         }
 
         private static bool Matches(IEnumerable<LinkPill> pills, int state)
@@ -501,7 +693,14 @@ namespace Pusula.Wpf.ViewModels
         {
             var text = planListSearch.Trim();
             PlanRows.Clear();
-            foreach (var row in allPlanRows)
+            IEnumerable<PlanRow> ordered = allPlanRows;
+            if (PlanSort == Resources.Verify_SortLink)
+            {
+                // Önce bağı eksikler (sarı), sonra Kaldı (kırmızı), sonra tamam olanlar; kendi içinde TP no.
+                ordered = allPlanRows.OrderBy(r => r.Stripe == 4 ? 0 : (r.Stripe == 2 ? 1 : 2)).ThenBy(r => r.TpNo, Comparer<string>.Create(PlanReportList.CompareNo));
+            }
+
+            foreach (var row in ordered)
             {
                 var item = row.Item;
                 if (text.Length > 0
@@ -527,7 +726,14 @@ namespace Pusula.Wpf.ViewModels
         {
             var text = reportListSearch.Trim();
             ReportRows.Clear();
-            foreach (var row in allReportRows)
+            IEnumerable<ReportRow> ordered = allReportRows;
+            if (ReportSort == Resources.Verify_SortResult)
+            {
+                // Önce Kaldı, sonra sonuçsuz, sonra Geçti; kendi içinde TR no.
+                ordered = allReportRows.OrderBy(r => ReportResultState(r.Item) == 2 ? 0 : (ReportResultState(r.Item) == 0 ? 1 : 2)).ThenBy(r => r.TrNo, Comparer<string>.Create(PlanReportList.CompareNo));
+            }
+
+            foreach (var row in ordered)
             {
                 var item = row.Item;
                 if (text.Length > 0

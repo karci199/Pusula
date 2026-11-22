@@ -265,6 +265,14 @@ namespace Pusula.Wpf
             }
         }
 
+        // Bağ kutusundaki Temizle: yalnız o kutunun seçimleri.
+        private void VerLinkBoxClear_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is LinkFilterBox box)
+            {
+                viewModel.ClearLinkBox(box);
+            }
+        }
         // Bağ süzgecini (ve aramayı) temizle.
         private void VerLinkClear_Click(object sender, RoutedEventArgs e)
         {

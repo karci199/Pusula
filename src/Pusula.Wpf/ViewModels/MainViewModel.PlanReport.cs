@@ -296,7 +296,7 @@ namespace Pusula.Wpf.ViewModels
             var keys = verificationItems.Select(VerificationList.KeyOf).ToList();
             var tps = verificationPlans.Select(p => p.TpNo).ToList();
 
-            RequirementsWithoutPlan = keys.Where(k => !verificationPlans.Any(p => p.Requirements.Contains(k, StringComparer.OrdinalIgnoreCase))).ToList();
+            RequirementsWithoutPlan = verificationItems.Where(i => !IsOutOfScope(i)).Select(VerificationList.KeyOf).Where(k => !verificationPlans.Any(p => p.Requirements.Contains(k, StringComparer.OrdinalIgnoreCase))).ToList();
             PlansWithoutReport = tps.Where(tp => tp.Length > 0 && !verificationReports.Any(r => r.Plans.Contains(tp, StringComparer.OrdinalIgnoreCase))).ToList();
             ReportsWithoutPlan = verificationReports.Where(r => !r.Plans.Any(p => tps.Contains(p, StringComparer.OrdinalIgnoreCase))).Select(r => r.TrNo).ToList();
 

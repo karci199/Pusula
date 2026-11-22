@@ -3295,4 +3295,25 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Verify_CoverageHint" xml:space="preserve">
     <value>Tıkla: bu maddeleri listele</value>
   </data>
+  <data name="Verify_LinkSelections" xml:space="preserve">
+    <value>{0} seçim</value>
+  </data>
+  <data name="Verify_LinkFilter" xml:space="preserve">
+    <value>Bağ</value>
+  </data>
+  <data name="Verify_SortTp" xml:space="preserve">
+    <value>TP no</value>
+  </data>
+  <data name="Verify_SortLink" xml:space="preserve">
+    <value>Bağ durumu</value>
+  </data>
+  <data name="Verify_SortTr" xml:space="preserve">
+    <value>TR no</value>
+  </data>
+  <data name="Verify_SortResult" xml:space="preserve">
+    <value>Sonuç</value>
+  </data>
+  <data name="Verify_SearchRequirements" xml:space="preserve">
+    <value>Ara: TG no, başlık</value>
+  </data>
 </root>

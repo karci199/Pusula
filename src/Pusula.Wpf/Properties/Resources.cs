@@ -3502,6 +3502,27 @@ namespace Pusula.Wpf.Properties
         /// <summary>Kapsama uyarısı parçasının ipucu.</summary>
         public static string Verify_CoverageHint { get { return Get("Verify_CoverageHint"); } }
 
+        /// <summary>Bağ kutusu: birden çok seçim; {0} sayı.</summary>
+        public static string Verify_LinkSelections { get { return Get("Verify_LinkSelections"); } }
+
+        /// <summary>Araç satırı: bağ süzgeci etiketi.</summary>
+        public static string Verify_LinkFilter { get { return Get("Verify_LinkFilter"); } }
+
+        /// <summary>Test planı sıralaması: TP no.</summary>
+        public static string Verify_SortTp { get { return Get("Verify_SortTp"); } }
+
+        /// <summary>Test planı sıralaması: önce bağı eksikler.</summary>
+        public static string Verify_SortLink { get { return Get("Verify_SortLink"); } }
+
+        /// <summary>Test raporu sıralaması: TR no.</summary>
+        public static string Verify_SortTr { get { return Get("Verify_SortTr"); } }
+
+        /// <summary>Test raporu sıralaması: önce Kaldı.</summary>
+        public static string Verify_SortResult { get { return Get("Verify_SortResult"); } }
+
+        /// <summary>Gereksinimler listesinde arama.</summary>
+        public static string Verify_SearchRequirements { get { return Get("Verify_SearchRequirements"); } }
+
         #endregion
     }
 }

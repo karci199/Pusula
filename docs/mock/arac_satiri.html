@@ -1,0 +1,145 @@
+﻿<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Araç satırı</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#202020;font-family:"Segoe UI",Arial,sans-serif;color:#e6e6e6;font-size:13px}
+.page{width:1400px;padding:24px 28px 28px;background:#202020;color:#e6e6e6;font-family:"Segoe UI",Arial,sans-serif;font-size:13px}
+h1{font-size:20px;margin:0 0 4px;font-weight:600}
+.lead{color:#a8a8a8;font-size:13px;margin-bottom:6px}
+.cap{font-size:12px;font-weight:700;color:#a8a8a8;margin:18px 0 8px;letter-spacing:.3px}
+.panel{background:#272727;border:1px solid #3a3a3a;border-radius:12px;padding:14px 16px;position:relative}
+.tabs{display:inline-flex;gap:4px;background:#2b2b2b;border:1px solid #3d3d3d;border-radius:10px;padding:4px}
+.tab{display:flex;align-items:center;gap:9px;padding:6px 14px 6px 10px;border-radius:8px;border-bottom:2px solid transparent;color:#a8a8a8}
+.tab.on{background:#353535;border-bottom-color:#4cc2ff;color:#fff;font-weight:600}
+.ib{width:24px;height:24px;border-radius:6px;background:#353535;display:flex;align-items:center;justify-content:center;font-size:11px}
+.tab small{display:block;font-size:10.5px;color:#8a8a8a;font-weight:400}
+.cnt{background:#3a3a3a;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px}
+.warn{margin-top:10px;background:#3d3214;border:1px solid #c9a227;border-radius:8px;padding:6px 12px;color:#f6c46f;font-size:12.5px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.wl{text-decoration:underline;text-underline-offset:3px;padding:1px 4px;border-radius:4px}
+.wl.on{background:#5a4714;text-decoration:none;font-weight:600}
+.groups{display:flex;gap:6px;margin:12px 0 0}
+.g{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:12px;border:1px solid #444;background:#2b2b2b;color:#cfcfcf;font-size:12px}
+.g.on{border-color:#4cc2ff;color:#fff;font-weight:600}
+.g .n{background:#3a3a3a;border-radius:8px;padding:0 6px;font-size:11px}
+.g.on .n{background:#4cc2ff;color:#111}
+.tb{display:flex;align-items:center;gap:8px;margin:10px 0 10px}
+.srch{background:#1f1f1f;border:1px solid #3d3d3d;border-radius:5px;padding:5px 10px;width:210px;color:#7a7a7a;font-size:12.5px}
+.dd{background:#2f2f2f;border:1px solid #444;border-radius:5px;padding:5px 10px;min-width:140px;display:flex;justify-content:space-between;gap:10px;font-size:12.5px;align-items:center}
+.dd .l{color:#8a8a8a;margin-right:6px}
+.dd.act{border-color:#4cc2ff;background:#16324a}
+.dd .ch{color:#8a8a8a;font-size:10px}
+.clear{color:#4cc2ff;font-size:12.5px}
+.sp{flex:1}
+.muted{color:#8a8a8a;font-size:12.5px}
+.cb{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:#cfcfcf}
+.box{width:15px;height:15px;border-radius:3px;border:1px solid #8a8a8a;display:inline-block;position:relative}
+.box.on{background:#4cc2ff;border-color:#4cc2ff}
+.box.on:after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #1a1a1a;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.btn{padding:5px 12px;border-radius:5px;font-size:12.5px;background:#2f2f2f;border:1px solid #444}
+.add{background:#4cc2ff;color:#111;font-weight:600;border-color:#4cc2ff}
+.pop{position:absolute;background:#2c2c2c;border:1px solid #4a4a4a;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.5);padding:6px;width:250px;z-index:5}
+.pop .h{color:#8a8a8a;font-size:11px;font-weight:700;padding:6px 8px 3px;letter-spacing:.3px}
+.pop .t{color:#4cc2ff;font-size:12px;padding:4px 8px 4px}
+.opt{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:5px}
+.opt.hov{background:#383838}
+.dot{width:8px;height:8px;border-radius:50%;flex:none;display:inline-block}
+.on2{margin-left:auto;color:#8a8a8a}
+.hr{border-top:1px solid #3a3a3a;margin:4px 0}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-weight:600;color:#a8a8a8;font-size:11.5px;padding:6px 10px;border-bottom:1px solid #3a3a3a;position:relative}
+th .grip{position:absolute;right:0;top:6px;bottom:6px;width:1px;background:#555}
+td{padding:8px 10px;border-bottom:1px solid #333;vertical-align:middle}
+tr.miss td:first-child{box-shadow:inset 3px 0 0 #c9a227}
+tr.fail td:first-child{box-shadow:inset 3px 0 0 #ff99a4}
+tr.ok td:first-child{box-shadow:inset 3px 0 0 #6ccb5f}
+.c{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:8px;margin-right:4px;background:#1d3348;color:#4cc2ff}
+.cp{background:#2e2742;color:#c8b6ff}.cg{background:#1f3a2a;color:#e6e6e6}.cr{background:#442726;color:#e6e6e6}.cy{background:#433519;color:#f6c46f}
+.st{display:inline-flex;align-items:center;gap:5px;padding:1px 9px;border-radius:9px;background:#353535;font-weight:600;font-size:11.5px}
+.b{font-weight:600}
+.mut{color:#8a8a8a}
+.note{background:#262626;border:1px solid #333;border-radius:10px;padding:10px 14px;font-size:12.5px;color:#b8b8b8;line-height:1.75;margin-top:16px}
+.note b{color:#e6e6e6}
+</style></head><body><div class="page">
+<h1>Doğrulama · tek araç satırı</h1>
+<div class="lead">Üç sekmede aynı sıra: <b>Ara · Bağ ▾ · (Durum ▾) · Sırala ▾ · Temizle</b> ········ <b>☐ göster · sayı · Dosyayı aç · + Madde</b> · haplar yerine çoklu seçimli açılır kutu</div>
+
+<div class="cap">① GEREKSİNİMLER · Bağ kutusu açık: "Test planı: Yok" seçili</div>
+<div class="panel" style="height:400px">
+  <div class="tabs">
+    <div class="tab on"><span class="ib" style="color:#4cc2ff">▤</span><div>Gereksinimler<small>ne doğrulanacak</small></div><span class="cnt">9</span></div>
+    <div class="tab"><span class="ib" style="color:#c8b6ff">✎</span><div>Test planı<small>nasıl doğrulanacak</small></div><span class="cnt">6</span></div>
+    <div class="tab"><span class="ib" style="color:#6ccb5f">✓</span><div>Test raporu<small>ne çıktı</small></div><span class="cnt">3</span></div>
+  </div>
+  <div class="warn">⚠ <span class="wl on">3 gereksinim hiçbir plan maddesine bağlı değil: DGÖ-4, DGÖ-6, DGÖ-8</span><span class="wl">3 gereksinimin raporu yok: TSD-0042, DGÖ-3, DGÖ-7</span></div>
+  <div class="groups"><span class="g on">Hepsi <span class="n">9</span></span><span class="g"><span class="dot" style="background:#4cc2ff"></span>İşlevsel <span class="n">4</span></span><span class="g"><span class="dot" style="background:#6ccb5f"></span>Özellik <span class="n">2</span></span><span class="g"><span class="dot" style="background:#f6e05e"></span>ÇK/EMC <span class="n">2</span></span><span class="g"><span class="dot" style="background:#999"></span>Diğer <span class="n">1</span></span></div>
+  <div class="tb">
+    <div class="srch">Ara: TG no, başlık</div>
+    <div class="dd act"><span><span class="l">Bağ</span>Plan yok</span><span class="ch">▲</span></div>
+    <div class="dd"><span><span class="l">Durum</span>Hepsi</span><span class="ch">▼</span></div>
+    <div class="dd" style="min-width:130px"><span><span class="l">Sırala</span>Sıra no</span><span class="ch">▼</span></div>
+    <span class="clear">Temizle</span>
+    <span class="sp"></span>
+    <span class="cb"><span class="box"></span>Raporları göster</span><span class="muted">3 / 9 madde</span>
+    <span class="btn">Dosyayı aç</span><span class="btn add">+ Madde</span>
+  </div>
+  <div class="pop" style="left:240px;top:228px">
+    <div class="t">Temizle</div>
+    <div class="h">TEST PLANI</div>
+    <div class="opt"><span class="box"></span>Var<span class="on2">6</span></div>
+    <div class="opt hov"><span class="box on"></span><span class="dot" style="background:#f6c46f"></span>Yok<span class="on2">3</span></div>
+    <div class="hr"></div>
+    <div class="h">TEST RAPORU</div>
+    <div class="opt"><span class="box"></span><span class="dot" style="background:#6ccb5f"></span>Geçti<span class="on2">2</span></div>
+    <div class="opt"><span class="box"></span><span class="dot" style="background:#ff99a4"></span>Kaldı<span class="on2">1</span></div>
+    <div class="opt"><span class="box"></span><span class="dot" style="background:#f6c46f"></span>Yok<span class="on2">6</span></div>
+  </div>
+  <table>
+    <tr><th style="width:110px">TG no<span class="grip"></span></th><th>Gereksinim<span class="grip"></span></th><th style="width:110px">Yöntem<span class="grip"></span></th><th style="width:110px">Test planı<span class="grip"></span></th><th style="width:140px">Durum</th></tr>
+    <tr class="miss"><td class="b">DGÖ-4</td><td>Kazanç <span class="mut">≥ 15 dBi @ 10 GHz</span></td><td>Test</td><td><span class="c cy">plan yok</span></td><td><span class="st"><span class="dot" style="background:#aaa"></span>Bekliyor</span></td></tr>
+    <tr class="miss"><td class="b">DGÖ-6</td><td>Çalışma sıcaklığı</td><td>Test</td><td><span class="c cy">plan yok</span></td><td><span class="st"><span class="dot" style="background:#f6c46f"></span>Hazırlık yapılıyor</span></td></tr>
+    <tr class="miss"><td class="b">DGÖ-8</td><td>Etiket ve işaretleme</td><td>Belge</td><td><span class="c cy">plan yok</span></td><td><span class="st"><span class="dot" style="background:#aaa"></span>Bekliyor</span></td></tr>
+  </table>
+</div>
+
+<div class="cap">② TEST PLANI · aynı satır (Durum yok)</div>
+<div class="panel">
+  <div class="warn">⚠ <span class="wl">3 plan maddesinin raporu yok: 4.3, 4.4, 4.8</span></div>
+  <div class="tb">
+    <div class="srch">Ara: TP no, açıklama</div>
+    <div class="dd"><span><span class="l">Bağ</span>Hepsi</span><span class="ch">▼</span></div>
+    <div class="dd" style="min-width:130px"><span><span class="l">Sırala</span>TP no</span><span class="ch">▼</span></div>
+    <span class="sp"></span>
+    <span class="muted">6 / 6 madde</span>
+    <span class="btn">Dosyayı aç</span><span class="btn add">+ Plan maddesi</span>
+  </div>
+  <table>
+    <tr><th style="width:60px">TP no<span class="grip"></span></th><th>Açıklama<span class="grip"></span></th><th style="width:100px">Yöntem<span class="grip"></span></th><th style="width:100px">Altyapı<span class="grip"></span></th><th style="width:130px">Gereksinimler<span class="grip"></span></th><th style="width:110px">Test raporu</th></tr>
+    <tr class="ok"><td class="b">4.1</td><td>SATIMO hüzme ölçümü <span class="mut">Jig JT-1000-0009</span></td><td>Test</td><td>SATIMO</td><td><span class="c">DGÖ-1</span></td><td><span class="c cg">● 5.1</span></td></tr>
+    <tr class="fail"><td class="b">4.2</td><td>SATIMO yan lob ölçümü</td><td>Test</td><td>SATIMO</td><td><span class="c">DGÖ-2</span></td><td><span class="c cr">● 5.2</span></td></tr>
+    <tr class="miss"><td class="b">4.3</td><td>VNA S11 ölçümü</td><td>Test</td><td>VNA</td><td><span class="c">DGÖ-3</span></td><td><span class="c cy">rapor yok</span></td></tr>
+  </table>
+</div>
+
+<div class="cap">③ TEST RAPORU · aynı satır</div>
+<div class="panel">
+  <div class="tb" style="margin-top:0">
+    <div class="srch">Ara: TR no, açıklama</div>
+    <div class="dd"><span><span class="l">Bağ</span>Hepsi</span><span class="ch">▼</span></div>
+    <div class="dd" style="min-width:130px"><span><span class="l">Sırala</span>TR no</span><span class="ch">▼</span></div>
+    <span class="sp"></span>
+    <span class="cb"><span class="box on"></span>Gereksinimleri göster</span><span class="muted">3 / 3 madde</span>
+    <span class="btn">Dosyayı aç</span><span class="btn add">+ Rapor maddesi</span>
+  </div>
+  <table>
+    <tr><th style="width:60px">TR no<span class="grip"></span></th><th>Açıklama<span class="grip"></span></th><th style="width:100px">Sonuç<span class="grip"></span></th><th style="width:100px">Test planı<span class="grip"></span></th><th style="width:130px">Gereksinimler<span class="grip"></span></th><th style="width:140px">Sonucun yeri</th></tr>
+    <tr><td class="b">5.1</td><td>Hüzme ölçüm sonuçları</td><td><span class="c cg">● Geçti</span></td><td><span class="c cp">4.1</span></td><td><span class="c">DGÖ-1</span></td><td></td></tr>
+    <tr class="fail"><td class="b">5.2</td><td>Yan lob sonuçları</td><td><span class="c cr">● Kaldı</span></td><td><span class="c cp">4.2</span></td><td><span class="c">DGÖ-2</span></td><td></td></tr>
+  </table>
+</div>
+
+<div class="note">
+<b>Bağ ▾</b> iki başlıklı çoklu seçim (Durum kutusuyla aynı görünüm) · kapalıyken: Hepsi / tek seçimin adı ("Plan yok") / "2 seçim" · seçim varken kutu mavi kenarlı ·
+Test planı: <b>Gereksinim</b> Var/Yok + <b>Test raporu</b> Geçti/Kaldı/Yok · Test raporu: <b>Test planı</b> Var/Yok + <b>Sonuç</b> Geçti/Kaldı/Yok ·
+<b>Sırala</b> Test planında: TP no · Bağ durumu; Test raporunda: TR no · Sonuç · Kapsam dışı gereksinimler uyarı ve sayılara girmez · sarı uyarı tıklanınca Bağ kutusunu doldurur
+</div>
+</div></body></html>

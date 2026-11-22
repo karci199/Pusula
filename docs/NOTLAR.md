@@ -191,6 +191,18 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 
 ## Bekleyen işler
 
+- **Doğrulama, yarın (22.11.2026 kararları):**
+  1. **Elle durum ile hesaplanan durum ayrılsın:** gereksinimde iki ayrı bilgi; bağlardan hesaplanan durum elle
+     verileni ezmesin (ikisi de görünür, hangisinin hesap olduğu belli). Şu an plan / rapor kaydında hesap elle
+     yazılanın üstüne yazıyor.
+  2. **`## Sonuç` → `## Rapor`:** eski dosyalarda başlık yeniden adlandırılır (yalnız başlık satırı).
+  3. **Gereksinim tablosundan eski TP / TR sütunları kaldırılır** (TP açıklama, TP not, TR açıklama, TR not,
+     TR sonuç, Sonuç yeri; TP no / TR no da): bilgi Plan / Rapor tablolarında. Önce Plan / Rapor tablolarında
+     karşılığı olduğu doğrulanır, eksik varsa oraya kopyalanır; sonra sütun kaldırılır. Kod ve testler güncellenir.
+  4. Sonra: test yardımcı araçlarına ayrıntı (kapak + numaralı foto şeridi, not, olaylar), ardından Excel dışa /
+     içe aktarma.
+  5. `mention-assist` testinde eski hata (Günlük penceresinde etiket kutusu bulunamıyor) incelenecek.
+  Testler artık `tests\GizliKos.ps1` ile görünmez masaüstünde koşar.
 - **Outlook'tan veri çekme (21.11.2026, sonraya bırakıldı; kullanıcı kararı):** klasik Outlook'a COM ile bağlanılır,
   Pusula ağa çıkmaz (Exchange'e Outlook gider). (1) Kayıt penceresinde Ortam = Outlook iken "Outlook'ta seçili maili al":
   konu → başlık, tarih, gönderen + alıcılar → katılımcı, gövde başı → notlar; mail `.msg` ve seçilen ekler

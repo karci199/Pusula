@@ -52,7 +52,8 @@ $user = [Environment]::UserName
 $stock = FindNode $vm.Nodes 'AB-7000-0003'; $vm.SelectedNode = $stock; Wait
 $vm.OpenJournalHere() | Out-Null; Wait
 $jt = $null; $st = New-Object System.Collections.Stack; $st.Push($win)
-while ($st.Count -gt 0) { $n = $st.Pop(); if ($n -is [Pusula.Wpf.TagBox] -and $n.IsVisible) { $jt = $n; break }; foreach ($c in [System.Windows.LogicalTreeHelper]::GetChildren($n)) { if ($c -is [System.Windows.DependencyObject]) { $st.Push($c) } } }
+# Pencere ekran dışında açıldığından açılır pencere içeriği "görünür" sayılmaz; kutu bağlandığı alandan (JournalTags) bulunur.
+while ($st.Count -gt 0) { $n = $st.Pop(); if ($n -is [Pusula.Wpf.TagBox]) { $bx = [System.Windows.Data.BindingOperations]::GetBinding($n, [Pusula.Wpf.TagBox]::TagsProperty); if ($bx -and $bx.Path.Path -eq 'JournalTags') { $jt = $n; break } }; foreach ($c in [System.Windows.LogicalTreeHelper]::GetChildren($n)) { if ($c -is [System.Windows.DependencyObject]) { $st.Push($c) } } }
 Check 'Günlük penceresinde etiket kutusu rozetli' ($jt -ne $null)
 if ($jt) { TypeText $jt.Input '#'; Check 'Günlük etiketinde # önerir' ($MA::IsOpen($jt.Input) -and $MA::Items($jt.Input).Count -ge 1) }
 $vm.IsJournalOpen = $false; Wait
