@@ -1,0 +1,118 @@
+﻿<Border xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="1180" Background="{DynamicResource SurfaceBaseBrush}" Padding="24,20" TextElement.FontFamily="Segoe UI"
+        TextElement.Foreground="{DynamicResource TextPrimaryBrush}" TextElement.FontSize="13">
+    <Border.Resources>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource LayerBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="16,12,16,10" />
+            <Setter Property="Margin" Value="0,0,12,12" />
+        </Style>
+        <Style x:Key="Title" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+        <Style x:Key="K" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+        </Style>
+        <Style x:Key="Cell" TargetType="StackPanel">
+            <Setter Property="Margin" Value="0,0,14,8" />
+        </Style>
+    </Border.Resources>
+    <StackPanel>
+        <TextBlock FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextTertiaryBrush}" Margin="0,0,0,12"
+                   Text="MOCK · ÖZELLİKLER KARTI · TÜRE VE ALT TÜRE GÖRE ALANLAR (her türde ortak: Kullanım amacı)" />
+        <UniformGrid Columns="3">
+            <!-- Kablaj RF -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Title}" Text="Kablaj · RF" />
+                    <UniformGrid Columns="2">
+                        <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Boy" /><TextBlock Text="1,5 m" /></StackPanel>
+                        <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Ekran" /><TextBlock Text="Ekranlı" /></StackPanel>
+                        <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Frekans bandı" /><TextBlock Text="2–18 GHz" /></StackPanel>
+                    </UniformGrid>
+                    <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Kullanım amacı" /><TextBlock TextWrapping="Wrap" Text="SATIMO referans kablosu" /></StackPanel>
+                </StackPanel>
+            </Border>
+            <!-- Kablaj Güç -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Title}" Text="Kablaj · Güç" />
+                    <UniformGrid Columns="2">
+                        <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Boy" /><TextBlock Text="3 m" /></StackPanel>
+                        <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Ekran" /><TextBlock Text="Ekransız" /></StackPanel>
+                        <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Gerilim" /><TextBlock Text="28 V" /></StackPanel>
+                        <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Akım" /><TextBlock Text="10 A" /></StackPanel>
+                        <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Kesit (AWG)" /><TextBlock Text="16" /></StackPanel>
+                    </UniformGrid>
+                    <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Kullanım amacı" /><TextBlock TextWrapping="Wrap" Text="Pozisyoner motor beslemesi" /></StackPanel>
+                </StackPanel>
+            </Border>
+            <!-- Kablaj Haberleşme -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Title}" Text="Kablaj · Haberleşme" />
+                    <UniformGrid Columns="2">
+                        <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Boy" /><TextBlock Text="5 m" /></StackPanel>
+                        <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Ekran" /><TextBlock Text="Ekranlı" /></StackPanel>
+                        <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Pin yapısı" /><TextBlock Text="D-Sub 9 ↔ D-Sub 9, 1:1" /></StackPanel>
+                    </UniformGrid>
+                    <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Kullanım amacı" /><TextBlock TextWrapping="Wrap" Text="RS422 pozisyoner kontrolü (#RS422 etiketi)" /></StackPanel>
+                </StackPanel>
+            </Border>
+            <!-- Kablaj Diğer -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Title}" Text="Kablaj · Diğer" />
+                    <UniformGrid Columns="2">
+                        <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Boy" /><TextBlock Text="2 m" /></StackPanel>
+                        <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Ekran" /><TextBlock Text="Ekransız" /></StackPanel>
+                    </UniformGrid>
+                    <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Kullanım amacı" /><TextBlock TextWrapping="Wrap" Text="Topraklama örgüsü" /></StackPanel>
+                </StackPanel>
+            </Border>
+            <!-- Mekanik jig -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Title}" Text="Mekanik jig · SATIMO (malzeme alanları kalktı)" />
+                    <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Kullanım amacı" /><TextBlock TextWrapping="Wrap" Text="DA400'ü döner tablaya bağlar" /></StackPanel>
+                </StackPanel>
+            </Border>
+            <!-- Yazılım -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Title}" Text="Yazılım" />
+                    <UniformGrid Columns="2">
+                        <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Revizyon" /><TextBlock Text="AC  (son Revizyon olayından)" /></StackPanel>
+                    </UniformGrid>
+                    <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Kullanım amacı" /><TextBlock TextWrapping="Wrap" Text="SATIMO ölçümünü otomatikleştirir" /></StackPanel>
+                </StackPanel>
+            </Border>
+            <!-- Cihaz -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Title}" Text="Cihaz · Zayıflatıcı" />
+                    <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Kullanım amacı" /><TextBlock TextWrapping="Wrap" Text="VNA girişini yüksek güçten korur" /></StackPanel>
+                </StackPanel>
+            </Border>
+            <!-- Diğer -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Title}" Text="Diğer" />
+                    <StackPanel Style="{StaticResource Cell}"><TextBlock Style="{StaticResource K}" Text="Kullanım amacı" /><TextBlock TextWrapping="Wrap" Text="Açık alanda anteni 2 m yükseklikte tutar" /></StackPanel>
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+        <Border Margin="0,4,0,0" Padding="14,10" CornerRadius="8" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+            <TextBlock TextWrapping="Wrap" FontSize="12" LineHeight="19" Foreground="{DynamicResource TextSecondaryBrush}">
+                <Run FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Text="Kalkan alanlar: " /><Run Text="jig Malzeme, Ölçüler, Yüzey, Bağlantı, Tork, Çizim revizyonu; yazılım Sürüm, Dil / platform, Konum, Bağlı cihaz; cihaz Marka / model, Seri no, Frekans, Kalibrasyon bitişi. Kayıtlardaki eski değerler silinmez (kayit.json'da durur), yalnız kartta görünmez." /><LineBreak />
+                <Run FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Text="Yazılım revizyonu: " /><Run Text="ayrı alan girilmez; son Revizyon olayının adı (AA, AB …) gösterilir. Revizyonda ne eklendiği olayın açıklamasıdır, Revizyonlar kartında listelenir." />
+            </TextBlock>
+        </Border>
+    </StackPanel>
+</Border>

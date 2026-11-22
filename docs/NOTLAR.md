@@ -197,8 +197,25 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
   plan / rapor ayrıntısı, rapor Tarih/Birim, kırpışma, geniş tablo), Excel'den gereksinim al + plan / rapor Excel'e aktar,
   aramalı bağ seçimi, "Sonuç yok" durumu, ÇK/EMC standardı (gereksinimde test tipi · standart · yöntem · prosedür;
   ortak liste `_TAKIP\Standartlar.md`, başlangıç 810F / 810G / 810G CHG1 / 810H / 461G — numaralar elle doğrulanmalı).
-  **Sıradaki:** test yardımcı araçları ayrıntısı (kapak + numaralı foto şeridi, not, olaylar), sonra istatistikler.
+  **Sıradaki:** istatistikler (mock `docs/mock/istatistikler.png`; kullanıcının itirazı var, konuşulacak).
   Küçükler: DOORS sütun adları (gerçek çıktı görülünce).
+- **Test yardımcı aracı sayfası (22.11.2026 gece, kullanıcı kararları; kodlandı):**
+  - Alanlar (turler.json sürüm 15): her türde **Kullanım amacı**. Kablaj: Boy, Ekran (ekranlı / ekransız), RF'te
+    Frekans bandı, Haberleşme'de Pin yapısı, Güç'te Gerilim · Akım · Kesit (AWG). Jigin malzeme alanları (Malzeme,
+    Ölçüler, Yüzey, Bağlantı, Tork, Çizim revizyonu), yazılımın Sürüm · Dil · Konum · Bağlı cihaz, cihazın Marka ·
+    Seri no · Frekans · Kalibrasyon bitişi kalktı (kayit.json'daki değerler silinmez). Mock: `docs/mock/arac_ozellikleri.png`.
+  - Fotoğraflar kayıt klasörünün kendisinde, iç klasör yok (yeni kayıtta fotoğraf alt klasörü açılmaz; eskisi okunur).
+    Ad düzeni stoktakiyle aynı: kapak `<numara>_kapak.jpg`, şerit `1_SMA_ucu.jpg`, `2_N_ucu.jpg` … (numara sırası,
+    sonrası şeritte ad olur); görünmesi istenmeyen fotoğraf numarasız bırakılır (`IMG_2041.jpg`), yalnız sayısı yazılır.
+  - Not kartı: aracın notunun gövdesi salt okunur (YAML ve `## Günlük` hariç); MD düğmesi notu açar.
+  - Olaylar: Günlük'e yazılır; yeni türler **Kalibrasyon** ve **Tamir / bakım** (jig / cihaz / kablajda revizyon
+    Revizyon türüyle). Stoka ait aracın olayları stokun zaman çizelgesinde de görünür (zaten vardı).
+  - Yazılım: fotoğraf kartı yerine **Revizyonlar** (Revizyon olayları: rev AA → AB, açıklama = eklenenler); en yenisi
+    Özellikler'de "Revizyon". Ayrı sürüm alanı yok.
+  - Kalibrasyon çipi (geçerlilik), kalibrasyon klasörü, "kalibrasyonu yaklaşan" listesi, yazılım ekran görüntüsü
+    şeridi: gerek yok (kullanıcı).
+  - Örnek veri: `tools\Ornek-Araclar.ps1 -Kok <kök>` (AB-7000-0003 altına 7 araç); `C:\PusulaDeneme`'ye eklendi.
+    Senaryo: `tool-page`.
 - **Hata avı (22.11.2026 gece):** Yöntem "—" hizası; eski düzenli dosyada gereksinimler taşımadan sonra okunur; aynı
   başlıklı iki Günlük girdisinde düzenle / sil doğru girdiyi bulur (`SourceOccurrence`); Excel okumada sayı artığı
   (3.1000000000000001 → 3.1), yazımda XML-geçersiz denetim karakterleri atılır; plan / rapor ayrıntısı `####` ya da
