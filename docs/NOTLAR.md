@@ -266,7 +266,10 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
   sonuçsuz) — metin "sonucu eksik" olarak ayrılabilir.
 - **Standart kütüphanesi (22.11.2026, sonraya; kullanıcı isteği):** ÇK / EMC test maddeleri için standartlar
   (MIL-STD-810G, MIL-STD-461G …) yüklenir; plan / gereksinim maddesinde doğrudan standart ve yöntem seçilebilir.
-- **Outlook'tan veri çekme (21.11.2026, sonraya bırakıldı; kullanıcı kararı):** klasik Outlook'a COM ile bağlanılır,
+- **Outlook / mail (22.11.2026 kullanıcı kararı):** yalnız `.msg` dosyası tutulur (kayda eklenir, `Diger\` klasörüne
+  kopyalanır, ✉ ile Outlook'ta açılır). Mailin içi okunmaz, pencere maille doldurulmaz; Outlook COM bağlantısı ve mail
+  istatistikleri yapılmaz (gereksiz karmaşıklık). Aşağıdaki "Outlook'tan veri çekme" ve "Mail istatistikleri" iptal.
+- **Outlook'tan veri çekme (21.11.2026, İPTAL 22.11.2026):** klasik Outlook'a COM ile bağlanılır,
   Pusula ağa çıkmaz (Exchange'e Outlook gider). (1) Kayıt penceresinde Ortam = Outlook iken "Outlook'ta seçili maili al":
   konu → başlık, tarih, gönderen + alıcılar → katılımcı, gövde başı → notlar; mail `.msg` ve seçilen ekler
   `03_Testler\Yazismalar\tarih_konu\` klasörüne; diskteki `.msg` de seçilebilir. (2) Adres defterinden kişi ekleme
@@ -283,7 +286,7 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
   Uygulamada (21.11.2026): Toplantı (ortam Outlook) ve Karar kaydına `.msg` eklenir; pencere maille doldurulmaz
   (kullanıcı kararı), dosya stokun en dışındaki `Diger\` klasörüne kendi adıyla kopyalanır (aynı ad varsa `_2`),
   notta `mail: Diger/….msg`; kartta ✉ Outlook'ta açar.
-- **Mail istatistikleri (21.11.2026, sonraya):** mailler Outlook'ta okunur; Pusula `Diger\*.msg` dosyalarını arka planda
+- **Mail istatistikleri (21.11.2026, İPTAL 22.11.2026):** mailler Outlook'ta okunur; Pusula `Diger\*.msg` dosyalarını arka planda
   yalnız okuyup sayar, nota yazmaz. Türetilmiş özet `_TAKIP\mail-ozet.json` (her an yeniden üretilebilir). Fikirler:
   (1) yanıt süresi (kişi / birim ortalaması, konuşma zincirinden), (2) kim bekliyor (son maili kim attı; "6 gündür
   yanıt yok"), (3) kimle ne kadar yazışılıyor, (4) talep bağı (konu / gövdede talep no geçen mail talebe bağlanır),
