@@ -36,6 +36,9 @@ Check 'taşıma: 3 plan (4.1, 4.3, 4.4), 3 rapor' ($vm.PlanCount -eq 3 -and $vm.
 Check '4.1 iki gereksinimi kapsar' ((($plans | Where-Object TpNo -eq '4.1').Requirements -join ',') -eq 'DGÖ-1,DGÖ-2')
 Check '4.4: TSD-0042 ve DGÖ-5' ((($plans | Where-Object TpNo -eq '4.4').Requirements -join ',') -eq 'TSD-0042,DGÖ-5')
 Check 'kapsama: DGÖ-4 planda yok, 4.3 raporsuz' ((@($vm.RequirementsWithoutPlan) -join ',') -eq 'DGÖ-4' -and (@($vm.PlansWithoutReport) -join ',') -eq '4.3') ($vm.VerCoverageText)
+$p41 = @($vm.PlanRows | Where-Object TpNo -eq '4.1')[0]
+Check 'plan ayrıntısı: 4.1 gereksinimleri başlık ve durumla, raporları 5.1 + 5.2' ((($p41.RequirementDetails | ForEach-Object { $_.Key + '/' + $_.Text }) -join ',') -eq 'DGÖ-1/Yanca hüzme genişliği,DGÖ-2/Yan lob seviyesi' -and (($p41.ReportDetails | ForEach-Object TrNo) -join ',') -eq '5.1,5.2' -and -not $p41.IsExpanded -and -not $p41.HasDetailText)
+$p41.IsExpanded = $true
 $rows = @($vm.VerificationGroups | ForEach-Object { $_.Rows })
 $r1 = $rows | Where-Object { $_.Item.TgNo -eq 'DGÖ-1' }
 Check 'gereksinim satırı: DGÖ-1 planı 4.1, raporu 5.1 Geçti + 5.2 Kaldı' ((($r1.LinkedPlans | ForEach-Object Text) -join ',') -eq '4.1' -and (($r1.LinkedReports | ForEach-Object { $_.Text + '/' + $_.Kind }) -join ',') -eq '5.1/1,5.2/2') ((($r1.LinkedReports | ForEach-Object { $_.Text + '/' + $_.Kind }) -join ','))
@@ -205,6 +208,8 @@ Check 'plan görünümü seçili' ($vm.IsVerPlanView -and -not $vm.IsVerReqView 
 (Pill $vm.PlanReportPills 0).IsChecked = $true; Wait
 Snap $win "$Out\ver-view-plan.png"
 $vm.ClearLinkFilter(); Wait
+@($vm.PlanRows | Where-Object TpNo -eq '4.1')[0].IsExpanded = $true; Wait
+Snap $win "$Out\ver-view-plan-detail.png"
 $vm.IsVerReportView = $true; $vm.ShowReportRequirements = $true; Wait
 Snap $win "$Out\ver-view-report.png"
 $vm.IsVerReqView = $true; $win.Width = 1900; Wait

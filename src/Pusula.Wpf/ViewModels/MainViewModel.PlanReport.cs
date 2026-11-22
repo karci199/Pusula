@@ -26,9 +26,41 @@ namespace Pusula.Wpf.ViewModels
         public int Kind { get; }
     }
 
-    /// <summary>Plan sekmesinde bir satır: plan maddesi, doğruladığı gereksinimler ve bağlı raporlar.</summary>
-    public sealed class PlanRow
+    /// <summary>Plan ayrıntısında bağlı gereksinim: numara, başlık, kısa not ve durum.</summary>
+    public sealed class PlanRequirementDetail
     {
+        /// <summary>Ayrıntıyı kurar.</summary>
+        public PlanRequirementDetail(string key, VerificationItem? item)
+        {
+            Key = key;
+            Text = item != null ? item.Text : Resources.Verify_LinkMissing;
+            Description = item != null ? item.Description : string.Empty;
+            var status = item != null ? item.EffectiveStatus : string.Empty;
+            StatusText = status.Length > 0 ? status : Resources.Verify_StatusPending;
+            StatusKind = VerificationRow.KindOf(status);
+        }
+
+        /// <summary>Gereksinim no (TG no).</summary>
+        public string Key { get; }
+
+        /// <summary>Başlık (gereksinim bulunamazsa uyarı).</summary>
+        public string Text { get; }
+
+        /// <summary>Kısa not (ölçüt).</summary>
+        public string Description { get; }
+
+        /// <summary>Durum.</summary>
+        public string StatusText { get; }
+
+        /// <summary>Durum türü (renk).</summary>
+        public int StatusKind { get; }
+    }
+
+    /// <summary>Plan sekmesinde bir satır: plan maddesi, doğruladığı gereksinimler ve bağlı raporlar; tıklanınca ayrıntı açılır.</summary>
+    public sealed class PlanRow : ViewModelBase
+    {
+        private bool isExpanded;
+
         /// <summary>Satırı kurar.</summary>
         public PlanRow(PlanItem item, IList<LinkChip> requirements, IList<LinkChip> reports)
         {
@@ -90,6 +122,34 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Satırın sol şeridi: 0 yok, 2 kırmızı (raporu Kaldı), 4 sarı (bağı eksik).</summary>
         public int Stripe { get; set; }
+
+        /// <summary>Ayrıntı açık mı.</summary>
+        public bool IsExpanded
+        {
+            get { return isExpanded; }
+            set { SetProperty(ref isExpanded, value); }
+        }
+
+        /// <summary>Ayrıntı: bağlı gereksinimler (numara, başlık, kısa not, durum).</summary>
+        public IList<PlanRequirementDetail> RequirementDetails { get; set; } = new List<PlanRequirementDetail>();
+
+        /// <summary>Ayrıntı: bağlı rapor maddeleri (sonuç, tarih, birim, klasör).</summary>
+        public IList<ReportRow> ReportDetails { get; set; } = new List<ReportRow>();
+
+        /// <summary>Ayrıntı: md'de "### TP no" başlığı altına elle yazılan metin (salt okunur).</summary>
+        public string DetailText { get; set; } = string.Empty;
+
+        /// <summary>Elle yazılmış ayrıntı var mı.</summary>
+        public bool HasDetailText
+        {
+            get { return DetailText.Length > 0; }
+        }
+
+        /// <summary>Bağlı rapor var mı.</summary>
+        public bool HasReportDetails
+        {
+            get { return ReportDetails.Count > 0; }
+        }
     }
 
     /// <summary>Rapor sekmesinde bir satır: rapor maddesi, sonuç, bağlı planlar ve (plan üzerinden) gereksinimler.</summary>
@@ -345,6 +405,16 @@ namespace Pusula.Wpf.ViewModels
                 {
                     Stripe = result == 2 ? 2 : (result == 0 || ReportPlanState(report) == 0 ? 4 : 0),
                 });
+            }
+
+            // Plan ayrıntısı: gereksinimler, raporlar ve md'deki elle yazılan ayrıntı.
+            var details = verificationStock.Length == 0 ? new Dictionary<string, string>() : PlanReportList.ReadDetails(verificationStock, PlanReportList.PlanHeading);
+            foreach (var row in allPlanRows)
+            {
+                row.RequirementDetails = row.Item.Requirements.Select(k => new PlanRequirementDetail(k, verificationItems.FirstOrDefault(i => string.Equals(VerificationList.KeyOf(i), k, StringComparison.OrdinalIgnoreCase)))).ToList();
+                row.ReportDetails = allReportRows.Where(r => r.Item.Plans.Contains(row.TpNo, StringComparer.OrdinalIgnoreCase)).ToList();
+                string text;
+                row.DetailText = details.TryGetValue(row.TpNo, out text) ? text : string.Empty;
             }
 
             UpdateLinkCounts();

@@ -3343,6 +3343,18 @@ namespace Pusula.Wpf.Properties
         /// <summary>Gereksinim / rapor satırı: bağlı plan yok.</summary>
         public static string Verify_NoPlan { get { return Get("Verify_NoPlan"); } }
 
+        /// <summary>Plan ayrıntısı: gereksinimler başlığı.</summary>
+        public static string Verify_DetailRequirements { get { return Get("Verify_DetailRequirements"); } }
+
+        /// <summary>Plan ayrıntısı: raporlar başlığı.</summary>
+        public static string Verify_DetailReports { get { return Get("Verify_DetailReports"); } }
+
+        /// <summary>Plan ayrıntısı: md ayrıntısı başlığı.</summary>
+        public static string Verify_DetailText { get { return Get("Verify_DetailText"); } }
+
+        /// <summary>Plan ayrıntısı: md ayrıntısı yokken ipucu.</summary>
+        public static string Verify_DetailEmpty { get { return Get("Verify_DetailEmpty"); } }
+
         /// <summary>Rapor tablosu: tarih sütunu.</summary>
         public static string Verify_ColDate { get { return Get("Verify_ColDate"); } }
 

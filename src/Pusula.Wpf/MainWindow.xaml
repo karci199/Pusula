@@ -2733,7 +2733,11 @@
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
                                                         <Border Padding="0,8" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}" Background="Transparent" Tag="{Binding Item}" MouseLeftButtonDown="VerPlanRow_MouseLeftButtonDown">
-                                                            <Grid>
+                                                            <Grid Grid.IsSharedSizeScope="True">
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="Auto" />
+                                                                    <RowDefinition Height="Auto" />
+                                                                </Grid.RowDefinitions>
                                                                 <Grid.ColumnDefinitions>
                                                                     <ColumnDefinition Width="{Binding DataContext.VerificationColumns.PlanTp, RelativeSource={RelativeSource AncestorType=Window}}" />
                                                                     <ColumnDefinition Width="*" MinWidth="200" />
@@ -2763,6 +2767,67 @@
                                                                         ToolTip="{x:Static res:Resources.Verify_EditHint}">
                                                                     <local:AppIcon Glyph="{x:Static local:AppIcons.Edit}" FontSize="12" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
                                                                 </Button>
+                                                                <!-- Ayrıntı: bağlı gereksinimler, raporlar, md'deki elle yazılan ayrıntı -->
+                                                                <Grid Grid.Row="1" Grid.ColumnSpan="7" Margin="10,10,40,4" Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVis}}">
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="16" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <StackPanel>
+                                                                        <TextBlock Margin="0,0,0,6" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Verify_DetailRequirements}" />
+                                                                        <ItemsControl ItemsSource="{Binding RequirementDetails}" Focusable="False">
+                                                                            <ItemsControl.ItemTemplate>
+                                                                                <DataTemplate>
+                                                                                    <Grid Margin="0,0,0,6">
+                                                                                        <Grid.ColumnDefinitions>
+                                                                                            <ColumnDefinition Width="Auto" SharedSizeGroup="PlanReqKey" />
+                                                                                            <ColumnDefinition Width="*" />
+                                                                                            <ColumnDefinition Width="Auto" />
+                                                                                        </Grid.ColumnDefinitions>
+                                                                                        <TextBlock Margin="0,0,12,0" FontWeight="SemiBold" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="{Binding Key}" />
+                                                                                        <StackPanel Grid.Column="1">
+                                                                                            <TextBlock TextWrapping="Wrap" Text="{Binding Text}" />
+                                                                                            <TextBlock FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Description}" />
+                                                                                        </StackPanel>
+                                                                                        <TextBlock Grid.Column="2" Margin="12,0,0,0" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding StatusText}" />
+                                                                                    </Grid>
+                                                                                </DataTemplate>
+                                                                            </ItemsControl.ItemTemplate>
+                                                                        </ItemsControl>
+                                                                        <TextBlock Margin="0,8,0,6" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Verify_DetailReports}" />
+                                                                        <TextBlock FontSize="12" Foreground="{DynamicResource SystemFillColorCautionBrush}" Text="{x:Static res:Resources.Verify_NoReport}"
+                                                                                   Visibility="{Binding HasReportDetails, Converter={StaticResource InverseBoolToVis}}" />
+                                                                        <ItemsControl ItemsSource="{Binding ReportDetails}" Focusable="False">
+                                                                            <ItemsControl.ItemTemplate>
+                                                                                <DataTemplate>
+                                                                                    <StackPanel Margin="0,0,0,4" Orientation="Horizontal">
+                                                                                        <TextBlock Width="48" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding TrNo}" />
+                                                                                        <TextBlock MinWidth="80" FontSize="12.5" VerticalAlignment="Center" Text="{Binding Result}" />
+                                                                                        <TextBlock Margin="10,0,0,0" FontSize="12" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Date}" />
+                                                                                        <TextBlock Margin="10,0,0,0" FontSize="12" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Unit}" />
+                                                                                        <Button Margin="8,0,0,0" Padding="6,2" Style="{DynamicResource SubtleButtonStyle}" Tag="{Binding Item}" Click="VerReportPathOpen_Click" ToolTip="{Binding ResultPath}"
+                                                                                                Visibility="{Binding HasResultPath, Converter={StaticResource BoolToVis}}">
+                                                                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="12" Foreground="{DynamicResource SystemFillColorCautionBrush}" />
+                                                                                        </Button>
+                                                                                    </StackPanel>
+                                                                                </DataTemplate>
+                                                                            </ItemsControl.ItemTemplate>
+                                                                        </ItemsControl>
+                                                                    </StackPanel>
+                                                                    <StackPanel Grid.Column="2">
+                                                                        <DockPanel Margin="0,0,0,6">
+                                                                            <Button DockPanel.Dock="Right" Padding="8,2" Style="{DynamicResource SubtleButtonStyle}" Command="{Binding DataContext.OpenVerificationFileCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                                                    ToolTip="{x:Static res:Resources.Verify_DetailHint}">
+                                                                                <TextBlock FontSize="12" Text="{x:Static res:Resources.Verify_OpenInFile}" />
+                                                                            </Button>
+                                                                            <TextBlock FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Verify_DetailText}" />
+                                                                        </DockPanel>
+                                                                        <TextBlock TextWrapping="Wrap" FontSize="12.5" Text="{Binding DetailText}" Visibility="{Binding HasDetailText, Converter={StaticResource BoolToVis}}" />
+                                                                        <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_DetailEmpty}"
+                                                                                   Visibility="{Binding HasDetailText, Converter={StaticResource InverseBoolToVis}}" />
+                                                                    </StackPanel>
+                                                                </Grid>
                                                             </Grid>
                                                         </Border>
                                                         <DataTemplate.Triggers>

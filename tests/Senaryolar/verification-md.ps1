@@ -86,6 +86,14 @@ try {
     $text2 = [IO.File]::ReadAllText($file2)
     Check 'tanınmayan sütun (Sorumlu) korunur, yeni madde eklenir' ($text2 -like '*| 4.1 | Yeni açıklama | Test | SATIMO | DGÖ-1, DGÖ-3 | eski not | Ali |*| 4.5 | Kütle | Muayene |  |  |  |  |*') $text2
     Check 'gereksinim tablosu sağlam' (@($VL::Read($stock2)).Count -eq 2)
+
+    "--- Plan ayrıntısı (### TP no altında elle yazılan)"
+    $text2 = [IO.File]::ReadAllText($file2).Replace("`n## Rapor", "`n### 4.1 · Kurulum`nAdım 1: kalibrasyon.`nAdım 2: ölçüm.`n`n### 4.5`n`n## Rapor")
+    [IO.File]::WriteAllText($file2, $text2, (New-Object System.Text.UTF8Encoding($false)))
+    $det = $PR::ReadDetails($stock2, 'Plan')
+    Check 'ayrıntı okunur: 4.1 iki satır, boş 4.5 yok' ($det.Count -eq 1 -and $det['4.1'] -eq ("Adım 1: kalibrasyon." + [Environment]::NewLine + "Adım 2: ölçüm.")) ([string]$det.Count)
+    Check 'plan kaydı ayrıntıya dokunmaz' ($PR::SavePlans($stock2, $PR::ReadPlans($stock2)) -eq '' -and ([IO.File]::ReadAllText($file2)).Contains("### 4.1 · Kurulum`nAdım 1: kalibrasyon.`nAdım 2: ölçüm."))
+    Check 'rapor bölümünde ayrıntı yok' ($PR::ReadDetails($stock2, 'Rapor').Count -eq 0)
 } finally { Remove-Item -Recurse -Force $tmp -ErrorAction SilentlyContinue }
 ""
 "SONUC: $ok basarili, $fail hata"

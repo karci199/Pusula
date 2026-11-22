@@ -214,6 +214,51 @@ namespace Pusula.Core.Testing
             return error.Length == 0;
         }
 
+        /// <summary>
+        /// Bölümdeki elle yazılmış madde ayrıntıları: <c>## Plan</c> (ya da <c>## Rapor</c>) altında <c>### 4.1 · başlık</c>
+        /// başlığından sonraki satırlar (sonraki başlığa kadar). Anahtar başlıktaki ilk sözcük (madde no). Yalnız okunur.
+        /// </summary>
+        public static Dictionary<string, string> ReadDetails(string stockFolder, string heading)
+        {
+            var details = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var lines = Lines(stockFolder);
+            int start, end;
+            var headings = string.Equals(heading, ReportHeading, StringComparison.OrdinalIgnoreCase) ? new[] { ReportHeading, LegacyReportHeading } : new[] { heading };
+            if (lines == null || !FindSection(lines, headings, out start, out end))
+            {
+                return details;
+            }
+
+            for (var i = start + 1; i < end; i++)
+            {
+                if (!lines[i].StartsWith("### ", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                var title = lines[i].Substring(4).Trim();
+                var cut = title.IndexOfAny(new[] { ' ', '·' });
+                var no = (cut < 0 ? title : title.Substring(0, cut)).Trim();
+                var body = new List<string>();
+                var j = i + 1;
+                while (j < end && !lines[j].StartsWith("#", StringComparison.Ordinal))
+                {
+                    body.Add(lines[j]);
+                    j++;
+                }
+
+                var text = string.Join(Environment.NewLine, body).Trim();
+                if (no.Length > 0 && text.Length > 0 && !details.ContainsKey(no))
+                {
+                    details[no] = text;
+                }
+
+                i = j - 1;
+            }
+
+            return details;
+        }
+
         /// <summary>Eski düzenin yedeğinin konduğu klasör (stok klasöründe).</summary>
         public const string BackupFolder = "_ARSIV";
 

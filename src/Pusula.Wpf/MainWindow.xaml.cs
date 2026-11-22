@@ -210,13 +210,23 @@ namespace Pusula.Wpf
             }
         }
 
-        // Plan satırına çift tık: düzenle.
+        // Plan satırına tek tık: ayrıntıyı aç / kapat; çift tık: düzenle.
         private void VerPlanRow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ClickCount == 2 && (sender as FrameworkElement)?.Tag is PlanItem plan)
+            var element = sender as FrameworkElement;
+            if (e.ClickCount == 2 && element?.Tag is PlanItem plan)
             {
+                if (element.DataContext is PlanRow open)
+                {
+                    open.IsExpanded = false;
+                }
+
                 viewModel.EditPlanItem(plan);
                 e.Handled = true;
+            }
+            else if (e.ClickCount == 1 && element?.DataContext is PlanRow row)
+            {
+                row.IsExpanded = !row.IsExpanded;
             }
         }
 

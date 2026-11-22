@@ -3116,7 +3116,7 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
     <value>Ayrıntı ↗</value>
   </data>
   <data name="Verify_DetailHint" xml:space="preserve">
-    <value>Ayrıntı md dosyasında: ## Plan / ## Sonuç altında bu maddenin bölümü (altına serbest yazılabilir)</value>
+    <value>Ayrıntı md dosyasında: ## Plan / ## Rapor altında "### madde no · başlık" başlığının altına serbest yazılır</value>
   </data>
   <data name="Verify_CoverageNoPlan" xml:space="preserve">
     <value>{0} gereksinim hiçbir plan maddesine bağlı değil: {1}</value>
@@ -3135,6 +3135,18 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   </data>
   <data name="Verify_NoPlan" xml:space="preserve">
     <value>plan yok</value>
+  </data>
+  <data name="Verify_DetailRequirements" xml:space="preserve">
+    <value>Doğruladığı gereksinimler</value>
+  </data>
+  <data name="Verify_DetailReports" xml:space="preserve">
+    <value>Raporlar</value>
+  </data>
+  <data name="Verify_DetailText" xml:space="preserve">
+    <value>Ayrıntı (md)</value>
+  </data>
+  <data name="Verify_DetailEmpty" xml:space="preserve">
+    <value>Henüz ayrıntı yok. md dosyasında ## Plan altına "### madde no · başlık" yazıp altına kurulum, adımlar, dikkat edilecekleri yazabilirsin.</value>
   </data>
   <data name="Verify_ColDate" xml:space="preserve">
     <value>Tarih</value>
