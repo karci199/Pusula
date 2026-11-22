@@ -18,8 +18,8 @@ function Fact($label) { (@($vm.Inventory.Facts) + @($vm.Inventory.Properties) | 
 "--- 1. Türler: hazır alanlar (eski sürümlü turler.json göçü)"
 $types = [Pusula.Core.Types.TypeStore]::LoadOrCreate($Data)
 $cableType = $types.Find('cable'); $jigType = $types.Find('jig'); $swType = $types.Find('software')
-Check 'kablo alanları (adet, uç, faz kararlı, protokol yok)' ($cableType.Fields.Count -eq 5 -and -not (@($cableType.Fields | % Key) -contains 'uc_a') -and -not (@($cableType.Fields | % Key) -contains 'faz_kararli') -and -not (@($cableType.Fields | % Key) -contains 'protokol') -and -not (@($cableType.Fields | % Key) -contains 'adet')) ([string]$cableType.Fields.Count)
-Check 'jig alanları (adet yok)' ($jigType.Fields.Count -eq 6 -and -not (@($jigType.Fields | % Key) -contains 'olcum_sistemi') -and -not (@($jigType.Fields | % Key) -contains 'adet')) ([string]$jigType.Fields.Count)
+Check 'kablo alanları (adet, uç, faz kararlı, protokol yok)' ($cableType.Fields.Count -eq 8 -and -not (@($cableType.Fields | % Key) -contains 'uc_a') -and -not (@($cableType.Fields | % Key) -contains 'faz_kararli') -and -not (@($cableType.Fields | % Key) -contains 'protokol') -and -not (@($cableType.Fields | % Key) -contains 'adet')) ([string]$cableType.Fields.Count)
+Check 'jig alanları (adet yok)' ($jigType.Fields.Count -eq 1 -and -not (@($jigType.Fields | % Key) -contains 'olcum_sistemi') -and -not (@($jigType.Fields | % Key) -contains 'adet')) ([string]$jigType.Fields.Count)
 Check 'yazılım envanter türü' ($swType -ne $null -and $swType.IsInventory)
 Check 'RF kablo: frekans var, protokol yok' ((@($cableType.FieldsFor('RF') | % Key) -contains 'frekans') -and -not (@($cableType.FieldsFor('RF') | % Key) -contains 'protokol'))
 Check 'Haberleşme: pin yapısı (protokol etiket oldu)' (-not (@($cableType.FieldsFor('Haberleşme') | % Key) -contains 'protokol') -and (@($cableType.FieldsFor('Haberleşme') | % Key) -contains 'pin_yapisi'))
@@ -27,7 +27,7 @@ Check 'kablo alt türleri: RF, Haberleşme, Güç, Diğer' (($cableType.SubTypes
 # Sürüm 7: kablo uçları (konnektör) alan değil; ileride etiket / not.
 Check 'uç alanları kalktı' (-not (@($cableType.Fields | % Key) -contains 'uc_b'))
 Check 'Güç: AWG kesit, akım' ((@($cableType.FieldsFor('Güç') | % Key) -contains 'kesit_awg') -and (@($cableType.FieldsFor('Güç') | % Key) -contains 'akim') -and -not (@($cableType.FieldsFor('RF') | % Key) -contains 'kesit_awg'))
-Check 'jig: alt türler ölçüm altyapısı, alanlar her alt türde' (($jigType.SubTypes -join ',') -eq 'SATIMO,Yankısız oda,Kompakt range,Test sahası,Diğer' -and (@($jigType.FieldsFor('SATIMO') | % Key) -contains 'tork') -and (@($jigType.FieldsFor('Diğer') | % Key) -contains 'yuzey')) ($jigType.SubTypes -join ',')
+Check 'jig: alt türler ölçüm altyapısı, alanlar her alt türde' (($jigType.SubTypes -join ',') -eq 'SATIMO,Yankısız oda,Kompakt range,Test sahası,Diğer' -and (@($jigType.FieldsFor('SATIMO') | % Key) -contains 'kullanim_amaci') -and (@($jigType.FieldsFor('Diğer') | % Key) -contains 'kullanim_amaci')) ($jigType.SubTypes -join ',')
 Check 'yazılımda alt tür yok' ($swType.SubTypes.Count -eq 0)
 Check 'eski alt tür adı yeni karşılığıyla eşleşir (RF kablo → RF)' ($cableType.CanonicalSubType('RF kablo') -eq 'RF' -and $cableType.CanonicalSubType('Güç / veri') -eq 'Güç' -and $jigType.CanonicalSubType('Mekanik') -eq 'Mekanik')
 
@@ -53,7 +53,7 @@ $note = Join-Path $rf 'JT-0001-0001.md'
 $bodyBefore = Body $note
 Check 'düzenle açılır, alanlar görünür' ($vm.OpenEdit($rf) -and $vm.HasEditFields)
 Check 'RF alanları (faz kararlı etiket oldu)' ((Keys) -contains 'frekans' -and -not ((Keys) -contains 'faz_kararli') -and -not ((Keys) -contains 'uc_a') -and -not ((Keys) -contains 'protokol')) ((Keys) -join ',')
-Check 'alan ipuçları birimin kendisi: m, MHz' ((Input 'boy').Placeholder -eq 'm' -and (Input 'frekans').Placeholder -eq 'MHz' -and (Input 'frekans').Label -eq 'Frekans (MHz)') ((Input 'boy').Placeholder + ' / ' + (Input 'frekans').Placeholder)
+Check 'alan ipuçları: birimli alanda birim (m), birimsiz alanda yalın ad' ((Input 'boy').Placeholder -eq 'm' -and (Input 'frekans').Label -eq 'Frekans bandı') ((Input 'boy').Placeholder + ' / ' + (Input 'frekans').Label)
 Check 'RF etiket önerisinde faz_kararli' (@($vm.TagSuggestions() | % Key) -contains '#faz_kararli')
 Check 'boy etiketi birimli' ((Input 'boy').Label -eq 'Boy (m)') ((Input 'boy').Label)
 (Input 'boy').Value = '1'
@@ -70,7 +70,7 @@ Check 'kayit.json alanları' ($r.Fields['boy'] -eq '1' -and ($r.Tags -contains '
 Check 'boş alan yazılmaz' (-not $r.Fields.ContainsKey('protokol'))
 $y = Yaml $note
 Check 'YAML: boy birimli' ($y -match '(?m)^boy: "?1 m"?\r?$') $y
-Check 'YAML: frekans, etiket' ($y -match '(?m)^frekans: ' -and $y -match '(?m)^tags: \[faz_kararli\]')
+Check 'YAML: frekans bandı, etiket' ($y -match '(?m)^frekans: ' -and $y -match '(?m)^tags: \[faz_kararli\]')
 Check 'not gövdesi değişmedi' ((Body $note) -eq $bodyBefore)
 
 "--- 3. Bilgiler kartı"
@@ -117,27 +117,23 @@ Check 'kayit.json RS422 etiketi + pin' ($r.SubType -eq 'Haberleşme' -and ($r.Ta
 $vm.SelectNodeByPath($rs); Wait
 Check 'kartta #RS422' (($vm.Inventory.Tags -join ' ') -eq '#RS422')
 
-"--- 6. Mekanik jig"
+"--- 6. Mekanik jig (22.11.2026: yalnız Kullanım amacı; eski malzeme alanları kalktı)"
 $jig = Join-Path $Data 'ENVANTER\Jigler\JIG-1000-0009_SATIMO_adaptor_plakasi'
 Check 'düzenle açılır' ($vm.OpenEdit($jig) -and $vm.EditSubType -eq 'Mekanik')
-Check 'jig alanları (eski alt tür Mekanik da)' ((Keys) -contains 'malzeme' -and (Keys) -contains 'yuzey' -and (Keys) -contains 'tork' -and -not ((Keys) -contains 'olcum_sistemi')) ((Keys) -join ',')
-(Input 'malzeme').Value = 'Al 6061'; (Input 'olculer').Value = '300x200x12'; (Input 'yuzey').Value = 'Eloksal'
-(Input 'baglanti').Value = 'M6 x 4, SATIMO direk flanşı'; (Input 'cizim_revizyonu').Value = 'AB'
+Check 'jig alanları: yalnız kullanım amacı' (((Keys) -join ',') -eq 'kullanim_amaci') ((Keys) -join ',')
+(Input 'kullanim_amaci').Value = 'SATIMO direk flanşına anten bağlar'
 Snap $win "$Out\fields-edit-jig.png"
 Check 'kaydedildi' ($vm.ConfirmEdit())
 $r = Rec $jig
-Check 'kayit.json' ($r.Fields['malzeme'] -eq 'Al 6061' -and $r.Fields['yuzey'] -eq 'Eloksal' -and $r.Fields['cizim_revizyonu'] -eq 'AB')
+Check 'kayit.json' ($r.Fields['kullanim_amaci'] -eq 'SATIMO direk flanşına anten bağlar')
 Check 'geçmiş ve notlar korundu' ($r.Events.Count -eq 5 -and $r.Notes.Count -eq 1)
 $vm.SelectNodeByPath($jig); Wait
-Check 'kartta malzeme, ölçüler' ((Fact 'Malzeme') -eq 'Al 6061' -and (Fact 'Ölçüler') -eq '300x200x12')
+Check 'kartta kullanım amacı' ((Fact 'Kullanım amacı') -eq 'SATIMO direk flanşına anten bağlar')
 Snap $win "$Out\fields-card-jig.png"
 $vm.OpenEdit($jig) | Out-Null
 $vm.EditSubType = 'Montaj'; Pump
-Check 'alt tür değişse de jig alanları aynı' ((Keys) -contains 'tork' -and (Keys) -contains 'yuzey')
-(Input 'tork').Value = '9'
+Check 'alt tür değişse de jig alanı aynı' ((Keys) -contains 'kullanim_amaci')
 Check 'kaydedildi' ($vm.ConfirmEdit())
-$jn = Join-Path $jig 'JIG-1000-0009.md'
-$y = Yaml $jn
-Check 'YAML: tork birimli' ($y -match '(?m)^tork: "?9 Nm') $y
-Check 'yüzey değeri kayıtta saklı' ((Rec $jig).Fields['yuzey'] -eq 'Eloksal')
+$y = Yaml (Join-Path $jig 'JIG-1000-0009.md')
+Check 'YAML: kullanım amacı' ($y -match '(?m)^kullanim_amaci: ') $y
 "SONUÇ OK=$ok HATA=$fail"

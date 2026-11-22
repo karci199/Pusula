@@ -759,6 +759,7 @@ namespace Pusula.Wpf.ViewModels
             }
 
             OnPropertyChanged(nameof(HasOpenIssues));
+            BuildStockStats();
             if (timelineFilter == "all" || timelineFilter == "planned")
             {
                 var planned = Detail.OpenTasks.Where(t => !t.IsDone).OrderBy(t => t.Task.Due ?? DateTime.MaxValue).Select(t => new StockTimelineCard(t) { ProjectColor = color }).ToList();

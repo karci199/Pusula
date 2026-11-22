@@ -167,6 +167,7 @@ namespace Pusula.Wpf.ViewModels
             }
 
             LoadVerifications();
+            BuildStockStats();
             OnPropertyChanged(nameof(HasStockSerials));
             OnPropertyChanged(nameof(StockOpenCount));
             OnPropertyChanged(nameof(HasStockLate));

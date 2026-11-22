@@ -47,6 +47,8 @@ Check 'düzenle açılır' ($vm.OpenEdit($jig)); Wait
 $combo = FindLogical $win { param($x) $x -is [System.Windows.Controls.ComboBox] -and [object]::ReferenceEquals($x.ItemsSource, $vm.EditSubTypes) }
 Check 'kutu kayıtlı alt türü gösterir' ($combo -ne $null -and $vm.EditSubType -eq 'Mekanik' -and $combo.SelectedItem -eq 'Mekanik' -and -not $combo.IsEditable) "seçili=[$($combo.SelectedItem)] vm=[$($vm.EditSubType)]"
 Check 'başlık: Özellikler · Mekanik' ($vm.EditFieldsHeader -eq 'Özellikler · Mekanik') $vm.EditFieldsHeader
+# 22.11.2026: jigin seçim alanları kalktı; seçim alanı kablajın Ekran alanında sınanır.
+Check 'kablaj düzenle açılır' ($vm.OpenEdit((Join-Path $Data 'ENVANTER\Kablolar\JT-0001-0001_SATIMO_RF_kablosu'))); Wait
 $choice = @($vm.EditFields | Where-Object { $_.IsChoice })[0]
 Check 'seçim alanı var, listede boş seçenek başta' ($choice -ne $null -and $choice.Choices[0] -eq '' -and $choice.Choices.Count -ge 2) ($choice.Choices -join '|')
 Snap $win "$Out\dialog-edit-jig.png"

@@ -21,7 +21,7 @@ try {
     [Pusula.Core.Inventory.InventoryService]::CreateNote($r.Folder, $rec) | Out-Null
     Check 'var olan nota dokunulmaz' ([IO.File]::ReadAllText("$($r.Folder)\JIG-1000-0001.md") -match 'elle yazılan satır')
     $c = $RC::Read($r.Folder, 'JIG-1000-0001')
-    Check 'boş kayıt: 3 klasör, hepsi 0' ($c.Folders.Count -eq 3 -and ($c.Folders | Where-Object FileCount -gt 0).Count -eq 0)
+    Check 'boş kayıt: 2 klasör (fotoğraf klasörü yok), hepsi 0' ($c.Folders.Count -eq 2 -and ($c.Folders | Where-Object FileCount -gt 0).Count -eq 0)
     Check 'özet: başlık atlanır' ($c.NoteExcerpt -eq 'elle yazılan satır') $c.NoteExcerpt
 } finally { Remove-Item -Recurse -Force $tmp -ErrorAction SilentlyContinue }
 

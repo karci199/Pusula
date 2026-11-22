@@ -61,7 +61,7 @@ namespace Pusula.Wpf.ViewModels
         private static EventKindOption[] custom = new EventKindOption[0];
 
         /// <summary>
-        /// Listede görünen türler (21.11.2026 sadeleştirmesi, 11 tür) sırasıyla ve ardından eklenenler. Eski türler
+        /// Listede görünen türler (21.11.2026 sadeleştirmesi, 11 tür; 22.11.2026: test yardımcı araçları için Kalibrasyon ve Tamir / bakım) sırasıyla ve ardından eklenenler. Eski türler
         /// (Test başladı/bitti, Arıza, Onarım, Üretime teslim, Numune, Teslim alındı) listede yok; okunurken yeni türün
         /// ikon ve rengiyle gösterilir (<see cref="Find"/>), adları korunur.
         /// </summary>
@@ -74,7 +74,8 @@ namespace Pusula.Wpf.ViewModels
                     var order = new[]
                     {
                         Resources.Event_Measurement, Resources.Event_Meeting, Resources.Event_Decision, Resources.Event_Request,
-                        Resources.Event_Delivery, Resources.Event_Shipment, Resources.Event_Revision, Resources.Event_Issue,
+                        Resources.Event_Delivery, Resources.Event_Shipment, Resources.Event_Revision, Resources.Event_Calibration,
+                        Resources.Event_Maintenance, Resources.Event_Issue,
                         Resources.Event_Solution, Resources.Event_Preparation, Resources.QuickNote_Chip,
                     }.Select(Journal.KindKey).ToList();
                     all = BuiltIn().Where(o => order.Contains(o.Key)).OrderBy(o => order.IndexOf(o.Key)).Concat(custom).ToArray();
@@ -211,6 +212,8 @@ namespace Pusula.Wpf.ViewModels
                 new EventKindOption(Resources.Event_Revision, "", StatusTone.Waiting),
                 new EventKindOption(Resources.Event_Sample, "", StatusTone.Neutral),
                 new EventKindOption(Resources.Event_Shipment, "", StatusTone.Neutral),
+                new EventKindOption(Resources.Event_Calibration, "", StatusTone.Done),
+                new EventKindOption(Resources.Event_Maintenance, "", StatusTone.Waiting),
             });
         }
 

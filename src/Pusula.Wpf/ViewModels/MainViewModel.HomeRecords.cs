@@ -275,6 +275,7 @@ namespace Pusula.Wpf.ViewModels
                     stocks.Max(s => s.LastChange));
             }
 
+            BuildHomeStats(data, projects.Select(p => Path.GetFileName(p.Path)).ToList());
             // Araç türleri: türün kendi adıyla ("Jig", "Kablo" …); hiç kaydı olmayanlar da (0) görünür.
             var kind = toolKind;
             ToolKindFilters.Clear();

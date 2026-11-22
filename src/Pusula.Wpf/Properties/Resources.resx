@@ -3507,4 +3507,70 @@ Ortak liste (ÇK / EMC): &quot;## standart&quot; başlığı altında &quot;- nu
   <data name="Verify_SearchRequirements" xml:space="preserve">
     <value>Ara: TG no, başlık</value>
   </data>
+  <data name="Event_Calibration" xml:space="preserve">
+    <value>Kalibrasyon</value>
+  </data>
+  <data name="Event_Maintenance" xml:space="preserve">
+    <value>Tamir / bakım</value>
+  </data>
+  <data name="Inv_NoteCard" xml:space="preserve">
+    <value>Not</value>
+  </data>
+  <data name="Inv_NoteReadOnlyHint" xml:space="preserve">
+    <value>Notun gövdesi; YAML ve ## Günlük burada gösterilmez. Değiştirmek için MD.</value>
+  </data>
+  <data name="Inv_Revisions" xml:space="preserve">
+    <value>Revizyonlar · {0}</value>
+  </data>
+  <data name="Inv_RevisionsEmpty" xml:space="preserve">
+    <value>Henüz revizyon yok. + Olay ile Revizyon türünde kayıt ekle (başlık: AA, AB …; açıklama: eklenenler).</value>
+  </data>
+  <data name="Inv_RevisionField" xml:space="preserve">
+    <value>Revizyon</value>
+  </data>
+  <data name="Inv_PhotoRule" xml:space="preserve">
+    <value>Kapak: {0}_kapak.jpg · şerit: 1_ad.jpg, 2_ad.jpg … (numarasızlar görünmez)</value>
+  </data>
+  <data name="Stats_Tab" xml:space="preserve">
+    <value>İstatistik</value>
+  </data>
+  <data name="Stats_Stocks" xml:space="preserve">
+    <value>Stoklar</value>
+  </data>
+  <data name="Stats_NoStatus" xml:space="preserve">
+    <value>Durumu yok</value>
+  </data>
+  <data name="Stats_OpenWork" xml:space="preserve">
+    <value>Açık iş</value>
+  </data>
+  <data name="Stats_Late" xml:space="preserve">
+    <value>Geciken</value>
+  </data>
+  <data name="Stats_OpenIssues" xml:space="preserve">
+    <value>Açık sorun</value>
+  </data>
+  <data name="Stats_OpenRequests" xml:space="preserve">
+    <value>Bekleyen talep</value>
+  </data>
+  <data name="Stats_Passed" xml:space="preserve">
+    <value>Geçti</value>
+  </data>
+  <data name="Stats_Failed" xml:space="preserve">
+    <value>Kaldı</value>
+  </data>
+  <data name="Stats_Running" xml:space="preserve">
+    <value>Sürüyor</value>
+  </data>
+  <data name="Stats_Pending" xml:space="preserve">
+    <value>Bekliyor</value>
+  </data>
+  <data name="Stats_NoPlan" xml:space="preserve">
+    <value>Planı olmayan gereksinim</value>
+  </data>
+  <data name="Stats_NoReport" xml:space="preserve">
+    <value>Raporu olmayan plan maddesi</value>
+  </data>
+  <data name="Stats_Hint" xml:space="preserve">
+    <value>Sayıya tıklayınca ilgili liste açılır. Doğrulama sayıları stokun kendi sayfasında.</value>
+  </data>
 </root>

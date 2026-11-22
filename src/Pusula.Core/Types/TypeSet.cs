@@ -44,7 +44,7 @@ namespace Pusula.Core.Types
 
         /// <summary>Dosya biçiminin sürümü.</summary>
         [DataMember(Name = "schemaVersion", Order = 0)]
-        public int SchemaVersion { get; set; } = 14;
+        public int SchemaVersion { get; set; } = 15;
 
         /// <summary>Kayıt türleri.</summary>
         [DataMember(Name = "types", Order = 1)]
@@ -415,7 +415,90 @@ namespace Pusula.Core.Types
                 RenameCableSubTypes(Tuple.Create("RF kablo", "RF"), Tuple.Create("Haberleşme kablosu", "Haberleşme"), Tuple.Create("Güç kablosu", "Güç"));
             }
 
-            SchemaVersion = 14;
+            // Sürüm 15 (22.11.2026 kullanıcı kararı): test yardımcı araçlarında yalnız gerekli alanlar. Her türde "Kullanım
+            // amacı"; kablajda Ekran (ekranlı / ekransız), RF'te Frekans bandı, Güç'te Gerilim. Jigin malzeme alanları,
+            // yazılımın sürüm / platform alanları (revizyon olaydan okunur), cihazın marka / seri / kalibrasyon alanları
+            // kalkar (kayıtlardaki değerler silinmez). Fotoğraflar kayıt klasöründe durur: yeni kayıtta fotoğraf alt klasörü açılmaz.
+            if (SchemaVersion < 15)
+            {
+                ApplyToolFieldsV15();
+            }
+
+            SchemaVersion = 15;
+        }
+
+        /// <summary>Sürüm 15'te kalkan hazır alanların anahtarları (türe göre).</summary>
+        private static readonly Dictionary<string, string[]> RemovedV15 = new Dictionary<string, string[]>
+        {
+            { "jig", new[] { "malzeme", "olculer", "yuzey", "baglanti", "tork", "cizim_revizyonu" } },
+            { "software", new[] { "surum", "dil_platform", "konum", "bagli_cihaz" } },
+            { EquipmentKey, new[] { "marka_model", "seri_no", "frekans", "kalibrasyon_bitisi" } },
+        };
+
+        // Sürüm 15 göçü: kullanıcının eklediği alanlara ve adını değiştirdiği klasörlere dokunulmaz.
+        private void ApplyToolFieldsV15()
+        {
+            foreach (var pair in RemovedV15)
+            {
+                Find(pair.Key)?.Fields.RemoveAll(x => pair.Value.Contains(x.Key));
+            }
+
+            var cable = Find("cable");
+            if (cable != null)
+            {
+                if (!cable.Fields.Any(x => x.Key == ShieldKey))
+                {
+                    var boy = cable.Fields.FindIndex(x => x.Key == "boy");
+                    cable.Fields.Insert(boy >= 0 ? boy + 1 : 0, ShieldField());
+                }
+
+                // Anahtar "frekans" kalır: kayıtlardaki değerler yeni adla görünmeye devam eder.
+                var frequency = cable.Fields.FirstOrDefault(x => x.Key == "frekans");
+                if (frequency != null)
+                {
+                    frequency.Name = "Frekans bandı";
+                    frequency.Unit = string.Empty;
+                    frequency.Kind = FieldKind.Text;
+                }
+
+                if (!cable.Fields.Any(x => x.Key == "gerilim"))
+                {
+                    var current = cable.Fields.FindIndex(x => x.Key == "akim");
+                    var voltage = Field("Gerilim", FieldKind.Number, "V", null, "Güç");
+                    cable.Fields.Insert(current >= 0 ? current : cable.Fields.Count, voltage);
+                }
+            }
+
+            foreach (var key in ToolKeys)
+            {
+                var type = Find(key);
+                if (type != null && !type.Fields.Any(x => x.Key == PurposeKey))
+                {
+                    type.Fields.Add(PurposeField());
+                }
+
+                type?.RecordFolders.RemoveAll(f => string.Equals(f, "02_Fotograflar", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(f, "03_Fotograflar", StringComparison.OrdinalIgnoreCase));
+            }
+        }
+
+        /// <summary>Test yardımcı aracı türlerinin anahtarları (kablaj, mekanik jig, yazılım, cihaz, diğer).</summary>
+        public static readonly string[] ToolKeys = { "cable", "jig", "software", EquipmentKey, OtherKey };
+
+        /// <summary>"Kullanım amacı" alanının anahtarı (bütün test yardımcı araçlarında).</summary>
+        public const string PurposeKey = "kullanim_amaci";
+
+        /// <summary>Kablajın "Ekran" alanının anahtarı.</summary>
+        public const string ShieldKey = "ekran";
+
+        private static FieldDefinition PurposeField()
+        {
+            return Field("Kullanım amacı", FieldKind.Text, string.Empty);
+        }
+
+        private static FieldDefinition ShieldField()
+        {
+            return Field("Ekran", FieldKind.Choice, string.Empty, new[] { "Ekranlı", "Ekransız" });
         }
 
         // Kablo alt türlerini yeniden adlandırır: alt tür listesi, alanların alt türleri, uç listeleri ve etiket kapsamları.
@@ -641,6 +724,8 @@ namespace Pusula.Core.Types
             set.Types.Add(person);
 
             AddDefaultFields(set);
+            // 22.11.2026 düzeni (sürüm 15) varsayılanlara da aynı yoldan uygulanır: tek tanım, iki kez çalışsa da aynı sonuç.
+            set.ApplyToolFieldsV15();
             return set;
         }
 

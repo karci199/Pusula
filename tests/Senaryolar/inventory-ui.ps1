@@ -58,7 +58,7 @@ try {
     Check 'stok seçilince envanter paneli kapanır' (-not $vm.Inventory.IsRecord -and -not $vm.Inventory.IsList)
     "--- 5. Şablon alt klasörleri ve elle açılmış klasör"
     $made = Get-ChildItem "$root\7000_MILKON\AB-7000-0003\02_Test_Araclari\Kablo\JT-0001-0002" -Directory | Where-Object { $_.Name -notlike '_*' } | ForEach-Object Name
-    Check 'kablo şablon klasörleri' (($made -join ',') -eq '01_Belgeler,02_Fotograflar') ($made -join ',')
+    Check 'kablo şablon klasörleri' (($made -join ',') -eq '01_Belgeler') ($made -join ',')
     New-Item -ItemType Directory "$root\ENVANTER\Jigler\JIG-1000-0030_Test_Aparati" -Force | Out-Null
     New-Item -ItemType Directory "$root\7000_MILKON\AB-7000-0003\05_Jigler\Mekanik" -Force | Out-Null
     $vm.RootPath = ''; Pump; $vm.RootPath = $root; Pump

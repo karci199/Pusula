@@ -18,8 +18,8 @@ try {
 
     "--- Liste"
     $labels = @($vm.JournalKinds | ForEach-Object Label)
-    $expected = 'Ölçüm,Toplantı,Karar,Talep,Teslim,Sevkiyat,Revizyon,Sorun,Çözüm,Hazırlık,Not'
-    Check 'listede 11 tür, sırasıyla' (($labels[0..10] -join ',') -eq $expected) ($labels -join ',')
+    $expected = 'Ölçüm,Toplantı,Karar,Talep,Teslim,Sevkiyat,Revizyon,Kalibrasyon,Tamir / bakım,Sorun,Çözüm,Hazırlık,Not'
+    Check 'listede 13 tür (22.11: Kalibrasyon, Tamir / bakım), sırasıyla' (($labels[0..12] -join ',') -eq $expected) ($labels -join ',')
     foreach ($old in 'Test başladı', 'Test bitti', 'Arıza', 'Onarım', 'Üretime teslim', 'Numune', 'Teslim alındı') { if ($labels -contains $old) { Check ('eski tür listede yok: ' + $old) $false } }
     Check 'eski türler listede yok' (-not ($labels -contains 'Arıza') -and -not ($labels -contains 'Test başladı'))
 

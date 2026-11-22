@@ -80,6 +80,70 @@ namespace Pusula.Core.Notes
             }
         }
 
+        /// <summary>
+        /// Notun gövde satırları (sayfada salt okunur gösterim için): YAML bloğu, ilk <c># başlık</c>, <c>## Günlük</c> bölümü
+        /// ve önündeki <c>---</c> ayırıcısı atlanır; baştaki ve sondaki boş satırlar kırpılır. En çok <paramref name="maxLines"/> satır.
+        /// </summary>
+        public static List<string> BodyLines(string path, int maxLines)
+        {
+            var result = new List<string>();
+            string text;
+            try
+            {
+                text = Fs.ReadAllText(path);
+            }
+            catch (IOException)
+            {
+                return result;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return result;
+            }
+
+            string body;
+            FrontMatter.Parse(text, out body);
+            var titleSkipped = false;
+            foreach (var raw in body.Replace("\r\n", "\n").Split('\n'))
+            {
+                var line = raw.TrimEnd();
+                var trimmed = line.Trim();
+                if (string.Equals(trimmed, Journal.Heading, StringComparison.OrdinalIgnoreCase) || string.Equals(trimmed, "## Gunluk", StringComparison.OrdinalIgnoreCase))
+                {
+                    break;
+                }
+
+                if (!titleSkipped && trimmed.StartsWith("# ", StringComparison.Ordinal))
+                {
+                    titleSkipped = true;
+                    continue;
+                }
+
+                if (trimmed.Length > 0)
+                {
+                    titleSkipped = true;
+                }
+
+                result.Add(line);
+                if (result.Count >= maxLines)
+                {
+                    break;
+                }
+            }
+
+            while (result.Count > 0 && (result[result.Count - 1].Trim().Length == 0 || result[result.Count - 1].Trim() == "---"))
+            {
+                result.RemoveAt(result.Count - 1);
+            }
+
+            while (result.Count > 0 && result[0].Trim().Length == 0)
+            {
+                result.RemoveAt(0);
+            }
+
+            return result;
+        }
+
         /// <summary>Gövdenin başı: YAML, başlıklar ve boş satırlar atlanır; en çok ~240 karakter.</summary>
         public static string Excerpt(string path)
         {

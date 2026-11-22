@@ -127,6 +127,40 @@ namespace Pusula.Core.Notes
             return cover;
         }
 
+        /// <summary>
+        /// Test yardımcı aracının fotoğrafları (22.11.2026 kullanıcı kararı): kayıt klasörünün kendisinde durur, iç klasör
+        /// gerekmez. Stoktaki kural: kapak <c>&lt;numara&gt;_kapak.*</c>; şeritte adı sayıyla başlayanlar
+        /// (<c>1_SMA_ucu.jpg</c>, <c>2_N_ucu.jpg</c> …) sayı sırasıyla; numarasızlar görünmez. Eski kayıtların fotoğraf alt
+        /// klasörü (<c>02_Fotograflar</c>, <c>03_Fotograflar</c>) de okunur. Not ve doküman bilgisi doldurulmaz. Yalnızca okur.
+        /// </summary>
+        public static StockCover ReadRecord(string recordFolder, string number)
+        {
+            var cover = new StockCover();
+            if (!Directory.Exists(recordFolder))
+            {
+                return cover;
+            }
+
+            cover.PhotosHome = recordFolder;
+            cover.PhotosFolder = recordFolder;
+            var images = RecordContents.ImagesUnder(recordFolder)
+                .Where(p => string.Equals(Path.GetDirectoryName(p), recordFolder.TrimEnd('\\', '/'), System.StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            var legacy = RecordContents.FindFolder(recordFolder, PhotosLabel);
+            if (legacy.Length > 0)
+            {
+                images.AddRange(RecordContents.ImagesUnder(legacy));
+            }
+
+            cover.Cover = images.Where(IsCover).OrderBy(p => Path.GetFileNameWithoutExtension(p).StartsWith(number + "_", System.StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+                .ThenBy(p => Path.GetFileName(p), System.StringComparer.OrdinalIgnoreCase).FirstOrDefault() ?? string.Empty;
+            cover.Strip = images.Where(p => !string.Equals(p, cover.Cover, System.StringComparison.OrdinalIgnoreCase) && NumberOf(p) >= 0)
+                .OrderBy(NumberOf).ThenBy(p => Path.GetFileName(p), System.StringComparer.OrdinalIgnoreCase).ToList();
+            cover.HiddenCount = images.Count - cover.Strip.Count - (cover.Cover.Length > 0 ? 1 : 0);
+            cover.Photos = (cover.Cover.Length > 0 ? new[] { cover.Cover } : new string[0]).Concat(cover.Strip).ToList();
+            return cover;
+        }
+
         /// <summary>Kapak mı: dosya adı (uzantısız) <c>kapak</c> ya da <c>…_kapak</c> ile biter (büyük/küçük harf duyarsız).</summary>
         public static bool IsCover(string path)
         {

@@ -3713,5 +3713,71 @@ namespace Pusula.Wpf.Properties
         public static string Verify_SearchRequirements { get { return Get("Verify_SearchRequirements"); } }
 
         #endregion
+
+        /// <summary>olay: kalibrasyon</summary>
+        public static string Event_Calibration { get { return Get("Event_Calibration"); } }
+
+        /// <summary>olay: tamir / bakım</summary>
+        public static string Event_Maintenance { get { return Get("Event_Maintenance"); } }
+
+        /// <summary>araç sayfası: not kartı başlığı</summary>
+        public static string Inv_NoteCard { get { return Get("Inv_NoteCard"); } }
+
+        /// <summary>araç sayfası: not kartı ipucu</summary>
+        public static string Inv_NoteReadOnlyHint { get { return Get("Inv_NoteReadOnlyHint"); } }
+
+        /// <summary>yazılım sayfası: revizyonlar kartı başlığı</summary>
+        public static string Inv_Revisions { get { return Get("Inv_Revisions"); } }
+
+        /// <summary>yazılım sayfası: revizyon yok</summary>
+        public static string Inv_RevisionsEmpty { get { return Get("Inv_RevisionsEmpty"); } }
+
+        /// <summary>yazılım: son revizyon (özellikler kartında)</summary>
+        public static string Inv_RevisionField { get { return Get("Inv_RevisionField"); } }
+
+        /// <summary>araç sayfası: fotoğraf adlandırma ipucu</summary>
+        public static string Inv_PhotoRule { get { return Get("Inv_PhotoRule"); } }
+
+        /// <summary>istatistik sekmesi</summary>
+        public static string Stats_Tab { get { return Get("Stats_Tab"); } }
+
+        /// <summary>istatistik: stoklar kartı</summary>
+        public static string Stats_Stocks { get { return Get("Stats_Stocks"); } }
+
+        /// <summary>istatistik: durumu girilmemiş stok</summary>
+        public static string Stats_NoStatus { get { return Get("Stats_NoStatus"); } }
+
+        /// <summary>istatistik: açık işler kartı</summary>
+        public static string Stats_OpenWork { get { return Get("Stats_OpenWork"); } }
+
+        /// <summary>istatistik: geciken iş</summary>
+        public static string Stats_Late { get { return Get("Stats_Late"); } }
+
+        /// <summary>istatistik: açık sorun</summary>
+        public static string Stats_OpenIssues { get { return Get("Stats_OpenIssues"); } }
+
+        /// <summary>istatistik: bekleyen talep</summary>
+        public static string Stats_OpenRequests { get { return Get("Stats_OpenRequests"); } }
+
+        /// <summary>istatistik: geçti (şartlı kabul dahil)</summary>
+        public static string Stats_Passed { get { return Get("Stats_Passed"); } }
+
+        /// <summary>istatistik: kaldı (tekrarlanacak dahil)</summary>
+        public static string Stats_Failed { get { return Get("Stats_Failed"); } }
+
+        /// <summary>istatistik: planlandı, hazırlık, yapılıyor, değerlendiriliyor</summary>
+        public static string Stats_Running { get { return Get("Stats_Running"); } }
+
+        /// <summary>istatistik: bekliyor</summary>
+        public static string Stats_Pending { get { return Get("Stats_Pending"); } }
+
+        /// <summary>istatistik: plansız gereksinim</summary>
+        public static string Stats_NoPlan { get { return Get("Stats_NoPlan"); } }
+
+        /// <summary>istatistik: raporsuz plan</summary>
+        public static string Stats_NoReport { get { return Get("Stats_NoReport"); } }
+
+        /// <summary>istatistik: ana sayfa ipucu</summary>
+        public static string Stats_Hint { get { return Get("Stats_Hint"); } }
     }
 }

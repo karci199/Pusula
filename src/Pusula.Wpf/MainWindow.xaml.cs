@@ -1284,12 +1284,41 @@ namespace Pusula.Wpf
             }
         }
 
-        private void RecordPhoto_Click(object sender, RoutedEventArgs e)
+        // Araç sayfası · Fotoğraflar: büyük resme tıklayınca dosya açılır.
+        private void RecordCover_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             var shown = viewModel.Inventory.Item;
-            if ((sender as FrameworkElement)?.Tag is string path && shown != null)
+            var gallery = viewModel.Inventory.Gallery;
+            if (shown != null && gallery.SelectedPhoto.Length > 0)
             {
-                viewModel.OpenNoteOrFolder(path, shown.Folder);
+                viewModel.OpenNoteOrFolder(gallery.SelectedPhoto, shown.Folder);
+            }
+        }
+
+        // Araç sayfası · şeritteki küçük resim büyükte gösterilir; "+N" klasörü açar.
+        private void RecordPhotoThumb_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is PhotoThumb thumb)
+            {
+                e.Handled = true;
+                if (thumb.IsMore)
+                {
+                    RecordPhotos_Click(sender, e);
+                }
+                else
+                {
+                    viewModel.Inventory.Gallery.Select(thumb);
+                }
+            }
+        }
+
+        // Araç sayfası · Fotoğraflar: kayıt klasörü açılır (fotoğraflar orada durur).
+        private void RecordPhotos_Click(object sender, RoutedEventArgs e)
+        {
+            var shown = viewModel.Inventory.Item;
+            if (shown != null)
+            {
+                viewModel.OpenPath(shown.Folder);
             }
         }
 

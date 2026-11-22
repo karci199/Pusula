@@ -260,6 +260,88 @@ namespace Pusula.Wpf.ViewModels
         public string LevelName { get; } = string.Empty;
     }
 
+    /// <summary>Not kartında bir satır: başlık, görev kutusu, madde ya da düz metin (Markdown işaretleri sadeleşir).</summary>
+    public sealed class NoteLine
+    {
+        /// <summary>Notun ham satırından gösterim satırını kurar.</summary>
+        public NoteLine(string raw)
+        {
+            var t = (raw ?? string.Empty).Trim();
+            if (t.Length == 0 || t == "---")
+            {
+                IsSpacer = true;
+                Text = string.Empty;
+                return;
+            }
+
+            var hashes = 0;
+            while (hashes < t.Length && t[hashes] == '#')
+            {
+                hashes++;
+            }
+
+            if (hashes > 0 && hashes < t.Length && t[hashes] == ' ')
+            {
+                IsHeading = true;
+                t = t.Substring(hashes + 1).Trim();
+            }
+            else if (t.StartsWith("- [ ]", StringComparison.Ordinal) || t.StartsWith("* [ ]", StringComparison.Ordinal))
+            {
+                t = "☐  " + t.Substring(5).Trim();
+            }
+            else if (t.StartsWith("- [x]", StringComparison.OrdinalIgnoreCase) || t.StartsWith("* [x]", StringComparison.OrdinalIgnoreCase))
+            {
+                IsDone = true;
+                t = "☑  " + t.Substring(5).Trim();
+            }
+            else if (t.StartsWith("- ", StringComparison.Ordinal) || t.StartsWith("* ", StringComparison.Ordinal))
+            {
+                t = "•  " + t.Substring(2).Trim();
+            }
+
+            Text = t.Replace("**", string.Empty).Replace("[[", string.Empty).Replace("]]", string.Empty);
+        }
+
+        /// <summary>Gösterilen metin.</summary>
+        public string Text { get; }
+
+        /// <summary>Başlık satırı mı (kalın).</summary>
+        public bool IsHeading { get; }
+
+        /// <summary>Kapanmış görev mi (soluk).</summary>
+        public bool IsDone { get; }
+
+        /// <summary>Boş satır ya da ayırıcı (küçük boşluk).</summary>
+        public bool IsSpacer { get; }
+    }
+
+    /// <summary>Yazılımın bir revizyonu: Günlük'teki Revizyon olayı (ad, tarih, eklenenler).</summary>
+    public sealed class RevisionRow
+    {
+        /// <summary>Revizyon olayından satırı kurar.</summary>
+        public RevisionRow(Pusula.Core.Notes.EventNote note)
+        {
+            Note = note;
+            Name = note.RevisionNew.Trim().Length > 0 ? note.RevisionNew.Trim() : note.Title.Trim();
+            Date = note.Date.ToString(Resources.Format_Date, System.Globalization.CultureInfo.CurrentCulture);
+            var summary = note.Body.Trim().Length > 0 ? Pusula.Core.Notes.Journal.SummaryOf(note.Body).Trim() : string.Empty;
+            var title = string.Equals(note.Title.Trim(), Name, StringComparison.CurrentCultureIgnoreCase) ? string.Empty : note.Title.Trim();
+            Text = string.Join(" · ", new[] { title, summary }.Where(s => s.Length > 0));
+        }
+
+        /// <summary>Kaynak olay.</summary>
+        public Pusula.Core.Notes.EventNote Note { get; }
+
+        /// <summary>Revizyon adı (AA, AB …; yoksa olay başlığı).</summary>
+        public string Name { get; }
+
+        /// <summary>Tarih.</summary>
+        public string Date { get; }
+
+        /// <summary>Revizyonda eklenenler (olayın başlığı ve açıklaması).</summary>
+        public string Text { get; }
+    }
+
     /// <summary>
     /// Envanter seçiliyken sağ panel: kayıt sayfası (bilgiler, durum, geçmiş) ya da kayıt listesi (tür / bölüm).
     /// </summary>
@@ -291,7 +373,13 @@ namespace Pusula.Wpf.ViewModels
         public bool IsRecord
         {
             get { return isRecord; }
-            private set { SetProperty(ref isRecord, value); }
+            private set
+            {
+                if (SetProperty(ref isRecord, value))
+                {
+                    OnPropertyChanged(nameof(ShowGallery));
+                }
+            }
         }
 
         /// <summary>Liste mi gösteriliyor.</summary>
@@ -448,6 +536,60 @@ namespace Pusula.Wpf.ViewModels
         {
             get { return noteExcerpt; }
             private set { SetProperty(ref noteExcerpt, value); }
+        }
+
+        /// <summary>
+        /// Fotoğraf kartı (22.11.2026): kayıt klasöründeki <c>&lt;numara&gt;_kapak</c> büyükte, <c>1_ad.jpg</c>, <c>2_ad.jpg</c> …
+        /// şeritte; numarasızlar görünmez. Stok sayfasındaki kartla aynı model.
+        /// </summary>
+        public StockCoverViewModel Gallery { get; } = new StockCoverViewModel();
+
+        /// <summary>Türün simgesi (fotoğraf yokken kartta genel resim).</summary>
+        public string TypeGlyph
+        {
+            get { return TreeNodeViewModel.GlyphOf(type?.Icon ?? string.Empty); }
+        }
+
+        /// <summary>Fotoğraf kartı gösterilsin mi (yazılımda yerine Revizyonlar kartı var).</summary>
+        public bool ShowGallery
+        {
+            get { return isRecord && !IsSoftware; }
+        }
+
+        /// <summary>Fotoğraf adlandırma ipucu ("Kapak: JT-1000-0007_kapak.jpg · şerit: 1_ad.jpg …").</summary>
+        public string PhotoRule
+        {
+            get { return item == null ? string.Empty : string.Format(Resources.Inv_PhotoRule, item.Record.Number); }
+        }
+
+        /// <summary>Not kartı: notun gövdesi satır satır (YAML ve Günlük hariç), salt okunur.</summary>
+        public ObservableCollection<NoteLine> NoteLines { get; } = new ObservableCollection<NoteLine>();
+
+        /// <summary>Notun gövdesinde gösterilecek satır var mı.</summary>
+        public bool HasNoteLines
+        {
+            get { return NoteLines.Count > 0; }
+        }
+
+        /// <summary>Kayıt yazılım mı (Revizyonlar kartı, Özellikler'de son revizyon).</summary>
+        public bool IsSoftware
+        {
+            get { return type != null && string.Equals(type.Key, "software", StringComparison.OrdinalIgnoreCase); }
+        }
+
+        /// <summary>Yazılımın revizyonları (Günlük'teki Revizyon olayları), yeniden eskiye.</summary>
+        public ObservableCollection<RevisionRow> Revisions { get; } = new ObservableCollection<RevisionRow>();
+
+        /// <summary>"Revizyonlar · 3".</summary>
+        public string RevisionsHeader
+        {
+            get { return string.Format(Resources.Inv_Revisions, Revisions.Count); }
+        }
+
+        /// <summary>Revizyon var mı.</summary>
+        public bool HasRevisions
+        {
+            get { return Revisions.Count > 0; }
         }
 
         /// <summary>Liste satırları.</summary>
@@ -807,6 +949,10 @@ namespace Pusula.Wpf.ViewModels
             }
 
             IsRecord = true;
+            OnPropertyChanged(nameof(IsSoftware));
+            OnPropertyChanged(nameof(ShowGallery));
+            OnPropertyChanged(nameof(PhotoRule));
+            OnPropertyChanged(nameof(TypeGlyph));
             var unused = LoadContentsAsync(shown);
         }
 
@@ -825,6 +971,12 @@ namespace Pusula.Wpf.ViewModels
             Cover = string.Empty;
             NoteFile = string.Empty;
             NoteExcerpt = string.Empty;
+            Gallery.Clear();
+            NoteLines.Clear();
+            Revisions.Clear();
+            OnPropertyChanged(nameof(HasNoteLines));
+            OnPropertyChanged(nameof(HasRevisions));
+            OnPropertyChanged(nameof(RevisionsHeader));
         }
 
         // Klasörü arka planda okur; bu arada başka kayıt seçildiyse sonucu atar.
@@ -850,10 +1002,17 @@ namespace Pusula.Wpf.ViewModels
             ClearContents();
             var version = contentsVersion;
             List<Pusula.Core.Notes.EventNote> events = new List<Pusula.Core.Notes.EventNote>();
+            var gallery = new Pusula.Core.Notes.StockCover();
+            var bodyLines = new List<string>();
             var contents = await Task.Run(() =>
             {
                 events = Pusula.Core.Notes.EventNote.ReadAll(shown.Folder);
                 var contentsRead = RecordContents.Read(shown.Folder, shown.Record.Number);
+                gallery = Pusula.Core.Notes.StockCover.ReadRecord(shown.Folder, shown.Record.Number);
+                if (contentsRead.NoteFile.Length > 0)
+                {
+                    bodyLines = Pusula.Core.Notes.NoteFile.BodyLines(contentsRead.NoteFile, NoteLineLimit);
+                }
 
                 // Kendi notunun Günlük'ü, ayrıca ait olduğu stokun Günlük'ünde bu kayda bağlanan olaylar.
                 events.AddRange(Pusula.Core.Notes.Journal.Read(contentsRead.NoteFile));
@@ -898,7 +1057,37 @@ namespace Pusula.Wpf.ViewModels
             Cover = contents.Cover;
             NoteFile = contents.NoteFile;
             NoteExcerpt = contents.NoteFile.Length == 0 ? string.Empty : contents.NoteExcerpt.Length == 0 ? Resources.Inv_NoteEmpty : contents.NoteExcerpt;
+
+            Gallery.Show(gallery, shown.Folder);
+            foreach (var line in bodyLines)
+            {
+                NoteLines.Add(new NoteLine(line));
+            }
+
+            OnPropertyChanged(nameof(HasNoteLines));
+
+            // Yazılım: Günlük'teki Revizyon olayları (rev AA → AB; açıklama: eklenenler); en yenisi Özellikler'de.
+            if (IsSoftware)
+            {
+                foreach (var revision in events.Where(e => EventKinds.IsRevision(e.Kind)).OrderByDescending(e => e.Date))
+                {
+                    Revisions.Add(new RevisionRow(revision));
+                }
+
+                if (Revisions.Count > 0)
+                {
+                    Properties.Insert(0, new FactRow(Resources.Inv_RevisionField, Revisions[0].Name));
+                    OnPropertyChanged(nameof(HasProperties));
+                    OnPropertyChanged(nameof(HasNoFilledProperties));
+                    OnPropertyChanged(nameof(PropertiesHeader));
+                }
+
+                OnPropertyChanged(nameof(HasRevisions));
+                OnPropertyChanged(nameof(RevisionsHeader));
+            }
         }
+
+        private const int NoteLineLimit = 40;
 
         private static string EventText(InventoryEvent? inventoryEvent)
         {

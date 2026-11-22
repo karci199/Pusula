@@ -20,7 +20,7 @@ namespace Pusula.Wpf.ViewModels
         private int homeTab;
         private List<StockTimelineCard> homeEvents = new List<StockTimelineCard>();
 
-        /// <summary>Seçili sekme: 0 Günlük, 1 Yapılacaklar, 2 Kayıtlar.</summary>
+        /// <summary>Seçili sekme: 0 Günlük, 1 Yapılacaklar, 2 Kayıtlar, 3 İstatistik.</summary>
         public int HomeTab
         {
             get { return homeTab; }
@@ -29,6 +29,7 @@ namespace Pusula.Wpf.ViewModels
                 if (SetProperty(ref homeTab, value))
                 {
                     OnPropertyChanged(nameof(IsHomeRecordsTab));
+                    OnPropertyChanged(nameof(IsHomeRangeTab));
                 }
             }
         }
@@ -37,6 +38,12 @@ namespace Pusula.Wpf.ViewModels
         public bool IsHomeRecordsTab
         {
             get { return homeTab == 2; }
+        }
+
+        /// <summary>Zaman süzgeci görünür mü (yalnız Günlük ve Yapılacaklar sekmelerinde).</summary>
+        public bool IsHomeRangeTab
+        {
+            get { return homeTab < 2; }
         }
 
         /// <summary>Günlük: gün gün kartlar (seçili zaman aralığı, geriye doğru).</summary>
