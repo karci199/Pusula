@@ -83,6 +83,18 @@ namespace Pusula.Core.Testing
         /// </summary>
         public string ManualStatus { get; set; } = string.Empty;
 
+        /// <summary>Test tipi: İşlevsel, ÇK, EMC ya da boş (elle girilir; Excel'den gelmez).</summary>
+        public string TestType { get; set; } = string.Empty;
+
+        /// <summary>Test standardı, örn. "MIL-STD-810G" (ÇK / EMC için).</summary>
+        public string Standard { get; set; } = string.Empty;
+
+        /// <summary>Standardın yöntemi, örn. "509.5 · Tuz sisi".</summary>
+        public string StandardMethod { get; set; } = string.Empty;
+
+        /// <summary>Prosedür, örn. "I" (isteğe bağlı; ayrıntısı md'de).</summary>
+        public string Procedure { get; set; } = string.Empty;
+
         /// <summary>Geçerli durum: elle verilen varsa o, yoksa hesaplanan.</summary>
         public string EffectiveStatus
         {
@@ -96,7 +108,7 @@ namespace Pusula.Core.Testing
     /// <summary>
     /// Stokun doğrulama listesi: <c>03_Testler\&lt;stok&gt;_Test_Gereksinimleri.md</c> içindeki ilk tablo.
     /// Sütunlar başlıklarından tanınır: # · TG no · kaynak · başlık · kısa not · gereksinim · grup · alt grup · tür · bağlı ·
-    /// yöntem · altyapı · durum (hesaplanan) · elle durum (sıra serbest, tanınmayan sütunlar korunur). Eski tablolarda eksik sütunlar ilk yazımda
+    /// yöntem · altyapı · tip · standart · standart yöntemi · prosedür · durum (hesaplanan) · elle durum (sıra serbest, tanınmayan sütunlar korunur). Eski tablolarda eksik sütunlar ilk yazımda
     /// eklenir; eski TP / TR sütunları (22.11.2026 öncesi) okunur ve <see cref="PlanReportList.RetireLegacy"/> ile Plan / Rapor
     /// tablolarına taşınıp kaldırılır. Uygulama tabloya satır
     /// ekler, satırı değiştirir ya da kaldırır (16.11.2026 kullanıcı kararı); dosyanın geri kalanına dokunmaz.
@@ -135,16 +147,20 @@ namespace Pusula.Core.Testing
         private const int ColResultPath = 19;
         private const int ColStatus = 20;
         private const int ColManualStatus = 21;
-        private const int KnownCount = 22;
+        private const int ColTestType = 22;
+        private const int ColStandard = 23;
+        private const int ColStandardMethod = 24;
+        private const int ColProcedure = 25;
+        private const int KnownCount = 26;
 
         /// <summary>Yeni ya da yükseltilen tablonun başlıkları (sırasıyla).</summary>
-        public static readonly string[] Headers = { "#", "TG no", "Kaynak", "Başlık", "Kısa not", "Gereksinim", "Grup", "Alt grup", "Tür", "Bağlı", "Yöntem", "Altyapı", "Durum", "Elle durum" };
+        public static readonly string[] Headers = { "#", "TG no", "Kaynak", "Başlık", "Kısa not", "Gereksinim", "Grup", "Alt grup", "Tür", "Bağlı", "Yöntem", "Altyapı", "Tip", "Standart", "Standart yöntemi", "Prosedür", "Durum", "Elle durum" };
 
         // Eski (22.11.2026 öncesi) TP / TR sütunları: okunur (taşıma için), yeni tabloya eklenmez; taşınınca kaldırılır.
         private static readonly int[] LegacyKeys = { ColTp, ColTpDescription, ColTpNote, ColTr, ColTrDescription, ColTrNote, ColTrResult, ColResultPath };
 
         // Yeni tablonun sütun anahtarları (Headers sırasıyla).
-        private static readonly int[] CurrentKeys = { ColNumber, ColTg, ColSource, ColText, ColDescription, ColRequirement, ColGroup, ColSubGroup, ColKind, ColParent, ColMethod, ColFacility, ColStatus, ColManualStatus };
+        private static readonly int[] CurrentKeys = { ColNumber, ColTg, ColSource, ColText, ColDescription, ColRequirement, ColGroup, ColSubGroup, ColKind, ColParent, ColMethod, ColFacility, ColTestType, ColStandard, ColStandardMethod, ColProcedure, ColStatus, ColManualStatus };
 
         // Eski (16.11.2026 öncesi) 7 sütunlu tablonun sırası; başlık tanınmazsa kullanılır.
         private static readonly int[] LegacyOrder = { ColNumber, ColText, ColGroup, ColSubGroup, ColFacility, ColTg, ColStatus };
@@ -610,6 +626,17 @@ namespace Pusula.Core.Testing
                     return ColStatus;
                 case "elledurum":
                     return ColManualStatus;
+                case "tip":
+                case "testtipi":
+                    return ColTestType;
+                case "standart":
+                    return ColStandard;
+                case "standartyöntemi":
+                case "standartyontemi":
+                    return ColStandardMethod;
+                case "prosedür":
+                case "prosedur":
+                    return ColProcedure;
                 default:
                     return -1;
             }
@@ -729,6 +756,10 @@ namespace Pusula.Core.Testing
                 item.ResultPath = values[ColResultPath] ?? string.Empty;
                 item.Status = values[ColStatus] ?? string.Empty;
                 item.ManualStatus = values[ColManualStatus] ?? string.Empty;
+                item.TestType = values[ColTestType] ?? string.Empty;
+                item.Standard = values[ColStandard] ?? string.Empty;
+                item.StandardMethod = values[ColStandardMethod] ?? string.Empty;
+                item.Procedure = values[ColProcedure] ?? string.Empty;
                 return item;
             }
 
@@ -805,6 +836,18 @@ namespace Pusula.Core.Testing
                             break;
                         case ColManualStatus:
                             value = item.ManualStatus;
+                            break;
+                        case ColTestType:
+                            value = item.TestType;
+                            break;
+                        case ColStandard:
+                            value = item.Standard;
+                            break;
+                        case ColStandardMethod:
+                            value = item.StandardMethod;
+                            break;
+                        case ColProcedure:
+                            value = item.Procedure;
                             break;
                         default:
                             item.Extra.TryGetValue(HeaderCells[i], out value);

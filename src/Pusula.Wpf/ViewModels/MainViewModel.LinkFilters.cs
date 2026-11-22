@@ -350,8 +350,8 @@ namespace Pusula.Wpf.ViewModels
         }
 
         /// <summary>
-        /// Gereksinimin rapor durumu (planları üzerinden): 2 bir raporu Kaldı; 1 her planı raporlu ve hepsi Geçti; 0 yok
-        /// (rapor yok, sonucu boş ya da Hazırlanmadı, ya da raporsuz planı var).
+        /// Gereksinimin rapor durumu (planları üzerinden): 2 bir raporu Kaldı; 1 her planı raporlu ve hepsi Geçti; 3 her planı
+        /// raporlu ama bir raporun sonucu girilmemiş (boş ya da Hazırlanmadı); 0 yok (rapor yok ya da raporsuz planı var).
         /// </summary>
         public int ReqReportState(VerificationItem item)
         {
@@ -369,7 +369,7 @@ namespace Pusula.Wpf.ViewModels
             return plan.Requirements.Any(r => keys.Contains(r, StringComparer.OrdinalIgnoreCase)) ? 1 : 0;
         }
 
-        /// <summary>Plan maddesinin rapor durumu: 2 bir raporu Kaldı, 1 raporlu ve hepsi Geçti, 0 yok.</summary>
+        /// <summary>Plan maddesinin rapor durumu: 2 bir raporu Kaldı, 1 raporlu ve hepsi Geçti, 3 raporlu ama sonucu girilmemiş, 0 raporu yok.</summary>
         public int PlanReportState(PlanItem plan)
         {
             return CombinedResult(verificationReports.Where(r => r.Plans.Contains(plan.TpNo, StringComparer.OrdinalIgnoreCase)).ToList(), true);
@@ -388,7 +388,8 @@ namespace Pusula.Wpf.ViewModels
             return kind == 3 ? 0 : kind;
         }
 
-        // Birden çok rapordan tek sonuç: biri Kaldı → 2; hepsi Geçti (ve eksik yok) → 1; değilse 0.
+        // Birden çok rapordan tek sonuç: biri Kaldı → 2; rapor yok ya da raporsuz plan var → 0; hepsi Geçti → 1; değilse
+        // (raporlu ama sonucu girilmemiş) → 3.
         private static int CombinedResult(IList<ReportItem> reports, bool complete)
         {
             var results = reports.Select(ReportResultState).ToList();
@@ -397,7 +398,12 @@ namespace Pusula.Wpf.ViewModels
                 return 2;
             }
 
-            return results.Count > 0 && complete && results.All(r => r == 1) ? 1 : 0;
+            if (results.Count == 0 || !complete)
+            {
+                return 0;
+            }
+
+            return results.All(r => r == 1) ? 1 : 3;
         }
 
         /// <summary>Uyarının parçasına tıklanınca: o sekmenin hap düğmeleri parçanınkine ayarlanır.</summary>
@@ -536,8 +542,10 @@ namespace Pusula.Wpf.ViewModels
 
             AddHave(ReqPlanPills, OnReqPill);
             AddResults(ReqReportPills, OnReqPill);
+            ReqReportPills.Insert(2, new LinkPill(3, Resources.Verify_PillNoResult, 4, OnReqPill));
             AddHave(PlanReqPills, OnPlanPill);
             AddResults(PlanReportPills, OnPlanPill);
+            PlanReportPills.Insert(2, new LinkPill(3, Resources.Verify_PillNoResult, 4, OnPlanPill));
             AddHave(ReportPlanPills, OnReportPill);
             AddResults(ReportResultPills, OnReportPill);
         }
@@ -606,6 +614,8 @@ namespace Pusula.Wpf.ViewModels
             Count(ReportResultPills, reportResult);
 
             RequirementsWithoutReport = inScope.Where(i => ReqPlanState(i) == 1 && ReqReportState(i) == 0).Select(VerificationList.KeyOf).ToList();
+            RequirementsWithoutResult = inScope.Where(i => ReqReportState(i) == 3).Select(VerificationList.KeyOf).ToList();
+            PlansWithoutResultValue = verificationPlans.Where(p => PlanReportState(p) == 3).Select(p => p.TpNo).ToList();
             PlansWithoutRequirement = verificationPlans.Where(p => PlanReqState(p) == 0).Select(p => p.TpNo).ToList();
             PlansWithoutResult = verificationPlans.Where(p => PlanReportState(p) == 0).Select(p => p.TpNo).ToList();
             ReportsWithoutResult = verificationReports.Where(r => ReportResultState(r) == 0).Select(r => r.TrNo).ToList();
@@ -620,13 +630,19 @@ namespace Pusula.Wpf.ViewModels
             }
         }
 
-        /// <summary>Planı var ama raporu yok (ya da sonuçsuz) gereksinimler.</summary>
+        /// <summary>Planı var ama raporu olmayan (en az bir planı raporsuz) gereksinimler.</summary>
         public IList<string> RequirementsWithoutReport { get; private set; } = new List<string>();
+
+        /// <summary>Her planı raporlu ama bir raporunun sonucu girilmemiş gereksinimler.</summary>
+        public IList<string> RequirementsWithoutResult { get; private set; } = new List<string>();
+
+        /// <summary>Raporu olan ama sonucu girilmemiş plan maddeleri.</summary>
+        public IList<string> PlansWithoutResultValue { get; private set; } = new List<string>();
 
         /// <summary>Hiçbir gereksinime bağlı olmayan plan maddeleri.</summary>
         public IList<string> PlansWithoutRequirement { get; private set; } = new List<string>();
 
-        /// <summary>Raporu olmayan ya da sonuçsuz plan maddeleri.</summary>
+        /// <summary>Raporu olmayan plan maddeleri.</summary>
         public IList<string> PlansWithoutResult { get; private set; } = new List<string>();
 
         /// <summary>Sonucu boş ya da Hazırlanmadı olan rapor maddeleri.</summary>
@@ -640,6 +656,7 @@ namespace Pusula.Wpf.ViewModels
             {
                 AddPart(PlansWithoutRequirement, Resources.Verify_CoveragePlanNoReq, 0, -1);
                 AddPart(PlansWithoutResult, Resources.Verify_CoverageNoReport, -1, 0);
+                AddPart(PlansWithoutResultValue, Resources.Verify_CoveragePlanNoResult, -1, 3);
             }
             else if (verificationView == 2)
             {
@@ -650,6 +667,7 @@ namespace Pusula.Wpf.ViewModels
             {
                 AddPart(RequirementsWithoutPlan, Resources.Verify_CoverageNoPlan, 0, -1);
                 AddPart(RequirementsWithoutReport, Resources.Verify_CoverageReqNoReport, 1, 0);
+                AddPart(RequirementsWithoutResult, Resources.Verify_CoverageReqNoResult, 1, 3);
             }
 
             MarkActiveParts();

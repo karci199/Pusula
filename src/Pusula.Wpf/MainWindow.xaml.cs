@@ -210,6 +210,33 @@ namespace Pusula.Wpf
             }
         }
 
+        // Bağ seçimi: ekleme kutusunda satıra tık → bağlanır (kutu açık kalır, birkaç tane art arda seçilebilir).
+        private void LinkPick_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is LinkOption option)
+            {
+                option.IsChecked = true;
+            }
+        }
+
+        // Bağ seçimi: bağlı satırdaki ✕ → bağ kalkar (madde silinmez).
+        private void LinkUnpick_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is LinkOption option)
+            {
+                option.IsChecked = false;
+            }
+        }
+
+        // Ekleme kutusu açılınca arama kutusu odaklanır.
+        private void LinkPickPopup_Opened(object sender, EventArgs e)
+        {
+            if ((sender as System.Windows.Controls.Primitives.Popup)?.Child is Border border && border.Child is StackPanel panel && panel.Children.Count > 0 && panel.Children[0] is TextBox box)
+            {
+                Dispatcher.BeginInvoke(DispatcherPriority.Input, new Action(() => Keyboard.Focus(box)));
+            }
+        }
+
         // Excel'den gereksinim al (deneme): dosya seçilir, özet onaya gelir.
         private void VerImportExcel_Click(object sender, RoutedEventArgs e)
         {
@@ -217,6 +244,39 @@ namespace Pusula.Wpf
             if (dialog.ShowDialog(this) == true)
             {
                 viewModel.PrepareImport(dialog.FileName);
+            }
+        }
+
+        // Test planı / raporu: Excel'e aktar (kaydetme yeri sorulur; var olan dosyanın üzerine yazmayı pencere sorar).
+        private void VerExportPlan_Click(object sender, RoutedEventArgs e)
+        {
+            ExportTo(false);
+        }
+
+        private void VerExportReport_Click(object sender, RoutedEventArgs e)
+        {
+            ExportTo(true);
+        }
+
+        private void ExportTo(bool report)
+        {
+            var dialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = Properties.Resources.Import_Filter,
+                FileName = viewModel.ExportFileName(report),
+                InitialDirectory = viewModel.ExportFolder,
+                OverwritePrompt = true,
+            };
+            if (dialog.ShowDialog(this) == true)
+            {
+                if (report)
+                {
+                    viewModel.ExportReports(dialog.FileName);
+                }
+                else
+                {
+                    viewModel.ExportPlans(dialog.FileName);
+                }
             }
         }
 
@@ -245,13 +305,23 @@ namespace Pusula.Wpf
             }
         }
 
-        // Rapor satırına çift tık: düzenle.
+        // Rapor satırına tek tık: ayrıntıyı aç / kapat; çift tık: düzenle.
         private void VerReportRow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ClickCount == 2 && (sender as FrameworkElement)?.Tag is ReportItem report)
+            var element = sender as FrameworkElement;
+            if (e.ClickCount == 2 && element?.Tag is ReportItem report)
             {
+                if (element.DataContext is ReportRow open)
+                {
+                    open.IsExpanded = false;
+                }
+
                 viewModel.EditReportItem(report);
                 e.Handled = true;
+            }
+            else if (e.ClickCount == 1 && element?.DataContext is ReportRow row)
+            {
+                row.IsExpanded = !row.IsExpanded;
             }
         }
 

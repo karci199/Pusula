@@ -2142,8 +2142,8 @@ stok: {0}
 
 ## Gereksinimler
 
-| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | Durum | Elle durum |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | Tip | Standart | Standart yöntemi | Prosedür | Durum | Elle durum |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 ## Plan
 
@@ -3147,6 +3147,143 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   </data>
   <data name="Verify_DetailEmpty" xml:space="preserve">
     <value>Henüz ayrıntı yok. md dosyasında ## Plan altına "### madde no · başlık" yazıp altına kurulum, adımlar, dikkat edilecekleri yazabilirsin.</value>
+  </data>
+  <data name="Export_Button" xml:space="preserve">
+    <value>Excel&apos;e aktar</value>
+  </data>
+  <data name="Export_Hint" xml:space="preserve">
+    <value>Tabloyu Excel&apos;e yazar (DOORS&apos;a kopyala-yapıştır için); bağı eksik hücrelerde — görünür</value>
+  </data>
+  <data name="Export_PlanSuffix" xml:space="preserve">
+    <value>_Test_Plani</value>
+  </data>
+  <data name="Export_ReportSuffix" xml:space="preserve">
+    <value>_Test_Raporu</value>
+  </data>
+  <data name="Export_RequirementTexts" xml:space="preserve">
+    <value>Gereksinim metni</value>
+  </data>
+  <data name="Export_Done" xml:space="preserve">
+    <value>{0} madde Excel&apos;e aktarıldı: {1}</value>
+  </data>
+  <data name="Link_ReqCount" xml:space="preserve">
+    <value>{0} gereksinim</value>
+  </data>
+  <data name="Link_ReqNone" xml:space="preserve">
+    <value>Gereksinim yok</value>
+  </data>
+  <data name="Link_PlanCount" xml:space="preserve">
+    <value>{0} plan</value>
+  </data>
+  <data name="Link_PlanNone" xml:space="preserve">
+    <value>Plan yok</value>
+  </data>
+  <data name="Link_AddReq" xml:space="preserve">
+    <value>Gereksinim ekle</value>
+  </data>
+  <data name="Link_AddPlan" xml:space="preserve">
+    <value>Plan ekle</value>
+  </data>
+  <data name="Link_ReqEmptyHint" xml:space="preserve">
+    <value>Bu plan maddesi henüz hiçbir gereksinimi doğrulamıyor.</value>
+  </data>
+  <data name="Link_PlanEmptyHint" xml:space="preserve">
+    <value>Bu rapor maddesi henüz hiçbir plana bağlı değil.</value>
+  </data>
+  <data name="Link_Remove" xml:space="preserve">
+    <value>Bağı kaldır (madde silinmez)</value>
+  </data>
+  <data name="Link_NothingToAdd" xml:space="preserve">
+    <value>Eklenecek madde yok (hepsi bağlı ya da aramayla eşleşmiyor).</value>
+  </data>
+  <data name="Verify_TpPlaceholder" xml:space="preserve">
+    <value>örn. 4.1</value>
+  </data>
+  <data name="Verify_TrPlaceholder" xml:space="preserve">
+    <value>örn. 5.1</value>
+  </data>
+  <data name="Verify_PlanDescPlaceholder" xml:space="preserve">
+    <value>Ne doğrulanacak: örn. SATIMO hüzme ve yan lob ölçümü</value>
+  </data>
+  <data name="Verify_PlanNotePlaceholder" xml:space="preserve">
+    <value>Hazırlık / dikkat: örn. Jig JT-1000-0009, SN01; kalibrasyon kiti 3,5 mm</value>
+  </data>
+  <data name="Verify_ReportDescPlaceholder" xml:space="preserve">
+    <value>Ne ölçüldü: örn. Hüzme ölçüm sonuçları</value>
+  </data>
+  <data name="Verify_ReportNotePlaceholder" xml:space="preserve">
+    <value>Ölçülen değer / ayrıntı: örn. en düşük 31,2°; kaldıysa bildirim no</value>
+  </data>
+  <data name="Verify_PillNoResult" xml:space="preserve">
+    <value>Sonuç yok</value>
+  </data>
+  <data name="Verify_CoverageReqNoResult" xml:space="preserve">
+    <value>{0} gereksinimin sonucu girilmedi: {1}</value>
+  </data>
+  <data name="Verify_CoveragePlanNoResult" xml:space="preserve">
+    <value>{0} plan maddesinin sonucu girilmedi: {1}</value>
+  </data>
+  <data name="Verify_DetailPlans" xml:space="preserve">
+    <value>Bağlı plan maddeleri</value>
+  </data>
+  <data name="Verify_ReportDetailEmpty" xml:space="preserve">
+    <value>Henüz ayrıntı yok. md dosyasında ## Rapor altına &quot;### rapor no · başlık&quot; yazıp altına ölçüm koşullarını, değerleri, gözlemleri yazabilirsin.</value>
+  </data>
+  <data name="Verify_OpenResultFolder" xml:space="preserve">
+    <value>Sonuç klasörünü aç</value>
+  </data>
+  <data name="Verify_TypeFunctional" xml:space="preserve">
+    <value>İşlevsel</value>
+  </data>
+  <data name="Verify_TypeEnvironment" xml:space="preserve">
+    <value>ÇK</value>
+  </data>
+  <data name="Verify_TypeEmc" xml:space="preserve">
+    <value>EMC</value>
+  </data>
+  <data name="Verify_TypeOther" xml:space="preserve">
+    <value>Diğer</value>
+  </data>
+  <data name="Verify_FieldTestType" xml:space="preserve">
+    <value>Test tipi</value>
+  </data>
+  <data name="Verify_FieldStandard" xml:space="preserve">
+    <value>Standart</value>
+  </data>
+  <data name="Verify_FieldStandardMethod" xml:space="preserve">
+    <value>Yöntem</value>
+  </data>
+  <data name="Verify_FieldProcedure" xml:space="preserve">
+    <value>Prosedür</value>
+  </data>
+  <data name="Standard_Placeholder" xml:space="preserve">
+    <value>Standart seç ya da yaz</value>
+  </data>
+  <data name="Standard_MethodPlaceholder" xml:space="preserve">
+    <value>Yöntem seç ya da yaz (örn. 509.5)</value>
+  </data>
+  <data name="Standard_ProcedurePlaceholder" xml:space="preserve">
+    <value>örn. I</value>
+  </data>
+  <data name="Standard_FileHeader" xml:space="preserve">
+    <value># Test standartları
+
+Ortak liste (ÇK / EMC): &quot;## standart&quot; başlığı altında &quot;- numara · ad&quot;. Numaraları kendi standart nüshanızla doğrulayın; Pusula&apos;dan yazılan yeni yöntem buraya eklenir.</value>
+  </data>
+  <data name="Standard_Procedure" xml:space="preserve">
+    <value>Prosedür {0}</value>
+  </data>
+  <data name="SearchPick_Placeholder" xml:space="preserve">
+    <value>Ara…</value>
+  </data>
+  <data name="SearchPick_Clear" xml:space="preserve">
+    <value>Seçimi temizle</value>
+  </data>
+  <data name="SearchPick_Add" xml:space="preserve">
+    <value>Ekle: {0}</value>
+  </data>
+  <data name="Export_Standard" xml:space="preserve">
+    <value>Standart</value>
   </data>
   <data name="Import_Filter" xml:space="preserve">
     <value>Excel (*.xlsx)|*.xlsx</value>

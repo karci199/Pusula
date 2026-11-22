@@ -33,6 +33,42 @@ namespace Pusula.Wpf.ViewModels
                 : string.Empty;
         }
 
+        /// <summary>Standart özeti ("810G 509.5"); yoksa boş.</summary>
+        public string StandardText
+        {
+            get { return MainViewModel.StandardShort(Item); }
+        }
+
+        /// <summary>Standart uzun yazımı (ipucu).</summary>
+        public string StandardLongText
+        {
+            get { return MainViewModel.StandardLong(Item); }
+        }
+
+        /// <summary>Standart yazılı mı (başlığın yanında turuncu çip).</summary>
+        public bool HasStandard
+        {
+            get { return Item.Standard.Trim().Length > 0; }
+        }
+
+        /// <summary>Başlığın altındaki turuncu çip: "ÇK · 810G 509.5" (tip ve / veya standart); ikisi de yoksa boş.</summary>
+        public string TypeChipText
+        {
+            get { return string.Join(" · ", new[] { Item.TestType.Trim(), StandardText }.Where(s => s.Length > 0)); }
+        }
+
+        /// <summary>Çip görünür mü.</summary>
+        public bool HasTypeChip
+        {
+            get { return TypeChipText.Length > 0; }
+        }
+
+        /// <summary>Test tipi (İşlevsel / ÇK / EMC); yoksa boş.</summary>
+        public string TestType
+        {
+            get { return Item.TestType; }
+        }
+
         /// <summary>Durum elle mi verildi (bağlardan hesaplanan ezmez).</summary>
         public bool IsManualStatus { get; }
 
@@ -162,22 +198,22 @@ namespace Pusula.Wpf.ViewModels
             get { return Item.Text; }
         }
 
-        /// <summary>Gösterilen başlık: başlık ya da (henüz yazılmadıysa) "Maddeler sonra yazılacak".</summary>
+        /// <summary>Gösterilen başlık: başlık; yoksa gereksinim metni (Excel'den gelen madde); o da yoksa "Maddeler sonra yazılacak".</summary>
         public string DisplayText
         {
-            get { return Item.Text.Length > 0 ? Item.Text : Item.SubGroup.Length > 0 ? Item.SubGroup + " · " + Resources.Verify_TextLater : Resources.Verify_TextLater; }
+            get { return Item.Text.Length > 0 ? Item.Text : Item.Requirement.Length > 0 ? Item.Requirement : Item.SubGroup.Length > 0 ? Item.SubGroup + " · " + Resources.Verify_TextLater : Resources.Verify_TextLater; }
         }
 
         /// <summary>Başlık henüz yazılmadı.</summary>
         public bool IsTextLater
         {
-            get { return Item.Text.Length == 0; }
+            get { return Item.Text.Length == 0 && Item.Requirement.Length == 0; }
         }
 
-        /// <summary>Başlığın altındaki tek satır: kısa not, yoksa gereksinim metni (tabloda kırpılır).</summary>
+        /// <summary>Başlığın altındaki tek satır: kısa not, yoksa gereksinim metni (başlık yokken metin zaten üstte, tekrarlanmaz).</summary>
         public string Description
         {
-            get { return Item.Description.Length > 0 ? Item.Description : Item.Requirement; }
+            get { return Item.Description.Length > 0 ? Item.Description : Item.Text.Length > 0 ? Item.Requirement : string.Empty; }
         }
 
         /// <summary>Başlığın altındaki tek satır görünür mü (satır açıkken gizli: tam metin açılan kısımda).</summary>
@@ -748,6 +784,9 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Seçenekler.</summary>
         public ObservableCollection<string> Options { get; } = new ObservableCollection<string>();
 
+        /// <summary>Yalnız adlar ("—" ve "+ Yeni" olmadan; aramalı kutu için).</summary>
+        public ObservableCollection<string> Names { get; } = new ObservableCollection<string>();
+
         /// <summary>Seçili seçenek.</summary>
         public string Selected
         {
@@ -761,6 +800,7 @@ namespace Pusula.Wpf.ViewModels
                 if (SetProperty(ref selected, value ?? Resources.Verify_None))
                 {
                     OnPropertyChanged(nameof(IsNew));
+                    OnPropertyChanged(nameof(Value));
                 }
             }
         }
@@ -775,7 +815,13 @@ namespace Pusula.Wpf.ViewModels
         public string NewText
         {
             get { return newText; }
-            set { SetProperty(ref newText, value ?? string.Empty); }
+            set
+            {
+                if (SetProperty(ref newText, value ?? string.Empty))
+                {
+                    OnPropertyChanged(nameof(Value));
+                }
+            }
         }
 
         /// <summary>Değer: yeni ad, seçili ad ya da boş.</summary>
@@ -815,10 +861,12 @@ namespace Pusula.Wpf.ViewModels
         public void SetNames(IEnumerable<string> names)
         {
             Options.Clear();
+            Names.Clear();
             Options.Add(Resources.Verify_None);
             foreach (var name in names)
             {
                 Options.Add(name);
+                Names.Add(name);
             }
 
             Options.Add(newLabel);
@@ -828,6 +876,7 @@ namespace Pusula.Wpf.ViewModels
             selected = Resources.Verify_None;
             OnPropertyChanged(nameof(Selected));
             OnPropertyChanged(nameof(IsNew));
+            OnPropertyChanged(nameof(Value));
         }
     }
     /// <summary>Seçmeli düğme (süzgeç ya da grup seçimi): metin ve işaret.</summary>
@@ -1135,6 +1184,7 @@ namespace Pusula.Wpf.ViewModels
             NewVerMethod = item.Method;
             NewVerSubGroup = item.SubGroup;
             NewVerFacility = item.Facility;
+            ResetStandardFields(item);
             NewVerStatus = item.EffectiveStatus.Length > 0 ? item.EffectiveStatus : Resources.Verify_StatusPending;
             NotifyVerificationDialog();
             IsVerificationDialogOpen = true;
@@ -1253,6 +1303,10 @@ namespace Pusula.Wpf.ViewModels
                 ResultPath = item.ResultPath,
                 Status = item.Status,
                 ManualStatus = item.ManualStatus,
+                TestType = item.TestType,
+                Standard = item.Standard,
+                StandardMethod = item.StandardMethod,
+                Procedure = item.Procedure,
             };
             foreach (var pair in item.Extra)
             {
@@ -1410,6 +1464,13 @@ namespace Pusula.Wpf.ViewModels
             foreach (var extra in verificationItems.Select(i => i.Group).Where(g => g.Length > 0 && !groups.Contains(g, StringComparer.CurrentCultureIgnoreCase)).Distinct())
             {
                 groups.Add(extra);
+            }
+
+            // Dosyada kendi grupları (Excel'den gelen bölümler) varsa boş kalan sabit gruplar gösterilmez.
+            var known = KnownGroups().ToList();
+            if (groups.Count > known.Count)
+            {
+                groups = groups.Where(g => !known.Contains(g, StringComparer.CurrentCultureIgnoreCase) || verificationItems.Any(i => SameGroup(i, g))).ToList();
             }
 
             if (verificationFilter.Length > 0 && !groups.Contains(verificationFilter, StringComparer.CurrentCultureIgnoreCase))
@@ -1716,9 +1777,17 @@ namespace Pusula.Wpf.ViewModels
             NewVerTgNo = string.Empty;
             NewVerStatus = Resources.Verify_StatusPending;
             VerificationError = string.Empty;
+            ResetStandardFields(null);
 
+            // Gruplar: dört sabit grup + dosyadaki diğer gruplar (Excel'den gelen bölümler) ve verilen grup; düzenlemede grup kaybolmaz.
             VerificationGroupChoices.Clear();
-            foreach (var name in KnownGroups())
+            var groupNames = KnownGroups().ToList();
+            foreach (var extra in verificationItems.Select(i => i.Group).Concat(new[] { group ?? string.Empty }).Where(g => g.Length > 0 && !groupNames.Contains(g, StringComparer.CurrentCultureIgnoreCase)).Distinct(StringComparer.CurrentCultureIgnoreCase).ToList())
+            {
+                groupNames.Add(extra);
+            }
+
+            foreach (var name in groupNames)
             {
                 VerificationGroupChoices.Add(new ChoiceOption(name, name, string.Equals(name, group, StringComparison.CurrentCultureIgnoreCase), OnVerificationGroupChoice)
                 {
@@ -1819,6 +1888,7 @@ namespace Pusula.Wpf.ViewModels
             };
             // Pencerede seçilen durum hesaplanandan farklıysa elle durum olur; aynıysa elle durum kalkar.
             item.ManualStatus = ManualStatusFor(NewVerStatus, item.Status);
+            ApplyStandardFields(item);
 
             if (editingVerification != null)
             {
@@ -1838,6 +1908,11 @@ namespace Pusula.Wpf.ViewModels
                 }
 
                 editingVerification = null;
+                if (updateError.Length == 0)
+                {
+                    RememberStandard(item);
+                }
+
                 if (updateError.Length == 0 && item.Facility.Length > 0 && rootPath.Length > 0)
                 {
                     FacilityList.Add(rootPath, item.Facility, Resources.Verify_FacilityTemplate);
@@ -1864,6 +1939,7 @@ namespace Pusula.Wpf.ViewModels
                 FacilityList.Add(rootPath, item.Facility, Resources.Verify_FacilityTemplate);
             }
 
+            RememberStandard(item);
             LinkVerificationFromUnitNote();
             LoadVerifications();
             Done(string.Format(CultureInfo.CurrentCulture, Resources.Verify_Added, item.Number, text.Length > 0 ? text : item.SubGroup), VerificationList.PathFor(verificationStock));

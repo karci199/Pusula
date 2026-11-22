@@ -63,6 +63,35 @@
                 </Grid>
             </controls:FormField>
         </DataTemplate>
+        <local:InverseBooleanConverter x:Key="InverseBool" />
+        <!-- Açılır süzgeç düğmesi (Bağ, Durum): açıkken dolu mavi yerine ince mavi kenar; açıkken tıklanmaz (dış tık kutuyu kapatır). -->
+        <Style x:Key="DropToggleStyle" TargetType="ToggleButton">
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{DynamicResource ControlCornerRadius}" SnapsToDevicePixels="True">
+                            <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <local:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
         <local:PathToImageConverter x:Key="PathToImage" />
 
@@ -191,7 +220,8 @@
         <!-- Bağ açılır kutusu: kapalıyken seçimin özeti, açılınca iki başlıklı çoklu seçim (Durum kutusuyla aynı görünüm) -->
         <DataTemplate x:Key="LinkFilterTemplate">
             <Grid>
-                <ToggleButton x:Name="LinkButton" Width="170" Margin="0,3" Padding="11,5" HorizontalContentAlignment="Stretch">
+                <ToggleButton x:Name="LinkButton" Width="170" Margin="0,3" Padding="11,5" HorizontalContentAlignment="Stretch" Style="{StaticResource DropToggleStyle}"
+                              IsHitTestVisible="{Binding IsOpen, ElementName=LinkPopup, Converter={StaticResource InverseBool}}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -201,7 +231,7 @@
                         <local:AppIcon Grid.Column="1" Margin="8,0,0,0" Glyph="{x:Static local:AppIcons.ChevronDown}" FontSize="10" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
                     </Grid>
                 </ToggleButton>
-                <Popup PlacementTarget="{Binding ElementName=LinkButton}" Placement="Bottom" VerticalOffset="4" StaysOpen="False" AllowsTransparency="True"
+                <Popup x:Name="LinkPopup" PlacementTarget="{Binding ElementName=LinkButton}" Placement="Bottom" VerticalOffset="4" StaysOpen="False" AllowsTransparency="True"
                        IsOpen="{Binding IsChecked, ElementName=LinkButton, Mode=TwoWay}">
                     <Border Padding="6" MinWidth="240" CornerRadius="{DynamicResource OverlayCornerRadius}" BorderThickness="1"
                             Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
@@ -224,22 +254,52 @@
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>        <!-- Çoklu seçim satırı: kutu, numara, açıklama, sağda bağlı olduğu diğer maddeler (yoksa sarı) -->
-        <DataTemplate x:Key="LinkOptionTemplate">
-            <CheckBox x:Name="Box" Margin="4,2" Padding="6,0,0,0" HorizontalContentAlignment="Stretch" IsChecked="{Binding IsChecked, Mode=TwoWay}"
-                      Visibility="{Binding IsVisible, Converter={StaticResource BoolToVis}}">
+        <!-- Bağ seçimi ("Kullanan stoklar" gibi): bağlı satır (numara · başlık ya da kısaltılmış metin · bilgi · ✕) -->
+        <DataTemplate x:Key="LinkedRowTemplate">
+            <Grid x:Name="Row" Margin="0" Visibility="{Binding IsChecked, Converter={StaticResource BoolToVis}}">
+                <Border BorderThickness="0,1,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}" Padding="10,5,4,5">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" MinWidth="70" SharedSizeGroup="LinkedKey" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Margin="0,0,12,0" VerticalAlignment="Center" FontWeight="SemiBold" Text="{Binding Key}" />
+                        <TextBlock Grid.Column="1" Margin="0,0,10,0" VerticalAlignment="Center" Text="{Binding Text}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Detail}" />
+                        <TextBlock x:Name="Badge" Grid.Column="2" Margin="0,0,6,0" VerticalAlignment="Center" FontSize="11.5" Foreground="#C8B6FF" Text="{Binding Badge}" />
+                        <Button Grid.Column="3" Padding="7,3" Style="{DynamicResource SubtleButtonStyle}" Tag="{Binding}" Click="LinkUnpick_Click" ToolTip="{x:Static res:Resources.Link_Remove}">
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.Remove}" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsWarning}" Value="True"><Setter TargetName="Badge" Property="Visibility" Value="Collapsed" /></DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+        <!-- Bağ seçimi: ekleme kutusundaki satır (tıklayınca bağlanır) -->
+        <DataTemplate x:Key="PickRowTemplate">
+            <Button Padding="8,5" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Style="{DynamicResource SubtleButtonStyle}" Tag="{Binding}" Click="LinkPick_Click" ToolTip="{Binding Detail}">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" MinWidth="70" SharedSizeGroup="LinkKey" />
+                        <ColumnDefinition Width="Auto" MinWidth="70" SharedSizeGroup="PickKey" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Margin="0,0,12,0" MaxWidth="190" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Text="{Binding Key}" TextTrimming="CharacterEllipsis" />
-                    <TextBlock Grid.Column="1" Margin="0,0,10,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Text}" TextTrimming="CharacterEllipsis" />
-                    <TextBlock x:Name="Badge" Grid.Column="2" FontSize="11.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Badge}" />
+                    <TextBlock Margin="0,0,12,0" FontWeight="SemiBold" Text="{Binding Key}" />
+                    <TextBlock Grid.Column="1" Margin="0,0,10,0" Text="{Binding Text}" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <TextBlock x:Name="Badge" Grid.Column="2" FontSize="11.5" Foreground="#C8B6FF" Text="{Binding Badge}" />
                 </Grid>
-            </CheckBox>
+            </Button>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding IsWarning}" Value="True"><Setter TargetName="Badge" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+        <DataTemplate x:Key="PickGroupHeader">
+            <TextBlock x:Name="Head" Margin="8,8,8,2" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Name}" />
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Name}" Value=""><Setter TargetName="Head" Property="Visibility" Value="Collapsed" /></DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
         <ItemsPanelTemplate x:Key="WrapItemsPanel">
@@ -2691,6 +2751,12 @@
                                         </WrapPanel>
                                         <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                                             <TextBlock Margin="12,0,14,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding PlanShownText}" />
+                                            <Button Margin="0,0,8,0" Padding="12,5" Click="VerExportPlan_Click" ToolTip="{x:Static res:Resources.Export_Hint}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <local:AppIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="13" VerticalAlignment="Center" />
+                                                    <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Export_Button}" />
+                                                </StackPanel>
+                                            </Button>
                                             <Button Margin="0,0,8,0" Padding="12,5" Command="{Binding OpenVerificationFileCommand}" ToolTip="{x:Static res:Resources.Verify_OpenFileHint}"
                                                     Visibility="{Binding HasVerificationFile, Converter={StaticResource BoolToVis}}">
                                                 <StackPanel Orientation="Horizontal">
@@ -2751,6 +2817,9 @@
                                                                 <TextBlock Margin="10,0,0,0" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding TpNo}" />
                                                                 <StackPanel Grid.Column="1" Margin="0,0,12,0" VerticalAlignment="Center">
                                                                     <TextBlock TextWrapping="Wrap" Text="{Binding Description}" />
+                                                                    <Border Margin="0,3,0,0" HorizontalAlignment="Left" Padding="7,1" CornerRadius="8" Background="#3A2A1A" Visibility="{Binding HasStandard, Converter={StaticResource BoolToVis}}">
+                                                                        <TextBlock FontSize="11.5" FontWeight="SemiBold" Foreground="#FFB46B" Text="{Binding StandardText}" />
+                                                                    </Border>
                                                                     <TextBlock FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" TextTrimming="CharacterEllipsis" Text="{Binding Note}"
                                                                                Visibility="{Binding HasNote, Converter={StaticResource BoolToVis}}" />
                                                                 </StackPanel>
@@ -2876,6 +2945,12 @@
                                             <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                                                 <CheckBox Margin="12,0,14,0" VerticalAlignment="Center" Content="{x:Static res:Resources.Verify_ShowRequirements}" IsChecked="{Binding ShowReportRequirements, Mode=TwoWay}" />
                                                 <TextBlock Margin="0,0,14,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding ReportShownText}" />
+                                                <Button Margin="0,0,8,0" Padding="12,5" Click="VerExportReport_Click" ToolTip="{x:Static res:Resources.Export_Hint}">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="13" VerticalAlignment="Center" />
+                                                        <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Export_Button}" />
+                                                    </StackPanel>
+                                                </Button>
                                                 <Button Margin="0,0,8,0" Padding="12,5" Command="{Binding OpenVerificationFileCommand}" ToolTip="{x:Static res:Resources.Verify_OpenFileHint}"
                                                         Visibility="{Binding HasVerificationFile, Converter={StaticResource BoolToVis}}">
                                                     <StackPanel Orientation="Horizontal">
@@ -2923,7 +2998,11 @@
                                                     <ItemsControl.ItemTemplate>
                                                         <DataTemplate>
                                                             <Border Padding="0,8" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}" Background="Transparent" Tag="{Binding Item}" MouseLeftButtonDown="VerReportRow_MouseLeftButtonDown">
-                                                                <Grid>
+                                                                <Grid Grid.IsSharedSizeScope="True">
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition Height="Auto" />
+                                                                        <RowDefinition Height="Auto" />
+                                                                    </Grid.RowDefinitions>
                                                                     <Grid.ColumnDefinitions>
                                                                         <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportTr, RelativeSource={RelativeSource AncestorType=Window}}" />
                                                                         <ColumnDefinition Width="*" MinWidth="200" />
@@ -2964,6 +3043,71 @@
                                                                             <local:AppIcon Glyph="{x:Static local:AppIcons.Edit}" FontSize="12" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
                                                                         </Button>
                                                                     </StackPanel>
+                                                                    <!-- Ayrıntı: bağlı planlar, gereksinimler, md'deki elle yazılan ayrıntı -->
+                                                                    <Grid Grid.Row="1" Grid.ColumnSpan="8" Margin="10,10,40,4" Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVis}}">
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition Width="*" />
+                                                                            <ColumnDefinition Width="16" />
+                                                                            <ColumnDefinition Width="*" />
+                                                                        </Grid.ColumnDefinitions>
+                                                                        <StackPanel>
+                                                                            <TextBlock Margin="0,0,0,6" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Verify_DetailPlans}" />
+                                                                            <TextBlock FontSize="12" Foreground="{DynamicResource SystemFillColorCautionBrush}" Text="{x:Static res:Resources.Link_PlanEmptyHint}"
+                                                                                       Visibility="{Binding HasPlanDetails, Converter={StaticResource InverseBoolToVis}}" />
+                                                                            <ItemsControl ItemsSource="{Binding PlanDetails}" Focusable="False">
+                                                                                <ItemsControl.ItemTemplate>
+                                                                                    <DataTemplate>
+                                                                                        <Grid Margin="0,0,0,6">
+                                                                                            <Grid.ColumnDefinitions>
+                                                                                                <ColumnDefinition Width="Auto" SharedSizeGroup="RepPlanKey" />
+                                                                                                <ColumnDefinition Width="*" />
+                                                                                                <ColumnDefinition Width="Auto" />
+                                                                                            </Grid.ColumnDefinitions>
+                                                                                            <TextBlock Margin="0,0,12,0" FontWeight="SemiBold" Foreground="#C8B6FF" Text="{Binding Key}" />
+                                                                                            <TextBlock Grid.Column="1" TextWrapping="Wrap" Text="{Binding Text}" />
+                                                                                            <TextBlock Grid.Column="2" Margin="12,0,0,0" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Method}" />
+                                                                                        </Grid>
+                                                                                    </DataTemplate>
+                                                                                </ItemsControl.ItemTemplate>
+                                                                            </ItemsControl>
+                                                                            <TextBlock Margin="0,8,0,6" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Verify_DetailRequirements}" />
+                                                                            <ItemsControl ItemsSource="{Binding RequirementDetails}" Focusable="False">
+                                                                                <ItemsControl.ItemTemplate>
+                                                                                    <DataTemplate>
+                                                                                        <Grid Margin="0,0,0,6">
+                                                                                            <Grid.ColumnDefinitions>
+                                                                                                <ColumnDefinition Width="Auto" SharedSizeGroup="RepReqKey" />
+                                                                                                <ColumnDefinition Width="*" />
+                                                                                                <ColumnDefinition Width="Auto" />
+                                                                                            </Grid.ColumnDefinitions>
+                                                                                            <TextBlock Margin="0,0,12,0" FontWeight="SemiBold" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="{Binding Key}" />
+                                                                                            <TextBlock Grid.Column="1" TextTrimming="CharacterEllipsis" Text="{Binding Text}" ToolTip="{Binding Text}" />
+                                                                                            <TextBlock Grid.Column="2" Margin="12,0,0,0" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding StatusText}" />
+                                                                                        </Grid>
+                                                                                    </DataTemplate>
+                                                                                </ItemsControl.ItemTemplate>
+                                                                            </ItemsControl>
+                                                                        </StackPanel>
+                                                                        <StackPanel Grid.Column="2">
+                                                                            <DockPanel Margin="0,0,0,6">
+                                                                                <Button DockPanel.Dock="Right" Padding="8,2" Style="{DynamicResource SubtleButtonStyle}" Command="{Binding DataContext.OpenVerificationFileCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                                                        ToolTip="{x:Static res:Resources.Verify_DetailHint}">
+                                                                                    <TextBlock FontSize="12" Text="{x:Static res:Resources.Verify_OpenInFile}" />
+                                                                                </Button>
+                                                                                <TextBlock FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Verify_DetailText}" />
+                                                                            </DockPanel>
+                                                                            <TextBlock TextWrapping="Wrap" FontSize="12.5" Text="{Binding DetailText}" Visibility="{Binding HasDetailText, Converter={StaticResource BoolToVis}}" />
+                                                                            <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_ReportDetailEmpty}"
+                                                                                       Visibility="{Binding HasDetailText, Converter={StaticResource InverseBoolToVis}}" />
+                                                                            <Button Margin="0,8,0,0" HorizontalAlignment="Left" Padding="10,4" Tag="{Binding Item}" Click="VerReportPathOpen_Click" ToolTip="{Binding ResultPath}"
+                                                                                    Visibility="{Binding HasResultPath, Converter={StaticResource BoolToVis}}">
+                                                                                <StackPanel Orientation="Horizontal">
+                                                                                    <local:AppIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="12" Foreground="{DynamicResource SystemFillColorCautionBrush}" VerticalAlignment="Center" />
+                                                                                    <TextBlock Margin="6,0,0,0" FontSize="12.5" VerticalAlignment="Center" Text="{x:Static res:Resources.Verify_OpenResultFolder}" />
+                                                                                </StackPanel>
+                                                                            </Button>
+                                                                        </StackPanel>
+                                                                    </Grid>
                                                                 </Grid>
                                                             </Border>
                                                             <DataTemplate.Triggers>
@@ -3018,7 +3162,8 @@
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
                                         <TextBlock Margin="16,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_FilterStatus}" />
-                                        <ToggleButton x:Name="StatusFilterButton" Width="160" Margin="0,3" Padding="11,5" HorizontalContentAlignment="Stretch">
+                                        <ToggleButton x:Name="StatusFilterButton" Width="160" Margin="0,3" Padding="11,5" HorizontalContentAlignment="Stretch" Style="{StaticResource DropToggleStyle}"
+                                                      IsHitTestVisible="{Binding IsOpen, ElementName=StatusFilterPopup, Converter={StaticResource InverseBool}}">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*" />
@@ -3028,7 +3173,7 @@
                                                 <local:AppIcon Grid.Column="1" Margin="8,0,0,0" Glyph="{x:Static local:AppIcons.ChevronDown}" FontSize="10" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
                                             </Grid>
                                         </ToggleButton>
-                                        <Popup PlacementTarget="{Binding ElementName=StatusFilterButton}" Placement="Bottom" VerticalOffset="4" StaysOpen="False" AllowsTransparency="True"
+                                        <Popup x:Name="StatusFilterPopup" PlacementTarget="{Binding ElementName=StatusFilterButton}" Placement="Bottom" VerticalOffset="4" StaysOpen="False" AllowsTransparency="True"
                                                IsOpen="{Binding IsChecked, ElementName=StatusFilterButton, Mode=TwoWay}">
                                             <Border Padding="6" MinWidth="240" CornerRadius="{DynamicResource OverlayCornerRadius}" BorderThickness="1"
                                                     Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
@@ -3160,6 +3305,9 @@
                                                                                            Text="{Binding Id}" ToolTip="{Binding Id}" />
                                                                                 <StackPanel Grid.Column="2" Margin="0,0,16,0" VerticalAlignment="Center">
                                                                                     <TextBlock x:Name="RowText" FontWeight="SemiBold" TextWrapping="Wrap" Text="{Binding DisplayText}" />
+                                                                                    <Border Margin="0,3,0,0" HorizontalAlignment="Left" Padding="7,1" CornerRadius="8" Background="#3A2A1A" ToolTip="{Binding StandardLongText}" Visibility="{Binding HasTypeChip, Converter={StaticResource BoolToVis}}">
+                                                                                        <TextBlock FontSize="11.5" FontWeight="SemiBold" Foreground="#FFB46B" Text="{Binding TypeChipText}" />
+                                                                                    </Border>
                                                                                     <TextBlock Margin="0,2,0,0" FontSize="12.5" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextTertiaryBrush}"
                                                                                                Text="{Binding Description}" Visibility="{Binding ShowsDescriptionLine, Converter={StaticResource BoolToVis}}" />
                                                                                 </StackPanel>
@@ -4177,6 +4325,36 @@
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldKind}" LabelWidth="150">
                         <ComboBox ItemsSource="{Binding VerificationKinds}" SelectedItem="{Binding NewVerKind, Mode=TwoWay}" ItemTemplate="{StaticResource VerKindItemTemplate}" />
                     </controls:FormField>
+                    <!-- Test tipi ve standart (elle girilir, Excel'den gelmez): ÇK / EMC seçilince standart, yöntem, prosedür açılır -->
+                    <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldTestType}" LabelWidth="150">
+                        <local:SearchPickBox x:Name="TestTypePick" Width="240" HorizontalAlignment="Left" AllowNew="False" ItemsSource="{Binding VerificationTestTypes}"
+                                             SelectedValue="{Binding NewVerTestType, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Verify_None}" />
+                    </controls:FormField>
+                    <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldStandard}" LabelWidth="150"
+                                        Visibility="{Binding IsNewVerStandard, Converter={StaticResource BoolToVis}}">
+                        <Border CornerRadius="8" BorderThickness="1" Padding="10,8" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="90" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Verify_FieldStandard}" />
+                                <local:SearchPickBox x:Name="StandardPick" Grid.Column="1" ItemsSource="{Binding StandardNames}" SelectedValue="{Binding NewVerStandard, Mode=TwoWay}"
+                                                     Placeholder="{x:Static res:Resources.Standard_Placeholder}" />
+                                <TextBlock Grid.Row="1" Margin="0,8,0,0" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Verify_FieldStandardMethod}" />
+                                <local:SearchPickBox x:Name="StandardMethodPick" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" ItemsSource="{Binding StandardMethodOptions}"
+                                                     SelectedValue="{Binding NewVerStandardMethod, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Standard_MethodPlaceholder}" />
+                                <TextBlock Grid.Row="2" Margin="0,8,0,0" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Verify_FieldProcedure}" />
+                                <TextBox Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Width="160" HorizontalAlignment="Left" Text="{Binding NewVerProcedure, UpdateSourceTrigger=PropertyChanged}"
+                                         controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Standard_ProcedurePlaceholder}" />
+                            </Grid>
+                        </Border>
+                    </controls:FormField>
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldParent}" LabelWidth="150"
                                         Visibility="{Binding IsNewVerDerived, Converter={StaticResource BoolToVis}}">
                         <ComboBox ItemsSource="{Binding VerificationParents}" SelectedItem="{Binding NewVerParent, Mode=TwoWay}" />
@@ -4203,35 +4381,55 @@
             <StackPanel>
                 <TextBlock Margin="0,0,0,14" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding VerificationFileText}" TextTrimming="CharacterEllipsis" />
                 <controls:FormField Header="{x:Static res:Resources.Verify_PlanNo}" LabelWidth="120" ErrorText="{Binding PlanError}">
-                    <TextBox Width="200" HorizontalAlignment="Left" Text="{Binding PlanTpNo, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+                    <TextBox Width="200" HorizontalAlignment="Left" Text="{Binding PlanTpNo, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_TpPlaceholder}" IsVisibleChanged="FocusWhenVisible" />
                 </controls:FormField>
                 <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_ColDescription}" LabelWidth="120">
-                    <TextBox Text="{Binding PlanDescription, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Text="{Binding PlanDescription, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlanDescPlaceholder}" />
                 </controls:FormField>
                 <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldMethod}" LabelWidth="120">
                     <ComboBox Width="240" HorizontalAlignment="Left" ItemsSource="{Binding VerificationMethods}" SelectedItem="{Binding PlanMethod, Mode=TwoWay}" ItemTemplate="{StaticResource VerMethodItemTemplate}" />
                 </controls:FormField>
                 <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldFacility}" LabelWidth="120">
-                    <StackPanel Orientation="Horizontal">
-                        <ComboBox Width="240" ItemsSource="{Binding PlanFacilityPick.Options}" SelectedItem="{Binding PlanFacilityPick.Selected, Mode=TwoWay}" />
-                        <TextBox Margin="8,0,0,0" Width="200" Text="{Binding PlanFacilityPick.NewText, UpdateSourceTrigger=PropertyChanged}"
-                                 controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlaceholderFacility}"
-                                 Visibility="{Binding PlanFacilityPick.IsNew, Converter={StaticResource BoolToVis}}" />
-                    </StackPanel>
+                    <local:SearchPickBox x:Name="PlanFacilityBox" Width="300" HorizontalAlignment="Left" ItemsSource="{Binding PlanFacilityPick.Names}" SelectedValue="{Binding PlanFacilityPick.Value, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Verify_None}" />
                 </controls:FormField>
                 <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldRequirements}" LabelWidth="120">
-                    <Border CornerRadius="8" BorderThickness="1" Padding="6" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}">
+                    <Border x:Name="PlanPickBox" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}">
                         <StackPanel>
-                            <TextBlock Margin="4,0,4,6" FontSize="12.5" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="{Binding PlanSelectedText}" />
-                            <TextBox Text="{Binding PlanSearch, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_SearchPlaceholder}" />
-                            <ScrollViewer Margin="0,6,0,0" MaxHeight="210" VerticalScrollBarVisibility="Auto">
-                                <ItemsControl ItemsSource="{Binding PlanRequirementOptions}" ItemTemplate="{StaticResource LinkOptionTemplate}" Focusable="False" Grid.IsSharedSizeScope="True" />
-                            </ScrollViewer>
+                            <DockPanel Margin="10,5,6,5">
+                                <Grid DockPanel.Dock="Right">
+                                    <ToggleButton x:Name="PlanPickButton" Padding="10,3" MinHeight="28" FontSize="13" Style="{StaticResource DropToggleStyle}"
+                                                  IsHitTestVisible="{Binding IsOpen, ElementName=PlanPickPopup, Converter={StaticResource InverseBool}}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="11" VerticalAlignment="Center" />
+                                            <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Link_AddReq}" />
+                                        </StackPanel>
+                                    </ToggleButton>
+                                    <Popup x:Name="PlanPickPopup" PlacementTarget="{Binding ElementName=PlanPickBox}" Placement="Bottom" VerticalOffset="4" Width="{Binding ActualWidth, ElementName=PlanPickBox}" StaysOpen="False" AllowsTransparency="True"
+                                           IsOpen="{Binding IsChecked, ElementName=PlanPickButton, Mode=TwoWay}" Opened="LinkPickPopup_Opened">
+                                        <Border Padding="6" CornerRadius="{DynamicResource OverlayCornerRadius}" BorderThickness="1"
+                                                Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+                                            <StackPanel>
+                                                <TextBox Text="{Binding PlanSearch, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_SearchPlaceholder}" />
+                                                <ScrollViewer Margin="0,4,0,0" MaxHeight="280" VerticalScrollBarVisibility="Auto">
+                                                    <ItemsControl ItemsSource="{Binding PlanPickView}" ItemTemplate="{StaticResource PickRowTemplate}" Focusable="False" Grid.IsSharedSizeScope="True">
+                                                        <ItemsControl.GroupStyle>
+                                                            <GroupStyle HeaderTemplate="{StaticResource PickGroupHeader}" />
+                                                        </ItemsControl.GroupStyle>
+                                                    </ItemsControl>
+                                                </ScrollViewer>
+                                            </StackPanel>
+                                        </Border>
+                                    </Popup>
+                                </Grid>
+                                <TextBlock VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding PlanCountText}" />
+                            </DockPanel>
+                            <ItemsControl ItemsSource="{Binding PlanRequirementOptions}" ItemTemplate="{StaticResource LinkedRowTemplate}" Focusable="False" Grid.IsSharedSizeScope="True" />
+                            <TextBlock Margin="10,2,10,8" FontSize="12.5" TextWrapping="Wrap" Foreground="{DynamicResource SystemFillColorCautionBrush}" Text="{x:Static res:Resources.Link_ReqEmptyHint}"
+                                       Visibility="{Binding HasPlanSelection, Converter={StaticResource InverseBoolToVis}}" />
                         </StackPanel>
-                    </Border>
-                </controls:FormField>
+                    </Border>                </controls:FormField>
                 <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_PlanNote}" LabelWidth="120">
-                    <TextBox Text="{Binding PlanNote, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" MinLines="2" MaxLines="5" VerticalScrollBarVisibility="Auto" />
+                    <TextBox Text="{Binding PlanNote, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_PlanNotePlaceholder}" AcceptsReturn="True" TextWrapping="Wrap" MinLines="2" MaxLines="5" VerticalScrollBarVisibility="Auto" />
                 </controls:FormField>
                 <TextBlock Margin="0,12,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" TextWrapping="Wrap" Text="{x:Static res:Resources.Verify_PlanItemHint}" />
             </StackPanel>
@@ -4259,10 +4457,10 @@
             <StackPanel>
                 <TextBlock Margin="0,0,0,14" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding VerificationFileText}" TextTrimming="CharacterEllipsis" />
                 <controls:FormField Header="{x:Static res:Resources.Verify_ReportNo}" LabelWidth="120" ErrorText="{Binding ReportError}">
-                    <TextBox Width="200" HorizontalAlignment="Left" Text="{Binding ReportTrNo, UpdateSourceTrigger=PropertyChanged}" IsVisibleChanged="FocusWhenVisible" />
+                    <TextBox Width="200" HorizontalAlignment="Left" Text="{Binding ReportTrNo, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_TrPlaceholder}" IsVisibleChanged="FocusWhenVisible" />
                 </controls:FormField>
                 <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_ColDescription}" LabelWidth="120">
-                    <TextBox Text="{Binding ReportDescription, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Text="{Binding ReportDescription, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_ReportDescPlaceholder}" />
                 </controls:FormField>
                 <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_ReportResult}" LabelWidth="120">
                     <ComboBox Width="240" HorizontalAlignment="Left" ItemsSource="{Binding VerificationResults}" SelectedItem="{Binding ReportResult, Mode=TwoWay}"
@@ -4276,16 +4474,41 @@
                     </StackPanel>
                 </controls:FormField>
                 <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldPlans}" LabelWidth="120">
-                    <Border CornerRadius="8" BorderThickness="1" Padding="6" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}">
+                    <Border x:Name="ReportPickBox" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}">
                         <StackPanel>
-                            <TextBlock Margin="4,0,4,6" FontSize="12.5" TextTrimming="CharacterEllipsis" Foreground="#C8B6FF" Text="{Binding ReportSelectedText}" />
-                            <TextBox Text="{Binding ReportSearch, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_SearchPlaceholder}" />
-                            <ScrollViewer Margin="0,6,0,0" MaxHeight="180" VerticalScrollBarVisibility="Auto">
-                                <ItemsControl ItemsSource="{Binding ReportPlanOptions}" ItemTemplate="{StaticResource LinkOptionTemplate}" Focusable="False" Grid.IsSharedSizeScope="True" />
-                            </ScrollViewer>
+                            <DockPanel Margin="10,5,6,5">
+                                <Grid DockPanel.Dock="Right">
+                                    <ToggleButton x:Name="ReportPickButton" Padding="10,3" MinHeight="28" FontSize="13" Style="{StaticResource DropToggleStyle}"
+                                                  IsHitTestVisible="{Binding IsOpen, ElementName=ReportPickPopup, Converter={StaticResource InverseBool}}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="11" VerticalAlignment="Center" />
+                                            <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Link_AddPlan}" />
+                                        </StackPanel>
+                                    </ToggleButton>
+                                    <Popup x:Name="ReportPickPopup" PlacementTarget="{Binding ElementName=ReportPickBox}" Placement="Bottom" VerticalOffset="4" Width="{Binding ActualWidth, ElementName=ReportPickBox}" StaysOpen="False" AllowsTransparency="True"
+                                           IsOpen="{Binding IsChecked, ElementName=ReportPickButton, Mode=TwoWay}" Opened="LinkPickPopup_Opened">
+                                        <Border Padding="6" CornerRadius="{DynamicResource OverlayCornerRadius}" BorderThickness="1"
+                                                Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+                                            <StackPanel>
+                                                <TextBox Text="{Binding ReportSearch, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_SearchPlaceholder}" />
+                                                <ScrollViewer Margin="0,4,0,0" MaxHeight="280" VerticalScrollBarVisibility="Auto">
+                                                    <ItemsControl ItemsSource="{Binding ReportPickView}" ItemTemplate="{StaticResource PickRowTemplate}" Focusable="False" Grid.IsSharedSizeScope="True">
+                                                        <ItemsControl.GroupStyle>
+                                                            <GroupStyle HeaderTemplate="{StaticResource PickGroupHeader}" />
+                                                        </ItemsControl.GroupStyle>
+                                                    </ItemsControl>
+                                                </ScrollViewer>
+                                            </StackPanel>
+                                        </Border>
+                                    </Popup>
+                                </Grid>
+                                <TextBlock VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding ReportCountText}" />
+                            </DockPanel>
+                            <ItemsControl ItemsSource="{Binding ReportPlanOptions}" ItemTemplate="{StaticResource LinkedRowTemplate}" Focusable="False" Grid.IsSharedSizeScope="True" />
+                            <TextBlock Margin="10,2,10,8" FontSize="12.5" TextWrapping="Wrap" Foreground="{DynamicResource SystemFillColorCautionBrush}" Text="{x:Static res:Resources.Link_PlanEmptyHint}"
+                                       Visibility="{Binding HasReportSelection, Converter={StaticResource InverseBoolToVis}}" />
                         </StackPanel>
-                    </Border>
-                </controls:FormField>
+                    </Border>                </controls:FormField>
                 <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_ResultPath}" LabelWidth="120">
                     <StackPanel>
                         <controls:FilePickerRow Mode="Folder" SelectedPath="{Binding ReportPath, Mode=TwoWay}"
@@ -4296,7 +4519,7 @@
                     </StackPanel>
                 </controls:FormField>
                 <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_PlanNote}" LabelWidth="120">
-                    <TextBox Text="{Binding ReportNote, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" MinLines="2" MaxLines="5" VerticalScrollBarVisibility="Auto" />
+                    <TextBox Text="{Binding ReportNote, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_ReportNotePlaceholder}" AcceptsReturn="True" TextWrapping="Wrap" MinLines="2" MaxLines="5" VerticalScrollBarVisibility="Auto" />
                 </controls:FormField>
                 <TextBlock Margin="0,12,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" TextWrapping="Wrap" Text="{x:Static res:Resources.Verify_ReportItemHint}" />
             </StackPanel>

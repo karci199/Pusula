@@ -220,6 +220,36 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
   (`%% pusula:plan … %%`) bölümleri artık tabloyla eşitlenmiyor; TP 4.6 → 4.7 sonrası bölümde hâlâ 4.6 yazıyor.
   Tablolara geçişten kalan bu bölümler ne olacak (tabloya taşınıp işaretler mi kalkar, yoksa TP no'ya göre
   ayrıntı bölümü mü olur — plan ayrıntılı görünümüyle birlikte karar).
+- **Excel / DOORS akışı (22.11.2026, deneme; dal `deneme/excel-gereksinim`, push yok):** test mühendisinin akışı:
+  (1) DOORS'tan alınan Excel ile gereksinim tablosu kurulur ("Excel'den al", çalışıyor); (2) Pusula'da plan maddeleri
+  açılıp DGÖ'lerle eşlenir, bilgiler girilir, plan "Tamamlandı" denir; (3) plan DOORS biçiminde Excel'e verilir (biçime
+  kullanıcı bakacak); (4) rapor maddeleri plandan kendiliğinden açılır (4.x → 5.x birebir, değiştirilebilir), yalnız
+  Geçti / Kaldı ve ayrıntı girilir. İçe aktarma kuralları: başlık satırı TG no + Gereksinim / Açıklama / ID / Object Text
+  sütunlarından tanınır (Tür, Not isteğe bağlı); Tür'ü boş ve metni numarayla başlayan satır ("3.1 Elektriksel …")
+  bölümdür, madde olmaz, altındaki maddelerin grubu olur; yeni maddenin başlığı boş kalır (gereksinim metni üstte
+  görünür); var olanın yalnız metin / tür / not / grubu güncellenir, durum ve bağ korunur, silme yok. Bağlı (üst
+  gereksinim) ilk aktarımda yok. Kod: `Pusula.Core\Office\XlsxReader.cs` (kütüphanesiz, System.IO.Compression),
+  `Testing\RequirementImport.cs`, `MainViewModel.Import.cs`, test `excel-import.ps1`. Gerçek DOORS çıktısının sütun
+  adlarına göre eş adlar genişletilecek.
+  **Karar (22.11.2026 öğleden sonra):** plan ve rapor maddeleri otomatik oluşturulmaz, hepsi elle (mock
+  `docs/mock/plan_olustur.png` reddedildi). Yalnız gereksinimler Excel'den gelir. Test planı ve Test raporu sekmelerinde
+  "Excel'e aktar" (`Office\XlsxWriter.cs`, kütüphanesiz): plan = TP no · Açıklama · Yöntem · Altyapı · Gereksinimler ·
+  Gereksinim metni · Not · Test raporu; rapor = TR no · Açıklama · Plan · Gereksinimler · Tarih · Birim · Sonuç ·
+  Sonuç yeri · Not; bağı eksik hücrede "—". DOORS'a kopyala-yapıştır yapılır (doğrudan aktarım değil). Uçtan uca test
+  `excel-flow.ps1` (49 denetim). Bağ / Durum kutusu: açıkken ince mavi kenar, ikinci tık kapatır.
+  **Bağ seçimi (22.11.2026, mock `bag_secimi.png`):** plan / rapor penceresinde "Kullanan stoklar" gibi: bağlı satırlar
+  (başlık yoksa kısaltılmış metin, ✕) + "+ Gereksinim ekle / Plan ekle" aramalı kutu (bölümlere ayrılı, seçince açık kalır).
+  **Rapor:** "sonucu girilmedi" ayrı uyarı ve "Sonuç yok" hapı; satıra tıklayınca ayrıntı (planlar, gereksinimler,
+  md'deki `### TR no` ayrıntısı, sonuç klasörü).
+  **Standart (22.11.2026, mock `standart_secimi.png`):** gereksinimde elle: Test tipi (İşlevsel / ÇK / EMC / Diğer),
+  ÇK / EMC'de Standart + Yöntem (509.5 · Tuz sisi) + Prosedür. md sütunları Tip · Standart · Standart yöntemi · Prosedür.
+  Ortak liste `_TAKIP\Standartlar.md` (`## MIL-STD-810G` / `- 509.5 · Tuz sisi`); dosya yokken başlangıç listesi
+  (810G ve 461G yöntemleri, bilgiden yazıldı — kullanıcı kendi nüshasıyla doğrulamalı; 810F / H gibi sürümler
+  eklenebilir); listede olmayan yöntem yazılırsa listeye eklenir. Planda ayrı seçim yok: bağlı gereksinimlerden okunur
+  (turuncu çip), Excel'e aktarımda "Standart" sütunu. Aramalı seçim kutusu `SearchPickBox` (tip, standart, yöntem,
+  plan altyapısı). Test `standard.ps1`.
+  Küçük not: gereksinimin rapor bağı "Yok" sayılırken sonuçsuz rapor da "raporu yok" uyarısına düşüyor (TSD-0042 5.3
+  sonuçsuz) — metin "sonucu eksik" olarak ayrılabilir.
 - **Standart kütüphanesi (22.11.2026, sonraya; kullanıcı isteği):** ÇK / EMC test maddeleri için standartlar
   (MIL-STD-810G, MIL-STD-461G …) yüklenir; plan / gereksinim maddesinde doğrudan standart ve yöntem seçilebilir.
 - **Outlook'tan veri çekme (21.11.2026, sonraya bırakıldı; kullanıcı kararı):** klasik Outlook'a COM ile bağlanılır,

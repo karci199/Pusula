@@ -19,6 +19,12 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Seçeneği kurar.</summary>
         public LinkOption(string key, string text, string badge, bool isWarning, bool isChecked, Action changed)
+            : this(key, text, badge, isWarning, isChecked, changed, string.Empty, string.Empty)
+        {
+        }
+
+        /// <summary>Seçeneği bölüm ve tam metinle kurar.</summary>
+        public LinkOption(string key, string text, string badge, bool isWarning, bool isChecked, Action changed, string group, string detail)
         {
             Key = key;
             Text = text;
@@ -26,6 +32,20 @@ namespace Pusula.Wpf.ViewModels
             IsWarning = isWarning;
             this.isChecked = isChecked;
             this.changed = changed;
+            Group = group ?? string.Empty;
+            Detail = (detail ?? string.Empty).Length > 0 ? detail! : text;
+        }
+
+        /// <summary>Seçim kutusunda ayraç olarak gösterilen bölüm ("3.1 Elektriksel özellikler"); yoksa boş.</summary>
+        public string Group { get; }
+
+        /// <summary>Tam metin (üzerine gelince ipucu; satırda kısaltılır).</summary>
+        public string Detail { get; }
+
+        /// <summary>Seçim kutusunda seçilebilir mi (aramadan geçiyor ve henüz bağlı değil).</summary>
+        public bool IsPickable
+        {
+            get { return isVisible && !isChecked; }
         }
 
         /// <summary>Numara (TG no / TP no); md'ye bu yazılır.</summary>
@@ -48,6 +68,7 @@ namespace Pusula.Wpf.ViewModels
             {
                 if (SetProperty(ref isChecked, value))
                 {
+                    OnPropertyChanged(nameof(IsPickable));
                     changed();
                 }
             }
@@ -57,7 +78,13 @@ namespace Pusula.Wpf.ViewModels
         public bool IsVisible
         {
             get { return isVisible; }
-            set { SetProperty(ref isVisible, value); }
+            set
+            {
+                if (SetProperty(ref isVisible, value))
+                {
+                    OnPropertyChanged(nameof(IsPickable));
+                }
+            }
         }
     }
 
@@ -144,6 +171,7 @@ namespace Pusula.Wpf.ViewModels
                 if (SetProperty(ref planSearch, value ?? string.Empty))
                 {
                     FilterOptions(PlanRequirementOptions, planSearch);
+                    PlanPickView.Refresh();
                 }
             }
         }
@@ -208,20 +236,21 @@ namespace Pusula.Wpf.ViewModels
             foreach (var item in verificationItems)
             {
                 var key = VerificationList.KeyOf(item);
-                var others = verificationPlans.Where(p => p != plan && p.Requirements.Contains(key, StringComparer.OrdinalIgnoreCase)).Select(p => p.TpNo).ToList();
-                PlanRequirementOptions.Add(new LinkOption(key, item.Text, others.Count > 0 ? string.Join(", ", others) : Resources.Verify_NoPlan, others.Count == 0,
-                    selected.Contains(key, StringComparer.OrdinalIgnoreCase), () => OnPropertyChanged(nameof(PlanSelectedText))));
+                var others = verificationPlans.Where(p => (plan == null || !string.Equals(p.TpNo, plan.TpNo, StringComparison.OrdinalIgnoreCase)) && p.Requirements.Contains(key, StringComparer.OrdinalIgnoreCase)).Select(p => p.TpNo).ToList();
+                PlanRequirementOptions.Add(new LinkOption(key, item.Text.Length > 0 ? item.Text : item.Requirement, others.Count > 0 ? string.Join(", ", others) : Resources.Verify_NoPlan, others.Count == 0,
+                    selected.Contains(key, StringComparer.OrdinalIgnoreCase), OnPlanSelectionChanged, item.Group, item.Requirement.Length > 0 ? item.Requirement : item.Text));
             }
 
             // Tabloda olup gereksinim listesinde olmayan bağlar da görünsün (silinmesin diye seçili kalır).
             foreach (var missing in selected.Where(s => !PlanRequirementOptions.Any(o => string.Equals(o.Key, s, StringComparison.OrdinalIgnoreCase))).ToList())
             {
-                PlanRequirementOptions.Add(new LinkOption(missing, Resources.Verify_LinkMissing, string.Empty, true, true, () => OnPropertyChanged(nameof(PlanSelectedText))));
+                PlanRequirementOptions.Add(new LinkOption(missing, Resources.Verify_LinkMissing, string.Empty, true, true, OnPlanSelectionChanged));
             }
 
             planSearch = string.Empty;
             OnPropertyChanged(nameof(PlanSearch));
-            OnPropertyChanged(nameof(PlanSelectedText));
+            PlanPickView.Refresh();
+            OnPlanSelectionChanged();
             OnPropertyChanged(nameof(VerPlanTitle));
             OnPropertyChanged(nameof(VerPlanDeleteText));
             IsVerPlanOpen = true;
@@ -415,6 +444,7 @@ namespace Pusula.Wpf.ViewModels
                 if (SetProperty(ref reportSearch, value ?? string.Empty))
                 {
                     FilterOptions(ReportPlanOptions, reportSearch);
+                    ReportPickView.Refresh();
                 }
             }
         }
@@ -471,17 +501,18 @@ namespace Pusula.Wpf.ViewModels
             {
                 var reqs = plan.Requirements.Count > 0 ? string.Join(", ", plan.Requirements) : Resources.Verify_NoRequirement;
                 ReportPlanOptions.Add(new LinkOption(plan.TpNo, plan.Description, reqs, plan.Requirements.Count == 0,
-                    selected.Contains(plan.TpNo, StringComparer.OrdinalIgnoreCase), () => OnPropertyChanged(nameof(ReportSelectedText))));
+                    selected.Contains(plan.TpNo, StringComparer.OrdinalIgnoreCase), OnReportSelectionChanged, string.Empty, plan.Description));
             }
 
             foreach (var missing in selected.Where(s => !ReportPlanOptions.Any(o => string.Equals(o.Key, s, StringComparison.OrdinalIgnoreCase))).ToList())
             {
-                ReportPlanOptions.Add(new LinkOption(missing, Resources.Verify_LinkMissing, string.Empty, true, true, () => OnPropertyChanged(nameof(ReportSelectedText))));
+                ReportPlanOptions.Add(new LinkOption(missing, Resources.Verify_LinkMissing, string.Empty, true, true, OnReportSelectionChanged));
             }
 
             reportSearch = string.Empty;
             OnPropertyChanged(nameof(ReportSearch));
-            OnPropertyChanged(nameof(ReportSelectedText));
+            ReportPickView.Refresh();
+            OnReportSelectionChanged();
             OnPropertyChanged(nameof(VerReportTitle));
             OnPropertyChanged(nameof(VerReportDeleteText));
             IsVerReportOpen = true;
@@ -651,8 +682,76 @@ namespace Pusula.Wpf.ViewModels
             {
                 option.IsVisible = text.Length == 0
                     || option.Key.IndexOf(text, StringComparison.CurrentCultureIgnoreCase) >= 0
-                    || option.Text.IndexOf(text, StringComparison.CurrentCultureIgnoreCase) >= 0;
+                    || option.Text.IndexOf(text, StringComparison.CurrentCultureIgnoreCase) >= 0
+                    || option.Detail.IndexOf(text, StringComparison.CurrentCultureIgnoreCase) >= 0;
             }
+        }
+
+        // Seçim kutusu görünümü: yalnız seçilebilenler (aramadan geçen, bağlı olmayan), bölüme göre ayrılmış.
+        private static System.ComponentModel.ICollectionView PickView(ObservableCollection<LinkOption> options, bool grouped)
+        {
+            var view = new System.Windows.Data.ListCollectionView(options) { Filter = o => ((LinkOption)o).IsPickable };
+            if (grouped)
+            {
+                view.GroupDescriptions.Add(new System.Windows.Data.PropertyGroupDescription(nameof(LinkOption.Group)));
+            }
+
+            return view;
+        }
+
+        private System.ComponentModel.ICollectionView? planPickView;
+        private System.ComponentModel.ICollectionView? reportPickView;
+
+        /// <summary>"+ Gereksinim ekle" kutusundaki seçenekler (bağlı olmayanlar, bölüme göre).</summary>
+        public System.ComponentModel.ICollectionView PlanPickView
+        {
+            get { return planPickView ?? (planPickView = PickView(PlanRequirementOptions, true)); }
+        }
+
+        /// <summary>"+ Plan ekle" kutusundaki seçenekler (bağlı olmayan planlar).</summary>
+        public System.ComponentModel.ICollectionView ReportPickView
+        {
+            get { return reportPickView ?? (reportPickView = PickView(ReportPlanOptions, false)); }
+        }
+
+        /// <summary>Plan penceresi: "2 gereksinim" ya da "Gereksinim yok".</summary>
+        public string PlanCountText
+        {
+            get { var n = PlanRequirementOptions.Count(o => o.IsChecked); return n == 0 ? Resources.Link_ReqNone : string.Format(CultureInfo.CurrentCulture, Resources.Link_ReqCount, n); }
+        }
+
+        /// <summary>Plan penceresinde bağlı gereksinim var mı (yoksa uyarı).</summary>
+        public bool HasPlanSelection
+        {
+            get { return PlanRequirementOptions.Any(o => o.IsChecked); }
+        }
+
+        /// <summary>Rapor penceresi: "1 plan" ya da "Plan yok".</summary>
+        public string ReportCountText
+        {
+            get { var n = ReportPlanOptions.Count(o => o.IsChecked); return n == 0 ? Resources.Link_PlanNone : string.Format(CultureInfo.CurrentCulture, Resources.Link_PlanCount, n); }
+        }
+
+        /// <summary>Rapor penceresinde bağlı plan var mı (yoksa uyarı).</summary>
+        public bool HasReportSelection
+        {
+            get { return ReportPlanOptions.Any(o => o.IsChecked); }
+        }
+
+        private void OnPlanSelectionChanged()
+        {
+            OnPropertyChanged(nameof(PlanSelectedText));
+            OnPropertyChanged(nameof(PlanCountText));
+            OnPropertyChanged(nameof(HasPlanSelection));
+            PlanPickView.Refresh();
+        }
+
+        private void OnReportSelectionChanged()
+        {
+            OnPropertyChanged(nameof(ReportSelectedText));
+            OnPropertyChanged(nameof(ReportCountText));
+            OnPropertyChanged(nameof(HasReportSelection));
+            ReportPickView.Refresh();
         }
 
         private static string SelectedText(IEnumerable<LinkOption> options)

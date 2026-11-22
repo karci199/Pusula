@@ -33,8 +33,8 @@ namespace Pusula.Wpf.ViewModels
         public PlanRequirementDetail(string key, VerificationItem? item)
         {
             Key = key;
-            Text = item != null ? item.Text : Resources.Verify_LinkMissing;
-            Description = item != null ? item.Description : string.Empty;
+            Text = item != null ? (item.Text.Length > 0 ? item.Text : item.Requirement) : Resources.Verify_LinkMissing;
+            Description = item != null ? (item.Text.Length > 0 ? item.Description : string.Empty) : string.Empty;
             var status = item != null ? item.EffectiveStatus : string.Empty;
             StatusText = status.Length > 0 ? status : Resources.Verify_StatusPending;
             StatusKind = VerificationRow.KindOf(status);
@@ -145,6 +145,15 @@ namespace Pusula.Wpf.ViewModels
             get { return DetailText.Length > 0; }
         }
 
+        /// <summary>Bağlı gereksinimlerin standartları ("810G 509.5, 461G RE102"); planda ayrı seçilmez, gereksinimden okunur.</summary>
+        public string StandardText { get; set; } = string.Empty;
+
+        /// <summary>Standart çipi görünür mü.</summary>
+        public bool HasStandard
+        {
+            get { return StandardText.Length > 0; }
+        }
+
         /// <summary>Bağlı rapor var mı.</summary>
         public bool HasReportDetails
         {
@@ -152,9 +161,32 @@ namespace Pusula.Wpf.ViewModels
         }
     }
 
-    /// <summary>Rapor sekmesinde bir satır: rapor maddesi, sonuç, bağlı planlar ve (plan üzerinden) gereksinimler.</summary>
-    public sealed class ReportRow
+    /// <summary>Rapor ayrıntısında bağlı plan: numara, açıklama, yöntem · altyapı.</summary>
+    public sealed class ReportPlanDetail
     {
+        /// <summary>Ayrıntıyı kurar (plan tabloda yoksa uyarı metni).</summary>
+        public ReportPlanDetail(string key, PlanItem? plan)
+        {
+            Key = key;
+            Text = plan != null ? (plan.Description.Length > 0 ? plan.Description : Resources.Verify_None) : Resources.Verify_LinkMissing;
+            Method = plan == null ? string.Empty : string.Join(" · ", new[] { plan.Method, plan.Facility }.Where(s => s.Length > 0));
+        }
+
+        /// <summary>TP no.</summary>
+        public string Key { get; }
+
+        /// <summary>Açıklama.</summary>
+        public string Text { get; }
+
+        /// <summary>Yöntem · altyapı.</summary>
+        public string Method { get; }
+    }
+
+    /// <summary>Rapor sekmesinde bir satır: rapor maddesi, sonuç, bağlı planlar ve (plan üzerinden) gereksinimler; tıklanınca ayrıntı açılır.</summary>
+    public sealed class ReportRow : ViewModelBase
+    {
+        private bool isExpanded;
+
         /// <summary>Satırı kurar.</summary>
         public ReportRow(ReportItem item, IList<LinkChip> plans, IList<LinkChip> requirements)
         {
@@ -231,6 +263,34 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Plan üzerinden gereksinimler (hesaplanır).</summary>
         public IList<LinkChip> Requirements { get; }
+
+        /// <summary>Ayrıntı açık mı.</summary>
+        public bool IsExpanded
+        {
+            get { return isExpanded; }
+            set { SetProperty(ref isExpanded, value); }
+        }
+
+        /// <summary>Ayrıntı: bağlı planlar (numara, açıklama, yöntem · altyapı).</summary>
+        public IList<ReportPlanDetail> PlanDetails { get; set; } = new List<ReportPlanDetail>();
+
+        /// <summary>Ayrıntı: planlar üzerinden gereksinimler (numara, başlık ya da metin, durum).</summary>
+        public IList<PlanRequirementDetail> RequirementDetails { get; set; } = new List<PlanRequirementDetail>();
+
+        /// <summary>Ayrıntı: md'de "### TR no" başlığı altına elle yazılan metin (salt okunur).</summary>
+        public string DetailText { get; set; } = string.Empty;
+
+        /// <summary>Elle yazılmış ayrıntı var mı.</summary>
+        public bool HasDetailText
+        {
+            get { return DetailText.Length > 0; }
+        }
+
+        /// <summary>Bağlı plan var mı.</summary>
+        public bool HasPlanDetails
+        {
+            get { return PlanDetails.Count > 0; }
+        }
 
         /// <summary>Satırın sol şeridi: 0 yok, 2 kırmızı (Kaldı), 4 sarı (planı ya da sonucu yok).</summary>
         public int Stripe { get; set; }
@@ -390,7 +450,7 @@ namespace Pusula.Wpf.ViewModels
                 var reportState = PlanReportState(plan);
                 allPlanRows.Add(new PlanRow(plan, reqs, reports.Count > 0 ? reports : new List<LinkChip> { new LinkChip(Resources.Verify_NoReport, 4) })
                 {
-                    Stripe = reportState == 2 ? 2 : (reportState == 0 || PlanReqState(plan) == 0 ? 4 : 0),
+                    Stripe = reportState == 2 ? 2 : (reportState == 0 || reportState == 3 || PlanReqState(plan) == 0 ? 4 : 0),
                 });
             }
 
@@ -412,9 +472,23 @@ namespace Pusula.Wpf.ViewModels
             foreach (var row in allPlanRows)
             {
                 row.RequirementDetails = row.Item.Requirements.Select(k => new PlanRequirementDetail(k, verificationItems.FirstOrDefault(i => string.Equals(VerificationList.KeyOf(i), k, StringComparison.OrdinalIgnoreCase)))).ToList();
+                row.StandardText = string.Join(", ", row.Item.Requirements.Select(k => verificationItems.FirstOrDefault(i => string.Equals(VerificationList.KeyOf(i), k, StringComparison.OrdinalIgnoreCase)))
+                    .Where(i => i != null).Select(i => StandardShort(i!)).Where(s => s.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase));
                 row.ReportDetails = allReportRows.Where(r => r.Item.Plans.Contains(row.TpNo, StringComparer.OrdinalIgnoreCase)).ToList();
                 string text;
                 row.DetailText = details.TryGetValue(row.TpNo, out text) ? text : string.Empty;
+            }
+
+            // Rapor ayrıntısı: planlar, planlar üzerinden gereksinimler, md'deki elle yazılan ayrıntı.
+            var reportDetails = verificationStock.Length == 0 ? new Dictionary<string, string>() : PlanReportList.ReadDetails(verificationStock, PlanReportList.ReportHeading);
+            foreach (var row in allReportRows)
+            {
+                var plans = row.Item.Plans.Select(k => verificationPlans.FirstOrDefault(p => string.Equals(p.TpNo, k, StringComparison.OrdinalIgnoreCase))).ToList();
+                row.PlanDetails = row.Item.Plans.Select((k, i) => new ReportPlanDetail(k, plans[i])).ToList();
+                row.RequirementDetails = plans.Where(p => p != null).SelectMany(p => p!.Requirements).Distinct(StringComparer.OrdinalIgnoreCase)
+                    .Select(k => new PlanRequirementDetail(k, verificationItems.FirstOrDefault(i => string.Equals(VerificationList.KeyOf(i), k, StringComparison.OrdinalIgnoreCase)))).ToList();
+                string text;
+                row.DetailText = reportDetails.TryGetValue(row.TrNo, out text) ? text : string.Empty;
             }
 
             UpdateLinkCounts();

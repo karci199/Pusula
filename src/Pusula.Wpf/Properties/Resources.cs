@@ -3343,6 +3343,141 @@ namespace Pusula.Wpf.Properties
         /// <summary>Gereksinim / rapor satırı: bağlı plan yok.</summary>
         public static string Verify_NoPlan { get { return Get("Verify_NoPlan"); } }
 
+        /// <summary>Excel'e aktarma: Export_Button.</summary>
+        public static string Export_Button { get { return Get("Export_Button"); } }
+
+        /// <summary>Excel'e aktarma: Export_Hint.</summary>
+        public static string Export_Hint { get { return Get("Export_Hint"); } }
+
+        /// <summary>Excel'e aktarma: Export_PlanSuffix.</summary>
+        public static string Export_PlanSuffix { get { return Get("Export_PlanSuffix"); } }
+
+        /// <summary>Excel'e aktarma: Export_ReportSuffix.</summary>
+        public static string Export_ReportSuffix { get { return Get("Export_ReportSuffix"); } }
+
+        /// <summary>Excel'e aktarma: Export_RequirementTexts.</summary>
+        public static string Export_RequirementTexts { get { return Get("Export_RequirementTexts"); } }
+
+        /// <summary>Excel'e aktarma: Export_Done.</summary>
+        public static string Export_Done { get { return Get("Export_Done"); } }
+
+        /// <summary>Bağ seçimi: Link_ReqCount.</summary>
+        public static string Link_ReqCount { get { return Get("Link_ReqCount"); } }
+
+        /// <summary>Bağ seçimi: Link_ReqNone.</summary>
+        public static string Link_ReqNone { get { return Get("Link_ReqNone"); } }
+
+        /// <summary>Bağ seçimi: Link_PlanCount.</summary>
+        public static string Link_PlanCount { get { return Get("Link_PlanCount"); } }
+
+        /// <summary>Bağ seçimi: Link_PlanNone.</summary>
+        public static string Link_PlanNone { get { return Get("Link_PlanNone"); } }
+
+        /// <summary>Bağ seçimi: Link_AddReq.</summary>
+        public static string Link_AddReq { get { return Get("Link_AddReq"); } }
+
+        /// <summary>Bağ seçimi: Link_AddPlan.</summary>
+        public static string Link_AddPlan { get { return Get("Link_AddPlan"); } }
+
+        /// <summary>Bağ seçimi: Link_ReqEmptyHint.</summary>
+        public static string Link_ReqEmptyHint { get { return Get("Link_ReqEmptyHint"); } }
+
+        /// <summary>Bağ seçimi: Link_PlanEmptyHint.</summary>
+        public static string Link_PlanEmptyHint { get { return Get("Link_PlanEmptyHint"); } }
+
+        /// <summary>Bağ seçimi: Link_Remove.</summary>
+        public static string Link_Remove { get { return Get("Link_Remove"); } }
+
+        /// <summary>Bağ seçimi: Link_NothingToAdd.</summary>
+        public static string Link_NothingToAdd { get { return Get("Link_NothingToAdd"); } }
+
+        /// <summary>Plan / rapor penceresi ipucu: Verify_TpPlaceholder.</summary>
+        public static string Verify_TpPlaceholder { get { return Get("Verify_TpPlaceholder"); } }
+
+        /// <summary>Plan / rapor penceresi ipucu: Verify_TrPlaceholder.</summary>
+        public static string Verify_TrPlaceholder { get { return Get("Verify_TrPlaceholder"); } }
+
+        /// <summary>Plan / rapor penceresi ipucu: Verify_PlanDescPlaceholder.</summary>
+        public static string Verify_PlanDescPlaceholder { get { return Get("Verify_PlanDescPlaceholder"); } }
+
+        /// <summary>Plan / rapor penceresi ipucu: Verify_PlanNotePlaceholder.</summary>
+        public static string Verify_PlanNotePlaceholder { get { return Get("Verify_PlanNotePlaceholder"); } }
+
+        /// <summary>Plan / rapor penceresi ipucu: Verify_ReportDescPlaceholder.</summary>
+        public static string Verify_ReportDescPlaceholder { get { return Get("Verify_ReportDescPlaceholder"); } }
+
+        /// <summary>Plan / rapor penceresi ipucu: Verify_ReportNotePlaceholder.</summary>
+        public static string Verify_ReportNotePlaceholder { get { return Get("Verify_ReportNotePlaceholder"); } }
+
+        /// <summary>Bağ durumu: Verify_PillNoResult.</summary>
+        public static string Verify_PillNoResult { get { return Get("Verify_PillNoResult"); } }
+
+        /// <summary>Bağ durumu: Verify_CoverageReqNoResult.</summary>
+        public static string Verify_CoverageReqNoResult { get { return Get("Verify_CoverageReqNoResult"); } }
+
+        /// <summary>Bağ durumu: Verify_CoveragePlanNoResult.</summary>
+        public static string Verify_CoveragePlanNoResult { get { return Get("Verify_CoveragePlanNoResult"); } }
+
+        /// <summary>Rapor ayrıntısı: Verify_DetailPlans.</summary>
+        public static string Verify_DetailPlans { get { return Get("Verify_DetailPlans"); } }
+
+        /// <summary>Rapor ayrıntısı: Verify_ReportDetailEmpty.</summary>
+        public static string Verify_ReportDetailEmpty { get { return Get("Verify_ReportDetailEmpty"); } }
+
+        /// <summary>Rapor ayrıntısı: Verify_OpenResultFolder.</summary>
+        public static string Verify_OpenResultFolder { get { return Get("Verify_OpenResultFolder"); } }
+
+        /// <summary>Standart / aramalı kutu: Verify_TypeFunctional.</summary>
+        public static string Verify_TypeFunctional { get { return Get("Verify_TypeFunctional"); } }
+
+        /// <summary>Standart / aramalı kutu: Verify_TypeEnvironment.</summary>
+        public static string Verify_TypeEnvironment { get { return Get("Verify_TypeEnvironment"); } }
+
+        /// <summary>Standart / aramalı kutu: Verify_TypeEmc.</summary>
+        public static string Verify_TypeEmc { get { return Get("Verify_TypeEmc"); } }
+
+        /// <summary>Standart / aramalı kutu: Verify_TypeOther.</summary>
+        public static string Verify_TypeOther { get { return Get("Verify_TypeOther"); } }
+
+        /// <summary>Standart / aramalı kutu: Verify_FieldTestType.</summary>
+        public static string Verify_FieldTestType { get { return Get("Verify_FieldTestType"); } }
+
+        /// <summary>Standart / aramalı kutu: Verify_FieldStandard.</summary>
+        public static string Verify_FieldStandard { get { return Get("Verify_FieldStandard"); } }
+
+        /// <summary>Standart / aramalı kutu: Verify_FieldStandardMethod.</summary>
+        public static string Verify_FieldStandardMethod { get { return Get("Verify_FieldStandardMethod"); } }
+
+        /// <summary>Standart / aramalı kutu: Verify_FieldProcedure.</summary>
+        public static string Verify_FieldProcedure { get { return Get("Verify_FieldProcedure"); } }
+
+        /// <summary>Standart / aramalı kutu: Standard_Placeholder.</summary>
+        public static string Standard_Placeholder { get { return Get("Standard_Placeholder"); } }
+
+        /// <summary>Standart / aramalı kutu: Standard_MethodPlaceholder.</summary>
+        public static string Standard_MethodPlaceholder { get { return Get("Standard_MethodPlaceholder"); } }
+
+        /// <summary>Standart / aramalı kutu: Standard_ProcedurePlaceholder.</summary>
+        public static string Standard_ProcedurePlaceholder { get { return Get("Standard_ProcedurePlaceholder"); } }
+
+        /// <summary>Standart / aramalı kutu: Standard_FileHeader.</summary>
+        public static string Standard_FileHeader { get { return Get("Standard_FileHeader"); } }
+
+        /// <summary>Standart / aramalı kutu: Standard_Procedure.</summary>
+        public static string Standard_Procedure { get { return Get("Standard_Procedure"); } }
+
+        /// <summary>Standart / aramalı kutu: SearchPick_Placeholder.</summary>
+        public static string SearchPick_Placeholder { get { return Get("SearchPick_Placeholder"); } }
+
+        /// <summary>Standart / aramalı kutu: SearchPick_Clear.</summary>
+        public static string SearchPick_Clear { get { return Get("SearchPick_Clear"); } }
+
+        /// <summary>Standart / aramalı kutu: SearchPick_Add.</summary>
+        public static string SearchPick_Add { get { return Get("SearchPick_Add"); } }
+
+        /// <summary>Standart / aramalı kutu: Export_Standard.</summary>
+        public static string Export_Standard { get { return Get("Export_Standard"); } }
+
         /// <summary>Excel içe aktarma: dosya seçme süzgeci.</summary>
         public static string Import_Filter { get { return Get("Import_Filter"); } }
 

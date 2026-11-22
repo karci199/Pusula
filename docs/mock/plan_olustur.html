@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Plan oluşturma</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#202020;font-family:"Segoe UI",Arial,sans-serif;color:#e6e6e6;font-size:13px}
+.page{width:1400px;padding:24px 28px 28px;background:#202020;color:#e6e6e6;font-family:"Segoe UI",Arial,sans-serif;font-size:13px}
+h1{font-size:20px;margin:0 0 4px;font-weight:600}
+.lead{color:#a8a8a8;font-size:13px;margin-bottom:6px}
+.cap{font-size:12px;font-weight:700;color:#a8a8a8;margin:18px 0 8px;letter-spacing:.3px}
+.panel{background:#272727;border:1px solid #3a3a3a;border-radius:12px;padding:14px 16px;position:relative}
+.tabs{display:inline-flex;gap:4px;background:#2b2b2b;border:1px solid #3d3d3d;border-radius:10px;padding:4px}
+.tab{display:flex;align-items:center;gap:9px;padding:6px 14px 6px 10px;border-radius:8px;border-bottom:2px solid transparent;color:#a8a8a8}
+.tab.on{background:#353535;border-bottom-color:#4cc2ff;color:#fff;font-weight:600}
+.ib{width:24px;height:24px;border-radius:6px;background:#353535;display:flex;align-items:center;justify-content:center;font-size:11px}
+.tab small{display:block;font-size:10.5px;color:#8a8a8a;font-weight:400}
+.cnt{background:#3a3a3a;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px}
+.warn{margin-top:10px;background:#3d3214;border:1px solid #c9a227;border-radius:8px;padding:6px 12px;color:#f6c46f;font-size:12.5px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.wl{text-decoration:underline;text-underline-offset:3px;padding:1px 4px;border-radius:4px}
+.wl.on{background:#5a4714;text-decoration:none;font-weight:600}
+.groups{display:flex;gap:6px;margin:12px 0 0}
+.g{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:12px;border:1px solid #444;background:#2b2b2b;color:#cfcfcf;font-size:12px}
+.g.on{border-color:#4cc2ff;color:#fff;font-weight:600}
+.g .n{background:#3a3a3a;border-radius:8px;padding:0 6px;font-size:11px}
+.g.on .n{background:#4cc2ff;color:#111}
+.tb{display:flex;align-items:center;gap:8px;margin:10px 0 10px}
+.srch{background:#1f1f1f;border:1px solid #3d3d3d;border-radius:5px;padding:5px 10px;width:210px;color:#7a7a7a;font-size:12.5px}
+.dd{background:#2f2f2f;border:1px solid #444;border-radius:5px;padding:5px 10px;min-width:140px;display:flex;justify-content:space-between;gap:10px;font-size:12.5px;align-items:center}
+.dd .l{color:#8a8a8a;margin-right:6px}
+.dd.act{border-color:#4cc2ff;background:#16324a}
+.dd .ch{color:#8a8a8a;font-size:10px}
+.clear{color:#4cc2ff;font-size:12.5px}
+.sp{flex:1}
+.muted{color:#8a8a8a;font-size:12.5px}
+.cb{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:#cfcfcf}
+.box{width:15px;height:15px;border-radius:3px;border:1px solid #8a8a8a;display:inline-block;position:relative}
+.box.on{background:#4cc2ff;border-color:#4cc2ff}
+.box.on:after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #1a1a1a;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.btn{padding:5px 12px;border-radius:5px;font-size:12.5px;background:#2f2f2f;border:1px solid #444}
+.add{background:#4cc2ff;color:#111;font-weight:600;border-color:#4cc2ff}
+.pop{position:absolute;background:#2c2c2c;border:1px solid #4a4a4a;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.5);padding:6px;width:250px;z-index:5}
+.pop .h{color:#8a8a8a;font-size:11px;font-weight:700;padding:6px 8px 3px;letter-spacing:.3px}
+.pop .t{color:#4cc2ff;font-size:12px;padding:4px 8px 4px}
+.opt{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:5px}
+.opt.hov{background:#383838}
+.dot{width:8px;height:8px;border-radius:50%;flex:none;display:inline-block}
+.on2{margin-left:auto;color:#8a8a8a}
+.hr{border-top:1px solid #3a3a3a;margin:4px 0}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-weight:600;color:#a8a8a8;font-size:11.5px;padding:6px 10px;border-bottom:1px solid #3a3a3a;position:relative}
+th .grip{position:absolute;right:0;top:6px;bottom:6px;width:1px;background:#555}
+td{padding:8px 10px;border-bottom:1px solid #333;vertical-align:middle}
+tr.miss td:first-child{box-shadow:inset 3px 0 0 #c9a227}
+tr.fail td:first-child{box-shadow:inset 3px 0 0 #ff99a4}
+tr.ok td:first-child{box-shadow:inset 3px 0 0 #6ccb5f}
+.c{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:8px;margin-right:4px;background:#1d3348;color:#4cc2ff}
+.cp{background:#2e2742;color:#c8b6ff}.cg{background:#1f3a2a;color:#e6e6e6}.cr{background:#442726;color:#e6e6e6}.cy{background:#433519;color:#f6c46f}
+.st{display:inline-flex;align-items:center;gap:5px;padding:1px 9px;border-radius:9px;background:#353535;font-weight:600;font-size:11.5px}
+.b{font-weight:600}
+.dlg{background:#2b2b2b;border:1px solid #4a4a4a;border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.6);padding:18px 20px;width:520px}
+.dlg h2{font-size:17px;margin:0 0 10px;font-weight:600}
+.dlg .row{display:flex;gap:10px;align-items:center;padding:4px 0;font-size:12.5px}
+.dlg .foot{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.sel{background:#1b2c3a}
+.bar{display:flex;align-items:center;gap:10px;background:#1b2c3a;border:1px solid #2f5470;border-radius:8px;padding:6px 12px;margin:0 0 8px;font-size:12.5px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+.num{display:inline-block;width:20px;height:20px;border-radius:50%;background:#4cc2ff;color:#111;font-weight:700;text-align:center;line-height:20px;font-size:11.5px;margin-right:6px}
+</style></head><body><div class="page">
+<h1>Plan oluşturma: varsayılan birebir, sonra seçip birleştir</h1>
+<div class="lead">Sürükle-bırak yok. Planı olmayan her gereksinime tek tuşla bir plan maddesi açılır; ortak doğrulanacaklar seçilip birleştirilir.</div>
+
+<div class="cap"><span class="num">1</span>GEREKSİNİMLER — "Plan oluştur" (yalnız planı olmayanlar için)</div>
+<div class="panel">
+ <div class="tb"><div class="srch">Ara: TG no, başlık</div><span class="muted">Bağ</span><div class="dd">Hepsi <span class="ch">▾</span></div><span class="muted">Durum</span><div class="dd">Hepsi <span class="ch">▾</span></div><div class="sp"></div>
+ <span class="muted">4 / 4 madde</span><span class="btn">Excel'den al</span><span class="btn" style="border-color:#4cc2ff;color:#4cc2ff;font-weight:600">＋ Plan oluştur (4)</span><span class="btn">Dosyayı aç</span><span class="btn add">＋ Madde</span></div>
+ <div class="grid">
+ <table><tr><th>TG no</th><th>Gereksinim</th><th>Test planı</th></tr>
+ <tr class="miss"><td class="b">DGÖ-2</td><td>Anten 8–12 GHz bandında 3 dB yanca hüzme …</td><td><span class="c cy">plan yok</span></td></tr>
+ <tr class="miss"><td class="b">DGÖ-3</td><td>Yan lob seviyesi ana hüzmeye göre ≤ −15 dB …</td><td><span class="c cy">plan yok</span></td></tr>
+ <tr class="miss"><td class="b">TSD-0042</td><td>Besleme konnektörü 4 Nm torkla sıkılmalıdır.</td><td><span class="c cy">plan yok</span></td></tr>
+ <tr class="miss"><td class="b">DGÖ-5</td><td>Antenin kütlesi 2 kg'ı geçmemelidir.</td><td><span class="c cy">plan yok</span></td></tr></table>
+ <div class="dlg"><h2>Plan maddelerini oluştur</h2>
+  <div class="mut" style="margin-bottom:8px">Planı olmayan 4 gereksinimin her birine bir plan maddesi açılır. Sonra Test planı sekmesinde seçip birleştirebilirsin.</div>
+  <div class="row"><span class="c cp">4.1</span>← <span class="c">DGÖ-2</span><span class="mut">Anten 8–12 GHz bandında 3 dB …</span></div>
+  <div class="row"><span class="c cp">4.2</span>← <span class="c">DGÖ-3</span><span class="mut">Yan lob seviyesi …</span></div>
+  <div class="row"><span class="c cp">4.3</span>← <span class="c">TSD-0042</span><span class="mut">Besleme konnektörü …</span></div>
+  <div class="row"><span class="c cp">4.4</span>← <span class="c">DGÖ-5</span><span class="mut">Antenin kütlesi …</span></div>
+  <div class="row" style="margin-top:6px"><span class="muted" style="width:90px">İlk no</span><span class="dd" style="min-width:80px">4.1</span><span class="muted" style="margin-left:14px">Yöntem</span><span class="dd" style="min-width:110px">● Test <span class="ch">▾</span></span></div>
+  <div class="mut" style="font-size:11.5px;margin-top:6px">Açıklama gereksinim metninden alınır (sonra düzeltilir). Var olan planlara dokunulmaz.</div>
+  <div class="foot"><span class="btn">Vazgeç</span><span class="btn add">Oluştur (4)</span></div></div>
+ </div>
+</div>
+
+<div class="cap"><span class="num">2</span>TEST PLANI — satırları seç, "Birleştir"</div>
+<div class="panel">
+ <div class="bar"><span class="b">2 madde seçili</span><span class="mut">4.1, 4.2</span><div class="sp"></div><span class="btn" style="border-color:#4cc2ff;color:#4cc2ff;font-weight:600">Birleştir</span><span class="btn">Seçimi kaldır</span></div>
+ <table><tr><th style="width:34px"></th><th style="width:70px">TP no</th><th>Açıklama</th><th>Yöntem</th><th>Gereksinimler</th><th>Test raporu</th></tr>
+ <tr class="miss sel"><td><span class="box on"></span></td><td class="b">4.1</td><td>Anten 8–12 GHz bandında 3 dB yanca hüzme …</td><td>● Test</td><td><span class="c">DGÖ-2</span></td><td><span class="c cy">rapor yok</span></td></tr>
+ <tr class="miss sel"><td><span class="box on"></span></td><td class="b">4.2</td><td>Yan lob seviyesi ana hüzmeye göre ≤ −15 dB …</td><td>● Test</td><td><span class="c">DGÖ-3</span></td><td><span class="c cy">rapor yok</span></td></tr>
+ <tr class="miss"><td><span class="box"></span></td><td class="b">4.3</td><td>Besleme konnektörü 4 Nm torkla sıkılmalıdır.</td><td>● Muayene</td><td><span class="c">TSD-0042</span></td><td><span class="c cy">rapor yok</span></td></tr>
+ <tr class="miss"><td><span class="box"></span></td><td class="b">4.4</td><td>Antenin kütlesi 2 kg'ı geçmemelidir.</td><td>● Muayene</td><td><span class="c">DGÖ-5</span></td><td><span class="c cy">rapor yok</span></td></tr></table>
+</div>
+
+<div class="cap"><span class="num">3</span>BİRLEŞTİR PENCERESİ</div>
+<div class="grid"><div class="dlg"><h2>Plan maddelerini birleştir</h2>
+  <div class="row"><span class="muted" style="width:110px">Kalacak no</span><span class="dd" style="min-width:90px">4.1 <span class="ch">▾</span></span></div>
+  <div class="row"><span class="muted" style="width:110px">Açıklama</span><span class="dd" style="min-width:330px">SATIMO hüzme ve yan lob ölçümü</span></div>
+  <div class="row"><span class="muted" style="width:110px">Gereksinimler</span><span class="c">DGÖ-2</span><span class="c">DGÖ-3</span></div>
+  <div class="row"><span class="muted" style="width:110px">Yöntem / Altyapı</span><span>Test · SATIMO</span></div>
+  <div class="mut" style="font-size:11.5px;margin-top:8px">4.2 kalkar; bağları ve (varsa) raporları 4.1'e geçer. Notlar alt alta eklenir.</div>
+  <div class="foot"><span class="btn">Vazgeç</span><span class="btn add">Birleştir</span></div></div>
+ <div class="note"><b>Tersi (bir gereksinimi iki planla doğrulamak):</b> plan penceresindeki gereksinim listesinden aynı DGÖ ikinci plana da işaretlenir (bugünkü gibi).<br><b>Bölmek:</b> planı aç, gereksinimlerinden birinin işaretini kaldır → o gereksinim "plan yok" olur, "Plan oluştur" ile kendi planı açılır.<br><b>Rapor:</b> aynı mantık, Test raporu sekmesinde "Rapor oluştur": raporu olmayan her plana bir rapor (4.1 → 5.1).</div></div>
+</div></body></html>

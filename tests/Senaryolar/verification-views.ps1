@@ -54,7 +54,7 @@ Check 'rapor satırı: 5.2 Kaldı, plan 4.1, gereksinimler DGÖ-1, DGÖ-2' ($rr.
 function Pill($pills, [int]$state) { @($pills | Where-Object State -eq $state)[0] }
 function Counts($pills) { (@($pills | ForEach-Object { $_.Text + $_.Count }) -join ',') }
 function ReqKeys { (@($vm.VerificationGroups | ForEach-Object { $_.Rows } | ForEach-Object { $_.Item.TgNo }) | Sort-Object) -join ',' }
-Check 'gereksinim hap sayıları' ((Counts $vm.ReqPlanPills) -eq 'Var5,Yok1' -and (Counts $vm.ReqReportPills) -eq 'Geçti2,Kaldı2,Yok2') ((Counts $vm.ReqPlanPills) + ' | ' + (Counts $vm.ReqReportPills))
+Check 'gereksinim hap sayıları' ((Counts $vm.ReqPlanPills) -eq 'Var5,Yok1' -and (Counts $vm.ReqReportPills) -eq 'Geçti2,Kaldı2,Sonuç yok0,Yok2') ((Counts $vm.ReqPlanPills) + ' | ' + (Counts $vm.ReqReportPills))
 Check 'uyarı iki parça: planı yok DGÖ-4, raporu yok DGÖ-3' ($vm.CoverageParts.Count -eq 2 -and $vm.CoverageParts[0].Text -like '*DGÖ-4*' -and $vm.CoverageParts[1].Text -like '*DGÖ-3*') $vm.VerCoverageText
 $vm.ApplyCoveragePart($vm.CoverageParts[0]); Wait
 Check 'parça 1: yalnız DGÖ-4, parça koyu, Temizle görünür' ((ReqKeys) -eq 'DGÖ-4' -and $vm.CoverageParts[0].IsActive -and $vm.HasReqLinkFilter -and (Pill $vm.ReqPlanPills 0).IsChecked) (ReqKeys)
@@ -74,7 +74,7 @@ $vm.ShowRequirementReports = $true; Wait
 Check 'açınca genişlik geri gelir' ($vm.VerificationColumns.Report.Value -gt 0)
 $vm.ShowRequirementReports = $false; Wait
 $vm.IsVerPlanView = $true; Wait
-Check 'plan hap sayıları' ((Counts $vm.PlanReqPills) -eq 'Var3,Yok0' -and (Counts $vm.PlanReportPills) -eq 'Geçti1,Kaldı1,Yok1') ((Counts $vm.PlanReqPills) + ' | ' + (Counts $vm.PlanReportPills))
+Check 'plan hap sayıları' ((Counts $vm.PlanReqPills) -eq 'Var3,Yok0' -and (Counts $vm.PlanReportPills) -eq 'Geçti1,Kaldı1,Sonuç yok0,Yok1') ((Counts $vm.PlanReqPills) + ' | ' + (Counts $vm.PlanReportPills))
 (Pill $vm.PlanReportPills 0).IsChecked = $true; Wait
 Check 'plan: raporu yok → 4.3, 1 / 3' ((@($vm.PlanRows | ForEach-Object TpNo) -join ',') -eq '4.3' -and $vm.PlanShownText -like '1*3*') $vm.PlanShownText
 Check 'şerit: 4.3 sarı, 4.1 kırmızı' (@($vm.PlanRows)[0].Stripe -eq 4 -and (@([Pusula.Wpf.ViewModels.MainViewModel].GetField('allPlanRows', [Reflection.BindingFlags]'NonPublic,Instance').GetValue($vm.psobject.BaseObject)) | Where-Object TpNo -eq '4.1').Stripe -eq 2)

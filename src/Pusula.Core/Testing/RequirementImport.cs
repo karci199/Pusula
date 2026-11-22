@@ -142,7 +142,7 @@ namespace Pusula.Core.Testing
 
         /// <summary>
         /// Okunanları doğrulama dosyasına yazar: TG no'su olmayan madde eklenir; var olanın yalnız gereksinim metni, türü,
-        /// notu ve bölümü güncellenir (durum, bağlar, başlık korunur). Hiçbir madde silinmez. (eklenen, güncellenen, aynı).
+        /// notu ve bölümü (grup) güncellenir (durum, bağlar, elle yazılan başlık korunur); yeni maddenin başlığı boş kalır, sonra elle yazılır. Hiçbir madde silinmez. (eklenen, güncellenen, aynı).
         /// </summary>
         public static Tuple<int, int, int> Apply(string stockFolder, IList<ImportedRequirement> items, string defaultGroup, string newFileTemplate, out string error)
         {
@@ -158,11 +158,10 @@ namespace Pusula.Core.Testing
                     {
                         TgNo = imp.TgNo,
                         Requirement = imp.Text,
-                        Text = ShortTitle(imp.Text),
+                        Text = string.Empty,
                         Kind = imp.Kind,
                         Description = imp.Note,
-                        SubGroup = imp.Section,
-                        Group = defaultGroup,
+                        Group = imp.Section.Length > 0 ? imp.Section : defaultGroup,
                         Status = string.Empty,
                     };
                     error = VerificationList.Add(stockFolder, item, newFileTemplate);
@@ -175,7 +174,8 @@ namespace Pusula.Core.Testing
                     continue;
                 }
 
-                if (old.Requirement == imp.Text && old.Kind == imp.Kind && old.Description == imp.Note && old.SubGroup == imp.Section)
+                var group = imp.Section.Length > 0 ? imp.Section : old.Group;
+                if (old.Requirement == imp.Text && old.Kind == imp.Kind && old.Description == imp.Note && old.Group == group)
                 {
                     same++;
                     continue;
@@ -184,7 +184,7 @@ namespace Pusula.Core.Testing
                 old.Requirement = imp.Text;
                 old.Kind = imp.Kind;
                 old.Description = imp.Note;
-                old.SubGroup = imp.Section;
+                old.Group = group;
                 error = VerificationList.Update(stockFolder, old);
                 if (error.Length > 0)
                 {
@@ -195,19 +195,6 @@ namespace Pusula.Core.Testing
             }
 
             return Tuple.Create(added, updated, same);
-        }
-
-        // Başlık yoksa gereksinimin ilk birkaç sözcüğü (en çok 60 karakter) kısa ad olur; sonra elle düzeltilir.
-        private static string ShortTitle(string text)
-        {
-            var t = (text ?? string.Empty).Trim();
-            if (t.Length <= 60)
-            {
-                return t;
-            }
-
-            var cut = t.LastIndexOf(' ', 60);
-            return (cut > 20 ? t.Substring(0, cut) : t.Substring(0, 60)) + " …";
         }
 
         private static string Cell(List<string> row, int col)

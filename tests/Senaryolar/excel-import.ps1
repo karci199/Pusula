@@ -66,7 +66,7 @@ try {
     $c = $RI::Apply($stock, $res.Items, 'Diğer', $template, [ref]$err)
     Check 'ilk aktarım: 4 yeni' ($err -eq '' -and $c.Item1 -eq 4 -and $c.Item2 -eq 0) ($err + ' ' + $c)
     $items = $VL::Read($stock)
-    Check 'tabloda 4 madde: TG no, gereksinim, tür, not, bölüm' ($items.Count -eq 4 -and $items[1].TgNo -eq 'DGÖ-3' -and $items[1].Requirement -like 'Yan lob*' -and $items[1].Description -eq 'E ve H düzlemi' -and $items[2].Kind -eq 'Türetilmiş' -and $items[3].SubGroup -eq '3.2 Fiziksel özellikler')
+    Check 'tabloda 4 madde: TG no, gereksinim, tür, not, bölüm' ($items.Count -eq 4 -and $items[1].TgNo -eq 'DGÖ-3' -and $items[1].Requirement -like 'Yan lob*' -and $items[1].Description -eq 'E ve H düzlemi' -and $items[2].Kind -eq 'Türetilmiş' -and $items[3].Group -eq '3.2 Fiziksel özellikler' -and $items[0].Group -eq '3.1 Elektriksel özellikler' -and $items[0].Text -eq '')
     $items[0].Status = 'Geçti'; $items[0].Text = 'Hüzme genişliği'; $VL::Update($stock, $items[0]) | Out-Null
 
     $rows[5] = @('DGÖ-3', 'Yan lob seviyesi ana hüzmeye göre ≤ −18 dB olmalıdır.', 'Temel', 'E ve H düzlemi')
