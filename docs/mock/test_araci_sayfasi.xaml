@@ -1,0 +1,289 @@
+﻿<Border xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="1180" Background="{DynamicResource SurfaceBaseBrush}" Padding="20" TextElement.FontFamily="Segoe UI"
+        TextElement.Foreground="{DynamicResource TextPrimaryBrush}" TextElement.FontSize="13">
+    <Border.Resources>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource LayerBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="16,14" />
+            <Setter Property="Margin" Value="0,0,0,12" />
+        </Style>
+        <Style x:Key="CardTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="Key" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+        </Style>
+        <Style x:Key="Btn" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Padding" Value="10,4" />
+        </Style>
+        <Style x:Key="Chip" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="9,2" />
+            <Setter Property="Margin" Value="0,0,6,0" />
+        </Style>
+        <Style x:Key="Note" TargetType="Border">
+            <Setter Property="Background" Value="#2A4CC2FF" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="8,4" />
+        </Style>
+    </Border.Resources>
+
+    <StackPanel>
+        <!-- Mock başlığı -->
+        <TextBlock FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextTertiaryBrush}" Margin="0,0,0,10"
+                   Text="MOCK · TEST YARDIMCI ARACI SAYFASI (KABLO ÖRNEĞİ) · mavi çerçeveli kutular yeni" />
+
+        <!-- Sayfa başlığı: mevcut düzen + kalibrasyon çipi -->
+        <Grid Margin="4,0,4,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE71B;" FontSize="26" Margin="0,6,14,0"
+                       Foreground="#F6A960" VerticalAlignment="Top" />
+            <StackPanel Grid.Column="1">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontSize="26" FontWeight="SemiBold" Text="KBL-1000-0007" />
+                    <TextBlock FontSize="18" Margin="12,0,0,2" VerticalAlignment="Bottom" Foreground="{DynamicResource TextSecondaryBrush}"
+                               Text="Faz kararlı RF kablo, 1,5 m" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                    <TextBlock Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="AB-7000-0003" />
+                    <TextBlock Margin="6,0" Foreground="{DynamicResource TextTertiaryBrush}" Text="›" />
+                    <TextBlock Foreground="{DynamicResource TextSecondaryBrush}" Text="RF kablo · SMA–N" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Border CornerRadius="10" BorderThickness="1" BorderBrush="{DynamicResource AccentTextFillColorPrimaryBrush}" Padding="10,1">
+                        <TextBlock FontSize="12" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="Kullanımda ⌄" />
+                    </Border>
+                    <TextBlock Margin="8,0,16,0" FontSize="12" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Text="02.11.2026 tarihinden beri" />
+                    <Border Style="{StaticResource Note}" Padding="9,1" CornerRadius="10" Background="{DynamicResource SystemFillColorSuccessBackgroundBrush}" BorderBrush="{DynamicResource SystemFillColorSuccessBrush}">
+                        <TextBlock FontSize="12" Foreground="{DynamicResource SystemFillColorSuccessBrush}" Text="✓ Kalibrasyon 12.11.2027'ye kadar" />
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Top">
+                <Border Style="{StaticResource Btn}"><TextBlock Text="🗀  Klasör" /></Border>
+                <TextBlock Margin="12,2,0,0" FontSize="16" Text="⋯" />
+            </StackPanel>
+        </Grid>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="470" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- SOL -->
+            <StackPanel>
+                <!-- YENİ: Fotoğraflar -->
+                <Border Style="{StaticResource Card}" BorderBrush="{DynamicResource AccentTextFillColorPrimaryBrush}" BorderThickness="1.5">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,10">
+                            <Border DockPanel.Dock="Right" Style="{StaticResource Btn}" Padding="8,2"><TextBlock FontSize="12" Text="🗀  Klasör" /></Border>
+                            <TextBlock Style="{StaticResource CardTitle}"><Run Text="Fotoğraflar" /><Run Foreground="{DynamicResource TextTertiaryBrush}" Text="  · 4" /></TextBlock>
+                        </DockPanel>
+                        <!-- Kapak -->
+                        <Border Height="230" CornerRadius="6" Background="#2E3440" ClipToBounds="True">
+                            <Grid>
+                                <Path Stroke="#C9CED8" StrokeThickness="7" Data="M 60,170 C 140,40 260,210 330,90 S 400,60 420,120" />
+                                <Rectangle Width="34" Height="22" Fill="#E0B050" RadiusX="3" RadiusY="3" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="40,160,0,0" />
+                                <Rectangle Width="40" Height="26" Fill="#9AA3B2" RadiusX="3" RadiusY="3" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="404,108,0,0" />
+                                <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8" Background="#99000000" CornerRadius="4" Padding="7,1">
+                                    <TextBlock FontSize="11" Foreground="White" Text="Kapak · KBL-1000-0007_kapak.jpg" />
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <!-- Numaralı şerit -->
+                        <UniformGrid Rows="1" Columns="5" Margin="0,8,0,0">
+                            <StackPanel Margin="0,0,6,0">
+                                <Border Height="54" CornerRadius="5" Background="#2E3440" BorderThickness="2" BorderBrush="{DynamicResource AccentTextFillColorPrimaryBrush}">
+                                    <Path Stroke="#C9CED8" StrokeThickness="3" Data="M 10,38 C 30,8 55,45 75,15" />
+                                </Border>
+                                <TextBlock HorizontalAlignment="Center" FontSize="11" Margin="0,3,0,0" Text="Kapak" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,6,0">
+                                <Border Height="54" CornerRadius="5" Background="#2E3440"><TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11" Foreground="#9AA3B2" Text="SMA ucu" /></Border>
+                                <TextBlock HorizontalAlignment="Center" FontSize="11" Margin="0,3,0,0" Text="1" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,6,0">
+                                <Border Height="54" CornerRadius="5" Background="#2E3440"><TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11" Foreground="#9AA3B2" Text="N ucu" /></Border>
+                                <TextBlock HorizontalAlignment="Center" FontSize="11" Margin="0,3,0,0" Text="2" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,6,0">
+                                <Border Height="54" CornerRadius="5" Background="#2E3440"><TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11" Foreground="#9AA3B2" Text="Etiket" /></Border>
+                                <TextBlock HorizontalAlignment="Center" FontSize="11" Margin="0,3,0,0" Text="3" />
+                            </StackPanel>
+                        </UniformGrid>
+                        <TextBlock Margin="0,6,0,0" FontSize="11.5" Foreground="{DynamicResource TextTertiaryBrush}">
+                            <Run Text="02_Fotograflar\ · numarasız 2 fotoğraf gösterilmiyor · " /><Run Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="klasörü aç" />
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- Mevcut: Süreç -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource CardTitle}" Margin="0,0,0,8" Text="Süreç" />
+                        <UniformGrid Columns="2">
+                            <StackPanel Margin="0,0,12,8"><TextBlock Style="{StaticResource Key}" Text="Düzey" /><TextBlock Text="Stok · AB-7000-0003" /></StackPanel>
+                            <StackPanel Margin="0,0,0,8"><TextBlock Style="{StaticResource Key}" Text="Talep" /><TextBlock Text="20.10.2026 · katan" /></StackPanel>
+                            <StackPanel Margin="0,0,12,8"><TextBlock Style="{StaticResource Key}" Text="Yapan" /><TextBlock Text="Atölye" /></StackPanel>
+                            <StackPanel Margin="0,0,0,8"><TextBlock Style="{StaticResource Key}" Text="Teslim" /><TextBlock Text="01.11.2026" /></StackPanel>
+                        </UniformGrid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Mevcut: Kullanan stoklar · Özellikler · Dosyalar (kısaltılmış) -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource CardTitle}" Margin="0,0,0,8"><Run Text="Kullanan stoklar" /><Run Foreground="{DynamicResource TextTertiaryBrush}" Text="  · 2" /></TextBlock>
+                        <TextBlock Margin="0,0,0,4"><Run FontWeight="SemiBold" Text="AB-7000-0003" /><Run Foreground="{DynamicResource TextSecondaryBrush}" Text="   DA400 Döner Anten" /></TextBlock>
+                        <TextBlock><Run FontWeight="SemiBold" Text="AB-7000-0002" /><Run Foreground="{DynamicResource TextSecondaryBrush}" Text="   SH2000 Horn" /></TextBlock>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource CardTitle}" Margin="0,0,0,8" Text="Özellikler · RF kablo · 5 / 6 dolu" />
+                        <TextBlock Foreground="{DynamicResource TextSecondaryBrush}" Text="Konnektör A: SMA (e) · Konnektör B: N (e) · Uzunluk: 1,5 m · Faz kararlı: evet · Frekans: 18 GHz" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="0">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource CardTitle}" Margin="0,0,0,8" Text="Dosyalar" />
+                        <StackPanel Orientation="Horizontal">
+                            <Border Style="{StaticResource Btn}" Margin="0,0,8,0"><TextBlock Text="🗀  01_Belgeler  · 2 PDF" /></Border>
+                            <Border Style="{StaticResource Btn}"><TextBlock Text="🗀  Kalibrasyon  · 1 PDF · 2 S2P" /></Border>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- SAĞ -->
+            <StackPanel Grid.Column="2">
+                <!-- YENİ: Not (ana notun gövdesi, salt okunur) -->
+                <Border Style="{StaticResource Card}" BorderBrush="{DynamicResource AccentTextFillColorPrimaryBrush}" BorderThickness="1.5">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,10">
+                            <Border DockPanel.Dock="Right" Style="{StaticResource Btn}" Padding="8,2"><TextBlock FontSize="12" Text="MD" /></Border>
+                            <TextBlock Style="{StaticResource CardTitle}"><Run Text="Not" /><Run Foreground="{DynamicResource TextTertiaryBrush}" Text="  · KBL-1000-0007.md" /></TextBlock>
+                        </DockPanel>
+                        <TextBlock FontWeight="SemiBold" Text="Kullanım" />
+                        <TextBlock Margin="0,2,0,8" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}"
+                                   Text="SATIMO ölçümlerinde referans kablo. Bükme yarıçapı en az 50 mm; tork anahtarı 0,9 N·m." />
+                        <TextBlock FontWeight="SemiBold" Text="Yapılacaklar" />
+                        <TextBlock Margin="0,2,0,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="☐  Yedek SMA adaptörü sipariş et" />
+                        <TextBlock Foreground="{DynamicResource TextSecondaryBrush}" Text="☑  Etiket yenilendi  ✅ 05.11.2026" />
+                        <TextBlock Margin="0,8,0,0" FontSize="11.5" Foreground="{DynamicResource TextTertiaryBrush}"
+                                   Text="YAML ve ## Günlük bölümü burada gösterilmez; değiştirmek için MD." />
+                    </StackPanel>
+                </Border>
+
+                <!-- YENİ: Olaylar (Geçmiş genişler: kalibrasyon, tamir, bakım) -->
+                <Border Style="{StaticResource Card}" BorderBrush="{DynamicResource AccentTextFillColorPrimaryBrush}" BorderThickness="1.5" Margin="0">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,10">
+                            <Border DockPanel.Dock="Right" Style="{StaticResource Btn}" Padding="8,2"><TextBlock FontSize="12" Text="+  Olay" /></Border>
+                            <TextBlock Style="{StaticResource CardTitle}"><Run Text="Olaylar" /><Run Foreground="{DynamicResource TextTertiaryBrush}" Text="  · 6" /></TextBlock>
+                        </DockPanel>
+                        <WrapPanel Margin="0,0,0,12">
+                            <Border Style="{StaticResource Chip}" Background="{DynamicResource AccentFillColorDefaultBrush}"><TextBlock FontSize="12" Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}" Text="Hepsi" /></Border>
+                            <Border Style="{StaticResource Chip}"><TextBlock FontSize="12" Text="Aşama" /></Border>
+                            <Border Style="{StaticResource Chip}"><TextBlock FontSize="12" Text="Kalibrasyon" /></Border>
+                            <Border Style="{StaticResource Chip}"><TextBlock FontSize="12" Text="Tamir / bakım" /></Border>
+                            <Border Style="{StaticResource Chip}"><TextBlock FontSize="12" Text="Konum" /></Border>
+                            <Border Style="{StaticResource Chip}"><TextBlock FontSize="12" Text="Not" /></Border>
+                        </WrapPanel>
+
+                        <Grid>
+                            <Rectangle Width="2" HorizontalAlignment="Left" Margin="5,6,0,6" Fill="#55F6A960" />
+                            <StackPanel Margin="20,0,0,0">
+                                <!-- Kalibrasyon -->
+                                <Grid Margin="0,0,0,12">
+                                    <Ellipse Width="11" Height="11" Fill="{DynamicResource SystemFillColorSuccessBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-20,3,0,0" />
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Style="{StaticResource Chip}" Background="{DynamicResource SystemFillColorSuccessBackgroundBrush}"><TextBlock FontSize="11.5" Foreground="{DynamicResource SystemFillColorSuccessBrush}" Text="Kalibrasyon" /></Border>
+                                            <TextBlock FontSize="12" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Text="12.11.2026 · Metroloji lab." />
+                                        </StackPanel>
+                                        <TextBlock Margin="0,4,0,0" Text="Faz / kayıp doğrulaması: geçti" />
+                                        <TextBlock FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Text="Sertifika K-2026-114 · geçerlilik 12.11.2027 · Kalibrasyon\2026-11-12 📁" />
+                                    </StackPanel>
+                                </Grid>
+                                <!-- Tamir -->
+                                <Grid Margin="0,0,0,12">
+                                    <Ellipse Width="11" Height="11" Fill="{DynamicResource SystemFillColorCautionBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-20,3,0,0" />
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Style="{StaticResource Chip}" Background="{DynamicResource SystemFillColorCautionBackgroundBrush}"><TextBlock FontSize="11.5" Foreground="{DynamicResource SystemFillColorCautionBrush}" Text="Tamir" /></Border>
+                                            <TextBlock FontSize="12" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Text="05.11.2026 · Atölye" />
+                                        </StackPanel>
+                                        <TextBlock Margin="0,4,0,0" Text="SMA ucu konnektörü değişti" />
+                                        <TextBlock FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Text="Tamirden sonra kalibrasyon gerekir → yeniden kalibre edildi (12.11)" />
+                                    </StackPanel>
+                                </Grid>
+                                <!-- Konum -->
+                                <Grid Margin="0,0,0,12">
+                                    <Ellipse Width="11" Height="11" Fill="{DynamicResource TextTertiaryBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-20,3,0,0" />
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Style="{StaticResource Chip}"><TextBlock FontSize="11.5" Text="Konum" /></Border>
+                                            <TextBlock FontSize="12" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Text="03.11.2026 · katan" />
+                                        </StackPanel>
+                                        <TextBlock Margin="0,4,0,0" Text="Yankısız oda, dolap 2" />
+                                    </StackPanel>
+                                </Grid>
+                                <!-- Aşama -->
+                                <Grid Margin="0,0,0,12">
+                                    <Ellipse Width="11" Height="11" Fill="{DynamicResource AccentTextFillColorPrimaryBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-20,3,0,0" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border CornerRadius="10" BorderThickness="1" BorderBrush="{DynamicResource AccentTextFillColorPrimaryBrush}" Padding="9,0" Margin="0,0,6,0">
+                                            <TextBlock FontSize="11.5" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="Kullanımda" />
+                                        </Border>
+                                        <TextBlock FontSize="12" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Text="02.11.2026 · katan" />
+                                    </StackPanel>
+                                </Grid>
+                                <!-- Talep -->
+                                <Grid>
+                                    <Ellipse Width="11" Height="11" Fill="{DynamicResource TextTertiaryBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-20,3,0,0" />
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Style="{StaticResource Chip}"><TextBlock FontSize="11.5" Text="Talep" /></Border>
+                                            <TextBlock FontSize="12" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Text="20.10.2026 · katan" />
+                                        </StackPanel>
+                                        <TextBlock Margin="0,4,0,0" Text="SATIMO referans kablosu" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+
+        <!-- Kurallar -->
+        <Border Margin="0,16,0,0" Padding="14,10" CornerRadius="8" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+            <TextBlock TextWrapping="Wrap" FontSize="12" LineHeight="19" Foreground="{DynamicResource TextSecondaryBrush}">
+                <Run FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Text="Fotoğraf: " /><Run Text="stoktaki kural — kapak &lt;numara&gt;_kapak, şerit &lt;numara&gt;_1, _2 …; numarasızlar görünmez; kapak yoksa ilk numaralı, o da yoksa türün simgesi. Klasör: kablo 02_Fotograflar, jig 03_Fotograflar (turler.json'daki fotoğraf klasörü)." /><LineBreak />
+                <Run FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Text="Not: " /><Run Text="ana notun gövdesi salt okunur (YAML ve ## Günlük hariç); değiştirmek MD ile." /><LineBreak />
+                <Run FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Text="Olaylar: " /><Run Text="Geçmiş kartı genişler; mevcut olaylara Kalibrasyon (tarih, yapan, sonuç, sertifika no, geçerlilik, klasör) ve Tamir / bakım eklenir. Son kalibrasyonun geçerliliği başlıkta çip: yeşil geçerli, sarı 30 gün kala, kırmızı geçmiş." />
+            </TextBlock>
+        </Border>
+    </StackPanel>
+</Border>
