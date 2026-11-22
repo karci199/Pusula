@@ -154,6 +154,18 @@ namespace Pusula.Wpf.ViewModels
             get { return Item.ResultPath.Length > 0; }
         }
 
+        /// <summary>Tarih.</summary>
+        public string Date
+        {
+            get { return Item.Date; }
+        }
+
+        /// <summary>Birim (seri no).</summary>
+        public string Unit
+        {
+            get { return Item.Unit; }
+        }
+
         /// <summary>Bağlı plan maddeleri (yoksa tek sarı "plan yok" çipi).</summary>
         public IList<LinkChip> Plans { get; }
 

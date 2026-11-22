@@ -3136,6 +3136,15 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Verify_NoPlan" xml:space="preserve">
     <value>plan yok</value>
   </data>
+  <data name="Verify_ColDate" xml:space="preserve">
+    <value>Tarih</value>
+  </data>
+  <data name="Verify_ColUnit" xml:space="preserve">
+    <value>Birim</value>
+  </data>
+  <data name="Verify_UnitPlaceholder" xml:space="preserve">
+    <value>örn. SN01</value>
+  </data>
   <data name="Verify_AutoStatus" xml:space="preserve">
     <value>hesap: {0}</value>
   </data>

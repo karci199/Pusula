@@ -205,12 +205,13 @@ $vm.OpenVerReport($s11); Wait
 Check 'yeni rapor penceresi: S11 planı 4.1 seçili' ($vm.IsVerReportOpen -and $vm.VerReportTitle -eq 'Rapor maddesi' -and ((@($vm.ReportPlanOptions | Where-Object IsChecked | ForEach-Object Key)) -join ',') -eq '4.1' -and @($vm.VerificationResults).Count -eq 3) $vm.VerReportTitle
 $measure = Join-Path $stock '03_Testler\01_Islevsel\S11\SNP1_T1'
 New-Item -ItemType Directory -Force $measure | Out-Null
-$vm.ReportTrNo = '5.3'; $vm.ReportDescription = 'S11 sonuçları'; $vm.ReportResult = 'Kaldı'; $vm.ReportPath = $measure; $vm.ReportNote = '−8 dB · BN-2026-020'
+Check 'yeni rapor: tarih bugün' ($vm.ReportDate -eq [DateTime]::Today.ToString('dd.MM.yyyy', [Globalization.CultureInfo]::InvariantCulture)) $vm.ReportDate
+$vm.ReportUnit = 'SNP1'; $vm.ReportTrNo = '5.3'; $vm.ReportDescription = 'S11 sonuçları'; $vm.ReportResult = 'Kaldı'; $vm.ReportPath = $measure; $vm.ReportNote = '−8 dB · BN-2026-020'
 Snap-Dialog 'verification-report.png'
 Check 'kaydedilir' ($vm.ConfirmVerReport())
 $vm.IsVerReportOpen = $false; Wait
 $r53 = @($PRL::ReadReports($stock) | Where-Object TrNo -eq '5.3')[0]
-Check 'Rapor tablosunda 5.3: plan 4.1, Kaldı, yer göreli' ($r53 -and ($r53.Plans -join ',') -eq '4.1' -and $r53.Result -eq 'Kaldı' -and $r53.ResultPath -eq '03_Testler\01_Islevsel\S11\SNP1_T1' -and $r53.Note -eq '−8 dB · BN-2026-020')
+Check 'Rapor tablosunda 5.3: plan 4.1, Kaldı, yer göreli' ($r53 -and ($r53.Plans -join ',') -eq '4.1' -and $r53.Result -eq 'Kaldı' -and $r53.ResultPath -eq '03_Testler\01_Islevsel\S11\SNP1_T1' -and $r53.Note -eq '−8 dB · BN-2026-020' -and $r53.Unit -eq 'SNP1' -and $r53.Date.Length -eq 10)
 $s11 = RowOf 'S11'
 Check 'bir rapor Kaldı → S11 Kaldı; Yan lob elle Değerlendiriliyor kalır, yanında hesap: Kaldı' ($s11.StatusText -eq 'Kaldı' -and (RowOf 'Yan lob seviyesi').StatusText -eq 'Değerlendiriliyor' -and (RowOf 'Yan lob seviyesi').AutoStatusText -eq 'hesap: Kaldı' -and (RowOf 'Yan lob seviyesi').Item.Status -eq 'Kaldı') ($s11.StatusText + ' / ' + (RowOf 'Yan lob seviyesi').StatusText)
 Check 'kart: rapor 5.3 kırmızı' ($s11.HasReport -and $s11.ReportItems[0].TrNo -eq '5.3' -and $s11.ReportItems[0].ResultKind -eq 2)

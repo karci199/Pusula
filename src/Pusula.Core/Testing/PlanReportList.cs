@@ -53,6 +53,12 @@ namespace Pusula.Core.Testing
         /// <summary>Not (ölçülen değer, kaldıysa bildirim no).</summary>
         public string Note { get; set; } = string.Empty;
 
+        /// <summary>Ölçüm / rapor tarihi (gg.aa.yyyy olarak yazılır); boş olabilir.</summary>
+        public string Date { get; set; } = string.Empty;
+
+        /// <summary>Ölçülen birim (seri no), örn. "SN01"; boş olabilir.</summary>
+        public string Unit { get; set; } = string.Empty;
+
         /// <summary>Tabloda tanınmayan sütunların değerleri; yazarken korunur.</summary>
         public Dictionary<string, string> Extra { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     }
@@ -78,7 +84,7 @@ namespace Pusula.Core.Testing
         public static readonly string[] PlanHeaders = { "TP no", "Açıklama", "Yöntem", "Altyapı", "Gereksinimler", "Not" };
 
         /// <summary>Rapor tablosunun başlıkları.</summary>
-        public static readonly string[] ReportHeaders = { "TR no", "Açıklama", "Sonuç", "Plan", "Sonuç yeri", "Not" };
+        public static readonly string[] ReportHeaders = { "TR no", "Açıklama", "Plan", "Tarih", "Birim", "Sonuç", "Sonuç yeri", "Not" };
 
         /// <summary>Plan maddelerini okur; dosya, bölüm ya da tablo yoksa boş liste.</summary>
         public static List<PlanItem> ReadPlans(string stockFolder)
@@ -115,10 +121,12 @@ namespace Pusula.Core.Testing
                 {
                     TrNo = Cell(row, 0),
                     Description = Cell(row, 1),
-                    Result = Cell(row, 2),
-                    Plans = SplitList(Cell(row, 3)),
-                    ResultPath = Cell(row, 4),
-                    Note = Cell(row, 5),
+                    Plans = SplitList(Cell(row, 2)),
+                    Date = Cell(row, 3),
+                    Unit = Cell(row, 4),
+                    Result = Cell(row, 5),
+                    ResultPath = Cell(row, 6),
+                    Note = Cell(row, 7),
                 };
                 CopyExtra(row, item.Extra, ReportHeaders);
                 if (item.TrNo.Length > 0 || item.Description.Length > 0)
@@ -142,7 +150,7 @@ namespace Pusula.Core.Testing
         public static string SaveReports(string stockFolder, IList<ReportItem> items)
         {
             var rows = (items ?? new List<ReportItem>()).Select(i => Tuple.Create(
-                new[] { i.TrNo, i.Description, i.Result, string.Join(", ", i.Plans), i.ResultPath, i.Note }, i.Extra)).ToList();
+                new[] { i.TrNo, i.Description, string.Join(", ", i.Plans), i.Date, i.Unit, i.Result, i.ResultPath, i.Note }, i.Extra)).ToList();
             return WriteRows(stockFolder, new[] { ReportHeading, LegacyReportHeading }, ReportHeaders, rows);
         }
 

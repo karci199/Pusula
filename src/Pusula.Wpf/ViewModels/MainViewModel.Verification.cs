@@ -534,13 +534,13 @@ namespace Pusula.Wpf.ViewModels
         {
             "tg", "kind", "method", "plan", "report", "status",
             "ptp", "pmethod", "pfacility", "preqs", "preports",
-            "rtr", "rresult", "rplans", "rreqs", "rpath",
+            "rtr", "rresult", "rplans", "rreqs", "rdate", "runit",
         };
 
         // Ayırıcısı sütunun sağ kenarında olanlar (sağa çekince genişler); diğerleri sol kenarda.
         private static readonly string[] Leading = { "tg", "ptp", "rtr" };
 
-        private static readonly double[] Defaults = { 104, 150, 110, 104, 104, 170, 80, 110, 120, 240, 220, 80, 130, 150, 170, 260 };
+        private static readonly double[] Defaults = { 104, 150, 110, 104, 104, 170, 80, 110, 120, 240, 220, 80, 130, 150, 170, 110, 110 };
         private const double MinWidth = 56;
         private const double MaxWidth = 600;
         private readonly double[] widths = (double[])Defaults.Clone();
@@ -642,10 +642,16 @@ namespace Pusula.Wpf.ViewModels
             get { return showReportRequirements ? At(14) : new GridLength(0); }
         }
 
-        /// <summary>Test raporu tablosu: sonucun yeri.</summary>
-        public GridLength ReportPath
+        /// <summary>Test raporu tablosu: tarih.</summary>
+        public GridLength ReportDate
         {
             get { return At(15); }
+        }
+
+        /// <summary>Test raporu tablosu: birim (seri no).</summary>
+        public GridLength ReportUnit
+        {
+            get { return At(16); }
         }
 
         /// <summary>Gereksinimler tablosunda Test raporu sütunu açık mı.</summary>

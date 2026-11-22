@@ -51,7 +51,7 @@ try {
     Check 'elle yazılan başlığıyla kalır' ($text.Contains("### DGÖ-1 · Hüzme`r`nElle: kurulum notu.")) $text
     Check 'giriş, son not, YAML korunur' ($text.StartsWith("---`r`ntur: test-gereksinimleri`r`n---") -and $text.Contains('Giriş metni.') -and $text.Contains('Son not.'))
     Check 'üç boş satır yok' (-not $text.Contains("`r`n`r`n`r`n")) $text
-    Check 'Plan tablosu ## Plan altında, Rapor tablosu ## Rapor altında' ($text -like '*## Plan*| TP no | Açıklama | Yöntem | Altyapı | Gereksinimler | Not |*## Rapor*| TR no | Açıklama | Sonuç | Plan | Sonuç yeri | Not |*')
+    Check 'Plan tablosu ## Plan altında, Rapor tablosu ## Rapor altında (Tarih, Birim)' ($text -like '*## Plan*| TP no | Açıklama | Yöntem | Altyapı | Gereksinimler | Not |*## Rapor*| TR no | Açıklama | Plan | Tarih | Birim | Sonuç | Sonuç yeri | Not |*| 5.1 | Hüzme sonuçları | 4.1 |  |  | Geçti | 03_Testler\S1 | 31,2° |*') $text
     Check 'ikinci geçiş yapılmaz, yeni yedek yok' (-not $PR::RetireLegacy($stock, [ref]$err) -and @(Get-ChildItem (Join-Path $stock '_ARSIV') -Filter '*.md.yedek').Count -eq 1)
     Check 'madde eklenince eski sütun geri gelmez' ($VL::Add($stock, (New-Object Pusula.Core.Testing.VerificationItem -Property @{ Text = 'Yeni'; TpNo = '9.9' }), '') -eq '' -and ([IO.File]::ReadAllText($file)) -notlike '*TP no |*9.9*')
 
@@ -70,6 +70,8 @@ try {
     Check '4.1: açıklama korunur, boş not dolar, DGÖ-1 bağlanır' ($plans[0].Description -eq 'Yeni açıklama' -and $plans[0].Note -eq 'eski not' -and ($plans[0].Requirements -join ',') -eq 'DGÖ-1') ($plans[0].Description + ' / ' + $plans[0].Note)
     Check '4.2 eklenir (DGÖ-2)' ($plans.Count -eq 2 -and $plans[1].TpNo -eq '4.2' -and $plans[1].Description -eq 'Yan lob planı' -and ($plans[1].Requirements -join ',') -eq 'DGÖ-2')
     Check 'rapor değişmez' (@($PR::ReadReports($stock2)).Count -eq 1)
+    $reps = $PR::ReadReports($stock2); $reps[0].Date = '22.11.2026'; $reps[0].Unit = 'SN01'
+    Check 'tarih ve birim yazılır, eski sıradaki tablo yeni sıraya geçer' ($PR::SaveReports($stock2, $reps) -eq '' -and ([IO.File]::ReadAllText($file2)) -like '*| TR no | Açıklama | Plan | Tarih | Birim | Sonuç | Sonuç yeri | Not |*| 5.1 | Hüzme | 4.1 | 22.11.2026 | SN01 | Geçti |  |  |*' -and @($PR::ReadReports($stock2))[0].Unit -eq 'SN01') ([IO.File]::ReadAllText($file2))
     $text2 = [IO.File]::ReadAllText($file2)
     Check 'LF korunur, BOM eklenmez, TP sütunu yok' ($text2 -notlike "*`r`n*" -and [IO.File]::ReadAllBytes($file2)[0] -ne 0xEF -and $text2 -notlike '*TP açıklama*') $text2
 

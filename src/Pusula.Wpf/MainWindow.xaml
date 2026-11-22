@@ -2831,25 +2831,28 @@
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportTr, RelativeSource={RelativeSource AncestorType=Window}}" />
                                                         <ColumnDefinition Width="*" MinWidth="200" />
-                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportResult, RelativeSource={RelativeSource AncestorType=Window}}" />
                                                         <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportPlans, RelativeSource={RelativeSource AncestorType=Window}}" />
                                                         <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportRequirements, RelativeSource={RelativeSource AncestorType=Window}}" />
-                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportPath, RelativeSource={RelativeSource AncestorType=Window}}" />
-                                                        <ColumnDefinition Width="40" />
+                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportDate, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportUnit, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportResult, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                        <ColumnDefinition Width="76" />
                                                     </Grid.ColumnDefinitions>
                                                     <TextBlock Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ReportNo}" />
                                                     <Thumb Style="{StaticResource ColumnGrip}" HorizontalAlignment="Right" Tag="rtr" />
                                                     <TextBlock Grid.Column="1" Text="{x:Static res:Resources.Verify_ColDescription}" />
-                                                    <TextBlock Grid.Column="2" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ColResult}" />
-                                                    <Thumb Grid.Column="2" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="rresult" />
-                                                    <TextBlock Grid.Column="3" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ViewPlan}" />
-                                                    <Thumb Grid.Column="3" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="rplans" />
-                                                    <TextBlock Grid.Column="4" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ColRequirements}"
+                                                    <TextBlock Grid.Column="2" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ViewPlan}" />
+                                                    <Thumb Grid.Column="2" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="rplans" />
+                                                    <TextBlock Grid.Column="3" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ColRequirements}"
                                                                Visibility="{Binding ShowReportRequirements, Converter={StaticResource BoolToVis}}" />
-                                                    <Thumb Grid.Column="4" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="rreqs"
+                                                    <Thumb Grid.Column="3" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="rreqs"
                                                            Visibility="{Binding ShowReportRequirements, Converter={StaticResource BoolToVis}}" />
-                                                    <TextBlock Grid.Column="5" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ColResultPath}" />
-                                                    <Thumb Grid.Column="5" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="rpath" />
+                                                    <TextBlock Grid.Column="4" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ColDate}" />
+                                                    <Thumb Grid.Column="4" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="rdate" />
+                                                    <TextBlock Grid.Column="5" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ColUnit}" />
+                                                    <Thumb Grid.Column="5" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="runit" />
+                                                    <TextBlock Grid.Column="6" Margin="10,0,0,0" Text="{x:Static res:Resources.Verify_ColResult}" />
+                                                    <Thumb Grid.Column="6" Style="{StaticResource ColumnGrip}" HorizontalAlignment="Left" Tag="rresult" />
                                                 </Grid>
                                                 <ItemsControl ItemsSource="{Binding ReportRows}" Focusable="False">
                                                     <ItemsControl.ItemTemplate>
@@ -2859,11 +2862,12 @@
                                                                     <Grid.ColumnDefinitions>
                                                                         <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportTr, RelativeSource={RelativeSource AncestorType=Window}}" />
                                                                         <ColumnDefinition Width="*" MinWidth="200" />
-                                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportResult, RelativeSource={RelativeSource AncestorType=Window}}" />
                                                                         <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportPlans, RelativeSource={RelativeSource AncestorType=Window}}" />
                                                                         <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportRequirements, RelativeSource={RelativeSource AncestorType=Window}}" />
-                                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportPath, RelativeSource={RelativeSource AncestorType=Window}}" />
-                                                                        <ColumnDefinition Width="40" />
+                                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportDate, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportUnit, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                                        <ColumnDefinition Width="{Binding DataContext.VerificationColumns.ReportResult, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                                                        <ColumnDefinition Width="76" />
                                                                     </Grid.ColumnDefinitions>
                                                                     <Rectangle x:Name="RStripe" Width="3" Margin="0,-4,0,-4" HorizontalAlignment="Left" RadiusX="1.5" RadiusY="1.5" Fill="Transparent" />
                                                                     <TextBlock Margin="10,0,0,0" FontWeight="SemiBold" VerticalAlignment="Center" Text="{Binding TrNo}" />
@@ -2872,25 +2876,29 @@
                                                                         <TextBlock FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" TextTrimming="CharacterEllipsis" Text="{Binding Note}"
                                                                                    Visibility="{Binding HasNote, Converter={StaticResource BoolToVis}}" />
                                                                     </StackPanel>
-                                                                    <Border x:Name="RPill" Grid.Column="2" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="9,1" CornerRadius="9" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                                                    <ItemsControl Grid.Column="2" Margin="10,0,0,0" VerticalAlignment="Center" ItemsSource="{Binding Plans}" ItemTemplate="{StaticResource LinkChipTemplate}"
+                                                                                  ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False" />
+                                                                    <ItemsControl Grid.Column="3" Margin="10,0,0,0" VerticalAlignment="Center" ItemsSource="{Binding Requirements}" ItemTemplate="{StaticResource LinkChipTemplate}"
+                                                                                  ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False"
+                                                                                  Visibility="{Binding DataContext.ShowReportRequirements, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
+                                                                    <TextBlock Grid.Column="4" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="12.5" Text="{Binding Date}" />
+                                                                    <TextBlock Grid.Column="5" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="12.5" TextTrimming="CharacterEllipsis" Text="{Binding Unit}" />
+                                                                    <Border x:Name="RPill" Grid.Column="6" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="9,1" CornerRadius="9" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
                                                                         <StackPanel Orientation="Horizontal">
                                                                             <Ellipse x:Name="RDot" Width="8" Height="8" Margin="0,0,6,0" VerticalAlignment="Center" Fill="{DynamicResource TextTertiaryBrush}" />
                                                                             <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding Result}" />
                                                                         </StackPanel>
                                                                     </Border>
-                                                                    <ItemsControl Grid.Column="3" Margin="10,0,0,0" VerticalAlignment="Center" ItemsSource="{Binding Plans}" ItemTemplate="{StaticResource LinkChipTemplate}"
-                                                                                  ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False" />
-                                                                    <ItemsControl Grid.Column="4" Margin="10,0,0,0" VerticalAlignment="Center" ItemsSource="{Binding Requirements}" ItemTemplate="{StaticResource LinkChipTemplate}"
-                                                                                  ItemsPanel="{StaticResource WrapItemsPanel}" Focusable="False"
-                                                                                  Visibility="{Binding DataContext.ShowReportRequirements, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
-                                                                    <StackPanel Grid.Column="5" Margin="10,0,0,0" Orientation="Horizontal" VerticalAlignment="Center" Visibility="{Binding HasResultPath, Converter={StaticResource BoolToVis}}">
-                                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="12" Foreground="{DynamicResource SystemFillColorCautionBrush}" VerticalAlignment="Center" />
-                                                                        <TextBlock Margin="6,0,0,0" MaxWidth="230" FontSize="12" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding ResultPath}" ToolTip="{Binding ResultPath}" />
+                                                                    <StackPanel Grid.Column="7" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                                        <Button Padding="8,4" Style="{DynamicResource SubtleButtonStyle}" Tag="{Binding Item}" Click="VerReportPathOpen_Click" ToolTip="{Binding ResultPath}"
+                                                                                Visibility="{Binding HasResultPath, Converter={StaticResource BoolToVis}}">
+                                                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="12" Foreground="{DynamicResource SystemFillColorCautionBrush}" />
+                                                                        </Button>
+                                                                        <Button Padding="8,4" Style="{DynamicResource SubtleButtonStyle}" Tag="{Binding Item}" Click="VerReportEdit_Click"
+                                                                                ToolTip="{x:Static res:Resources.Verify_EditHint}">
+                                                                            <local:AppIcon Glyph="{x:Static local:AppIcons.Edit}" FontSize="12" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                                                        </Button>
                                                                     </StackPanel>
-                                                                    <Button Grid.Column="6" Padding="8,4" VerticalAlignment="Center" Style="{DynamicResource SubtleButtonStyle}" Tag="{Binding Item}" Click="VerReportEdit_Click"
-                                                                            ToolTip="{x:Static res:Resources.Verify_EditHint}">
-                                                                        <local:AppIcon Glyph="{x:Static local:AppIcons.Edit}" FontSize="12" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
-                                                                    </Button>
                                                                 </Grid>
                                                             </Border>
                                                             <DataTemplate.Triggers>
@@ -4179,6 +4187,13 @@
                 <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_ReportResult}" LabelWidth="120">
                     <ComboBox Width="240" HorizontalAlignment="Left" ItemsSource="{Binding VerificationResults}" SelectedItem="{Binding ReportResult, Mode=TwoWay}"
                               ItemTemplate="{StaticResource VerStatusItemTemplate}" />
+                </controls:FormField>
+                <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_ColDate}" LabelWidth="120">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox Width="120" Text="{Binding ReportDate, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Margin="20,0,10,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Verify_ColUnit}" />
+                        <TextBox Width="160" Text="{Binding ReportUnit, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_UnitPlaceholder}" />
+                    </StackPanel>
                 </controls:FormField>
                 <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldPlans}" LabelWidth="120">
                     <Border CornerRadius="8" BorderThickness="1" Padding="6" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}">

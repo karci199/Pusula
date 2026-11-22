@@ -317,6 +317,8 @@ namespace Pusula.Wpf.ViewModels
         private string reportResult = string.Empty;
         private string reportPath = string.Empty;
         private string reportNote = string.Empty;
+        private string reportDate = string.Empty;
+        private string reportUnit = string.Empty;
         private string reportError = string.Empty;
         private string reportSearch = string.Empty;
 
@@ -378,6 +380,20 @@ namespace Pusula.Wpf.ViewModels
         {
             get { return reportNote; }
             set { SetProperty(ref reportNote, value ?? string.Empty); }
+        }
+
+        /// <summary>Tarih (gg.aa.yyyy); yeni maddede bugün.</summary>
+        public string ReportDate
+        {
+            get { return reportDate; }
+            set { SetProperty(ref reportDate, value ?? string.Empty); }
+        }
+
+        /// <summary>Birim (seri no), örn. "SN01".</summary>
+        public string ReportUnit
+        {
+            get { return reportUnit; }
+            set { SetProperty(ref reportUnit, value ?? string.Empty); }
         }
 
         /// <summary>Penceredeki hata; boşsa gizli.</summary>
@@ -446,6 +462,8 @@ namespace Pusula.Wpf.ViewModels
             ReportResult = report != null ? report.Result : string.Empty;
             ReportPath = report != null ? FullResultPath(verificationStock, report.ResultPath) : string.Empty;
             ReportNote = report != null ? report.Note : string.Empty;
+            ReportDate = report != null ? report.Date : DateTime.Today.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
+            ReportUnit = report != null ? report.Unit : string.Empty;
             ReportError = string.Empty;
 
             ReportPlanOptions.Clear();
@@ -502,6 +520,8 @@ namespace Pusula.Wpf.ViewModels
             item.Plans = ReportPlanOptions.Where(o => o.IsChecked).Select(o => o.Key).ToList();
             item.ResultPath = RelativeResultPath(verificationStock, ReportPath.Trim());
             item.Note = ReportNote.Trim();
+            item.Date = ReportDate.Trim();
+            item.Unit = ReportUnit.Trim();
             if (index < 0)
             {
                 reports.Add(item);
