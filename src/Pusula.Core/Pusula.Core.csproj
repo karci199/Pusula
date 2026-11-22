@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="System.IO.Compression" />
     <Reference Include="Markdig">
       <HintPath>$(DependenciesDir)Markdig\Markdig.dll</HintPath>
     </Reference>

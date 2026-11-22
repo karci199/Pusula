@@ -3061,6 +3061,12 @@
                                     <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                                         <CheckBox Margin="12,0,14,0" VerticalAlignment="Center" Content="{x:Static res:Resources.Verify_ShowReports}" IsChecked="{Binding ShowRequirementReports, Mode=TwoWay}" />
                                         <TextBlock Margin="0,0,14,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding VerificationShownText}" />
+                                        <Button Margin="0,0,8,0" Padding="12,5" Click="VerImportExcel_Click" ToolTip="{x:Static res:Resources.Import_Hint}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <local:AppIcon Glyph="{x:Static local:AppIcons.Folder}" FontSize="13" VerticalAlignment="Center" />
+                                                <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" Text="{x:Static res:Resources.Import_Button}" />
+                                            </StackPanel>
+                                        </Button>
                                         <Button Margin="0,0,8,0" Padding="12,5" Command="{Binding OpenVerificationFileCommand}" ToolTip="{x:Static res:Resources.Verify_OpenFileHint}"
                                                 Visibility="{Binding HasVerificationFile, Converter={StaticResource BoolToVis}}">
                                             <StackPanel Orientation="Horizontal">
@@ -4230,6 +4236,15 @@
                 <TextBlock Margin="0,12,0,0" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" TextWrapping="Wrap" Text="{x:Static res:Resources.Verify_PlanItemHint}" />
             </StackPanel>
         </local:FormDialog>
+
+        <!-- Excel'den gereksinim al (deneme): özet ve onay -->
+        <controls:ContentDialog Grid.RowSpan="3" IsOpen="{Binding IsImportOpen, Mode=TwoWay}" DialogWidth="480" Title="{x:Static res:Resources.Import_Title}"
+                                PrimaryButtonText="{x:Static res:Resources.Import_Confirm}" CloseButtonText="{x:Static res:Resources.Dialog_Cancel}" PrimaryButtonClick="VerImport_PrimaryButtonClick">
+            <StackPanel>
+                <TextBlock TextWrapping="Wrap" Text="{Binding ImportText}" />
+                <TextBlock Margin="0,12,0,0" TextWrapping="Wrap" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Import_Rule}" />
+            </StackPanel>
+        </controls:ContentDialog>
 
         <!-- Rapor maddesi: TR no, açıklama, sonuç, plan maddeleri (çoklu seçim), sonucun yeri, not; yalnız ## Rapor tablosu yazılır -->
         <local:FormDialog Grid.RowSpan="3"

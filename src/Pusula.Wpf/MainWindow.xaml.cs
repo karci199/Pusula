@@ -210,6 +210,21 @@ namespace Pusula.Wpf
             }
         }
 
+        // Excel'den gereksinim al (deneme): dosya seçilir, özet onaya gelir.
+        private void VerImportExcel_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Microsoft.Win32.OpenFileDialog { Filter = Properties.Resources.Import_Filter, CheckFileExists = true };
+            if (dialog.ShowDialog(this) == true)
+            {
+                viewModel.PrepareImport(dialog.FileName);
+            }
+        }
+
+        private void VerImport_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            viewModel.ConfirmImport();
+        }
+
         // Plan satırına tek tık: ayrıntıyı aç / kapat; çift tık: düzenle.
         private void VerPlanRow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

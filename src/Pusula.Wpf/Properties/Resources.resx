@@ -3148,6 +3148,33 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   <data name="Verify_DetailEmpty" xml:space="preserve">
     <value>Henüz ayrıntı yok. md dosyasında ## Plan altına "### madde no · başlık" yazıp altına kurulum, adımlar, dikkat edilecekleri yazabilirsin.</value>
   </data>
+  <data name="Import_Filter" xml:space="preserve">
+    <value>Excel (*.xlsx)|*.xlsx</value>
+  </data>
+  <data name="Import_Button" xml:space="preserve">
+    <value>Excel&apos;den al</value>
+  </data>
+  <data name="Import_Hint" xml:space="preserve">
+    <value>DOORS&apos;tan alınan Excel&apos;deki gereksinimleri tabloya ekler (deneme)</value>
+  </data>
+  <data name="Import_Title" xml:space="preserve">
+    <value>Excel&apos;den gereksinim al</value>
+  </data>
+  <data name="Import_Confirm" xml:space="preserve">
+    <value>Aktar</value>
+  </data>
+  <data name="Import_Summary" xml:space="preserve">
+    <value>{0} madde, {1} başlık okundu: {2} yeni eklenecek, {3} var olan güncellenecek.</value>
+  </data>
+  <data name="Import_Rule" xml:space="preserve">
+    <value>Başlık satırları (3.1 Elektriksel …) madde olmaz, altındaki maddelerin bölümü olur. Var olan maddenin yalnız gereksinim metni, türü, notu ve bölümü güncellenir; durum ve bağlar korunur, hiçbir madde silinmez.</value>
+  </data>
+  <data name="Import_NoHeader" xml:space="preserve">
+    <value>Excel&apos;de başlık satırı bulunamadı (TG no ve Gereksinim / Açıklama sütunları gerekir).</value>
+  </data>
+  <data name="Import_Done" xml:space="preserve">
+    <value>Excel&apos;den alındı: {0} yeni, {1} güncellendi, {2} aynı.</value>
+  </data>
   <data name="Verify_ColDate" xml:space="preserve">
     <value>Tarih</value>
   </data>

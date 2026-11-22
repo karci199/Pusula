@@ -3343,6 +3343,33 @@ namespace Pusula.Wpf.Properties
         /// <summary>Gereksinim / rapor satırı: bağlı plan yok.</summary>
         public static string Verify_NoPlan { get { return Get("Verify_NoPlan"); } }
 
+        /// <summary>Excel içe aktarma: dosya seçme süzgeci.</summary>
+        public static string Import_Filter { get { return Get("Import_Filter"); } }
+
+        /// <summary>Excel içe aktarma: Import_Button.</summary>
+        public static string Import_Button { get { return Get("Import_Button"); } }
+
+        /// <summary>Excel içe aktarma: Import_Hint.</summary>
+        public static string Import_Hint { get { return Get("Import_Hint"); } }
+
+        /// <summary>Excel içe aktarma: Import_Title.</summary>
+        public static string Import_Title { get { return Get("Import_Title"); } }
+
+        /// <summary>Excel içe aktarma: Import_Confirm.</summary>
+        public static string Import_Confirm { get { return Get("Import_Confirm"); } }
+
+        /// <summary>Excel içe aktarma: Import_Summary.</summary>
+        public static string Import_Summary { get { return Get("Import_Summary"); } }
+
+        /// <summary>Excel içe aktarma: Import_Rule.</summary>
+        public static string Import_Rule { get { return Get("Import_Rule"); } }
+
+        /// <summary>Excel içe aktarma: Import_NoHeader.</summary>
+        public static string Import_NoHeader { get { return Get("Import_NoHeader"); } }
+
+        /// <summary>Excel içe aktarma: Import_Done.</summary>
+        public static string Import_Done { get { return Get("Import_Done"); } }
+
         /// <summary>Plan ayrıntısı: gereksinimler başlığı.</summary>
         public static string Verify_DetailRequirements { get { return Get("Verify_DetailRequirements"); } }
 
