@@ -26,8 +26,8 @@ Check 'eklenir, pencere kapanabilir' ($vm.ConfirmNewVerification())
 $vm.IsVerificationDialogOpen = $false; Wait
 Check 'dosya oluştu' (Test-Path $file)
 $text = [IO.File]::ReadAllText($file)
-Check 'dosyada 21 sütunlu başlık' ($text -like '*| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | TP no | TP açıklama | TP not | TR no | TR açıklama | TR not | TR sonuç | Sonuç yeri | Durum |*') $text
-Check 'dosyada satır' ($text -like '*| 1 | TG-012 |  | Kazanç ≥ 5 dBi @ 2,4 GHz |  |  | İşlevsel | Anten örüntü |  |  |  | SATIMO |  |  |  |  |  |  |  |  | Bekliyor |*') $text
+Check 'dosyada 13 sütunlu başlık (TP / TR yok)' ($text -like '*| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | Durum |*' -and $text -notlike '*TP no*') $text
+Check 'dosyada satır' ($text -like '*| 1 | TG-012 |  | Kazanç ≥ 5 dBi @ 2,4 GHz |  |  | İşlevsel | Anten örüntü |  |  |  | SATIMO | Bekliyor |*') $text
 Check 'dosyada Plan ve Rapor kısımları' ($text -like '*## Plan*' -and $text -like '*## Rapor*')
 Check 'altyapı ortak listede' ((Test-Path $facilities) -and ([IO.File]::ReadAllText($facilities) -like '*- SATIMO*'))
 Check 'listede 1 madde' ($vm.VerificationCount -eq 1 -and $vm.VerificationGroups.Count -eq 1)
@@ -65,37 +65,21 @@ $row = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Row
 Check 'durum seçenekleri 10 (Planlandı, Hazırlık yapılıyor, Değerlendiriliyor, Şartlı kabul dahil)' (@($vm.VerificationStatuses).Count -eq 10 -and @($vm.VerificationStatuses)[2] -eq 'Hazırlık yapılıyor' -and @($vm.VerificationStatuses)[1] -eq 'Planlandı') (@($vm.VerificationStatuses) -join ',')
 $vm.SetVerificationStatus($row, 'Yapılıyor'); Wait
 $text = [IO.File]::ReadAllText($file)
-Check 'yalnız durum hücresi değişti' ($text -like '*| 1 | TG-012 |  | Kazanç ≥ 5 dBi @ 2,4 GHz |  |  | İşlevsel | Anten örüntü |  |  |  | SATIMO |  |  |  |  |  |  |  |  | Yapılıyor |*' -and $text -like '*| 2 |  |  | RE102 \| CE102 sınır içinde |  |  | ÇK/EMC |*') $text
+Check 'yalnız durum hücresi değişti' ($text -like '*| 1 | TG-012 |  | Kazanç ≥ 5 dBi @ 2,4 GHz |  |  | İşlevsel | Anten örüntü |  |  |  | SATIMO | Yapılıyor |*' -and $text -like '*| 2 |  |  | RE102 \| CE102 sınır içinde |  |  | ÇK/EMC |*') $text
 $row = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows[0]
 Check 'yapılıyor türü' ($row.StatusKind -eq 3 -and $row.StatusText -eq 'Yapılıyor')
 
 "--- düzenleme"
 $vm.EditVerification($row); Wait
 Check 'düzenleme penceresi dolu' ($vm.IsVerificationDialogOpen -and $vm.IsEditingVerification -and $vm.NewVerText -eq 'Kazanç ≥ 5 dBi @ 2,4 GHz' -and $vm.FacilityPick.Selected -eq 'SATIMO' -and $vm.NewVerSubGroup -eq 'Anten örüntü' -and $vm.NewVerStatus -eq 'Yapılıyor') $vm.VerificationDialogTitle
-$vm.NewVerText = 'Kazanç ≥ 6 dBi @ 2,4 GHz'; $vm.NewVerDescription = '≥ 6 dBi ana yönde'; $vm.NewVerRequirement = 'Anten 2,4 GHz''de ana yönde en az 6 dBi kazanç sağlamalıdır.'; $vm.NewVerKind = 'Temel'; $vm.NewVerMethod = 'Test'; $vm.NewVerTgNo = 'TG-013'; $vm.NewVerTpNo = 'TP-004'; $vm.NewVerTrNo = 'TR-009'
+$vm.NewVerText = 'Kazanç ≥ 6 dBi @ 2,4 GHz'; $vm.NewVerDescription = '≥ 6 dBi ana yönde'; $vm.NewVerRequirement = 'Anten 2,4 GHz''de ana yönde en az 6 dBi kazanç sağlamalıdır.'; $vm.NewVerKind = 'Temel'; $vm.NewVerMethod = 'Test'; $vm.NewVerTgNo = 'TG-013'
 Check 'kaydedilir' ($vm.ConfirmNewVerification())
 $vm.IsVerificationDialogOpen = $false; Wait
 $text = [IO.File]::ReadAllText($file)
-Check 'satır yerinde değişti, numara aynı' ($text -like '*| 1 | TG-013 |  | Kazanç ≥ 6 dBi @ 2,4 GHz | ≥ 6 dBi ana yönde | Anten 2,4 GHz''de ana yönde en az 6 dBi kazanç sağlamalıdır. | İşlevsel | Anten örüntü | Temel |  | Test | SATIMO | TP-004 |  |  | TR-009 |  |  |  |  | Yapılıyor |*' -and $text -notlike '*5 dBi*' -and $vm.VerificationCount -eq 2) $text
+Check 'satır yerinde değişti, numara aynı' ($text -like '*| 1 | TG-013 |  | Kazanç ≥ 6 dBi @ 2,4 GHz | ≥ 6 dBi ana yönde | Anten 2,4 GHz''de ana yönde en az 6 dBi kazanç sağlamalıdır. | İşlevsel | Anten örüntü | Temel |  | Test | SATIMO | Yapılıyor |*' -and $text -notlike '*5 dBi*' -and $vm.VerificationCount -eq 2) $text
 
-"--- plan / rapor açıklama ve not sütunları (madde penceresinde yok, düzenlemede korunur)"
-$items = [Pusula.Core.Testing.VerificationList]::Read($stock)
-$it = @($items | Where-Object { $_.TgNo -eq 'TG-013' })[0]
-$it.TpDescription = 'SATIMO kazanç ölçümü'; $it.TpNote = 'Jig JT-1000-0009'; $it.TrDescription = 'Kazanç sonuçları'; $it.TrNote = 'BN-2026-014'
-Check 'yazılır' ([Pusula.Core.Testing.VerificationList]::Update($stock, $it) -eq '')
-$text = [IO.File]::ReadAllText($file)
-Check 'dosyada yeni hücreler' ($text -like '*| SATIMO | TP-004 | SATIMO kazanç ölçümü | Jig JT-1000-0009 | TR-009 | Kazanç sonuçları | BN-2026-014 |  |  | Yapılıyor |*') $text
-$back = @([Pusula.Core.Testing.VerificationList]::Read($stock) | Where-Object { $_.TgNo -eq 'TG-013' })[0]
-Check 'geri okunur' ($back.TpDescription -eq 'SATIMO kazanç ölçümü' -and $back.TrNote -eq 'BN-2026-014')
 $row1 = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows[0]
-$vm.EditVerification($row1); Wait
-$vm.NewVerDescription = '≥ 6 dBi ana yönde (güncel)'
-Check 'pencereden kaydedilir' ($vm.ConfirmNewVerification())
-$vm.IsVerificationDialogOpen = $false; Wait
-$text = [IO.File]::ReadAllText($file)
-Check 'düzenlemede plan / rapor açıklama ve not korunur' ($text -like '*(güncel)*| SATIMO | TP-004 | SATIMO kazanç ölçümü | Jig JT-1000-0009 | TR-009 | Kazanç sonuçları | BN-2026-014 |  |  | Yapılıyor |*') $text
-$row1 = ($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Rows[0]
-Check 'satır: TG no, kısa not, tür, yöntem, plan / rapor' ($row1.Id -eq 'TG-013' -and $row1.Description -like '≥ 6 dBi ana yönde*' -and $row1.KindText -eq 'Temel' -and $row1.MethodTone -eq 1 -and $row1.TpText -eq 'TP-004' -and $row1.TrText -eq 'TR-009') ($row1.Id + ' ' + $row1.KindText)
+Check 'satır: TG no, kısa not, tür, yöntem, plan / rapor' ($row1.Id -eq 'TG-013' -and $row1.Description -like '≥ 6 dBi ana yönde*' -and $row1.KindText -eq 'Temel' -and $row1.MethodTone -eq 1) ($row1.Id + ' ' + $row1.KindText)
 $vm.ToggleVerification($row1)
 Check 'satır açılır: tam gereksinim ve kaynak satırı' ($row1.IsExpanded -and $row1.Requirement -like 'Anten 2,4 GHz*' -and $row1.SourceLine -like '*TG-013*') $row1.SourceLine
 
@@ -120,7 +104,7 @@ Check 'en dar sınır' ($cols.Kind.Value -eq 56)
 $cols.Reset()
 Snap $win "$Out\verification.png"
 $vm.AddVerificationCommand.Execute($null); Wait
-Check 'yeni madde penceresi düzenleme kipinde değil' (-not $vm.IsEditingVerification -and $vm.NewVerText -eq '' -and $vm.NewVerTpNo -eq '')
+Check 'yeni madde penceresi düzenleme kipinde değil' (-not $vm.IsEditingVerification -and $vm.NewVerText -eq '')
 Check 'metin ve alt grup boşsa eklenmez' (-not $vm.ConfirmNewVerification() -and $vm.VerificationError.Length -gt 0)
 $vm.NewVerSubGroup = 'S11'; $vm.NewVerStatus = 'Planlandı'
 Check 'yalnız alt grupla eklenir (madde sonra)' ($vm.ConfirmNewVerification())
@@ -163,7 +147,7 @@ $r0 = @(($vm.VerificationGroups | Where-Object { $_.Title -eq 'İşlevsel' }).Ro
 Check 'tür rengi: türetilmiş 2' ($r0.KindTone -eq 2) ([string]$r0.KindTone)
 $vm.EditVerification($r0); Wait
 for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 }
-function Find-Open($node) { if ($node -eq $null) { return $null }; if ($node.GetType().Name -eq 'ContentDialog' -and $node.IsOpen) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Open ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }
+function Find-Open($node) { if ($node -eq $null) { return $null }; if ($node -is [DesignKit.Controls.ContentDialog] -and $node.IsOpen) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Open ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }
 function Find-Popup($node) { if ($node -is [System.Windows.Controls.Primitives.Popup]) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Popup ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }
 $dlg = Find-Open $win
 if ($dlg) {
@@ -207,7 +191,7 @@ $vm.IsVerPlanOpen = $false; Wait
 $p41 = @($PRL::ReadPlans($stock) | Where-Object TpNo -eq '4.1')[0]
 Check 'Plan tablosunda 4.1: iki gereksinim, yöntem, altyapı, not' ($p41 -and $p41.Requirements.Count -eq 2 -and $p41.Requirements -contains $s11Key -and $p41.Requirements -contains $yanKey -and $p41.Method -eq 'Test' -and $p41.Facility -eq 'VNA' -and $p41.Note -eq 'Kalibrasyon kiti 3,5 mm')
 $s11 = RowOf 'S11'
-Check 'S11: kartta 4.1, Bekliyor → Planlandı, TP no sütunu' ($s11.HasPlan -and $s11.PlanItems[0].TpNo -eq '4.1' -and $s11.StatusText -eq 'Planlandı' -and $s11.Item.TpNo -eq '4.1') ($s11.StatusText + ' / ' + $s11.Item.TpNo)
+Check 'S11: kartta 4.1, Bekliyor → Planlandı' ($s11.HasPlan -and $s11.PlanItems[0].TpNo -eq '4.1' -and $s11.StatusText -eq 'Planlandı') $s11.StatusText
 Check 'ileri durum değişmez (Değerlendiriliyor)' ((RowOf 'Yan lob seviyesi').StatusText -eq 'Değerlendiriliyor') (RowOf 'Yan lob seviyesi').StatusText
 $vm.NewPlanItem(); $vm.PlanTpNo = '4.1'
 Check 'aynı TP no reddedilir' (-not $vm.ConfirmVerPlan() -and $vm.PlanError -like '*4.1*') $vm.PlanError
@@ -228,7 +212,7 @@ $vm.IsVerReportOpen = $false; Wait
 $r53 = @($PRL::ReadReports($stock) | Where-Object TrNo -eq '5.3')[0]
 Check 'Rapor tablosunda 5.3: plan 4.1, Kaldı, yer göreli' ($r53 -and ($r53.Plans -join ',') -eq '4.1' -and $r53.Result -eq 'Kaldı' -and $r53.ResultPath -eq '03_Testler\01_Islevsel\S11\SNP1_T1' -and $r53.Note -eq '−8 dB · BN-2026-020')
 $s11 = RowOf 'S11'
-Check 'bir rapor Kaldı → iki gereksinim de Kaldı, TR no sütunu' ($s11.StatusText -eq 'Kaldı' -and (RowOf 'Yan lob seviyesi').StatusText -eq 'Kaldı' -and $s11.Item.TrNo -eq '5.3') ($s11.StatusText + ' / ' + (RowOf 'Yan lob seviyesi').StatusText)
+Check 'bir rapor Kaldı → iki gereksinim de Kaldı' ($s11.StatusText -eq 'Kaldı' -and (RowOf 'Yan lob seviyesi').StatusText -eq 'Kaldı') ($s11.StatusText + ' / ' + (RowOf 'Yan lob seviyesi').StatusText)
 Check 'kart: rapor 5.3 kırmızı' ($s11.HasReport -and $s11.ReportItems[0].TrNo -eq '5.3' -and $s11.ReportItems[0].ResultKind -eq 2)
 $vm.EditReportItem($r53); $vm.ReportResult = 'Geçti'
 Check 'Geçti kaydedilir' ($vm.ConfirmVerReport()); $vm.IsVerReportOpen = $false; Wait
@@ -241,7 +225,7 @@ $vm.EditPlanItem(@($PRL::ReadPlans($stock) | Where-Object TpNo -eq '4.1')[0])
 Check 'düzenleme penceresi: başlık, Sil var' ($vm.VerPlanTitle -eq 'Plan maddesi · 4.1' -and $vm.VerPlanDeleteText -eq 'Sil') $vm.VerPlanTitle
 $vm.PlanTpNo = '4.10'
 Check 'yeniden adlandırılır' ($vm.ConfirmVerPlan()); $vm.IsVerPlanOpen = $false; Wait
-Check 'rapor 5.3 artık 4.10 a bağlı, S11 TP no 4.10' ((@($PRL::ReadReports($stock) | Where-Object TrNo -eq '5.3')[0].Plans -join ',') -eq '4.10' -and (RowOf 'S11').Item.TpNo -eq '4.10')
+Check 'rapor 5.3 artık 4.10 a bağlı, S11 kartında 4.10' ((@($PRL::ReadReports($stock) | Where-Object TrNo -eq '5.3')[0].Plans -join ',') -eq '4.10' -and (RowOf 'S11').PlanItems[0].TpNo -eq '4.10')
 $oldH = $win.Height; $win.Height = 1800; $s11 = RowOf 'S11'; $s11.IsExpanded = $true; Wait; Wait
 Snap $win "$Out\verification-plan-card.png"
 $win.Height = $oldH
@@ -253,9 +237,9 @@ $before = [IO.File]::ReadAllText($file)
 $vm.EditReportItem(@($PRL::ReadReports($stock) | Where-Object TrNo -eq '5.3')[0]); $vm.RequestDeleteReportItem()
 Check 'silme onayı sorulur' ($vm.IsVerLinkDeleteOpen -and $vm.VerLinkDeleteText -like '*5.3*') $vm.VerLinkDeleteText
 $vm.ConfirmDeleteVerLink(); Wait
-Check 'rapor 5.3 gitti, S11 Planlandı, TR no boş' (@($PRL::ReadReports($stock) | Where-Object TrNo -eq '5.3').Count -eq 0 -and (RowOf 'S11').StatusText -eq 'Planlandı' -and (RowOf 'S11').Item.TrNo -eq '')
+Check 'rapor 5.3 gitti, S11 Planlandı, rapor kartı boş' (@($PRL::ReadReports($stock) | Where-Object TrNo -eq '5.3').Count -eq 0 -and (RowOf 'S11').StatusText -eq 'Planlandı' -and -not (RowOf 'S11').HasReport)
 $vm.EditPlanItem(@($PRL::ReadPlans($stock) | Where-Object TpNo -eq '4.10')[0]); $vm.IsVerPlanOpen = $false; $vm.RequestDeletePlanItem(); $vm.ConfirmDeleteVerLink(); Wait
-Check 'plan 4.10 gitti, S11 Bekliyor, TP no boş' (@($PRL::ReadPlans($stock) | Where-Object TpNo -eq '4.10').Count -eq 0 -and (RowOf 'S11').StatusText -eq 'Bekliyor' -and (RowOf 'S11').Item.TpNo -eq '') (RowOf 'S11').StatusText
+Check 'plan 4.10 gitti, S11 Bekliyor, plan kartı boş' (@($PRL::ReadPlans($stock) | Where-Object TpNo -eq '4.10').Count -eq 0 -and (RowOf 'S11').StatusText -eq 'Bekliyor' -and -not (RowOf 'S11').HasPlan) (RowOf 'S11').StatusText
 $text = [IO.File]::ReadAllText($file)
 Check 'ölçüm klasörü silinmedi' (Test-Path $measure)
 Check 'tablo bozulmadı' ([Pusula.Core.Testing.VerificationList]::Read($stock).Count -eq $vm.VerificationCount)
@@ -274,7 +258,7 @@ $vm.NewVerText = 'Boyut 100x50 mm'
 Check 'eklenir' ($vm.ConfirmNewVerification())
 $vm.IsVerificationDialogOpen = $false; Wait
 $after = [IO.File]::ReadAllText($md)
-Check 'eski 7 sütunlu tablo 21 sütuna yükseldi, numara 8 sonda' ($after -like "*| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | TP no | TP açıklama | TP not | TR no | TR açıklama | TR not | TR sonuç | Sonuç yeri | Durum |`n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|`n| 7 |  |  | Ağırlık ≤ 1,2 kg |  |  | Özellik |  |  |  |  |  |  |  |  |  |  |  |  |  | Geçti |`n| 8 |  |  | Boyut 100x50 mm |  |  | İşlevsel |  |  |  |  |  |  |  |  |  |  |  |  |  | Bekliyor |`n`nSon not.*") $after
+Check 'eski 7 sütunlu tablo 13 sütuna yükseldi, numara 8 sonda' ($after -like "*| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | Durum |`n|---|---|---|---|---|---|---|---|---|---|---|---|---|`n| 7 |  |  | Ağırlık ≤ 1,2 kg |  |  | Özellik |  |  |  |  |  | Geçti |`n| 8 |  |  | Boyut 100x50 mm |  |  | İşlevsel |  |  |  |  |  | Bekliyor |`n`nSon not.*") $after
 Check 'giriş ve son not korunur, LF korunur' ($after.StartsWith("# Elle`n`nGiriş metni.") -and $after -notlike "*`r`n*")
 Check 'yeni dosya açılmadı' (@(Get-ChildItem (Split-Path $md) -Filter *.md).Count -eq 1)
 
@@ -284,7 +268,7 @@ $vm.NewVerText = 'Yan lob ≤ −15 dB (E ve H düzlemi)'; $vm.NewVerSubGroup = 
 Check 'yeni altyapı: yazı kutusu açık' ($vm.FacilityPick.IsNew -and $vm.FacilityPick.NewText -eq 'Döner tabla')
 # Pencere ayrı bir Popup'ta: çocuğunu pencerenin üstüne çizerek görüntü alınır.
 $dlg = $null; $st = New-Object System.Collections.Stack; $st.Push($win)
-while ($st.Count) { $e = $st.Pop(); if ($e.GetType().Name -eq 'ContentDialog' -and $e.IsOpen) { $dlg = $e }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($e); $i++) { $st.Push([System.Windows.Media.VisualTreeHelper]::GetChild($e, $i)) } }
+while ($st.Count) { $e = $st.Pop(); if ($e -is [DesignKit.Controls.ContentDialog] -and $e.IsOpen) { $dlg = $e }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($e); $i++) { $st.Push([System.Windows.Media.VisualTreeHelper]::GetChild($e, $i)) } }
 if ($dlg)
 {
     $child = $dlg.Template.FindName('PART_Popup', $dlg).Child

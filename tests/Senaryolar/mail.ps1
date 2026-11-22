@@ -66,7 +66,7 @@ try {
     Check 'Hazırlıkta mail alanı yok' (-not $vm.IsJournalMailVisible)
     $vm.IsJournalOpen = $false; Pump
     # Görüntüler: pencere (mail seçili) ve kart
-    function Find-Open($node) { if ($node -eq $null) { return $null }; if ($node.GetType().Name -eq 'ContentDialog' -and $node.IsOpen) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Open ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }
+    function Find-Open($node) { if ($node -eq $null) { return $null }; if ($node -is [DesignKit.Controls.ContentDialog] -and $node.IsOpen) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Open ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }
     function Find-Popup($node) { if ($node -is [System.Windows.Controls.Primitives.Popup]) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Popup ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }
     [void]$vm.OpenJournalHere(); $vm.JournalKind = 'Toplantı'; & $choose 'Outlook'; [void]$vm.SetJournalMail($msg); $vm.JournalHeading = 'Ölçüt yazışması'
     for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 }

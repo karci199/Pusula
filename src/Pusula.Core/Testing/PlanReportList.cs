@@ -206,6 +206,182 @@ namespace Pusula.Core.Testing
             return error.Length == 0;
         }
 
+        /// <summary>Eski düzenin yedeğinin konduğu klasör (stok klasöründe).</summary>
+        public const string BackupFolder = "_ARSIV";
+
+        /// <summary>
+        /// Eski düzenden yeni düzene geçiş (22.11.2026 kullanıcı kararı). Gereksinim tablosundaki TP / TR sütunlarının
+        /// bilgisi önce Plan / Rapor tablolarına aktarılır (tablo yoksa kurulur; varsa eksik madde, bağ ve boş alanlar
+        /// tamamlanır, dolu alanlara dokunulmaz); sonra sütunlar kalkar, <c>## Sonuç</c> → <c>## Rapor</c>, eski işaretli
+        /// madde bölümleri kalkar. Değişiklikten önce dosyanın kopyası <c>_ARSIV\&lt;ad&gt;_&lt;zaman&gt;.md.yedek</c> olarak
+        /// alınır (Obsidian'da görünmez). Bir şey değiştiyse true; hata olursa <paramref name="error"/> dolar.
+        /// </summary>
+        public static bool RetireLegacy(string stockFolder, out string error)
+        {
+            error = string.Empty;
+            var path = VerificationList.PathFor(stockFolder);
+            var lines = Lines(stockFolder);
+            if (lines == null)
+            {
+                return false;
+            }
+
+            var probe = new List<string>(lines);
+            if (!VerificationList.RetireLegacyLines(probe))
+            {
+                return false;
+            }
+
+            try
+            {
+                var backupDir = Path.Combine(stockFolder, BackupFolder);
+                Directory.CreateDirectory(backupDir);
+                var stamp = DateTime.Now.ToString("yyyyMMdd-HHmmss", System.Globalization.CultureInfo.InvariantCulture);
+                var backup = Path.Combine(backupDir, Path.GetFileNameWithoutExtension(path) + "_" + stamp + ".md.yedek");
+                if (!File.Exists(backup))
+                {
+                    File.Copy(path, backup);
+                }
+            }
+            catch (IOException ex)
+            {
+                error = ex.Message;
+                return false;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                error = ex.Message;
+                return false;
+            }
+
+            // 1) Bilgiyi Plan / Rapor tablolarına aktar.
+            var requirements = VerificationList.Read(stockFolder);
+            if (VerificationList.HasLegacyColumns(lines))
+            {
+                MigrateFromRequirements(stockFolder, requirements);
+                error = MergeLegacy(stockFolder, requirements);
+                if (error.Length > 0)
+                {
+                    return false;
+                }
+            }
+
+            // 2) Sütunları, başlığı, eski bölümleri yeni düzene çevir (dosya yeniden okunur: tablolar yazılmış olabilir).
+            try
+            {
+                var text = File.ReadAllText(path);
+                var newline = text.Contains("\r\n") ? "\r\n" : "\n";
+                var now = text.Replace("\r\n", "\n").Split('\n').ToList();
+                if (!VerificationList.RetireLegacyLines(now))
+                {
+                    return false;
+                }
+
+                error = VerificationList.WriteAtomic(path, string.Join(newline, now), Journal.HasBom(path));
+                return error.Length == 0;
+            }
+            catch (IOException ex)
+            {
+                error = ex.Message;
+                return false;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                error = ex.Message;
+                return false;
+            }
+        }
+
+        // Plan / Rapor tabloları varken eski sütunlardaki bilgiyi tamamlar: eksik madde eklenir, eksik bağ eklenir, boş alan doldurulur.
+        private static string MergeLegacy(string stockFolder, IList<VerificationItem> requirements)
+        {
+            var plans = ReadPlans(stockFolder);
+            var reports = ReadReports(stockFolder);
+            var plansChanged = false;
+            var reportsChanged = false;
+            foreach (var req in requirements)
+            {
+                var key = VerificationList.KeyOf(req);
+                var tps = SplitList(req.TpNo);
+                foreach (var tp in tps)
+                {
+                    var plan = plans.FirstOrDefault(p => string.Equals(p.TpNo, tp, StringComparison.OrdinalIgnoreCase));
+                    if (plan == null)
+                    {
+                        plan = new PlanItem { TpNo = tp };
+                        plans.Add(plan);
+                        plansChanged = true;
+                    }
+
+                    if (!plan.Requirements.Contains(key, StringComparer.OrdinalIgnoreCase))
+                    {
+                        plan.Requirements.Add(key);
+                        plansChanged = true;
+                    }
+
+                    if (tps.Count == 1)
+                    {
+                        plansChanged |= Fill(() => plan.Description, v => plan.Description = v, req.TpDescription);
+                        plansChanged |= Fill(() => plan.Method, v => plan.Method = v, req.Method);
+                        plansChanged |= Fill(() => plan.Facility, v => plan.Facility = v, req.Facility);
+                        plansChanged |= Fill(() => plan.Note, v => plan.Note = v, req.TpNote);
+                    }
+                }
+
+                var trs = SplitList(req.TrNo);
+                foreach (var tr in trs)
+                {
+                    var report = reports.FirstOrDefault(r => string.Equals(r.TrNo, tr, StringComparison.OrdinalIgnoreCase));
+                    if (report == null)
+                    {
+                        report = new ReportItem { TrNo = tr };
+                        reports.Add(report);
+                        reportsChanged = true;
+                    }
+
+                    // Raporun hiç planı yoksa gereksinimin planlarına bağlanır.
+                    if (report.Plans.Count == 0 && tps.Count > 0)
+                    {
+                        report.Plans.AddRange(tps);
+                        reportsChanged = true;
+                    }
+
+                    if (trs.Count == 1)
+                    {
+                        reportsChanged |= Fill(() => report.Description, v => report.Description = v, req.TrDescription);
+                        reportsChanged |= Fill(() => report.Result, v => report.Result = v, req.TrResult);
+                        reportsChanged |= Fill(() => report.ResultPath, v => report.ResultPath = v, req.ResultPath);
+                        reportsChanged |= Fill(() => report.Note, v => report.Note = v, req.TrNote);
+                    }
+                }
+            }
+
+            var error = string.Empty;
+            if (plansChanged)
+            {
+                error = SavePlans(stockFolder, plans.OrderBy(p => p.TpNo, Comparer<string>.Create(CompareNo)).ToList());
+            }
+
+            if (error.Length == 0 && reportsChanged)
+            {
+                error = SaveReports(stockFolder, reports.OrderBy(r => r.TrNo, Comparer<string>.Create(CompareNo)).ToList());
+            }
+
+            return error;
+        }
+
+        // Alan boşsa değeri yazar; yazdıysa true.
+        private static bool Fill(Func<string> get, Action<string> set, string value)
+        {
+            if (get().Trim().Length > 0 || string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            set(value.Trim());
+            return true;
+        }
+
         /// <summary>Madde numaralarını karşılaştırır: "4.2" &lt; "4.10" (nokta, tire ya da boşlukla ayrılan sayılar sayı olarak).</summary>
         public static int CompareNo(string a, string b)
         {

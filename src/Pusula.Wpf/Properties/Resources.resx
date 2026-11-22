@@ -2142,8 +2142,8 @@ stok: {0}
 
 ## Gereksinimler
 
-| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | TP no | TP açıklama | TP not | TR no | TR açıklama | TR not | TR sonuç | Sonuç yeri | Durum |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | Durum |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 ## Plan
 
@@ -3137,7 +3137,7 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
     <value>plan yok</value>
   </data>
   <data name="Verify_Migrated" xml:space="preserve">
-    <value>Plan ve rapor tabloları gereksinim satırlarından kuruldu (kopyalandı, hiçbir şey silinmedi).</value>
+    <value>Doğrulama dosyası yeni düzene geçti: TP / TR bilgisi Plan ve Rapor tablolarına taşındı, eski sütunlar kalktı (eski dosyanın kopyası _ARSIV klasöründe).</value>
   </data>
   <data name="Verify_ViewRequirements" xml:space="preserve">
     <value>Gereksinimler</value>

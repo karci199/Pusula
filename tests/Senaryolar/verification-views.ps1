@@ -5,7 +5,8 @@ $PR = [Pusula.Core.Testing.PlanReportList]
 
 "--- Örnek: eski düzende (satırda TP / TR) 6 gereksinim"
 $stock = Join-Path $Data '7000_MILKON\AB-7000-0002'
-$template = [string]::Format([Pusula.Wpf.Properties.Resources]::Verify_FileTemplate, 'AB-7000-0002')
+# Eski şablon: gereksinim tablosunda TP / TR sütunları (açılınca yeni düzene geçer).
+$template = "---`r`ntur: test-gereksinimleri`r`n---`r`n`r`n# AB-7000-0002 Test Gereksinimleri`r`n`r`n## Gereksinimler`r`n`r`n| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | TP no | TP açıklama | TP not | TR no | TR açıklama | TR not | TR sonuç | Sonuç yeri | Durum |`r`n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|`r`n`r`n## Plan`r`n`r`n## Sonuç`r`n"
 function Add-Req($tg, $text, $desc, $group, $kind, $method, $facility, $tp, $tpd, $tr, $result, $status) {
     $i = New-Object Pusula.Core.Testing.VerificationItem
     $i.TgNo = $tg; $i.Text = $text; $i.Description = $desc; $i.Group = $group; $i.Kind = $kind; $i.Method = $method; $i.Facility = $facility
@@ -29,6 +30,8 @@ $vm.SelectNodeByPath($stock); Wait; Wait
 
 "--- Taşıma ve bağlar"
 $plans = $PR::ReadPlans($stock); $reports = $PR::ReadReports($stock)
+$vtext = [IO.File]::ReadAllText($VL::PathFor($stock))
+Check 'yeni düzen: TP / TR sütunu yok, ## Rapor, yedek _ARSIV''de' ($vtext -notlike '*TP açıklama*' -and $vtext -like '*## Rapor*' -and $vtext -notlike '*## Sonuç*' -and @(Get-ChildItem (Join-Path $stock '_ARSIV') -Filter '*.md.yedek').Count -eq 1)
 Check 'taşıma: 3 plan (4.1, 4.3, 4.4), 3 rapor' ($vm.PlanCount -eq 3 -and $vm.ReportCount -eq 3 -and (($plans | ForEach-Object TpNo) -join ',') -eq '4.1,4.3,4.4') (($plans | ForEach-Object { $_.TpNo + ':' + ($_.Requirements -join '+') }) -join ' ')
 Check '4.1 iki gereksinimi kapsar' ((($plans | Where-Object TpNo -eq '4.1').Requirements -join ',') -eq 'DGÖ-1,DGÖ-2')
 Check '4.4: TSD-0042 ve DGÖ-5' ((($plans | Where-Object TpNo -eq '4.4').Requirements -join ',') -eq 'TSD-0042,DGÖ-5')

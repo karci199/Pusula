@@ -263,30 +263,6 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Planlar üzerinden bağlı raporlar ve sonuçları (Rapor sütunu, istenirse açılır).</summary>
         public IList<LinkChip> LinkedReports { get; set; } = new List<LinkChip>();
 
-        /// <summary>Test planı madde no; yoksa "—".</summary>
-        public string TpText
-        {
-            get { return Item.TpNo; }
-        }
-
-        /// <summary>Test raporu madde no; yoksa "—".</summary>
-        public string TrText
-        {
-            get { return Item.TrNo; }
-        }
-
-        /// <summary>Plan madde no yazılı mı.</summary>
-        public bool HasTp
-        {
-            get { return Item.TpNo.Length > 0; }
-        }
-
-        /// <summary>Rapor madde no yazılı mı.</summary>
-        public bool HasTr
-        {
-            get { return Item.TrNo.Length > 0; }
-        }
-
         /// <summary>Test sonucu seçenekleri (rapor): Geçti · Kaldı · Hazırlanmadı.</summary>
         public static string[] Results
         {
@@ -308,127 +284,10 @@ namespace Pusula.Wpf.ViewModels
             get { return ReportItems.Count > 0; }
         }
 
-        /// <summary>Rapordaki sonuç.</summary>
-        public string ReportResult
-        {
-            get { return Item.TrResult; }
-        }
-
-        /// <summary>Sonucun rengi: 1 geçti, 2 kaldı, 3 hazırlanmadı, 0 boş.</summary>
-        public int ReportResultKind
-        {
-            get
-            {
-                if (string.Equals(Item.TrResult, Resources.Verify_StatusPassed, StringComparison.CurrentCultureIgnoreCase))
-                {
-                    return 1;
-                }
-
-                if (string.Equals(Item.TrResult, Resources.Verify_StatusFailed, StringComparison.CurrentCultureIgnoreCase))
-                {
-                    return 2;
-                }
-
-                return Item.TrResult.Length > 0 ? 3 : 0;
-            }
-        }
-
-        /// <summary>Sonuç yazılı mı.</summary>
-        public bool HasReportResult
-        {
-            get { return Item.TrResult.Length > 0; }
-        }
-
-        /// <summary>Rapordaki açıklama.</summary>
-        public string ReportDescription
-        {
-            get { return Item.TrDescription; }
-        }
-
-        /// <summary>Rapor açıklaması yazılı mı.</summary>
-        public bool HasReportDescription
-        {
-            get { return Item.TrDescription.Length > 0; }
-        }
-
-        /// <summary>Rapor notu.</summary>
-        public string ReportNote
-        {
-            get { return Item.TrNote; }
-        }
-
-        /// <summary>Rapor notu yazılı mı.</summary>
-        public bool HasReportNote
-        {
-            get { return Item.TrNote.Length > 0; }
-        }
-
-        /// <summary>Sonucun yeri (md'de yazıldığı gibi).</summary>
-        public string ResultPath
-        {
-            get { return Item.ResultPath; }
-        }
-
-        /// <summary>Sonucun yeri yazılı mı.</summary>
-        public bool HasResultPath
-        {
-            get { return Item.ResultPath.Length > 0; }
-        }
-
         /// <summary>Bağlı plan maddesi var mı; yoksa kartta "Test planı ekle".</summary>
         public bool HasPlan
         {
             get { return PlanItems.Count > 0; }
-        }
-
-        /// <summary>Plandaki açıklama.</summary>
-        public string PlanDescription
-        {
-            get { return Item.TpDescription; }
-        }
-
-        /// <summary>Plan notu.</summary>
-        public string PlanNote
-        {
-            get { return Item.TpNote; }
-        }
-
-        /// <summary>Plan açıklaması yazılı mı.</summary>
-        public bool HasPlanDescription
-        {
-            get { return Item.TpDescription.Length > 0; }
-        }
-
-        /// <summary>Plan notu yazılı mı.</summary>
-        public bool HasPlanNote
-        {
-            get { return Item.TpNote.Length > 0; }
-        }
-
-        /// <summary>Açılan satırda plan özeti: "TP-5.2 · Altyapı SATIMO" (boş olanlar atlanır).</summary>
-        public string PlanLine
-        {
-            get
-            {
-                var parts = new List<string>();
-                if (Item.Method.Length > 0)
-                {
-                    parts.Add(Item.Method);
-                }
-
-                if (Item.Facility.Length > 0)
-                {
-                    parts.Add(string.Format(CultureInfo.CurrentCulture, Resources.Verify_PlanFacility, Item.Facility));
-                }
-
-                return parts.Count == 0 ? (HasPlan ? string.Empty : Resources.Verify_PlanEmpty) : string.Join(" · ", parts);
-            }
-        }
-
-        /// <summary>Açılan satırda rapor özeti: durum ya da "Henüz sonuç yok".</summary>
-        public string ReportLine
-        {
-            get { return Item.TrNo.Length > 0 || IsPassed || StatusKind == 2 ? StatusText : Resources.Verify_ReportEmpty; }
         }
 
         /// <summary>Alt grup.</summary>
@@ -453,18 +312,6 @@ namespace Pusula.Wpf.ViewModels
         public string TgNo
         {
             get { return Item.TgNo; }
-        }
-
-        /// <summary>TP no.</summary>
-        public string TpNo
-        {
-            get { return Item.TpNo; }
-        }
-
-        /// <summary>TR no.</summary>
-        public string TrNo
-        {
-            get { return Item.TrNo; }
         }
 
         /// <summary>Durum metni (boşsa "Bekliyor").</summary>
@@ -1029,8 +876,6 @@ namespace Pusula.Wpf.ViewModels
         private string newVerParent = string.Empty;
         private string newVerMethod = string.Empty;
         private string newVerTgNo = string.Empty;
-        private string newVerTpNo = string.Empty;
-        private string newVerTrNo = string.Empty;
         private string newVerStatus = string.Empty;
         private string verificationError = string.Empty;
         private ICommand? addVerificationCommand;
@@ -1267,28 +1112,11 @@ namespace Pusula.Wpf.ViewModels
             NewVerMethod = item.Method;
             NewVerSubGroup = item.SubGroup;
             NewVerFacility = item.Facility;
-            NewVerTpNo = item.TpNo;
-            NewVerTrNo = item.TrNo;
             NewVerStatus = item.Status.Length > 0 ? item.Status : Resources.Verify_StatusPending;
             NotifyVerificationDialog();
             IsVerificationDialogOpen = true;
         }
 
-        // Md'deki okunur bölümler (## Plan / ## Sonuç altında madde başlığı); yazılamazsa durum çubuğunda söylenir.
-        private void WriteVerificationSections(VerificationItem item)
-        {
-            if (verificationStock.Length == 0 || item == null)
-            {
-                return;
-            }
-
-            var order = VerificationList.Read(verificationStock);
-            var error = VerificationList.WriteSections(verificationStock, item, order);
-            if (error.Length > 0 && error != "missing")
-            {
-                Status = string.Format(CultureInfo.CurrentCulture, Resources.Verify_WriteFailed, error);
-            }
-        }
 
         /// <summary>Md'deki yol (göreli ya da tam) → tam yol.</summary>
         public static string FullResultPath(string stockFolder, string path)
@@ -1351,13 +1179,6 @@ namespace Pusula.Wpf.ViewModels
             pendingVerificationDelete = null;
             if (item != null && verificationStock.Length > 0 && WriteVerification(VerificationList.Remove(verificationStock, item.Number)))
             {
-                // Md'deki okunur bölümleri: altında elle yazılmış yoksa kalkar, varsa "silindi" notuyla kalır.
-                var sectionError = VerificationList.RemoveSections(verificationStock, VerificationList.KeyOf(item));
-                if (sectionError.Length > 0)
-                {
-                    Status = string.Format(CultureInfo.CurrentCulture, Resources.Verify_WriteFailed, sectionError);
-                    return;
-                }
 
                 Done(string.Format(CultureInfo.CurrentCulture, Resources.Verify_Deleted, item.Number, item.Text));
             }
@@ -1503,20 +1324,6 @@ namespace Pusula.Wpf.ViewModels
         {
             get { return newVerTgNo; }
             set { SetProperty(ref newVerTgNo, value ?? string.Empty); }
-        }
-
-        /// <summary>Pencerede: TP no (isteğe bağlı).</summary>
-        public string NewVerTpNo
-        {
-            get { return newVerTpNo; }
-            set { SetProperty(ref newVerTpNo, value ?? string.Empty); }
-        }
-
-        /// <summary>Pencerede: TR no (isteğe bağlı).</summary>
-        public string NewVerTrNo
-        {
-            get { return newVerTrNo; }
-            set { SetProperty(ref newVerTrNo, value ?? string.Empty); }
         }
 
         /// <summary>Pencerede: durum.</summary>
@@ -1882,8 +1689,6 @@ namespace Pusula.Wpf.ViewModels
             NewVerParent = string.Empty;
             NewVerMethod = string.Empty;
             NewVerTgNo = string.Empty;
-            NewVerTpNo = string.Empty;
-            NewVerTrNo = string.Empty;
             NewVerStatus = Resources.Verify_StatusPending;
             VerificationError = string.Empty;
 
@@ -1970,9 +1775,7 @@ namespace Pusula.Wpf.ViewModels
             }
 
             var group = VerificationGroupChoices.FirstOrDefault(c => c.IsChecked)?.Key ?? Resources.Verify_GroupFunctional;
-            // Plan / rapor açıklama ve notu pencerede yok: düzenlemede diskteki güncel satırdan korunur (Obsidian'da değişmiş olabilir).
-            var onDisk = editingVerification == null ? null
-                : VerificationList.Read(verificationStock).FirstOrDefault(v => v.Number == editingVerification.Number) ?? editingVerification;
+
             var item = new VerificationItem
             {
                 Text = text,
@@ -1986,22 +1789,14 @@ namespace Pusula.Wpf.ViewModels
                 SubGroup = NewVerSubGroup.Trim(),
                 Facility = NewVerFacility.Trim(),
                 TgNo = NewVerTgNo.Trim(),
-                TpNo = NewVerTpNo.Trim(),
-                TrNo = NewVerTrNo.Trim(),
-                TpDescription = onDisk?.TpDescription ?? string.Empty,
-                TpNote = onDisk?.TpNote ?? string.Empty,
-                TrDescription = onDisk?.TrDescription ?? string.Empty,
-                TrNote = onDisk?.TrNote ?? string.Empty,
-                TrResult = onDisk?.TrResult ?? string.Empty,
-                ResultPath = onDisk?.ResultPath ?? string.Empty,
+
                 Status = NewVerStatus.Trim(),
             };
 
             if (editingVerification != null)
             {
-                // Düzenleme: aynı numaralı satır yerinde değişir. TG no değiştiyse md'deki okunur bölümler yeni anahtara taşınır.
+                // Düzenleme: aynı numaralı satır yerinde değişir.
                 item.Number = editingVerification.Number;
-                VerificationList.RenameSections(verificationStock, VerificationList.KeyOf(editingVerification), VerificationList.KeyOf(item));
                 // Plan tablosundaki bağlar da yeni anahtara geçer.
                 var plansToRename = PlanReportList.ReadPlans(verificationStock);
                 if (plansToRename.Count(p => PlanReportList.RenameLink(p.Requirements, VerificationList.KeyOf(editingVerification), VerificationList.KeyOf(item))) > 0)
@@ -2016,11 +1811,6 @@ namespace Pusula.Wpf.ViewModels
                 }
 
                 editingVerification = null;
-                if (updateError.Length == 0)
-                {
-                    WriteVerificationSections(item);
-                }
-
                 if (updateError.Length == 0 && item.Facility.Length > 0 && rootPath.Length > 0)
                 {
                     FacilityList.Add(rootPath, item.Facility, Resources.Verify_FacilityTemplate);

@@ -1,67 +1,89 @@
 ﻿param([string]$Bin, [string]$Out, [string]$Data, [string]$Sample)
 . (Join-Path $PSScriptRoot '..\_Ortak.ps1')
 $VL = [Pusula.Core.Testing.VerificationList]
+$PR = [Pusula.Core.Testing.PlanReportList]
+$utf8 = New-Object System.Text.UTF8Encoding($true)
 
-"--- Md'deki okunur bölümler: sıra, boş satır, silme, yeniden adlandırma"
+# Eski düzen (22.11.2026 öncesi): gereksinim tablosunda TP / TR sütunları, ## Sonuç başlığı, işaretli madde bölümleri.
+$H21 = '| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | TP no | TP açıklama | TP not | TR no | TR açıklama | TR not | TR sonuç | Sonuç yeri | Durum | Sorumlu |'
+$S21 = '|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|'
+$H13 = '| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | Durum | Sorumlu |'
+function Row([string]$no, [string]$tg, [string]$text, [string]$method, [string]$facility, [string]$tp, [string]$tpd, [string]$tpn, [string]$tr, [string]$trd, [string]$trn, [string]$res, [string]$path, [string]$status, [string]$owner)
+{
+    '| ' + (@($no, $tg, '', $text, '', '', 'İşlevsel', '', 'Temel', '', $method, $facility, $tp, $tpd, $tpn, $tr, $trd, $trn, $res, $path, $status, $owner) -join ' | ') + ' |'
+}
+
 $tmp = Join-Path $env:TEMP ('pusula-vmd-' + [guid]::NewGuid().ToString('N').Substring(0,6))
-$stock = Join-Path $tmp 'AB-1'
 try {
-    New-Item -ItemType Directory -Force $stock | Out-Null
-    $template = "# AB-1 Test Gereksinimleri`r`n`r`n## Gereksinimler`r`n`r`n| # | TG no | Başlık | Durum |`r`n|---|---|---|---|`r`n`r`n## Plan`r`n`r`n## Sonuç`r`n"
-    function NewItem([string]$tg, [string]$text, [string]$tp) { $i = New-Object Pusula.Core.Testing.VerificationItem; $i.TgNo = $tg; $i.Text = $text; $i.TpNo = $tp; $i.Method = 'Test'; $i }
-    foreach ($x in @(@('TG-1','Bir','4.1'), @('TG-2','İki','4.2'), @('TG-3','Üç','4.3'))) { $VL::Add($stock, (NewItem $x[0] $x[1] $x[2]), $template) | Out-Null }
+    "--- Eski düzenden geçiş: Plan / Rapor tablosu yok"
+    $stock = Join-Path $tmp 'AB-1'
+    New-Item -ItemType Directory -Force (Join-Path $stock '03_Testler') | Out-Null
+    $lines = @(
+        '---', 'tur: test-gereksinimleri', '---', '', '# AB-1 Test Gereksinimleri', '', 'Giriş metni.', '', '## Gereksinimler', '',
+        $H21, $S21,
+        (Row '1' 'DGÖ-1' 'Hüzme' 'Test' 'SATIMO' '4.1' 'SATIMO hüzme' 'Jig JT-9' '5.1' 'Hüzme sonuçları' '31,2°' 'Geçti' '03_Testler\S1' 'Geçti' 'Ali'),
+        (Row '2' 'DGÖ-2' 'Yan lob' 'Test' 'SATIMO' '4.1' '' '' '5.2' 'Yan lob sonuçları' '−13,8 dB' 'Kaldı' '' 'Kaldı' ''),
+        (Row '3' 'DGÖ-3' 'VSWR' 'Test' 'VNA' '4.3' 'VNA S11' '' '' '' '' '' '' 'Planlandı' ''),
+        (Row '4' 'DGÖ-4' 'Kazanç' '' '' '' '' '' '' '' '' '' '' 'Bekliyor' 'Ayşe'),
+        '', '## Plan', '',
+        '### DGÖ-1 · Hüzme', '%% pusula:plan DGÖ-1 %%', '- **TP:** 4.1 · SATIMO hüzme', '%% pusula:son %%', 'Elle: kurulum notu.', '',
+        '### DGÖ-3 · VSWR', '%% pusula:plan DGÖ-3 %%', '- **TP:** 4.3 · VNA S11', '%% pusula:son %%', '',
+        '## Sonuç', '',
+        '### DGÖ-1 · Hüzme', '%% pusula:sonuc DGÖ-1 %%', '- **TR:** 5.1', '%% pusula:son %%', '',
+        'Son not.', '')
+    $file = Join-Path $stock '03_Testler\AB-1_Test_Gereksinimleri.md'
+    $original = $lines -join "`r`n"
+    [IO.File]::WriteAllText($file, $original, $utf8)
+    $err = ''
+    Check 'geçiş yapılır' ($PR::RetireLegacy($stock, [ref]$err)) $err
+    $text = [IO.File]::ReadAllText($file)
+    $backups = @(Get-ChildItem (Join-Path $stock '_ARSIV') -Filter '*.md.yedek' -ErrorAction SilentlyContinue)
+    Check 'yedek alınır (_ARSIV, .md.yedek, içerik aynı)' ($backups.Count -eq 1 -and [IO.File]::ReadAllText($backups[0].FullName) -eq $original) ([string]$backups.Count)
+    Check 'gereksinim tablosu 13 sütun (+ tanınmayan Sorumlu)' ($text.Contains("$H13`r`n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|`r`n| 1 | DGÖ-1 |  | Hüzme |  |  | İşlevsel |  | Temel |  | Test | SATIMO | Geçti | Ali |")) $text
+    Check 'TP / TR sütunları yok' ($text -notlike '*TP açıklama*' -and $text -notlike '*TR sonuç*' -and $text -notlike '*| TP no | TP*')
     $items = $VL::Read($stock)
-    function Item([string]$tg) { @($VL::Read($stock) | Where-Object TgNo -eq $tg)[0] }
-    $file = $VL::PathFor($stock)
-    Check 'TG-1 ve TG-3 yazılır' ($VL::WriteSections($stock, (Item 'TG-1'), $items) -eq '' -and $VL::WriteSections($stock, (Item 'TG-3'), $items) -eq '')
-    $VL::WriteSections($stock, (Item 'TG-2'), $items) | Out-Null
-    $text = [IO.File]::ReadAllText($file)
-    $plan = $text.Substring($text.IndexOf('## Plan'), $text.IndexOf('## Sonuç') - $text.IndexOf('## Plan'))
-    Check 'madde sırası: TG-1, TG-2, TG-3' ($plan.IndexOf('pusula:plan TG-1') -lt $plan.IndexOf('pusula:plan TG-2') -and $plan.IndexOf('pusula:plan TG-2') -lt $plan.IndexOf('pusula:plan TG-3')) $plan
-    Check 'bloklar arasında çift boş satır yok' (-not $text.Contains("`r`n`r`n`r`n")) $text
-    Check 'başlık: ### TG-2 · İki' ($text.Contains("### TG-2 · İki`r`n%% pusula:plan TG-2 %%`r`n- **TP:** 4.2`r`n- **Yöntem:** Test`r`n%% pusula:son %%"))
-    Check 'sonuç bölümü boşsa yazılmaz' (-not $text.Contains('pusula:sonuc'))
+    Check '4 gereksinim, durum ve tanınmayan sütun korunur' ($items.Count -eq 4 -and $items[1].Status -eq 'Kaldı' -and $items[3].Extra['Sorumlu'] -eq 'Ayşe')
+    $plans = $PR::ReadPlans($stock); $reports = $PR::ReadReports($stock)
+    Check 'plan: 4.1 (DGÖ-1, DGÖ-2) ve 4.3' ($plans.Count -eq 2 -and ($plans[0].Requirements -join ',') -eq 'DGÖ-1,DGÖ-2' -and $plans[0].Description -eq 'SATIMO hüzme' -and $plans[0].Note -eq 'Jig JT-9' -and $plans[1].TpNo -eq '4.3' -and $plans[1].Facility -eq 'VNA') (@($plans | ForEach-Object { $_.TpNo + ':' + ($_.Requirements -join '+') }) -join ' ')
+    Check 'rapor: 5.1 Geçti (yer, not), 5.2 Kaldı; ikisi de 4.1' ($reports.Count -eq 2 -and $reports[0].Result -eq 'Geçti' -and $reports[0].ResultPath -eq '03_Testler\S1' -and $reports[0].Note -eq '31,2°' -and $reports[1].Result -eq 'Kaldı' -and ($reports[1].Plans -join ',') -eq '4.1')
+    Check '## Sonuç → ## Rapor (yalnız başlık)' ($text -like "*`r`n## Rapor`r`n*" -and $text -notlike "*## Sonuç*")
+    Check 'işaretli eski bölümler kalktı' ($text -notlike '*pusula:plan*' -and $text -notlike '*pusula:sonuc*' -and $text -notlike '*pusula:son*' -and $text -notlike '*### DGÖ-3*') $text
+    Check 'elle yazılan başlığıyla kalır' ($text.Contains("### DGÖ-1 · Hüzme`r`nElle: kurulum notu.")) $text
+    Check 'giriş, son not, YAML korunur' ($text.StartsWith("---`r`ntur: test-gereksinimleri`r`n---") -and $text.Contains('Giriş metni.') -and $text.Contains('Son not.'))
+    Check 'üç boş satır yok' (-not $text.Contains("`r`n`r`n`r`n")) $text
+    Check 'Plan tablosu ## Plan altında, Rapor tablosu ## Rapor altında' ($text -like '*## Plan*| TP no | Açıklama | Yöntem | Altyapı | Gereksinimler | Not |*## Rapor*| TR no | Açıklama | Sonuç | Plan | Sonuç yeri | Not |*')
+    Check 'ikinci geçiş yapılmaz, yeni yedek yok' (-not $PR::RetireLegacy($stock, [ref]$err) -and @(Get-ChildItem (Join-Path $stock '_ARSIV') -Filter '*.md.yedek').Count -eq 1)
+    Check 'madde eklenince eski sütun geri gelmez' ($VL::Add($stock, (New-Object Pusula.Core.Testing.VerificationItem -Property @{ Text = 'Yeni'; TpNo = '9.9' }), '') -eq '' -and ([IO.File]::ReadAllText($file)) -notlike '*TP no |*9.9*')
 
-    # TG-1'in altına elle ayrıntı
-    $text = $text.Replace("- **TP:** 4.1`r`n- **Yöntem:** Test`r`n%% pusula:son %%", "- **TP:** 4.1`r`n- **Yöntem:** Test`r`n%% pusula:son %%`r`nElle: kurulum notu.")
-    [IO.File]::WriteAllText($file, $text, (New-Object System.Text.UTF8Encoding($true)))
-    Check 'silme (ayrıntılı): bölüm kalır, silindi notu, ayrıntı korunur' ($VL::RemoveSections($stock, 'TG-1') -eq '' -and ([IO.File]::ReadAllText($file)).Contains("%% pusula:plan TG-1 %%`r`n- *Madde tablodan silindi.*`r`n%% pusula:son %%`r`nElle: kurulum notu."))
-    Check 'silme (ayrıntısız): başlık ve blok kalkar' ($VL::RemoveSections($stock, 'TG-3') -eq '' -and -not ([IO.File]::ReadAllText($file)).Contains('pusula:plan TG-3') -and -not ([IO.File]::ReadAllText($file)).Contains('### TG-3') -and -not ([IO.File]::ReadAllText($file)).Contains("`r`n`r`n`r`n")) ([IO.File]::ReadAllText($file))
-    Check 'yeniden adlandırma: işaret yeni anahtarda' ($VL::RenameSections($stock, 'TG-2', 'TG-20') -eq '' -and ([IO.File]::ReadAllText($file)).Contains('%% pusula:plan TG-20 %%') -and -not ([IO.File]::ReadAllText($file)).Contains('%% pusula:plan TG-2 %%'))
-    $i2 = Item 'TG-2'; $i2.TgNo = 'TG-20'; $VL::Update($stock, $i2) | Out-Null
-    $VL::WriteSections($stock, (Item 'TG-20'), $VL::Read($stock)) | Out-Null
-    $text = [IO.File]::ReadAllText($file)
-    Check 'başlık da yeni anahtarla, tek bölüm' ($text.Contains("### TG-20 · İki`r`n%% pusula:plan TG-20 %%") -and ([regex]::Matches($text, 'pusula:plan TG-20')).Count -eq 1 -and -not $text.Contains('### TG-2 ')) $text
-    Check 'tablo sağlam' (@($VL::Read($stock)).Count -eq 3)
+    "--- Plan / Rapor tablosu varken: eksikler tamamlanır, dolu alanlar korunur"
+    $stock2 = Join-Path $tmp 'AB-2'
+    New-Item -ItemType Directory -Force (Join-Path $stock2 '03_Testler') | Out-Null
+    $lines2 = @('# AB-2', '', $H21, $S21,
+        (Row '1' 'DGÖ-1' 'Hüzme' 'Test' 'SATIMO' '4.1' 'eski açıklama' 'eski not' '5.1' '' '' 'Geçti' '' 'Geçti' ''),
+        (Row '2' 'DGÖ-2' 'Yan lob' 'Test' '' '4.2' 'Yan lob planı' '' '' '' '' '' '' 'Planlandı' ''),
+        '', '## Plan', '', '| TP no | Açıklama | Yöntem | Altyapı | Gereksinimler | Not |', '|---|---|---|---|---|---|', '| 4.1 | Yeni açıklama | Test | SATIMO |  |  |', '',
+        '## Rapor', '', '| TR no | Açıklama | Sonuç | Plan | Sonuç yeri | Not |', '|---|---|---|---|---|---|', '| 5.1 | Hüzme | Geçti | 4.1 |  |  |', '')
+    $file2 = Join-Path $stock2 '03_Testler\AB-2_Test_Gereksinimleri.md'
+    [IO.File]::WriteAllText($file2, ($lines2 -join "`n"), (New-Object System.Text.UTF8Encoding($false)))
+    Check 'geçiş yapılır' ($PR::RetireLegacy($stock2, [ref]$err)) $err
+    $plans = $PR::ReadPlans($stock2)
+    Check '4.1: açıklama korunur, boş not dolar, DGÖ-1 bağlanır' ($plans[0].Description -eq 'Yeni açıklama' -and $plans[0].Note -eq 'eski not' -and ($plans[0].Requirements -join ',') -eq 'DGÖ-1') ($plans[0].Description + ' / ' + $plans[0].Note)
+    Check '4.2 eklenir (DGÖ-2)' ($plans.Count -eq 2 -and $plans[1].TpNo -eq '4.2' -and $plans[1].Description -eq 'Yan lob planı' -and ($plans[1].Requirements -join ',') -eq 'DGÖ-2')
+    Check 'rapor değişmez' (@($PR::ReadReports($stock2)).Count -eq 1)
+    $text2 = [IO.File]::ReadAllText($file2)
+    Check 'LF korunur, BOM eklenmez, TP sütunu yok' ($text2 -notlike "*`r`n*" -and [IO.File]::ReadAllBytes($file2)[0] -ne 0xEF -and $text2 -notlike '*TP açıklama*') $text2
 
-    "--- Plan ve Rapor tabloları (üç tablo)"
-    $PR = [Pusula.Core.Testing.PlanReportList]
-    $stock2 = Join-Path $tmp 'AB-2'; New-Item -ItemType Directory -Force $stock2 | Out-Null
-    foreach ($x in @(@('DGÖ-1','Hüzme'), @('DGÖ-2','Yan lob'), @('DGÖ-3','VSWR'))) { $i = New-Object Pusula.Core.Testing.VerificationItem; $i.TgNo = $x[0]; $i.Text = $x[1]; $VL::Add($stock2, $i, $template) | Out-Null }
-    # Eski düzen: gereksinim satırlarında TP / TR
-    $rows = $VL::Read($stock2)
-    $rows[0].TpNo = '4.1'; $rows[0].TpDescription = 'SATIMO'; $rows[0].Method = 'Test'; $rows[0].TrNo = '5.1'; $rows[0].TrResult = 'Geçti'
-    $rows[1].TpNo = '4.1'; $rows[1].TrNo = '5.1'
-    $rows[2].TpNo = '4.3'; $rows[2].Method = 'Test'; $rows[2].Facility = 'VNA'
-    foreach ($r in $rows) { $VL::Update($stock2, $r) | Out-Null }
-    $file2 = $VL::PathFor($stock2)
-    [IO.File]::AppendAllText($file2, "`r`nElle Sonuç altında yazı.`r`n")
-    Check 'taşıma: plan / rapor tablosu kurulur' ($PR::MigrateFromRequirements($stock2, $VL::Read($stock2)))
-    $plans = $PR::ReadPlans($stock2); $reports = $PR::ReadReports($stock2)
-    Check 'aynı TP tek plan maddesi, gereksinimleri toplanır' ($plans.Count -eq 2 -and ($plans[0].TpNo -eq '4.1') -and (($plans[0].Requirements) -join ',') -eq 'DGÖ-1,DGÖ-2' -and $plans[0].Description -eq 'SATIMO' -and $plans[1].Facility -eq 'VNA') (@($plans | ForEach-Object { $_.TpNo + ':' + ($_.Requirements -join '+') }) -join ' ')
-    Check 'rapor: 5.1 Geçti, plan 4.1' ($reports.Count -eq 1 -and $reports[0].TrNo -eq '5.1' -and $reports[0].Result -eq 'Geçti' -and ($reports[0].Plans -join ',') -eq '4.1')
-    $text = [IO.File]::ReadAllText($file2)
-    Check 'md: ## Plan altında tablo, rapor eski ## Sonuç altında; elle yazı korunur' ($text -like '*## Plan*| TP no | Açıklama | Yöntem | Altyapı | Gereksinimler | Not |*| 4.1 | SATIMO | Test |  | DGÖ-1, DGÖ-2 |  |*## Sonuç*| TR no | Açıklama | Sonuç | Plan | Sonuç yeri | Not |*| 5.1 |  | Geçti | 4.1 |  |  |*Elle Sonuç altında yazı.*') $text
-    Check 'ikinci taşıma yapılmaz' (-not $PR::MigrateFromRequirements($stock2, $VL::Read($stock2)))
-    # Düzenleme + tanınmayan sütun korunur
-    $text = $text.Replace('| TP no | Açıklama | Yöntem | Altyapı | Gereksinimler | Not |', '| TP no | Açıklama | Yöntem | Altyapı | Gereksinimler | Not | Sorumlu |').Replace('|---|---|---|---|---|---|', '|---|---|---|---|---|---|---|').Replace('| 4.1 | SATIMO | Test |  | DGÖ-1, DGÖ-2 |  |', '| 4.1 | SATIMO | Test |  | DGÖ-1, DGÖ-2 |  | Ali |')
-    [IO.File]::WriteAllText($file2, $text, (New-Object System.Text.UTF8Encoding($true)))
+    "--- Plan tablosu: tanınmayan sütun korunur"
+    $plans = $PR::ReadPlans($stock2)
+    $text2 = $text2.Replace('| TP no | Açıklama | Yöntem | Altyapı | Gereksinimler | Not |', '| TP no | Açıklama | Yöntem | Altyapı | Gereksinimler | Not | Sorumlu |').Replace("|---|---|---|---|---|---|`n| 4.1", "|---|---|---|---|---|---|---|`n| 4.1")
+    $text2 = $text2.Replace('| 4.1 | Yeni açıklama | Test | SATIMO | DGÖ-1 | eski not |', '| 4.1 | Yeni açıklama | Test | SATIMO | DGÖ-1 | eski not | Ali |')
+    [IO.File]::WriteAllText($file2, $text2, (New-Object System.Text.UTF8Encoding($false)))
     $plans = $PR::ReadPlans($stock2)
     $plans[0].Requirements.Add('DGÖ-3'); $new = New-Object Pusula.Core.Testing.PlanItem; $new.TpNo = '4.5'; $new.Description = 'Kütle'; $new.Method = 'Muayene'; $plans.Add($new)
     Check 'kaydedilir' ($PR::SavePlans($stock2, $plans) -eq '')
-    $text = [IO.File]::ReadAllText($file2)
-    Check 'tanınmayan sütun (Sorumlu) korunur, yeni madde eklenir' ($text -like '*| 4.1 | SATIMO | Test |  | DGÖ-1, DGÖ-2, DGÖ-3 |  | Ali |*| 4.5 | Kütle | Muayene |  |  |  |  |*') $text
-    Check 'gereksinim tablosu sağlam' (@($VL::Read($stock2)).Count -eq 3)
+    $text2 = [IO.File]::ReadAllText($file2)
+    Check 'tanınmayan sütun (Sorumlu) korunur, yeni madde eklenir' ($text2 -like '*| 4.1 | Yeni açıklama | Test | SATIMO | DGÖ-1, DGÖ-3 | eski not | Ali |*| 4.5 | Kütle | Muayene |  |  |  |  |*') $text2
+    Check 'gereksinim tablosu sağlam' (@($VL::Read($stock2)).Count -eq 2)
 } finally { Remove-Item -Recurse -Force $tmp -ErrorAction SilentlyContinue }
 ""
 "SONUC: $ok basarili, $fail hata"

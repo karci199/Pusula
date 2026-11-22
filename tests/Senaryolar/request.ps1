@@ -84,7 +84,7 @@ try {
     Check 'bekleyen talepler: 3' ($vm.OpenRequests.Count -eq 3) ([string]$vm.OpenRequests.Count)
     $vm.IsTimelineDone = $true; Wait
     # Pencerenin görüntüsü (ayrı katmanda çizilir): Malzeme talebi dolu
-    function Find-Open($node) { if ($node -eq $null) { return $null }; if ($node.GetType().Name -eq 'ContentDialog' -and $node.IsOpen) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Open ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }
+    function Find-Open($node) { if ($node -eq $null) { return $null }; if ($node -is [DesignKit.Controls.ContentDialog] -and $node.IsOpen) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Open ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }
     function Find-Popup($node) { if ($node -is [System.Windows.Controls.Primitives.Popup]) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Popup ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }
     [void]$vm.OpenJournalHere(); $vm.JournalKind = 'Talep'; Pick 'Malzeme'
     $vm.JournalRequestNo = 'AMB-2026-1190'; $vm.JournalRequestFrom = '@Ambar'; $vm.JournalRequestDueText = $due; $vm.JournalHeading = 'Ölçüm düzeneği için konnektör'

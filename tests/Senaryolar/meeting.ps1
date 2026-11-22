@@ -80,7 +80,7 @@ try {
     # Açık diyalog ayrı katmanda çizilir: görsel ağaçta bulunup kendisi PNG'ye çizilir.
     function Find-Open($node) {
         if ($node -eq $null) { return $null }
-        if ($node.GetType().Name -eq 'ContentDialog' -and $node.IsOpen) { return $node }
+        if ($node -is [DesignKit.Controls.ContentDialog] -and $node.IsOpen) { return $node }
         for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Open ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }
         return $null
     }

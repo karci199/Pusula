@@ -81,8 +81,9 @@ namespace Pusula.Core.Testing
     /// <summary>
     /// Stokun doğrulama listesi: <c>03_Testler\&lt;stok&gt;_Test_Gereksinimleri.md</c> içindeki ilk tablo.
     /// Sütunlar başlıklarından tanınır: # · TG no · kaynak · başlık · kısa not · gereksinim · grup · alt grup · tür · bağlı ·
-    /// yöntem · altyapı · TP no · TP açıklama · TP not · TR no · TR açıklama · TR not · TR sonuç · sonuç yeri · durum (sıra serbest, tanınmayan sütunlar korunur). Eski tablolarda eksik sütunlar
-    /// ilk yazımda eklenir. Uygulama tabloya satır
+    /// yöntem · altyapı · durum (sıra serbest, tanınmayan sütunlar korunur). Eski tablolarda eksik sütunlar ilk yazımda
+    /// eklenir; eski TP / TR sütunları (22.11.2026 öncesi) okunur ve <see cref="PlanReportList.RetireLegacy"/> ile Plan / Rapor
+    /// tablolarına taşınıp kaldırılır. Uygulama tabloya satır
     /// ekler, satırı değiştirir ya da kaldırır (16.11.2026 kullanıcı kararı); dosyanın geri kalanına dokunmaz.
     /// </summary>
     public static class VerificationList
@@ -121,7 +122,13 @@ namespace Pusula.Core.Testing
         private const int KnownCount = 21;
 
         /// <summary>Yeni ya da yükseltilen tablonun başlıkları (sırasıyla).</summary>
-        public static readonly string[] Headers = { "#", "TG no", "Kaynak", "Başlık", "Kısa not", "Gereksinim", "Grup", "Alt grup", "Tür", "Bağlı", "Yöntem", "Altyapı", "TP no", "TP açıklama", "TP not", "TR no", "TR açıklama", "TR not", "TR sonuç", "Sonuç yeri", "Durum" };
+        public static readonly string[] Headers = { "#", "TG no", "Kaynak", "Başlık", "Kısa not", "Gereksinim", "Grup", "Alt grup", "Tür", "Bağlı", "Yöntem", "Altyapı", "Durum" };
+
+        // Eski (22.11.2026 öncesi) TP / TR sütunları: okunur (taşıma için), yeni tabloya eklenmez; taşınınca kaldırılır.
+        private static readonly int[] LegacyKeys = { ColTp, ColTpDescription, ColTpNote, ColTr, ColTrDescription, ColTrNote, ColTrResult, ColResultPath };
+
+        // Yeni tablonun sütun anahtarları (Headers sırasıyla).
+        private static readonly int[] CurrentKeys = { ColNumber, ColTg, ColSource, ColText, ColDescription, ColRequirement, ColGroup, ColSubGroup, ColKind, ColParent, ColMethod, ColFacility, ColStatus };
 
         // Eski (16.11.2026 öncesi) 7 sütunlu tablonun sırası; başlık tanınmazsa kullanılır.
         private static readonly int[] LegacyOrder = { ColNumber, ColText, ColGroup, ColSubGroup, ColFacility, ColTg, ColStatus };
@@ -344,357 +351,81 @@ namespace Pusula.Core.Testing
             return Journal.SetFrontMatter(notePath, new Dictionary<string, string> { { LinkKey, link } });
         }
 
-        /// <summary>Plan bölümünün başlığı (dosyada <c>## Plan</c>).</summary>
-        public const string PlanHeading = "Plan";
-
-        /// <summary>Sonuç bölümünün başlığı (dosyada <c>## Sonuç</c>).</summary>
-        public const string ResultHeading = "Sonuç";
-
         /// <summary>
-        /// Maddenin okunur bölümlerini yazar (21.11.2026 kullanıcı kararı): <c>## Plan</c> ve <c>## Sonuç</c> altında
-        /// <c>### &lt;TG no&gt; · &lt;başlık&gt;</c> başlığı ve <c>%% pusula:plan TG %%</c> … <c>%% pusula:son %%</c> işaretleri
-        /// arasında plan / rapor bilgisi. Yalnız işaretlerin arası (ve bölümün başlık satırı) yazılır; altına elle yazılan
-        /// ayrıntıya dokunulmaz. Bölüm yoksa ve yazılacak bilgi varsa madde sırasıyla eklenir; <c>## Plan</c> /
-        /// <c>## Sonuç</c> başlığı yoksa dosyanın sonuna eklenir. Hata metni ya da boş döndürür.
+        /// Eski düzeni (22.11.2026 öncesi) satırlarda yeni düzene çevirir: gereksinim tablosundaki TP / TR sütunları kalkar,
+        /// <c>## Sonuç</c> başlığı <c>## Rapor</c> olur (yalnız başlık satırı; <c>## Rapor</c> zaten varsa dokunulmaz),
+        /// <c>%% pusula:plan … %%</c> / <c>%% pusula:sonuc … %%</c> işaretli eski madde bölümleri kalkar (uygulamanın yazdığı
+        /// kısım; altında elle yazılan varsa başlığıyla birlikte o kalır). Bilginin Plan / Rapor tablolarına önceden taşınmış
+        /// olması çağıranın işidir. Değiştiyse true.
         /// </summary>
-        public static string WriteSections(string stockFolder, VerificationItem item, IList<VerificationItem> order)
+        internal static bool RetireLegacyLines(List<string> lines)
         {
-            if (item == null)
+            var changed = false;
+            var table = Table.Parse(lines);
+            if (table != null && table.DropLegacy())
             {
-                throw new ArgumentNullException(nameof(item));
+                changed = true;
             }
 
-            var path = PathFor(stockFolder);
-            try
+            var hasReport = lines.Any(l => IsHeading(l, PlanReportList.ReportHeading));
+            var legacy = lines.FindIndex(l => IsHeading(l, PlanReportList.LegacyReportHeading));
+            if (!hasReport && legacy >= 0)
             {
-                if (!File.Exists(path))
+                lines[legacy] = "## " + PlanReportList.ReportHeading;
+                changed = true;
+            }
+
+            for (var i = 0; i < lines.Count; i++)
+            {
+                var t = lines[i].Trim();
+                if (!t.StartsWith("%% pusula:plan ", StringComparison.Ordinal) && !t.StartsWith("%% pusula:sonuc ", StringComparison.Ordinal))
                 {
-                    return "missing";
+                    continue;
                 }
 
-                var text = File.ReadAllText(path);
-                var newline = text.Contains("\r\n") ? "\r\n" : "\n";
-                var lines = text.Replace("\r\n", "\n").Split('\n').ToList();
-                var keys = (order ?? new List<VerificationItem>()).Select(KeyOf).ToList();
-                var changed = WriteSection(lines, PlanHeading, "plan", item, PlanLines(item), keys);
-                changed |= WriteSection(lines, ResultHeading, "sonuc", item, ResultLines(item), keys);
-                if (!changed)
-                {
-                    return string.Empty;
-                }
-
-                return WriteAtomic(path, string.Join(newline, lines), Journal.HasBom(path));
-            }
-            catch (IOException ex)
-            {
-                return ex.Message;
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return ex.Message;
-            }
-        }
-
-        /// <summary>Silinen madde bölümünün yerine yazılan satır (altında elle yazılmış ayrıntı varsa bölüm kalır).</summary>
-        public const string RemovedLine = "- *Madde tablodan silindi.*";
-
-        /// <summary>
-        /// Madde tablodan silinince okunur bölümlerini toplar: bölümün altında elle yazılmış bir şey yoksa başlık ve işaretli
-        /// kısım kaldırılır; varsa elle yazılan korunur, işaretli kısma yalnız <see cref="RemovedLine"/> yazılır.
-        /// Hata metni ya da boş döndürür.
-        /// </summary>
-        public static string RemoveSections(string stockFolder, string key)
-        {
-            return EditSections(stockFolder, lines =>
-            {
-                var changed = false;
-                foreach (var kind in new[] { "plan", "sonuc" })
-                {
-                    var at = lines.FindIndex(l => string.Equals(l.Trim(), StartMarker(kind, key), StringComparison.Ordinal));
-                    if (at < 0)
-                    {
-                        continue;
-                    }
-
-                    var close = lines.FindIndex(at + 1, l => string.Equals(l.Trim(), EndMarker, StringComparison.Ordinal));
-                    if (close < 0)
-                    {
-                        continue;
-                    }
-
-                    // Bölümün sonu: sonraki başlık (### ya da ##) ya da dosya sonu; arada boş olmayan satır = elle yazılmış.
-                    var next = close + 1;
-                    while (next < lines.Count && !lines[next].StartsWith("#", StringComparison.Ordinal))
-                    {
-                        next++;
-                    }
-
-                    var hasFree = lines.Skip(close + 1).Take(next - close - 1).Any(l => l.Trim().Length > 0);
-                    var heading = at > 0 && lines[at - 1].StartsWith("### ", StringComparison.Ordinal) ? at - 1 : at;
-                    if (hasFree)
-                    {
-                        lines.RemoveRange(at + 1, close - at - 1);
-                        lines.Insert(at + 1, RemovedLine);
-                    }
-                    else
-                    {
-                        var from = heading > 0 && lines[heading - 1].Trim().Length == 0 ? heading - 1 : heading;
-                        lines.RemoveRange(from, close - from + 1);
-                    }
-
-                    changed = true;
-                }
-
-                return changed;
-            });
-        }
-
-        /// <summary>
-        /// Maddenin TG no'su değişince okunur bölümlerinin işaretlerini yeni anahtara çevirir (elle yazılan korunur;
-        /// başlık bir sonraki yazımda güncellenir). Yeni anahtarla bölüm zaten varsa dokunulmaz. Hata metni ya da boş döndürür.
-        /// </summary>
-        public static string RenameSections(string stockFolder, string oldKey, string newKey)
-        {
-            if (string.Equals(oldKey, newKey, StringComparison.Ordinal))
-            {
-                return string.Empty;
-            }
-
-            return EditSections(stockFolder, lines =>
-            {
-                var changed = false;
-                foreach (var kind in new[] { "plan", "sonuc" })
-                {
-                    var at = lines.FindIndex(l => string.Equals(l.Trim(), StartMarker(kind, oldKey), StringComparison.Ordinal));
-                    if (at < 0 || lines.Any(l => string.Equals(l.Trim(), StartMarker(kind, newKey), StringComparison.Ordinal)))
-                    {
-                        continue;
-                    }
-
-                    lines[at] = StartMarker(kind, newKey);
-                    changed = true;
-                }
-
-                return changed;
-            });
-        }
-
-        // Dosyayı satır satır düzenler (satır sonları, BOM korunur); işlev değişiklik yaptıysa atomik yazılır.
-        private static string EditSections(string stockFolder, Func<List<string>, bool> edit)
-        {
-            var path = PathFor(stockFolder);
-            try
-            {
-                if (!File.Exists(path))
-                {
-                    return string.Empty;
-                }
-
-                var text = File.ReadAllText(path);
-                var newline = text.Contains("\r\n") ? "\r\n" : "\n";
-                var lines = text.Replace("\r\n", "\n").Split('\n').ToList();
-                return edit(lines) ? WriteAtomic(path, string.Join(newline, lines), Journal.HasBom(path)) : string.Empty;
-            }
-            catch (IOException ex)
-            {
-                return ex.Message;
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return ex.Message;
-            }
-        }
-
-        /// <summary>Plan bölümünün satırları: TP · açıklama, yöntem · altyapı, not (boş olanlar atlanır).</summary>
-        public static List<string> PlanLines(VerificationItem item)
-        {
-            var lines = new List<string>();
-            var tp = Join(" · ", item.TpNo, item.TpDescription);
-            if (tp.Length > 0)
-            {
-                lines.Add("- **TP:** " + tp);
-            }
-
-            var parts = new List<string>();
-            if (item.Method.Length > 0)
-            {
-                parts.Add("**Yöntem:** " + item.Method);
-            }
-
-            if (item.Facility.Length > 0)
-            {
-                parts.Add("**Altyapı:** " + item.Facility);
-            }
-
-            if (parts.Count > 0)
-            {
-                lines.Add("- " + string.Join(" · ", parts));
-            }
-
-            if (item.TpNote.Length > 0)
-            {
-                lines.Add("- **Not:** " + item.TpNote);
-            }
-
-            return lines;
-        }
-
-        /// <summary>Sonuç bölümünün satırları: TR · açıklama, sonuç, yer, not (boş olanlar atlanır).</summary>
-        public static List<string> ResultLines(VerificationItem item)
-        {
-            var lines = new List<string>();
-            var tr = Join(" · ", item.TrNo, item.TrDescription);
-            if (tr.Length > 0)
-            {
-                lines.Add("- **TR:** " + tr);
-            }
-
-            if (item.TrResult.Length > 0)
-            {
-                lines.Add("- **Sonuç:** " + item.TrResult);
-            }
-
-            if (item.ResultPath.Length > 0)
-            {
-                lines.Add("- **Yer:** `" + item.ResultPath + "`");
-            }
-
-            if (item.TrNote.Length > 0)
-            {
-                lines.Add("- **Not:** " + item.TrNote);
-            }
-
-            return lines;
-        }
-
-        private static string Join(string separator, params string[] parts)
-        {
-            return string.Join(separator, parts.Where(p => !string.IsNullOrWhiteSpace(p)).Select(p => p.Trim()));
-        }
-
-        private const string EndMarker = "%% pusula:son %%";
-
-        private static string StartMarker(string kind, string key)
-        {
-            return "%% pusula:" + kind + " " + key + " %%";
-        }
-
-        // Bölüm başlığı ("## Plan") ve sonu (sonraki "## " ya da dosya sonu).
-        private static void FindSection(List<string> lines, string heading, out int start, out int end)
-        {
-            start = lines.FindIndex(l => l.StartsWith("## ", StringComparison.Ordinal)
-                && string.Equals(l.Substring(3).Trim(), heading, StringComparison.CurrentCultureIgnoreCase));
-            end = lines.Count;
-            if (start < 0)
-            {
-                return;
-            }
-
-            for (var i = start + 1; i < lines.Count; i++)
-            {
-                if (lines[i].StartsWith("## ", StringComparison.Ordinal) || lines[i].StartsWith("# ", StringComparison.Ordinal))
-                {
-                    end = i;
-                    break;
-                }
-            }
-        }
-
-        // Bir bölümde maddenin işaretli kısmını yazar; değişiklik olduysa true.
-        private static bool WriteSection(List<string> lines, string heading, string kind, VerificationItem item, List<string> body, List<string> order)
-        {
-            var key = KeyOf(item);
-            var title = "### " + key + (item.Text.Trim().Length > 0 ? " · " + item.Text.Trim() : string.Empty);
-            var marker = StartMarker(kind, key);
-            int start, end;
-            FindSection(lines, heading, out start, out end);
-            var at = start < 0 ? -1 : lines.FindIndex(start, end - start, l => string.Equals(l.Trim(), marker, StringComparison.Ordinal));
-            if (at >= 0)
-            {
-                var close = lines.FindIndex(at + 1, end - at - 1, l => string.Equals(l.Trim(), EndMarker, StringComparison.Ordinal));
+                var close = lines.FindIndex(i + 1, l => string.Equals(l.Trim(), "%% pusula:son %%", StringComparison.Ordinal));
                 if (close < 0)
                 {
-                    // Bitiş işareti silinmişse dokunulmaz (elle yazılanı ezmemek için).
-                    return false;
+                    continue;
                 }
 
-                var old = lines.GetRange(at + 1, close - at - 1);
-                var headingChanged = at > 0 && lines[at - 1].StartsWith("### ", StringComparison.Ordinal) && lines[at - 1] != title;
-                if (old.SequenceEqual(body) && !headingChanged)
+                // Bölümün sonu: sonraki başlık ya da dosya sonu; arada boş olmayan satır = elle yazılmış.
+                var next = close + 1;
+                while (next < lines.Count && !lines[next].StartsWith("#", StringComparison.Ordinal))
                 {
-                    return false;
+                    next++;
                 }
 
-                lines.RemoveRange(at + 1, close - at - 1);
-                lines.InsertRange(at + 1, body);
-                if (headingChanged)
+                var hasFree = lines.Skip(close + 1).Take(next - close - 1).Any(l => l.Trim().Length > 0);
+                var from = i;
+                if (!hasFree && i > 0 && lines[i - 1].StartsWith("### ", StringComparison.Ordinal))
                 {
-                    lines[at - 1] = title;
-                }
-
-                return true;
-            }
-
-            if (body.Count == 0)
-            {
-                return false;
-            }
-
-            if (start < 0)
-            {
-                while (lines.Count > 0 && lines[lines.Count - 1].Trim().Length == 0)
-                {
-                    lines.RemoveAt(lines.Count - 1);
-                }
-
-                lines.Add(string.Empty);
-                lines.Add("## " + heading);
-                lines.Add(string.Empty);
-                FindSection(lines, heading, out start, out end);
-            }
-
-            // Madde sırasıyla: sıradaki maddelerden ilkinin bölüm başlığından önce; yoksa bölümün sonuna.
-            var mine = order.FindIndex(k => string.Equals(k, key, StringComparison.OrdinalIgnoreCase));
-            var insertAt = -1;
-            if (mine >= 0)
-            {
-                for (var i = start + 1; i < end && insertAt < 0; i++)
-                {
-                    var t = lines[i].Trim();
-                    if (!t.StartsWith("%% pusula:" + kind + " ", StringComparison.Ordinal))
+                    from = i - 1;
+                    if (from > 0 && lines[from - 1].Trim().Length == 0)
                     {
-                        continue;
-                    }
-
-                    var other = t.Substring(("%% pusula:" + kind + " ").Length).TrimEnd('%', ' ');
-                    var index = order.FindIndex(k => string.Equals(k, other, StringComparison.OrdinalIgnoreCase));
-                    if (index > mine)
-                    {
-                        insertAt = i > 0 && lines[i - 1].StartsWith("### ", StringComparison.Ordinal) ? i - 1 : i;
+                        from--;
                     }
                 }
+
+                lines.RemoveRange(from, close - from + 1);
+                changed = true;
+                i = from - 1;
             }
 
-            if (insertAt < 0)
-            {
-                insertAt = end;
-                while (insertAt - 1 > start && lines[insertAt - 1].Trim().Length == 0)
-                {
-                    insertAt--;
-                }
-            }
+            return changed;
+        }
 
-            // Önünde zaten boş satır varsa ikinci boş satır eklenmez.
-            var block = insertAt > 0 && lines[insertAt - 1].Trim().Length == 0 ? new List<string> { title, marker } : new List<string> { string.Empty, title, marker };
-            block.AddRange(body);
-            block.Add(EndMarker);
-            if (insertAt < lines.Count && lines[insertAt].Trim().Length > 0)
-            {
-                block.Add(string.Empty);
-            }
+        /// <summary>Gereksinim tablosunda eski TP / TR sütunları var mı.</summary>
+        internal static bool HasLegacyColumns(List<string> lines)
+        {
+            var table = Table.Parse(lines);
+            return table != null && LegacyKeys.Any(k => table.Keys.Contains(k));
+        }
 
-            lines.InsertRange(insertAt, block);
-            return true;
+        private static bool IsHeading(string line, string heading)
+        {
+            return line.StartsWith("## ", StringComparison.Ordinal)
+                && string.Equals(line.Substring(3).Trim(), heading, StringComparison.CurrentCultureIgnoreCase);
         }
 
         // Numarası verilen satırı değiştirir (item) ya da kaldırır (null); dosyanın geri kalanı, satır sonları ve BOM korunur.
@@ -1041,14 +772,37 @@ namespace Pusula.Core.Testing
                 return "| " + string.Join(" | ", cells) + " |";
             }
 
-            /// <summary>Eksik tanınan sütun varsa tablo yeni başlıklarla (tanınmayan sütunlar sonda) yeniden yazılır.</summary>
+            /// <summary>
+            /// Eksik tanınan sütun varsa tablo yeni başlıklarla yeniden yazılır: önce <see cref="Headers"/>, sonra varsa eski
+            /// TP / TR sütunları (taşınana kadar korunur), en sonda tanınmayan sütunlar.
+            /// </summary>
             public void Upgrade()
             {
-                if (Enumerable.Range(0, KnownCount).All(k => Keys.Contains(k)))
+                if (CurrentKeys.All(k => Keys.Contains(k)))
                 {
                     return;
                 }
 
+                var legacy = LegacyKeys.Where(k => Keys.Contains(k)).ToList();
+                Rebuild(Headers.Concat(legacy.Select(k => HeaderCells[Array.IndexOf(Keys, k)])).ToList(), CurrentKeys.Concat(legacy).ToList());
+            }
+
+            /// <summary>Eski TP / TR sütunlarını kaldırır (diğer sütunlar ve değerleri korunur). Kaldırdıysa true.</summary>
+            public bool DropLegacy()
+            {
+                if (!LegacyKeys.Any(k => Keys.Contains(k)))
+                {
+                    return false;
+                }
+
+                var keep = Enumerable.Range(0, Keys.Length).Where(i => Keys[i] >= 0 && !LegacyKeys.Contains(Keys[i])).ToList();
+                Rebuild(keep.Select(i => HeaderCells[i]).ToList(), keep.Select(i => Keys[i]).ToList());
+                return true;
+            }
+
+            // Tabloyu verilen tanınan sütunlarla (tanınmayanlar sonda) yeniden yazar.
+            private void Rebuild(List<string> knownHeaders, List<int> knownKeys)
+            {
                 var items = new List<VerificationItem>();
                 for (var i = Start + 2; i < End; i++)
                 {
@@ -1056,10 +810,10 @@ namespace Pusula.Core.Testing
                 }
 
                 var extras = HeaderCells.Where((h, i) => Keys[i] < 0 && h.Length > 0).ToList();
-                var headers = Headers.Concat(extras).ToList();
+                var headers = knownHeaders.Concat(extras).ToList();
                 var rows = new List<string> { HeaderLine(headers), SeparatorLine(headers.Count) };
                 HeaderCells = headers;
-                Keys = Enumerable.Range(0, KnownCount).Concat(Enumerable.Repeat(-1, extras.Count)).ToArray();
+                Keys = knownKeys.Concat(Enumerable.Repeat(-1, extras.Count)).ToArray();
                 rows.AddRange(items.Select(RowOf));
 
                 Lines.RemoveRange(Start, End - Start);

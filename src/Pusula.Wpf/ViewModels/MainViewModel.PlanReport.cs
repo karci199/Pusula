@@ -286,9 +286,14 @@ namespace Pusula.Wpf.ViewModels
         // Plan ve rapor tablolarını okur (tablo yoksa bir kez gereksinim satırlarından taşınır); satırları ve kapsamayı kurar.
         private void LoadPlanReports()
         {
-            if (verificationStock.Length > 0 && PlanReportList.MigrateFromRequirements(verificationStock, verificationItems))
+            var retireError = string.Empty;
+            if (verificationStock.Length > 0 && PlanReportList.RetireLegacy(verificationStock, out retireError))
             {
                 Status = Resources.Verify_Migrated;
+            }
+            else if (verificationStock.Length > 0 && retireError.Length > 0)
+            {
+                Status = string.Format(CultureInfo.CurrentCulture, Resources.Verify_WriteFailed, retireError);
             }
 
             verificationPlans = verificationStock.Length == 0 ? new List<PlanItem>() : PlanReportList.ReadPlans(verificationStock);
@@ -422,8 +427,7 @@ namespace Pusula.Wpf.ViewModels
         }
 
         /// <summary>
-        /// Gereksinim satırlarını bağlarla eşitler: durum (<see cref="StatusFromLinks"/>), TP no (bağlı planlar) ve TR no
-        /// (planlar üzerinden raporlar) sütunları. Yalnız değişen satırlar yazılır. Değişen satır sayısı.
+        /// Gereksinim satırlarının Durum sütununu bağlarla eşitler (<see cref="StatusFromLinks"/>). Yalnız değişen satırlar yazılır. Değişen satır sayısı.
         /// </summary>
         private int SyncRequirementLinks()
         {
@@ -442,16 +446,12 @@ namespace Pusula.Wpf.ViewModels
                 var tps = mine.Select(p => p.TpNo).ToList();
                 var myReports = reports.Where(r => r.Plans.Any(p => tps.Contains(p, StringComparer.OrdinalIgnoreCase))).ToList();
                 var status = StatusFromLinks(item.Status, mine, myReports);
-                var tpText = string.Join(", ", tps);
-                var trText = string.Join(", ", myReports.Select(r => r.TrNo));
-                if (status == item.Status && tpText == item.TpNo && trText == item.TrNo)
+                if (status == item.Status)
                 {
                     continue;
                 }
 
                 item.Status = status;
-                item.TpNo = tpText;
-                item.TrNo = trText;
                 if (VerificationList.Update(verificationStock, item).Length == 0)
                 {
                     changed++;

@@ -52,7 +52,7 @@ try {
     Check 'değişiklik no eklendi, rev aynı' ([IO.File]::ReadAllText($note) -match 'Geçiş parçası rev B\r?\n[^\n]*rev: A → B · değişiklik no: ECO-0002')
 
     # Pencerenin görüntüsü
-    function Find-Open($node) { if ($node -eq $null) { return $null }; if ($node.GetType().Name -eq 'ContentDialog' -and $node.IsOpen) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Open ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }
+    function Find-Open($node) { if ($node -eq $null) { return $null }; if ($node -is [DesignKit.Controls.ContentDialog] -and $node.IsOpen) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Open ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }
     function Find-Popup($node) { if ($node -is [System.Windows.Controls.Primitives.Popup]) { return $node }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($node); $i++) { $r = Find-Popup ([System.Windows.Media.VisualTreeHelper]::GetChild($node, $i)); if ($r) { return $r } }; return $null }
     [void]$vm.OpenJournalHere(); $vm.JournalKind = 'Revizyon'; $vm.JournalRevisionNew = 'C'; $vm.JournalRevisionChangeNo = 'ECO-0003'; $vm.JournalHeading = 'Konnektör değişti'
     for ($k = 0; $k -lt 20; $k++) { Pump; Start-Sleep -Milliseconds 30 }
