@@ -71,8 +71,23 @@ namespace Pusula.Core.Testing
         /// <summary>Sonucun yeri: ölçüm klasörü ya da dosya (stok klasörüne göre göreli ya da tam yol); boş olabilir.</summary>
         public string ResultPath { get; set; } = string.Empty;
 
-        /// <summary>Durum metni: Bekliyor, Planlandı, Hazırlık yapılıyor, Yapılıyor, Değerlendiriliyor, Geçti, Kaldı, Şartlı kabul, Tekrarlanacak, Kapsam dışı.</summary>
+        /// <summary>
+        /// Bağlardan hesaplanan durum (Durum sütunu; uygulama yazar): Bekliyor, Planlandı, Geçti, Kaldı. Eski dosyalarda
+        /// elle verilmiş bir durum da olabilir (ilk eşitlemede Elle durum sütununa taşınır).
+        /// </summary>
         public string Status { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Elle verilen durum (Elle durum sütunu; boşsa hesaplanan geçerli): Hazırlık yapılıyor, Yapılıyor, Değerlendiriliyor,
+        /// Şartlı kabul, Tekrarlanacak, Kapsam dışı ya da hesaplanandan farklı herhangi bir durum.
+        /// </summary>
+        public string ManualStatus { get; set; } = string.Empty;
+
+        /// <summary>Geçerli durum: elle verilen varsa o, yoksa hesaplanan.</summary>
+        public string EffectiveStatus
+        {
+            get { return ManualStatus.Trim().Length > 0 ? ManualStatus.Trim() : Status.Trim(); }
+        }
 
         /// <summary>Tabloda uygulamanın tanımadığı sütunların değerleri (başlık → değer); yazarken korunur.</summary>
         public Dictionary<string, string> Extra { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -81,7 +96,7 @@ namespace Pusula.Core.Testing
     /// <summary>
     /// Stokun doğrulama listesi: <c>03_Testler\&lt;stok&gt;_Test_Gereksinimleri.md</c> içindeki ilk tablo.
     /// Sütunlar başlıklarından tanınır: # · TG no · kaynak · başlık · kısa not · gereksinim · grup · alt grup · tür · bağlı ·
-    /// yöntem · altyapı · durum (sıra serbest, tanınmayan sütunlar korunur). Eski tablolarda eksik sütunlar ilk yazımda
+    /// yöntem · altyapı · durum (hesaplanan) · elle durum (sıra serbest, tanınmayan sütunlar korunur). Eski tablolarda eksik sütunlar ilk yazımda
     /// eklenir; eski TP / TR sütunları (22.11.2026 öncesi) okunur ve <see cref="PlanReportList.RetireLegacy"/> ile Plan / Rapor
     /// tablolarına taşınıp kaldırılır. Uygulama tabloya satır
     /// ekler, satırı değiştirir ya da kaldırır (16.11.2026 kullanıcı kararı); dosyanın geri kalanına dokunmaz.
@@ -119,16 +134,17 @@ namespace Pusula.Core.Testing
         private const int ColTrResult = 18;
         private const int ColResultPath = 19;
         private const int ColStatus = 20;
-        private const int KnownCount = 21;
+        private const int ColManualStatus = 21;
+        private const int KnownCount = 22;
 
         /// <summary>Yeni ya da yükseltilen tablonun başlıkları (sırasıyla).</summary>
-        public static readonly string[] Headers = { "#", "TG no", "Kaynak", "Başlık", "Kısa not", "Gereksinim", "Grup", "Alt grup", "Tür", "Bağlı", "Yöntem", "Altyapı", "Durum" };
+        public static readonly string[] Headers = { "#", "TG no", "Kaynak", "Başlık", "Kısa not", "Gereksinim", "Grup", "Alt grup", "Tür", "Bağlı", "Yöntem", "Altyapı", "Durum", "Elle durum" };
 
         // Eski (22.11.2026 öncesi) TP / TR sütunları: okunur (taşıma için), yeni tabloya eklenmez; taşınınca kaldırılır.
         private static readonly int[] LegacyKeys = { ColTp, ColTpDescription, ColTpNote, ColTr, ColTrDescription, ColTrNote, ColTrResult, ColResultPath };
 
         // Yeni tablonun sütun anahtarları (Headers sırasıyla).
-        private static readonly int[] CurrentKeys = { ColNumber, ColTg, ColSource, ColText, ColDescription, ColRequirement, ColGroup, ColSubGroup, ColKind, ColParent, ColMethod, ColFacility, ColStatus };
+        private static readonly int[] CurrentKeys = { ColNumber, ColTg, ColSource, ColText, ColDescription, ColRequirement, ColGroup, ColSubGroup, ColKind, ColParent, ColMethod, ColFacility, ColStatus, ColManualStatus };
 
         // Eski (16.11.2026 öncesi) 7 sütunlu tablonun sırası; başlık tanınmazsa kullanılır.
         private static readonly int[] LegacyOrder = { ColNumber, ColText, ColGroup, ColSubGroup, ColFacility, ColTg, ColStatus };
@@ -415,6 +431,29 @@ namespace Pusula.Core.Testing
             return changed;
         }
 
+        /// <summary>Gereksinim tablosunda Elle durum sütunu var mı (yoksa eski dosya: Durum'daki elle durumlar henüz taşınmadı).</summary>
+        public static bool HasManualStatusColumn(string stockFolder)
+        {
+            var path = PathFor(stockFolder);
+            try
+            {
+                if (!File.Exists(path))
+                {
+                    return false;
+                }
+
+                var table = Table.Parse(File.ReadAllText(path).Replace("\r\n", "\n").Split('\n').ToList());
+                return table != null && table.Keys.Contains(ColManualStatus);
+            }
+            catch (IOException)
+            {
+                return false;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
+        }
         /// <summary>Gereksinim tablosunda eski TP / TR sütunları var mı.</summary>
         internal static bool HasLegacyColumns(List<string> lines)
         {
@@ -569,6 +608,8 @@ namespace Pusula.Core.Testing
                     return ColResultPath;
                 case "durum":
                     return ColStatus;
+                case "elledurum":
+                    return ColManualStatus;
                 default:
                     return -1;
             }
@@ -687,6 +728,7 @@ namespace Pusula.Core.Testing
                 item.TrResult = values[ColTrResult] ?? string.Empty;
                 item.ResultPath = values[ColResultPath] ?? string.Empty;
                 item.Status = values[ColStatus] ?? string.Empty;
+                item.ManualStatus = values[ColManualStatus] ?? string.Empty;
                 return item;
             }
 
@@ -760,6 +802,9 @@ namespace Pusula.Core.Testing
                             break;
                         case ColStatus:
                             value = item.Status;
+                            break;
+                        case ColManualStatus:
+                            value = item.ManualStatus;
                             break;
                         default:
                             item.Extra.TryGetValue(HeaderCells[i], out value);

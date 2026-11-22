@@ -3343,6 +3343,12 @@ namespace Pusula.Wpf.Properties
         /// <summary>Gereksinim / rapor satırı: bağlı plan yok.</summary>
         public static string Verify_NoPlan { get { return Get("Verify_NoPlan"); } }
 
+        /// <summary>Doğrulama: elle durumun yanında hesaplanan durum ("hesap: Geçti").</summary>
+        public static string Verify_AutoStatus { get { return Get("Verify_AutoStatus"); } }
+
+        /// <summary>Doğrulama: elle durum ipucu.</summary>
+        public static string Verify_ManualStatusHint { get { return Get("Verify_ManualStatusHint"); } }
+
         /// <summary>Durum çubuğu: taşıma yapıldı.</summary>
         public static string Verify_Migrated { get { return Get("Verify_Migrated"); } }
 

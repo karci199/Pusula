@@ -23,9 +23,26 @@ namespace Pusula.Wpf.ViewModels
         public VerificationRow(VerificationItem item)
         {
             Item = item;
-            var status = item.Status.Trim();
+            var status = item.EffectiveStatus;
             StatusText = status.Length > 0 ? status : Resources.Verify_StatusPending;
             StatusKind = KindOf(status);
+            var auto = item.Status.Trim().Length > 0 ? item.Status.Trim() : Resources.Verify_StatusPending;
+            IsManualStatus = item.ManualStatus.Trim().Length > 0;
+            AutoStatusText = IsManualStatus && !string.Equals(auto, StatusText, StringComparison.CurrentCultureIgnoreCase)
+                ? string.Format(CultureInfo.CurrentCulture, Resources.Verify_AutoStatus, auto)
+                : string.Empty;
+        }
+
+        /// <summary>Durum elle mi verildi (bağlardan hesaplanan ezmez).</summary>
+        public bool IsManualStatus { get; }
+
+        /// <summary>Elle durum hesaplanandan farklıysa "hesap: Geçti"; değilse boş.</summary>
+        public string AutoStatusText { get; }
+
+        /// <summary>Hesaplanan durum notu gösterilsin mi.</summary>
+        public bool HasAutoStatus
+        {
+            get { return AutoStatusText.Length > 0; }
         }
 
         /// <summary>
@@ -935,7 +952,7 @@ namespace Pusula.Wpf.ViewModels
                     return string.Empty;
                 }
 
-                var kinds = verificationItems.Select(i => VerificationRow.KindOf(i.Status)).ToList();
+                var kinds = verificationItems.Select(i => VerificationRow.KindOf(i.EffectiveStatus)).ToList();
                 return string.Format(CultureInfo.CurrentCulture, Resources.Verify_Summary, kinds.Count(VerificationRow.IsPassedKind), kinds.Count(k => k != 5));
             }
         }
@@ -945,7 +962,7 @@ namespace Pusula.Wpf.ViewModels
         {
             get
             {
-                var kinds = verificationItems.Select(i => VerificationRow.KindOf(i.Status)).ToList();
+                var kinds = verificationItems.Select(i => VerificationRow.KindOf(i.EffectiveStatus)).ToList();
                 var counted = kinds.Count(k => k != 5);
                 return counted == 0 ? 0 : 100.0 * kinds.Count(VerificationRow.IsPassedKind) / counted;
             }
@@ -1112,7 +1129,7 @@ namespace Pusula.Wpf.ViewModels
             NewVerMethod = item.Method;
             NewVerSubGroup = item.SubGroup;
             NewVerFacility = item.Facility;
-            NewVerStatus = item.Status.Length > 0 ? item.Status : Resources.Verify_StatusPending;
+            NewVerStatus = item.EffectiveStatus.Length > 0 ? item.EffectiveStatus : Resources.Verify_StatusPending;
             NotifyVerificationDialog();
             IsVerificationDialogOpen = true;
         }
@@ -1145,16 +1162,17 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Satırın durumunu değiştirir (yalnız o satırın durum hücresi yazılır).</summary>
         public void SetVerificationStatus(VerificationRow row, string status)
         {
-            if (row == null || verificationStock.Length == 0 || string.Equals(row.Item.Status, status, StringComparison.CurrentCulture))
+            if (row == null || verificationStock.Length == 0 || string.Equals(row.Item.EffectiveStatus, status, StringComparison.CurrentCulture))
             {
                 return;
             }
 
             var item = Copy(row.Item);
-            item.Status = status ?? string.Empty;
+            // Hesaplananla aynı durum (ya da Bekliyor / Planlandı) seçilirse elle durum kalkar (yeniden otomatik).
+            item.ManualStatus = ManualStatusFor(status, item.Status);
             if (WriteVerification(VerificationList.Update(verificationStock, item)))
             {
-                Done(string.Format(CultureInfo.CurrentCulture, Resources.Verify_StatusSet, item.Number, item.Status));
+                Done(string.Format(CultureInfo.CurrentCulture, Resources.Verify_StatusSet, item.Number, item.EffectiveStatus));
             }
         }
 
@@ -1228,6 +1246,7 @@ namespace Pusula.Wpf.ViewModels
                 TrResult = item.TrResult,
                 ResultPath = item.ResultPath,
                 Status = item.Status,
+                ManualStatus = item.ManualStatus,
             };
             foreach (var pair in item.Extra)
             {
@@ -1529,7 +1548,7 @@ namespace Pusula.Wpf.ViewModels
             foreach (var status in VerificationRow.Statuses)
             {
                 var kind = VerificationRow.KindOf(status);
-                VerificationStatusFilters.Add(new VerificationStatusFilterOption(status, inGroup.Count(i => VerificationRow.KindOf(i.Status) == kind), verificationStatusFilter.Contains(status), OnStatusFilterChanged));
+                VerificationStatusFilters.Add(new VerificationStatusFilterOption(status, inGroup.Count(i => VerificationRow.KindOf(i.EffectiveStatus) == kind), verificationStatusFilter.Contains(status), OnStatusFilterChanged));
             }
 
             OnPropertyChanged(nameof(VerificationStatusFilterText));
@@ -1596,7 +1615,7 @@ namespace Pusula.Wpf.ViewModels
 
             if (sort == Resources.Verify_SortStatus)
             {
-                return items.OrderBy(i => StatusOrder(i.Status)).ThenBy(i => i.Number);
+                return items.OrderBy(i => StatusOrder(i.EffectiveStatus)).ThenBy(i => i.Number);
             }
 
             if (sort == Resources.Verify_SortTitle)
@@ -1618,7 +1637,7 @@ namespace Pusula.Wpf.ViewModels
                 }
 
                 var kinds = new HashSet<int>(verificationStatusFilter.Select(VerificationRow.KindOf));
-                var rows = SortVerification(verificationItems.Where(i => SameGroup(i, option.Key) && (kinds.Count == 0 || kinds.Contains(VerificationRow.KindOf(i.Status))) && PassesReqLinks(i) && PassesRequirementSearch(i))).Select(i => new VerificationRow(i) { SourceLine = SourceLineOf(i), Attempts = AttemptsOf(i), LinkedPlans = PlansOfRequirement(i), LinkedReports = ReportsOfRequirement(i), PlanItems = PlanRowsOf(i), ReportItems = ReportRowsOf(i), HasNoPlan = ReqPlanState(i) == 0 }).ToList();
+                var rows = SortVerification(verificationItems.Where(i => SameGroup(i, option.Key) && (kinds.Count == 0 || kinds.Contains(VerificationRow.KindOf(i.EffectiveStatus))) && PassesReqLinks(i) && PassesRequirementSearch(i))).Select(i => new VerificationRow(i) { SourceLine = SourceLineOf(i), Attempts = AttemptsOf(i), LinkedPlans = PlansOfRequirement(i), LinkedReports = ReportsOfRequirement(i), PlanItems = PlanRowsOf(i), ReportItems = ReportRowsOf(i), HasNoPlan = ReqPlanState(i) == 0 }).ToList();
                 if (rows.Count > 0)
                 {
                     VerificationGroups.Add(new VerificationGroup(option.Key, Math.Max(0, option.Tone), rows));
@@ -1790,8 +1809,10 @@ namespace Pusula.Wpf.ViewModels
                 Facility = NewVerFacility.Trim(),
                 TgNo = NewVerTgNo.Trim(),
 
-                Status = NewVerStatus.Trim(),
+                Status = editingVerification != null && editingVerification.Status.Trim().Length > 0 ? editingVerification.Status.Trim() : Resources.Verify_StatusPending,
             };
+            // Pencerede seçilen durum hesaplanandan farklıysa elle durum olur; aynıysa elle durum kalkar.
+            item.ManualStatus = ManualStatusFor(NewVerStatus, item.Status);
 
             if (editingVerification != null)
             {

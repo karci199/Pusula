@@ -149,7 +149,7 @@ namespace Pusula.Wpf.ViewModels
                 var item = journalItems.FirstOrDefault(i => string.Equals(VerificationList.KeyOf(i), journalItem, StringComparison.OrdinalIgnoreCase));
                 if (journalResult.Length > 0 && journalItem != NewItemKey)
                 {
-                    var before = item == null || item.Status.Trim().Length == 0 ? Resources.Verify_StatusPending : item.Status.Trim();
+                    var before = item == null || item.EffectiveStatus.Length == 0 ? Resources.Verify_StatusPending : item.EffectiveStatus;
                     return string.Format(CultureInfo.CurrentCulture, Resources.Journal_ResultChange, before, journalResult);
                 }
 
@@ -214,7 +214,7 @@ namespace Pusula.Wpf.ViewModels
                 var title = item.Text.Length > 0 ? item.Text : item.SubGroup;
                 JournalItemOptions.Add(new ChoiceOption(key, title.Length > 0 ? key + " · " + title : key, false, o => { })
                 {
-                    Badge = item.Status.Trim().Length > 0 ? item.Status.Trim() : Resources.Verify_StatusPending,
+                    Badge = item.EffectiveStatus.Length > 0 ? item.EffectiveStatus : Resources.Verify_StatusPending,
                 });
             }
 
@@ -291,12 +291,13 @@ namespace Pusula.Wpf.ViewModels
             }
 
             var item = VerificationList.Read(journalItemStock).FirstOrDefault(i => string.Equals(VerificationList.KeyOf(i), entry.Item, StringComparison.OrdinalIgnoreCase));
-            if (item == null || string.Equals(item.Status.Trim(), entry.Result, StringComparison.CurrentCultureIgnoreCase))
+            if (item == null || string.Equals(item.EffectiveStatus, entry.Result, StringComparison.CurrentCultureIgnoreCase))
             {
                 return;
             }
 
-            item.Status = entry.Result;
+            // Ölçüm sonucu elle durumdur (bağlardan hesaplananla aynıysa elle durum kalkar).
+            item.ManualStatus = ManualStatusFor(entry.Result, item.Status);
             var error = VerificationList.Update(journalItemStock, item);
             if (error.Length > 0 && error != "missing")
             {

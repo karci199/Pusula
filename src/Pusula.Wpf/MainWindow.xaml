@@ -3104,6 +3104,8 @@
                                                                                         <TextBlock x:Name="StatusLabel" Text="{Binding StatusText}" FontSize="12.5" Foreground="{DynamicResource TextSecondaryBrush}" />
                                                                                     </StackPanel>
                                                                                 </Border>
+                                                                                <TextBlock Grid.Column="7" Margin="10,0,0,-30" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="11" Foreground="{DynamicResource TextTertiaryBrush}"
+                                                                                           Text="{Binding AutoStatusText}" ToolTip="{x:Static res:Resources.Verify_ManualStatusHint}" Visibility="{Binding HasAutoStatus, Converter={StaticResource BoolToVis}}" />
                                                                                 <StackPanel Grid.Column="8" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                                                                                     <Button x:Name="RowAttempt" Margin="0,0,4,0" Padding="9,2" VerticalAlignment="Center" Visibility="Hidden"
                                                                                             ToolTip="{x:Static res:Resources.Verify_AddAttemptHint}" Click="VerificationAttempt_Click">

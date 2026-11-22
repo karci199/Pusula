@@ -262,7 +262,7 @@ namespace Pusula.Wpf.ViewModels
         // Kapsam dışı gereksinim bağ sayılarına, uyarıya ve bağ süzgecine girmez.
         private static bool IsOutOfScope(VerificationItem item)
         {
-            return VerificationRow.KindOf(item.Status) == 5;
+            return VerificationRow.KindOf(item.EffectiveStatus) == 5;
         }
 
         /// <summary>Gereksinimler: Test planı [Var · Yok].</summary>

@@ -393,22 +393,14 @@ namespace Pusula.Wpf.ViewModels
         }
 
         /// <summary>
-        /// Bağlardan gereksinim durumu (kod karar verir): Kapsam dışı ve Şartlı kabul korunur; planı yoksa Bekliyor; bağlı bir
-        /// rapor Kaldı ise Kaldı; her planının raporu var ve hepsi Geçti ise Geçti; değilse sürmekte olan durum (hazırlık,
-        /// yapılıyor, değerlendiriliyor, tekrarlanacak) korunur, yoksa Planlandı.
+        /// Bağlardan hesaplanan gereksinim durumu (kod karar verir): planı yoksa Bekliyor; bağlı bir rapor Kaldı ise Kaldı;
+        /// her planının raporu var ve hepsi Geçti ise Geçti; değilse Planlandı. Elle verilen durum ayrı tutulur, bunu ezmez.
         /// </summary>
-        public static string StatusFromLinks(string current, IList<PlanItem> plans, IList<ReportItem> reports)
+        public static string StatusFromLinks(IList<PlanItem> plans, IList<ReportItem> reports)
         {
-            var now = current ?? string.Empty;
-            var kind = VerificationRow.KindOf(now);
-            if (kind == 5 || kind == 9)
-            {
-                return now;
-            }
-
             if (plans.Count == 0)
             {
-                return kind == 0 ? now : Resources.Verify_StatusPending;
+                return Resources.Verify_StatusPending;
             }
 
             var results = reports.Select(r => ResultKindOf(r.Result)).ToList();
@@ -418,14 +410,25 @@ namespace Pusula.Wpf.ViewModels
             }
 
             var everyPlanReported = plans.All(p => reports.Any(r => r.Plans.Contains(p.TpNo, StringComparer.OrdinalIgnoreCase)));
-            if (results.Count > 0 && everyPlanReported && results.All(k => k == 1))
-            {
-                return Resources.Verify_StatusPassed;
-            }
-
-            return kind == 7 || kind == 3 || kind == 8 || kind == 4 ? now : Resources.Verify_StatusPlanned;
+            return results.Count > 0 && everyPlanReported && results.All(k => k == 1) ? Resources.Verify_StatusPassed : Resources.Verify_StatusPlanned;
         }
 
+        /// <summary>
+        /// Seçilen durumdan elle durum: boş, Bekliyor ya da hesaplananla aynıysa boş (hesaplanan geçerli olur);
+        /// değilse seçilen.
+        /// </summary>
+        public static string ManualStatusFor(string picked, string computed)
+        {
+            var p = (picked ?? string.Empty).Trim();
+            return IsDefaultStatus(p) || string.Equals(p, (computed ?? string.Empty).Trim(), StringComparison.CurrentCultureIgnoreCase) ? string.Empty : p;
+        }
+
+        // Bekliyor (boş da sayılır): elle verilmiş sayılmaz.
+        private static bool IsDefaultStatus(string status)
+        {
+            var kind = VerificationRow.KindOf(status);
+            return status.Trim().Length == 0 || kind == 0;
+        }
         /// <summary>
         /// Gereksinim satırlarının Durum sütununu bağlarla eşitler (<see cref="StatusFromLinks"/>). Yalnız değişen satırlar yazılır. Değişen satır sayısı.
         /// </summary>
@@ -439,19 +442,35 @@ namespace Pusula.Wpf.ViewModels
             var plans = PlanReportList.ReadPlans(verificationStock);
             var reports = PlanReportList.ReadReports(verificationStock);
             var changed = 0;
+            // Eski dosya (Elle durum sütunu yok): Durum'da Bekliyor dışında, hesaplanandan farklı bir durum elle
+            // verilmiştir; Elle durum'a taşınır (kaybolmaz).
+            var firstTime = !VerificationList.HasManualStatusColumn(verificationStock);
             foreach (var item in VerificationList.Read(verificationStock))
             {
                 var key = VerificationList.KeyOf(item);
                 var mine = plans.Where(p => p.Requirements.Contains(key, StringComparer.OrdinalIgnoreCase)).ToList();
                 var tps = mine.Select(p => p.TpNo).ToList();
                 var myReports = reports.Where(r => r.Plans.Any(p => tps.Contains(p, StringComparer.OrdinalIgnoreCase))).ToList();
-                var status = StatusFromLinks(item.Status, mine, myReports);
-                if (status == item.Status)
+                var status = StatusFromLinks(mine, myReports);
+                var manual = item.ManualStatus.Trim();
+                if (firstTime && manual.Length == 0 && item.Status.Trim() != status && !IsDefaultStatus(item.Status))
+                {
+                    manual = item.Status.Trim();
+                }
+
+                // Elle durum hesaplananla aynı olunca kalkar (iş bitti, yeniden otomatik).
+                if (string.Equals(manual, status, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    manual = string.Empty;
+                }
+
+                if (status == item.Status && manual == item.ManualStatus)
                 {
                     continue;
                 }
 
                 item.Status = status;
+                item.ManualStatus = manual;
                 if (VerificationList.Update(verificationStock, item).Length == 0)
                 {
                     changed++;

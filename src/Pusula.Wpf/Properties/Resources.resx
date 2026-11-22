@@ -2142,8 +2142,8 @@ stok: {0}
 
 ## Gereksinimler
 
-| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | Durum |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| # | TG no | Kaynak | Başlık | Kısa not | Gereksinim | Grup | Alt grup | Tür | Bağlı | Yöntem | Altyapı | Durum | Elle durum |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 ## Plan
 
@@ -3135,6 +3135,12 @@ Zaman çizelgesinde sonradan eklenen işlem türleri; tüm projelerde ortak. Her
   </data>
   <data name="Verify_NoPlan" xml:space="preserve">
     <value>plan yok</value>
+  </data>
+  <data name="Verify_AutoStatus" xml:space="preserve">
+    <value>hesap: {0}</value>
+  </data>
+  <data name="Verify_ManualStatusHint" xml:space="preserve">
+    <value>Elle verilen durum. Bağlardan hesaplanan durum ayrı tutulur; hesaplananı seçince elle durum kalkar.</value>
   </data>
   <data name="Verify_Migrated" xml:space="preserve">
     <value>Doğrulama dosyası yeni düzene geçti: TP / TR bilgisi Plan ve Rapor tablolarına taşındı, eski sütunlar kalktı (eski dosyanın kopyası _ARSIV klasöründe).</value>

@@ -41,7 +41,7 @@ try {
     Check 'eklenir' ($vm.ConfirmJournal()); Wait; Wait
     $txt = [IO.File]::ReadAllText($note)
     Check 'Günlük: madde ve sonuç' ($txt.Contains('madde: DGÖ-1 · sonuç: Kaldı'))
-    Check 'madde durumu Kaldı' ((ItemOf 'DGÖ-1').Status -eq 'Kaldı')
+    Check 'madde durumu Kaldı' ((ItemOf 'DGÖ-1').EffectiveStatus -eq 'Kaldı')
     $read = [Pusula.Core.Notes.Journal]::Read($note) | Where-Object { $_.Title -eq 'İlk VSWR ölçümü' } | Select-Object -First 1
     Check 'okunur: Item, Result' ($read.Item -eq 'DGÖ-1' -and $read.Result -eq 'Kaldı' -and ($read.Tags -contains 'SN-003'))
 
@@ -65,7 +65,7 @@ try {
     Check 'metinle Ekle var' ($vm.JournalPrimaryText -ne '')
     Check 'eklenir' ($vm.ConfirmJournal()); Wait; Wait
     $ek = ItemOf 'EK-1'
-    Check 'tabloya EK-1: metin, kaynak, durum Geçti' ($ek -and $ek.Text -eq 'Ön-arka oranı ≥ 20 dB' -and $ek.Source -eq 'ANT-TSR-012 §4.2' -and $ek.Status -eq 'Geçti')
+    Check 'tabloya EK-1: metin, kaynak, durum Geçti' ($ek -and $ek.Text -eq 'Ön-arka oranı ≥ 20 dB' -and $ek.Source -eq 'ANT-TSR-012 §4.2' -and $ek.EffectiveStatus -eq 'Geçti')
     Check 'Günlük: madde EK-1' ([IO.File]::ReadAllText($note).Contains('madde: EK-1 · sonuç: Geçti'))
     Check 'sıradaki ek no EK-2' ([Pusula.Core.Testing.VerificationList]::NextExtraNo([Pusula.Core.Testing.VerificationList]::Read($stock)) -eq 'EK-2')
 
@@ -74,7 +74,7 @@ try {
     Check 'Bilgi ile eklenir' ($vm.JournalPrimaryText -ne '' -and $vm.ConfirmJournal()); Wait
     $txt = [IO.File]::ReadAllText($note)
     Check 'Günlük: sonuç Bilgi, madde yok' ($txt -match '### [^\n]*Karakterizasyon taraması\r?\n[^\n]*sonuç: Bilgi' -and -not ($txt -match 'Karakterizasyon taraması\r?\n[^\n]*madde:'))
-    Check 'DGÖ-1 durumu değişmedi' ((ItemOf 'DGÖ-1').Status -eq 'Kaldı')
+    Check 'DGÖ-1 durumu değişmedi' ((ItemOf 'DGÖ-1').EffectiveStatus -eq 'Kaldı')
     "--- MD'de eklenen ayrıntı"
     $txt = [IO.File]::ReadAllText($note)
     Check 'kayda boş Ayrıntı başlığı yazılır' ($txt -match "8,2 GHz'de 1,72\.\r?\n\r?\n#### Ayrıntı\r?\n")
