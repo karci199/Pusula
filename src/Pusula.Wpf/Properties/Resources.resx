@@ -3573,4 +3573,13 @@ Ortak liste (ÇK / EMC): &quot;## standart&quot; başlığı altında &quot;- nu
   <data name="Stats_Hint" xml:space="preserve">
     <value>Sayıya tıklayınca ilgili liste açılır. Doğrulama sayıları stokun kendi sayfasında.</value>
   </data>
+  <data name="Stats_Requirements" xml:space="preserve">
+    <value>{0} gereksinim</value>
+  </data>
+  <data name="Stats_Percent" xml:space="preserve">
+    <value>%{0}</value>
+  </data>
+  <data name="Stats_SummaryHint" xml:space="preserve">
+    <value>Tıklayınca tablo bu durumla süzülür</value>
+  </data>
 </root>

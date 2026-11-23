@@ -1501,6 +1501,7 @@ namespace Pusula.Wpf.ViewModels
             OnPropertyChanged(nameof(VerificationCount));
             OnPropertyChanged(nameof(StockVerificationText));
             OnPropertyChanged(nameof(VerificationProgress));
+            BuildStockStats();
             OnPropertyChanged(nameof(IsVerificationEmpty));
             OnPropertyChanged(nameof(HasVerificationFile));
         }

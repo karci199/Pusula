@@ -1,0 +1,120 @@
+<Border xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="1180" Background="{DynamicResource SurfaceBaseBrush}" Padding="24,20" TextElement.FontFamily="Segoe UI"
+        TextElement.Foreground="{DynamicResource TextPrimaryBrush}" TextElement.FontSize="13">
+    <Border.Resources>
+        <Style x:Key="Tab" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,0,28,0" />
+            <Setter Property="Padding" Value="0,0,0,8" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+        </Style>
+        <Style x:Key="Stat" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,22,0" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style x:Key="Cell" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="10,0,0,0" />
+        </Style>
+    </Border.Resources>
+
+    <StackPanel>
+        <!-- Stok başlığı -->
+        <TextBlock FontSize="22" FontWeight="SemiBold" Text="AB-7000-0003 · Kontrol kartı" />
+        <TextBlock Margin="0,2,0,18" Foreground="{DynamicResource TextTertiaryBrush}" Text="7000_MILKON · Testte" />
+
+        <!-- Sekmeler: İstatistik yok, üç sekme -->
+        <Grid Margin="0,0,0,16">
+            <Border VerticalAlignment="Bottom" Height="1" Background="{DynamicResource DividerStrokeColorDefaultBrush}" />
+            <StackPanel Orientation="Horizontal">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Tab}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold" Text="Doğrulamalar" />
+                    <Border Height="3" CornerRadius="2" Margin="0,0,28,0" Background="{DynamicResource AccentFillColorDefaultBrush}" />
+                </StackPanel>
+                <TextBlock Style="{StaticResource Tab}" Text="Yapılacaklar  3" />
+                <TextBlock Style="{StaticResource Tab}" Text="Test yardımcı araçları  7" />
+            </StackPanel>
+        </Grid>
+
+        <!-- YENİ: tek satır özet (yalnız bu stok) -->
+        <Border Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                CornerRadius="8" Padding="16,11" Margin="0,0,0,12">
+            <DockPanel>
+                <Border DockPanel.Dock="Left" Width="160" Height="6" CornerRadius="3" VerticalAlignment="Center" Margin="0,0,20,0"
+                        Background="{DynamicResource SubtleFillColorSecondaryBrush}" ClipToBounds="True">
+                    <StackPanel Orientation="Horizontal">
+                        <Rectangle Width="106" Fill="{DynamicResource SystemFillColorSuccessBrush}" />
+                        <Rectangle Width="4" Fill="{DynamicResource SystemFillColorCriticalBrush}" />
+                        <Rectangle Width="29" Fill="{DynamicResource AccentFillColorDefaultBrush}" />
+                    </StackPanel>
+                </Border>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource Stat}" FontWeight="Normal" Foreground="{DynamicResource TextSecondaryBrush}" Text="112 gereksinim" />
+                    <TextBlock Style="{StaticResource Stat}"><Run Foreground="{DynamicResource SystemFillColorSuccessBrush}" Text="74 geçti" /><Run FontWeight="Normal" Foreground="{DynamicResource TextTertiaryBrush}" Text="  %66" /></TextBlock>
+                    <TextBlock Style="{StaticResource Stat}" Foreground="{DynamicResource SystemFillColorCriticalBrush}" Text="3 kaldı" />
+                    <TextBlock Style="{StaticResource Stat}" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="20 sürüyor" />
+                    <TextBlock Style="{StaticResource Stat}" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,30,0" Text="15 bekliyor" />
+                    <TextBlock Style="{StaticResource Stat}" FontWeight="Normal" Foreground="{DynamicResource SystemFillColorCautionBrush}" Text="4 plansız" />
+                    <TextBlock Style="{StaticResource Stat}" FontWeight="Normal" Foreground="{DynamicResource SystemFillColorCautionBrush}" Text="9 raporsuz" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Var olan araç satırı (haplar artık yok) -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+            <Border Width="180" Height="32" CornerRadius="4" Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" BorderThickness="1">
+                <TextBlock Margin="10,0" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Text="Ara: TG no, başlık" />
+            </Border>
+            <TextBlock Margin="20,0,8,0" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="Bağ" />
+            <Border Width="150" Height="32" CornerRadius="4" Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" BorderThickness="1">
+                <TextBlock Margin="10,0" VerticalAlignment="Center" Text="Hepsi" />
+            </Border>
+            <TextBlock Margin="20,0,8,0" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="Durum" />
+            <Border Width="150" Height="32" CornerRadius="4" Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" BorderThickness="1">
+                <TextBlock Margin="10,0" VerticalAlignment="Center" Text="Hepsi" />
+            </Border>
+        </StackPanel>
+
+        <!-- Tablo (kısaltılmış) -->
+        <Border Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="12,8">
+            <StackPanel>
+                <Grid Margin="0,0,0,6" TextElement.Foreground="{DynamicResource TextTertiaryBrush}" TextElement.FontSize="12">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="110" /><ColumnDefinition /><ColumnDefinition Width="110" /><ColumnDefinition Width="110" /></Grid.ColumnDefinitions>
+                    <TextBlock Text="TG no" />
+                    <TextBlock Grid.Column="1" Style="{StaticResource Cell}" Text="Gereksinim" />
+                    <TextBlock Grid.Column="2" Style="{StaticResource Cell}" Text="Plan" />
+                    <TextBlock Grid.Column="3" Style="{StaticResource Cell}" Text="Durum" />
+                </Grid>
+                <Grid Height="34">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="110" /><ColumnDefinition /><ColumnDefinition Width="110" /><ColumnDefinition Width="110" /></Grid.ColumnDefinitions>
+                    <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="TSD-0040" />
+                    <TextBlock Grid.Column="1" Style="{StaticResource Cell}" Text="Besleme gerilimi 18–32 V aralığında çalışmalı" />
+                    <TextBlock Grid.Column="2" Style="{StaticResource Cell}" Text="TP-01" />
+                    <TextBlock Grid.Column="3" Style="{StaticResource Cell}" Foreground="{DynamicResource SystemFillColorSuccessBrush}" Text="Geçti" />
+                </Grid>
+                <Grid Height="34">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="110" /><ColumnDefinition /><ColumnDefinition Width="110" /><ColumnDefinition Width="110" /></Grid.ColumnDefinitions>
+                    <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="TSD-0041" />
+                    <TextBlock Grid.Column="1" Style="{StaticResource Cell}" Text="Kutu IP65 koruma sınıfında olmalı" />
+                    <TextBlock Grid.Column="2" Style="{StaticResource Cell}" Text="TP-04" />
+                    <TextBlock Grid.Column="3" Style="{StaticResource Cell}" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="Testte" />
+                </Grid>
+                <Grid Height="34">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="110" /><ColumnDefinition /><ColumnDefinition Width="110" /><ColumnDefinition Width="110" /></Grid.ColumnDefinitions>
+                    <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="TSD-0042" />
+                    <TextBlock Grid.Column="1" Style="{StaticResource Cell}" Text="Ağırlık 1,2 kg'ı geçmemeli" />
+                    <TextBlock Grid.Column="2" Style="{StaticResource Cell}" Foreground="{DynamicResource SystemFillColorCautionBrush}" Text="—" />
+                    <TextBlock Grid.Column="3" Style="{StaticResource Cell}" Foreground="{DynamicResource TextSecondaryBrush}" Text="Bekliyor" />
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <Border Margin="0,18,0,0" Padding="14,10" CornerRadius="8" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+            <TextBlock TextWrapping="Wrap" FontSize="12" LineHeight="19" Foreground="{DynamicResource TextSecondaryBrush}">
+                <Run Text="Stokta İstatistik sekmesi kalkar; doğrulama sayıları Doğrulamalar'ın üstünde tek satır. Sayıya tıklayınca Durum süzgeci o değere geçer (plansız / raporsuz: Bağ süzgeci). Araç ve açık iş sayıları sekme başlıklarında. Ana sayfadaki İstatistik sekmesi aynen kalır." />
+            </TextBlock>
+        </Border>
+    </StackPanel>
+</Border>

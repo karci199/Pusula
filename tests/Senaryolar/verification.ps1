@@ -46,6 +46,14 @@ Check '2 madde, 2 grup' ($vm.VerificationCount -eq 2 -and $vm.VerificationGroups
 $emc = $vm.VerificationGroups | Where-Object { $_.Title -eq 'ÇK/EMC' }
 Check '| kaçışla geri okunur' ($emc.Rows[0].Text -eq 'RE102 | CE102 sınır içinde') $emc.Rows[0].Text
 Check 'geçti sayılır' ($emc.Rows[0].StatusKind -eq 1 -and $vm.StockVerificationText -like '*1/2*') $vm.StockVerificationText
+"--- stok özeti (Doğrulamalar'ın üstü)"
+$sum = @($vm.VerificationSummary)
+Check 'özet: dört parça; 1 geçti, 1 bekliyor; %50; 2 gereksinim' ($sum.Count -eq 4 -and $sum[0].Count -eq 1 -and $sum[3].Count -eq 1 -and $vm.VerificationPassedPercent -eq '%50' -and $vm.VerificationSummaryTotal -eq '2 gereksinim') (($sum | ForEach-Object { $_.Label + '=' + $_.Count }) -join ', ')
+$sum[0].Open.Execute($null); Wait
+$shown = @($vm.VerificationGroups | ForEach-Object { $_.Rows })
+Check 'Geçti sayısına tıklayınca tablo yalnız geçenler' ($vm.HasVerificationStatusFilter -and $shown.Count -eq 1 -and $shown[0].StatusKind -eq 1) ([string]$shown.Count)
+$vm.ClearVerificationStatusFilter(); Wait
+Check 'süzgeç temizlenince iki madde' (@($vm.VerificationGroups | ForEach-Object { $_.Rows }).Count -eq 2)
 Check 'yeni altyapı da listede' ([IO.File]::ReadAllText($facilities) -like '*- EMC lab*')
 
 "--- süzgeç"

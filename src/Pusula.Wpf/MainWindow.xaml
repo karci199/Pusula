@@ -3181,6 +3181,74 @@
                                     </DockPanel>
                                 </Border>
 
+                                <!-- Doğrulama özeti (23.11.2026; stokta ayrı İstatistik sekmesi yerine): yüzde · toplam · çubuk · tıklanır durum sayıları -->
+                                <Border Grid.Row="1" Margin="0,0,0,12" Padding="16,10" CornerRadius="10" BorderThickness="1"
+                                        Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding IsVerReqView}" Value="True" />
+                                                        <Condition Binding="{Binding HasVerificationSummary}" Value="True" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" MinWidth="80" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock VerticalAlignment="Center" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource SystemFillColorSuccessBrush}" Text="{Binding VerificationPassedPercent}" />
+                                        <TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding VerificationSummaryTotal}" />
+                                        <Border Grid.Column="2" Margin="18,0,18,0" Height="6" CornerRadius="3" VerticalAlignment="Center" ClipToBounds="True"
+                                                Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="{Binding VerificationBar[0]}" />
+                                                    <ColumnDefinition Width="{Binding VerificationBar[1]}" />
+                                                    <ColumnDefinition Width="{Binding VerificationBar[2]}" />
+                                                    <ColumnDefinition Width="{Binding VerificationBar[3]}" />
+                                                </Grid.ColumnDefinitions>
+                                                <Rectangle Fill="{DynamicResource SystemFillColorSuccessBrush}" />
+                                                <Rectangle Grid.Column="1" Fill="{DynamicResource SystemFillColorCriticalBrush}" />
+                                                <Rectangle Grid.Column="2" Fill="{DynamicResource AccentFillColorDefaultBrush}" />
+                                            </Grid>
+                                        </Border>
+                                        <ItemsControl Grid.Column="3" ItemsSource="{Binding VerificationSummary}" Focusable="False" VerticalAlignment="Center">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Orientation="Horizontal" />
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Button x:Name="Part" Margin="2,0,0,0" Padding="8,4" Style="{DynamicResource SubtleButtonStyle}" Command="{Binding Open}"
+                                                            ToolTip="{x:Static res:Resources.Stats_SummaryHint}">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Ellipse x:Name="Dot" Width="8" Height="8" VerticalAlignment="Center" Fill="{DynamicResource TextTertiaryBrush}" />
+                                                            <TextBlock Margin="7,0,0,0" VerticalAlignment="Center" FontWeight="SemiBold" Text="{Binding Count}" />
+                                                            <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Label}" />
+                                                        </StackPanel>
+                                                    </Button>
+                                                    <DataTemplate.Triggers>
+                                                        <DataTrigger Binding="{Binding Tone}" Value="done"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
+                                                        <DataTrigger Binding="{Binding Tone}" Value="failed"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" /></DataTrigger>
+                                                        <DataTrigger Binding="{Binding Tone}" Value="active"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentFillColorDefaultBrush}" /></DataTrigger>
+                                                        <DataTrigger Binding="{Binding Count}" Value="0"><Setter TargetName="Part" Property="Opacity" Value="0.45" /></DataTrigger>
+                                                    </DataTemplate.Triggers>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Grid>
+                                </Border>
+
                                 <!-- Grup hapları: şimdilik gizli (23.11.2026, kullanıcı: bölümlere ayırmaya gerek yok, sonra bakılır). Süzgeç kodu yerinde. -->
                                 <ItemsControl Grid.Row="1" Margin="0,0,0,10" ItemsSource="{Binding VerificationFilters}" Focusable="False" VerticalAlignment="Center"
                                               Visibility="Collapsed">
@@ -3850,18 +3918,6 @@
                                     <TextBlock Margin="8,10" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Stock_NoTools}"
                                                Visibility="{Binding StockToolCount, Converter={StaticResource ZeroToVis}}" />
                                 </StackPanel>
-                            </ScrollViewer>
-                        </TabItem>
-                        <!-- İstatistik (22.11.2026): bu stokun doğrulaması, araçları, açık işleri -->
-                        <TabItem Header="{x:Static res:Resources.Stats_Tab}">
-                            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                                <ItemsControl Margin="0,12,0,0" ItemsSource="{Binding StockStatCards}" ItemTemplate="{StaticResource StatCardTemplate}" Focusable="False">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <WrapPanel />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                </ItemsControl>
                             </ScrollViewer>
                         </TabItem>
                     </TabControl>

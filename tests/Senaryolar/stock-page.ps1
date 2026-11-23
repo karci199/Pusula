@@ -11,7 +11,7 @@ $vm = $win.DataContext; $vm.RootPath = $Data; Wait
 function StockTabs()
 {
     $st = New-Object System.Collections.Stack; $st.Push($win)
-    while ($st.Count -gt 0) { $x = $st.Pop(); if ($x -is [System.Windows.Controls.TabControl] -and $x.IsVisible -and $x.Items.Count -eq 4) { return $x }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($x); $i++) { $st.Push([System.Windows.Media.VisualTreeHelper]::GetChild($x, $i)) } }
+    while ($st.Count -gt 0) { $x = $st.Pop(); if ($x -is [System.Windows.Controls.TabControl] -and $x.IsVisible -and $x.Items.Count -eq 3) { return $x }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($x); $i++) { $st.Push([System.Windows.Media.VisualTreeHelper]::GetChild($x, $i)) } }
     $null
 }
 
@@ -24,7 +24,7 @@ Check 'sayı satırı: açık iş yazısı' ($vm.StockTasksText -like '*iş*') $
 Snap $win "$Out\stock-page.png"
 
 $tabs = StockTabs
-Check 'dört sekme (İstatistik dahil)' ($tabs -ne $null)
+Check 'üç sekme (stokta İstatistik sekmesi yok)' ($tabs -ne $null -and $tabs.Items.Count -eq 3) ([string]$tabs.Items.Count)
 if ($tabs) { $tabs.SelectedIndex = 1; Wait; Snap $win "$Out\stock-page-tasks.png"; $tabs.SelectedIndex = 2; Wait; Snap $win "$Out\stock-page-tools.png" }
 
 $vm.SelectNodeByPath((Join-Path $Data '7000_MILKON\AB-7000-0002')); Wait; Wait

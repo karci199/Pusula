@@ -3779,5 +3779,14 @@ namespace Pusula.Wpf.Properties
 
         /// <summary>istatistik: ana sayfa ipucu</summary>
         public static string Stats_Hint { get { return Get("Stats_Hint"); } }
+
+        /// <summary>Stok doğrulama özeti: "{0} gereksinim".</summary>
+        public static string Stats_Requirements { get { return Get("Stats_Requirements"); } }
+
+        /// <summary>Stok doğrulama özeti: geçme yüzdesi "%{0}".</summary>
+        public static string Stats_Percent { get { return Get("Stats_Percent"); } }
+
+        /// <summary>Stok doğrulama özeti: sayının ipucu.</summary>
+        public static string Stats_SummaryHint { get { return Get("Stats_SummaryHint"); } }
     }
 }

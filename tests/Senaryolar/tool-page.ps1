@@ -148,11 +148,7 @@ try {
     Check 'stokun çizelgesinde aracın kalibrasyonu' (@($vm.Detail.Timeline | Where-Object { $_.Title -like '*Faz / kayıp*' }).Count -ge 1) (@($vm.Detail.Timeline | ForEach-Object Title) -join ' | ')
 
     "--- 6. İstatistik"
-    $cards = @($vm.StockStatCards)
-    $line = { param($card, $label) ($card.Lines | Where-Object { $_.Label -like "$label*" } | Select-Object -First 1).Count }
-    Check 'stok: üç kart (doğrulama, araçlar, açık iş)' ($cards.Count -eq 3) (($cards | ForEach-Object Title) -join ', ')
-    Check 'stok: araç kartında kablaj 3+, yazılım 1' ($cards[1].Total -ge 7 -and (& $line $cards[1] 'Kablaj') -ge 3 -and (& $line $cards[1] 'Yazılım') -eq 1) (($cards[1].Lines | ForEach-Object { $_.Label + '=' + $_.Count }) -join ', ')
-    Check 'stok: doğrulama satırları (geçti, kaldı, sürüyor, bekliyor, plansız, raporsuz)' (@($cards[0].Lines).Count -ge 6)
+    Check 'stok: maddesiz stokta doğrulama özeti görünmez' (-not $vm.HasVerificationSummary) ([string]$vm.VerificationCount)
     $vm.SelectedNode = $null; $vm.LoadHome(); Wait; for ($k = 0; $k -lt 40; $k++) { Pump; Start-Sleep -Milliseconds 30 }
     $anaKart = @($vm.HomeStatCards)
     $stockCount = @(Get-ChildItem $Data -Recurse -Directory | Where-Object { Test-Path (Join-Path $_.FullName '_TAKIP\stok.json') }).Count
