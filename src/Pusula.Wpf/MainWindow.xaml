@@ -3181,9 +3181,9 @@
                                     </DockPanel>
                                 </Border>
 
-                                <!-- Grup hapları -->
+                                <!-- Grup hapları: şimdilik gizli (23.11.2026, kullanıcı: bölümlere ayırmaya gerek yok, sonra bakılır). Süzgeç kodu yerinde. -->
                                 <ItemsControl Grid.Row="1" Margin="0,0,0,10" ItemsSource="{Binding VerificationFilters}" Focusable="False" VerticalAlignment="Center"
-                                              Visibility="{Binding IsVerReqView, Converter={StaticResource BoolToVis}}">
+                                              Visibility="Collapsed">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <WrapPanel Orientation="Horizontal" />
