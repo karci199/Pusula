@@ -221,11 +221,16 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
   - **Alt / üst stok (yapıldı, 25.11.2026):** bileşenler üst stokta girilir (stok.json → components; "+ Bileşen" aramalı kutu,
     sağ tık "Bileşeni kaldır"); alt stokta "Kullanıldığı yerler" hesaplanır. Birden çok üst olabilir; kendisi, tekrar ve döngü
     (doğrudan / dolaylı) engellenir. Klasörler ve ağaç değişmez.
-  - **Sol liste (kalan):** araçlar çoğalınca kalabalık (Kablolar / Jigler'e tıklayınca stoka gidiyor; çok olunca karışır); proje
-    listesinde hepsini kapat, arama ve süzgeç, proje sıralaması; hiçbir projeye ait olmayan genel kullanım (anten vb.) —
-    kullanıldıkları projeler eklenebilir.
-  - **Stok bağı:** alt stok / üst stok bilgisi ("şurada kullanılıyor" / "altında şu bileşen var") — hangisi konuşulacak.
-  - Sonraya: Kiwi için s2p / s1p / S11 analizi (zorunlu değil, jpg de olabilir); kişiler (modül / almaç sorumluları).
+  - **Kişiler (yapıldı, 25.11.2026):** Ayarlar → "Kişiler…" Türler penceresini kişi listesiyle açar. @ önerisinde kişiler,
+    stoklar, araçlar ve seçili stokun `Diger\*.msg` mail dosyaları (`[[Diger/….msg]]`, tıklanınca Outlook'ta açılır); bahsetme
+    yalnız metin, iş atamaz. Kalan: stoka "sorumlu" alanı (modül / almaç sorumluları) istenirse.
+  - **Hata avı (25.11.2026):** düzenle penceresinde genel araçtan kalan proje seçimi; sayı satırı 261 maddelerini sayıyordu;
+    son değişiklik sırası her seferinde tarıyordu.
+  - **Genel düzen (mock `docs/mock/genel_duzen.png`, onay bekliyor):** süzgeç çubuğu tek biçim (etiket kutunun içinde,
+    seçili mavi, ✕ ile temizle; Bağ → "Plan / rapor", Sırala → "Sıra"); sol listede "Test yardımcı araçları" başlığı
+    Projeler gibi; ana sayfa boşken özet (geciken, açık iş, değişiklik bekleyen doküman, son açılanlar); araç sayfasında
+    Özellikler Süreç'in üstüne, çipler tek biçim, boş kartlar gizli.
+  - Sonraya: Kiwi için s2p / s1p / S11 analizi (zorunlu değil, jpg de olabilir).
 
 - **Durum (22.11.2026 akşam, 9cc1279):** aşağıdaki 22.11 maddelerinin hepsi bitti (elle durum, ## Rapor, eski TP/TR,
   plan / rapor ayrıntısı, rapor Tarih/Birim, kırpışma, geniş tablo), Excel'den gereksinim al + plan / rapor Excel'e aktar,
