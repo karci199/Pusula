@@ -3901,5 +3901,32 @@ namespace Pusula.Wpf.Properties
 
         /// <summary>Genel araç (25.11.2026): Inv_UsedInProjectsHint.</summary>
         public static string Inv_UsedInProjectsHint { get { return Get("Inv_UsedInProjectsHint"); } }
+
+        /// <summary>Alt / üst stok (25.11.2026): Stock_Components.</summary>
+        public static string Stock_Components { get { return Get("Stock_Components"); } }
+
+        /// <summary>Alt / üst stok (25.11.2026): Stock_UsedIn.</summary>
+        public static string Stock_UsedIn { get { return Get("Stock_UsedIn"); } }
+
+        /// <summary>Alt / üst stok (25.11.2026): Stock_AddComponent.</summary>
+        public static string Stock_AddComponent { get { return Get("Stock_AddComponent"); } }
+
+        /// <summary>Alt / üst stok (25.11.2026): Stock_AddComponentHint.</summary>
+        public static string Stock_AddComponentHint { get { return Get("Stock_AddComponentHint"); } }
+
+        /// <summary>Alt / üst stok (25.11.2026): Stock_RemoveComponent.</summary>
+        public static string Stock_RemoveComponent { get { return Get("Stock_RemoveComponent"); } }
+
+        /// <summary>Alt / üst stok (25.11.2026): Stock_ComponentAdded.</summary>
+        public static string Stock_ComponentAdded { get { return Get("Stock_ComponentAdded"); } }
+
+        /// <summary>Alt / üst stok (25.11.2026): Stock_ComponentRemoved.</summary>
+        public static string Stock_ComponentRemoved { get { return Get("Stock_ComponentRemoved"); } }
+
+        /// <summary>Alt / üst stok (25.11.2026): Stock_ComponentCycle.</summary>
+        public static string Stock_ComponentCycle { get { return Get("Stock_ComponentCycle"); } }
+
+        /// <summary>Alt / üst stok (25.11.2026): Stock_ComponentMissing.</summary>
+        public static string Stock_ComponentMissing { get { return Get("Stock_ComponentMissing"); } }
     }
 }

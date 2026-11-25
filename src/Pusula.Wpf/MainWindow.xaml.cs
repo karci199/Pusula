@@ -148,6 +148,36 @@ namespace Pusula.Wpf
         {
             viewModel.ProjectTag = string.Empty;
         }
+        // Alt / üst stok çipi: o stoku açar (ağaçta yoksa bir şey yapmaz).
+        private void StockLinkChip_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is string path && path.Length > 0)
+            {
+                viewModel.SelectNodeByPath(path);
+            }
+        }
+
+        private void RemoveComponent_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is string number)
+            {
+                viewModel.RemoveComponent(number);
+            }
+        }
+
+        // "+ Bileşen": seçim kutusunu açar / kapatır; açılınca liste açık gelir.
+        private void AddComponentToggle_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.IsAddingComponent = !viewModel.IsAddingComponent;
+            if (viewModel.IsAddingComponent)
+            {
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    ComponentBox.Focus();
+                    ComponentBox.IsDropDownOpen = true;
+                }), System.Windows.Threading.DispatcherPriority.Input);
+            }
+        }
         // Sağ tık, menü açılmadan önce tıklanan düğümü seçer.
         private void FolderTree_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {

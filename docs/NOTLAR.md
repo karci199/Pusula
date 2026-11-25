@@ -218,6 +218,9 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
     "Hepsini kapat": seçili kaydın yolu açık kalır (yoksa seçim üst düğüme kayıp sayfa değişirdi).
   - **Sol liste madde 3 (yapıldı, 25.11.2026):** genel araçta "Kullanıldığı projeler" (Düzenle'de proje işaretleri; kayit.json
     fields → projeler). Kayıt sayfasında, listede (Genel + projeler, Proje süzgeci) ve proje sayfası Kayıtlar / İstatistik'te görünür.
+  - **Alt / üst stok (yapıldı, 25.11.2026):** bileşenler üst stokta girilir (stok.json → components; "+ Bileşen" aramalı kutu,
+    sağ tık "Bileşeni kaldır"); alt stokta "Kullanıldığı yerler" hesaplanır. Birden çok üst olabilir; kendisi, tekrar ve döngü
+    (doğrudan / dolaylı) engellenir. Klasörler ve ağaç değişmez.
   - **Sol liste (kalan):** araçlar çoğalınca kalabalık (Kablolar / Jigler'e tıklayınca stoka gidiyor; çok olunca karışır); proje
     listesinde hepsini kapat, arama ve süzgeç, proje sıralaması; hiçbir projeye ait olmayan genel kullanım (anten vb.) —
     kullanıldıkları projeler eklenebilir.

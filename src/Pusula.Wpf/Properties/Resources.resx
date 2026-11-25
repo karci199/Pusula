@@ -3696,4 +3696,31 @@ Ortak liste (ÇK / EMC): &quot;## standart&quot; başlığı altında &quot;- nu
   <data name="Inv_UsedInProjectsHint" xml:space="preserve">
     <value>Genel araç; işaretlenen projelerin sayfasında (Kayıtlar, İstatistik) da görünür.</value>
   </data>
+  <data name="Stock_Components" xml:space="preserve">
+    <value>Bileşenler</value>
+  </data>
+  <data name="Stock_UsedIn" xml:space="preserve">
+    <value>Kullanıldığı yerler</value>
+  </data>
+  <data name="Stock_AddComponent" xml:space="preserve">
+    <value>+ Bileşen</value>
+  </data>
+  <data name="Stock_AddComponentHint" xml:space="preserve">
+    <value>Bu stokun içinde kullanılan bir stoku bileşen olarak ekler (yalnız bağ; klasörler taşınmaz)</value>
+  </data>
+  <data name="Stock_RemoveComponent" xml:space="preserve">
+    <value>Bileşeni kaldır</value>
+  </data>
+  <data name="Stock_ComponentAdded" xml:space="preserve">
+    <value>{0}, {1} stokuna bileşen olarak eklendi</value>
+  </data>
+  <data name="Stock_ComponentRemoved" xml:space="preserve">
+    <value>{0}, {1} bileşenlerinden çıkarıldı</value>
+  </data>
+  <data name="Stock_ComponentCycle" xml:space="preserve">
+    <value>{0}, {1} stokuna eklenemez (kendisi, zaten bileşeni ya da üstlerinden biri)</value>
+  </data>
+  <data name="Stock_ComponentMissing" xml:space="preserve">
+    <value>ağaçta yok</value>
+  </data>
 </root>

@@ -1,0 +1,90 @@
+<Border xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="1180" Background="{DynamicResource SurfaceBaseBrush}" Padding="24,20" TextElement.FontFamily="Segoe UI"
+        TextElement.Foreground="{DynamicResource TextPrimaryBrush}" TextElement.FontSize="13">
+    <Border.Resources>
+        <Style x:Key="Cap" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11.5" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+        <Style x:Key="Link" TargetType="Border">
+            <Setter Property="Margin" Value="0,0,6,0" />
+            <Setter Property="Padding" Value="8,2" />
+            <Setter Property="CornerRadius" Value="9" />
+            <Setter Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+        </Style>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource LayerBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="20,16" />
+            <Setter Property="Margin" Value="0,0,0,18" />
+        </Style>
+    </Border.Resources>
+
+    <StackPanel>
+        <!-- Üst stok: bileşenler burada girilir -->
+        <TextBlock Style="{StaticResource Cap}" Text="ÜST STOK (SİSTEM) · BİLEŞENLER BURADA GİRİLİR" />
+        <Border Style="{StaticResource Card}">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontSize="22" FontWeight="SemiBold" Text="AB-7000-0001" />
+                    <TextBlock Margin="12,6,0,0" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" Text="MILKON anten sistemi" />
+                </StackPanel>
+                <TextBlock Margin="0,2,0,10" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="7000_MILKON" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,10,0" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="Bileşenler" />
+                    <Border Style="{StaticResource Link}"><TextBlock Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="AB-7000-0003 · DA400 Döner Anten" /></Border>
+                    <Border Style="{StaticResource Link}"><TextBlock Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="JY-7000-0004 · Besleme ağı" /></Border>
+                    <TextBlock VerticalAlignment="Center" Margin="6,0,0,0" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="+ Bileşen" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Alt stok: kullanıldığı yerler kendiliğinden -->
+        <TextBlock Style="{StaticResource Cap}" Text="ALT STOK (BİLEŞEN) · KULLANILDIĞI YERLER KENDİLİĞİNDEN" />
+        <Border Style="{StaticResource Card}">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontSize="22" FontWeight="SemiBold" Text="AB-7000-0003" />
+                    <TextBlock Margin="12,6,0,0" FontSize="15" Foreground="{DynamicResource TextSecondaryBrush}" Text="DA400 Döner Anten" />
+                </StackPanel>
+                <TextBlock Margin="0,2,0,10" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="7000_MILKON" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,10,0" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="Kullanıldığı yerler" />
+                    <Border Style="{StaticResource Link}"><TextBlock Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="AB-7000-0001 · MILKON anten sistemi" /></Border>
+                    <Border Style="{StaticResource Link}"><TextBlock Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="AB-8000-0002 · Deneme sistemi" /></Border>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- + Bileşen penceresi -->
+        <TextBlock Style="{StaticResource Cap}" Text="+ BİLEŞEN · ARAMALI SEÇİM (YALNIZ STOKLAR; KENDİSİ VE ÜSTLERİ LİSTEDE YOK)" />
+        <Border Width="460" HorizontalAlignment="Left" Style="{StaticResource Card}">
+            <StackPanel>
+                <TextBlock FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" Text="AB-7000-0001 · bileşen ekle" />
+                <Border Height="32" CornerRadius="4" BorderThickness="1" Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}">
+                    <TextBlock Margin="10,0" VerticalAlignment="Center" Text="0002" />
+                </Border>
+                <Border Margin="0,6,0,0" Padding="10,6" CornerRadius="4" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                    <TextBlock Text="AB-7000-0002 · TAKIM ANTEN BOYNUZ Y" />
+                </Border>
+                <Border Padding="10,6">
+                    <TextBlock Foreground="{DynamicResource TextSecondaryBrush}" Text="AB-8000-0002 · Deneme sistemi" />
+                </Border>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                    <Border Padding="14,5" CornerRadius="4" Margin="0,0,8,0" Background="{DynamicResource ControlFillColorDefaultBrush}"><TextBlock Text="Vazgeç" /></Border>
+                    <Border Padding="14,5" CornerRadius="4" Background="{DynamicResource AccentFillColorDefaultBrush}"><TextBlock Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}" Text="Ekle" /></Border>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <Border Padding="14,10" CornerRadius="8" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+            <TextBlock TextWrapping="Wrap" FontSize="12" LineHeight="19" Foreground="{DynamicResource TextSecondaryBrush}"
+                       Text="Bilgi tek yerde: üst stokun stok.json'unda bileşen listesi. Alt stokta 'Kullanıldığı yerler' hesaplanır (bir bileşen birden çok sistemde olabilir). Çipe tıklayınca o stok açılır, sağ tıkla bağ kaldırılır. Klasörler taşınmaz, ağaç değişmez. Bağ yoksa satır görünmez." />
+        </Border>
+    </StackPanel>
+</Border>

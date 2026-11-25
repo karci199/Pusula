@@ -22,6 +22,7 @@ namespace Pusula.Core.Tracking
             Inventory = new System.Collections.Generic.List<string>();
             Notes = new System.Collections.Generic.List<QuickNote>();
             Tags = new System.Collections.Generic.List<string>();
+            Components = new System.Collections.Generic.List<string>();
         }
 
         /// <summary>Dosya biçiminin sürümü.</summary>
@@ -66,6 +67,13 @@ namespace Pusula.Core.Tracking
         /// <summary>Stokun etiketleri (<c>#</c> olmadan; türler dosyasındaki etiket listesinden, ana notun YAML'ında da durur).</summary>
         [DataMember(Name = "tags", Order = 9, EmitDefaultValue = false)]
         public System.Collections.Generic.List<string> Tags { get; set; } = new System.Collections.Generic.List<string>();
+
+        /// <summary>
+        /// Bu stokun bileşenleri (alt stok numaraları; 25.11.2026). Bilgi yalnız üst stokta tutulur; alt stokun
+        /// "kullanıldığı yerler" bu listelerden hesaplanır. Klasörler taşınmaz.
+        /// </summary>
+        [DataMember(Name = "components", Order = 10, EmitDefaultValue = false)]
+        public System.Collections.Generic.List<string> Components { get; set; } = new System.Collections.Generic.List<string>();
 
         /// <summary>Durumu ve tarihini ayarlar.</summary>
         public void SetStatus(string status, string note, System.DateTime when)
