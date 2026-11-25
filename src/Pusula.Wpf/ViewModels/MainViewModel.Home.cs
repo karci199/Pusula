@@ -377,6 +377,7 @@ namespace Pusula.Wpf.ViewModels
                 return new OpenTaskRow(t, project?.Path ?? root) { ProjectColor = project?.ProjectColor ?? string.Empty };
             }).ToList();
             FilterHomeTasks();
+            BuildHomeEmptySummary();
             OnPropertyChanged(nameof(HomeTaskSummary));
             OnPropertyChanged(nameof(HomeOpenCount));
             OnPropertyChanged(nameof(StatusCounts));

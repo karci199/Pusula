@@ -3741,4 +3741,34 @@ Ortak liste (ÇK / EMC): &quot;## standart&quot; başlığı altında &quot;- nu
   <data name="Placeholder_ResponsibleRole" xml:space="preserve">
     <value>Rol (örn. Tasarım sorumlusu)</value>
   </data>
+  <data name="Filter_SortCaption" xml:space="preserve">
+    <value>Sıra</value>
+  </data>
+  <data name="Verify_LinkCaptionReq" xml:space="preserve">
+    <value>Plan / rapor</value>
+  </data>
+  <data name="Verify_LinkCaptionPlan" xml:space="preserve">
+    <value>Gereksinim / rapor</value>
+  </data>
+  <data name="Verify_LinkCaptionReport" xml:space="preserve">
+    <value>Plan / sonuç</value>
+  </data>
+  <data name="Tree_InventoryHint" xml:space="preserve">
+    <value>Bütün test yardımcı araçlarının listesi</value>
+  </data>
+  <data name="Tree_NewTool" xml:space="preserve">
+    <value>Yeni test yardımcı aracı</value>
+  </data>
+  <data name="Home_LastEvent" xml:space="preserve">
+    <value>· son olay {0} · {1} · {2}</value>
+  </data>
+  <data name="Home_OpenTasks" xml:space="preserve">
+    <value>Açık iş</value>
+  </data>
+  <data name="Home_PendingDocuments" xml:space="preserve">
+    <value>Değişiklik bekleyen doküman</value>
+  </data>
+  <data name="Home_ShowAll" xml:space="preserve">
+    <value>Hepsini göster</value>
+  </data>
 </root>

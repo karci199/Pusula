@@ -82,12 +82,22 @@ namespace Pusula.Wpf.ViewModels
     {
         /// <summary>Kutuyu iki grupla kurar.</summary>
         public LinkFilterBox(string firstTitle, ObservableCollection<LinkPill> first, string secondTitle, ObservableCollection<LinkPill> second)
+            : this(firstTitle, first, secondTitle, second, string.Empty)
         {
+        }
+
+        /// <summary>Kutuyu iki grup ve kutunun içindeki etiketle ("Plan / rapor") kurar.</summary>
+        public LinkFilterBox(string firstTitle, ObservableCollection<LinkPill> first, string secondTitle, ObservableCollection<LinkPill> second, string caption)
+        {
+            Caption = caption;
             FirstTitle = firstTitle;
             First = first;
             SecondTitle = secondTitle;
             Second = second;
         }
+
+        /// <summary>Kutunun içindeki etiket ("Plan / rapor: Hepsi"; 25.11.2026).</summary>
+        public string Caption { get; }
 
         /// <summary>Birinci grubun başlığı.</summary>
         public string FirstTitle { get; }
@@ -178,19 +188,19 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Gereksinimler: Bağ kutusu (Test planı · Test raporu).</summary>
         public LinkFilterBox ReqLinkBox
         {
-            get { return reqLinkBox ?? (reqLinkBox = new LinkFilterBox(Resources.Verify_PillPlan, ReqPlanPills, Resources.Verify_PillReport, ReqReportPills)); }
+            get { return reqLinkBox ?? (reqLinkBox = new LinkFilterBox(Resources.Verify_PillPlan, ReqPlanPills, Resources.Verify_PillReport, ReqReportPills, Resources.Verify_LinkCaptionReq)); }
         }
 
         /// <summary>Test planı: Bağ kutusu (Gereksinim · Test raporu).</summary>
         public LinkFilterBox PlanLinkBox
         {
-            get { return planLinkBox ?? (planLinkBox = new LinkFilterBox(Resources.Verify_PillRequirement, PlanReqPills, Resources.Verify_PillReport, PlanReportPills)); }
+            get { return planLinkBox ?? (planLinkBox = new LinkFilterBox(Resources.Verify_PillRequirement, PlanReqPills, Resources.Verify_PillReport, PlanReportPills, Resources.Verify_LinkCaptionPlan)); }
         }
 
         /// <summary>Test raporu: Bağ kutusu (Test planı · Sonuç).</summary>
         public LinkFilterBox ReportLinkBox
         {
-            get { return reportLinkBox ?? (reportLinkBox = new LinkFilterBox(Resources.Verify_PillPlan, ReportPlanPills, Resources.Verify_PillResult, ReportResultPills)); }
+            get { return reportLinkBox ?? (reportLinkBox = new LinkFilterBox(Resources.Verify_PillPlan, ReportPlanPills, Resources.Verify_PillResult, ReportResultPills, Resources.Verify_LinkCaptionReport)); }
         }
 
         /// <summary>Gereksinimlerde arama (TG no, başlık, kısa not, alt grup).</summary>

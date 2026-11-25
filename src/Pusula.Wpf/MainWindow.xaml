@@ -97,19 +97,86 @@
             </controls:FormField>
         </DataTemplate>
         <local:InverseBooleanConverter x:Key="InverseBool" />
+        <!--
+            Süzgeç kutusu (25.11.2026, genel düzen): hap biçimi, etiket kutunun içinde ("Durum: Hepsi ⌄"; Tag = etiket).
+            İlk seçenek (Tümü / varsayılan sıra) dışında bir şey seçiliyse kenar mavi. Açılır liste DesignKit'inkiyle aynı.
+        -->
+        <Style x:Key="PillCombo" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+            <Setter Property="Margin" Value="0,3,8,3" />
+            <Setter Property="MinHeight" Value="30" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton x:Name="tb" Focusable="False" ClickMode="Press"
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="bd" CornerRadius="15" BorderThickness="1" SnapsToDevicePixels="True"
+                                                Background="{DynamicResource ControlFillColorDefaultBrush}" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <Border x:Name="Ring" CornerRadius="15" BorderThickness="1" IsHitTestVisible="False" BorderBrush="{DynamicResource AccentFillColorDefaultBrush}" />
+                            <StackPanel Orientation="Horizontal" Margin="12,0,10,0" VerticalAlignment="Center" IsHitTestVisible="False">
+                                <TextBlock x:Name="Caption" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Text="{TemplateBinding Tag}" />
+                                <TextBlock x:Name="Colon" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Text=": " />
+                                <ContentPresenter x:Name="Value" VerticalAlignment="Center"
+                                                  Content="{TemplateBinding SelectionBoxItem}"
+                                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                  ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                                  ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}" />
+                                <local:AppIcon Margin="8,1,0,0" VerticalAlignment="Center" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" Glyph="{x:Static local:AppIcons.ChevronDown}" />
+                            </StackPanel>
+                            <Popup x:Name="PART_Popup" Placement="Bottom" AllowsTransparency="True" Focusable="False"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}" PopupAnimation="Fade">
+                                <Border Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                        BorderThickness="1" CornerRadius="{DynamicResource OverlayCornerRadius}" Margin="0,2,0,6" Padding="0,4" MaxHeight="360"
+                                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}">
+                                    <ScrollViewer>
+                                        <ItemsPresenter />
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="SelectedIndex" Value="0">
+                                <Setter TargetName="Ring" Property="Visibility" Value="Collapsed" />
+                            </Trigger>
+                            <Trigger Property="SelectedIndex" Value="-1">
+                                <Setter TargetName="Ring" Property="Visibility" Value="Collapsed" />
+                            </Trigger>
+                            <Trigger Property="Tag" Value="{x:Null}">
+                                <Setter TargetName="Caption" Property="Visibility" Value="Collapsed" />
+                                <Setter TargetName="Colon" Property="Visibility" Value="Collapsed" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <!-- Açılır süzgeç düğmesi (Bağ, Durum): açıkken dolu mavi yerine ince mavi kenar; açıkken tıklanmaz (dış tık kutuyu kapatır). -->
         <Style x:Key="DropToggleStyle" TargetType="ToggleButton">
             <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="MinHeight" Value="32" />
-            <Setter Property="FontSize" Value="14" />
+            <Setter Property="MinHeight" Value="30" />
+            <Setter Property="FontSize" Value="13" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
                         <Border x:Name="bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="{DynamicResource ControlCornerRadius}" SnapsToDevicePixels="True">
+                                CornerRadius="15" SnapsToDevicePixels="True">
                             <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
@@ -254,14 +321,18 @@
         <!-- Bağ açılır kutusu: kapalıyken seçimin özeti, açılınca iki başlıklı çoklu seçim (Durum kutusuyla aynı görünüm) -->
         <DataTemplate x:Key="LinkFilterTemplate">
             <Grid>
-                <ToggleButton x:Name="LinkButton" Width="170" Margin="0,3" Padding="11,5" HorizontalContentAlignment="Stretch" Style="{StaticResource DropToggleStyle}"
+                <ToggleButton x:Name="LinkButton" Margin="0,3,8,3" Padding="12,4,10,4" HorizontalContentAlignment="Stretch" Style="{StaticResource DropToggleStyle}"
                               IsHitTestVisible="{Binding IsOpen, ElementName=LinkPopup, Converter={StaticResource InverseBool}}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock x:Name="LinkText" Text="{Binding Text}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Caption}" />
+                            <TextBlock Foreground="{DynamicResource TextTertiaryBrush}" Text=": " />
+                            <TextBlock x:Name="LinkText" MaxWidth="240" Text="{Binding Text}" TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
                         <local:AppIcon Grid.Column="1" Margin="8,0,0,0" Glyph="{x:Static local:AppIcons.ChevronDown}" FontSize="10" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
                     </Grid>
                 </ToggleButton>
@@ -1724,10 +1795,21 @@
                     <GridSplitter Grid.Row="2" Height="6" HorizontalAlignment="Stretch" ResizeDirection="Rows"
                                   Background="Transparent" Focusable="False"
                                   Visibility="{Binding HasInventory, Converter={StaticResource BoolToVis}}" />
+                    <!-- Test yardımcı araçları (25.11.2026, genel düzen): "Projeler" gibi başlık; başlığa tıklayınca bütün araçların listesi,
+                         + yeni araç. Altında türler (Envanter düğümü ağaçta gösterilmez). -->
+                    <DockPanel Grid.Row="3" Visibility="{Binding HasInventory, Converter={StaticResource BoolToVis}}">
+                    <Grid DockPanel.Dock="Top" Margin="16,6,8,0">
+                        <Button HorizontalAlignment="Left" Padding="0,4" Style="{DynamicResource SubtleButtonStyle}" Click="InventoryHeader_Click"
+                                ToolTip="{x:Static res:Resources.Tree_InventoryHint}">
+                            <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Records_ViewTools}" />
+                        </Button>
+                        <Button HorizontalAlignment="Right" Width="34" Height="34" Style="{DynamicResource IconButtonStyle}" Click="NewTool_Click"
+                                ToolTip="{x:Static res:Resources.Tree_NewTool}">
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.Add}" FontSize="17" Foreground="{DynamicResource AccentBrush}" />
+                        </Button>
+                    </Grid>
                     <TreeView x:Name="InventoryTree"
-                              Grid.Row="3"
-                              ItemsSource="{Binding InventoryNodes}"
-                              Visibility="{Binding HasInventory, Converter={StaticResource BoolToVis}}"
+                              ItemsSource="{Binding InventoryTypeNodes}"
                               ItemContainerStyle="{Binding ItemContainerStyle, ElementName=FolderTree}"
                               ItemTemplate="{Binding ItemTemplate, ElementName=FolderTree}"
                               Background="Transparent"
@@ -1735,6 +1817,7 @@
                               Padding="4"
                               SelectedItemChanged="FolderTree_SelectedItemChanged"
                               PreviewMouseRightButtonDown="FolderTree_PreviewMouseRightButtonDown" />
+                    </DockPanel>
                 </Grid>
             </Border>
 
@@ -1859,8 +1942,56 @@
                                 <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*" MaxWidth="1100" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                                 <StackPanel Margin="0,8,0,0">
                                     <ItemsControl ItemsSource="{Binding HomeTimeline}" ItemTemplate="{StaticResource TimelineDayTemplate}" Focusable="False" />
-                                    <TextBlock Margin="2,4" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Home_NoEvents}"
-                                               Visibility="{Binding IsHomeTimelineEmpty, Converter={StaticResource BoolToVis}}" />
+                                    <!-- Boşken (25.11.2026, genel düzen): son olay + Hepsi'ni göster; geciken / açık iş / değişiklik bekleyen doküman; son açılanlar -->
+                                    <StackPanel TextElement.FontWeight="Normal" Visibility="{Binding IsHomeTimelineEmpty, Converter={StaticResource BoolToVis}}">
+                                        <WrapPanel Margin="2,4,0,12">
+                                            <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Home_NoEvents}" />
+                                            <TextBlock Margin="8,0,0,0" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding HomeLastEventText}" />
+                                            <Button Margin="8,0,0,0" Padding="6,2" Style="{DynamicResource SubtleButtonStyle}" Click="HomeShowAll_Click">
+                                                <TextBlock Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="{x:Static res:Resources.Home_ShowAll}" />
+                                            </Button>
+                                        </WrapPanel>
+                                        <WrapPanel>
+                                            <ItemsControl ItemsSource="{Binding HomeEmptyCards}" Focusable="False">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Margin="0,0,10,10" Width="200" Padding="16,12" HorizontalContentAlignment="Left" Command="{Binding Open}"
+                                                                Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+                                                            <StackPanel>
+                                                                <TextBlock x:Name="Num" FontSize="22" FontWeight="SemiBold" Text="{Binding Count}" />
+                                                                <TextBlock Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Label}" TextWrapping="Wrap" />
+                                                            </StackPanel>
+                                                        </Button>
+                                                        <DataTemplate.Triggers>
+                                                            <DataTrigger Binding="{Binding Tone}" Value="failed"><Setter TargetName="Num" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" /></DataTrigger>
+                                                            <DataTrigger Binding="{Binding Tone}" Value="waiting"><Setter TargetName="Num" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
+                                                        </DataTemplate.Triggers>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                            <Border Margin="0,0,10,10" Padding="16,12" MinWidth="260" CornerRadius="{DynamicResource ControlCornerRadius}" BorderThickness="1"
+                                                    Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                                    Visibility="{Binding HasHomeEmptyRecent, Converter={StaticResource BoolToVis}}">
+                                                <StackPanel>
+                                                    <TextBlock FontWeight="SemiBold" Text="{x:Static res:Resources.Home_Recent}" />
+                                                    <ItemsControl Margin="0,4,0,0" ItemsSource="{Binding HomeEmptyRecent}" Focusable="False">
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Button Padding="0,2" HorizontalAlignment="Left" Style="{DynamicResource SubtleButtonStyle}" Tag="{Binding Path}" Click="StockLinkChip_Click">
+                                                                    <TextBlock Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="{Binding Title}" />
+                                                                </Button>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </StackPanel>
+                                            </Border>
+                                        </WrapPanel>
+                                    </StackPanel>
                                 </StackPanel>
                                 </Grid>
                                 </ScrollViewer>
@@ -2453,8 +2584,8 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Margin="0,0,6,0" Padding="7,1" CornerRadius="5" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
-                                            <TextBlock Text="{Binding}" FontSize="12" />
+                                        <Border Margin="0,0,6,0" Padding="8,1" CornerRadius="9" Background="{DynamicResource SubtleFillColorSecondaryBrush}">
+                                            <TextBlock Text="{Binding}" FontSize="12.5" />
                                         </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -3012,12 +3143,12 @@
                                         <WrapPanel>
                                             <TextBox Width="180" Margin="0,3" VerticalAlignment="Center" Text="{Binding PlanListSearch, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_SearchPlans}" />
                                             <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
-                                                <TextBlock Margin="16,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_LinkFilter}" />
+                                                
                                                 <ContentControl Focusable="False" Content="{Binding PlanLinkBox}" ContentTemplate="{StaticResource LinkFilterTemplate}" />
                                             </StackPanel>
                                             <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
-                                                <TextBlock Margin="16,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_SortBy}" />
-                                                <ComboBox Width="120" Margin="0,3" ItemsSource="{Binding PlanSorts}" SelectedItem="{Binding PlanSort, Mode=TwoWay}" />
+                                                
+                                                <ComboBox Style="{StaticResource PillCombo}" Tag="{x:Static res:Resources.Filter_SortCaption}" ItemsSource="{Binding PlanSorts}" SelectedItem="{Binding PlanSort, Mode=TwoWay}" />
                                             </StackPanel>
                                             <Button Margin="8,0,0,0" Padding="8,3" VerticalAlignment="Center" Style="{DynamicResource SubtleButtonStyle}" Click="VerLinkClear_Click" Visibility="{Binding HasPlanLinkFilter, Converter={StaticResource BoolToVis}}">
                                                 <TextBlock FontSize="12.5" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="{x:Static res:Resources.Verify_FilterClear}" />
@@ -3205,12 +3336,12 @@
                                             <WrapPanel>
                                                 <TextBox Width="180" Margin="0,3" VerticalAlignment="Center" Text="{Binding ReportListSearch, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_SearchReports}" />
                                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
-                                                    <TextBlock Margin="16,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_LinkFilter}" />
+                                                    
                                                     <ContentControl Focusable="False" Content="{Binding ReportLinkBox}" ContentTemplate="{StaticResource LinkFilterTemplate}" />
                                                 </StackPanel>
                                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
-                                                    <TextBlock Margin="16,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_SortBy}" />
-                                                    <ComboBox Width="120" Margin="0,3" ItemsSource="{Binding ReportSorts}" SelectedItem="{Binding ReportSort, Mode=TwoWay}" />
+                                                    
+                                                    <ComboBox Style="{StaticResource PillCombo}" Tag="{x:Static res:Resources.Filter_SortCaption}" ItemsSource="{Binding ReportSorts}" SelectedItem="{Binding ReportSort, Mode=TwoWay}" />
                                                 </StackPanel>
                                                 <Button Margin="8,0,0,0" Padding="8,3" VerticalAlignment="Center" Style="{DynamicResource SubtleButtonStyle}" Click="VerLinkClear_Click" Visibility="{Binding HasReportLinkFilter, Converter={StaticResource BoolToVis}}">
                                                     <TextBlock FontSize="12.5" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="{x:Static res:Resources.Verify_FilterClear}" />
@@ -3431,19 +3562,23 @@
                                     <WrapPanel>
                                         <TextBox Width="180" Margin="0,3" VerticalAlignment="Center" Text="{Binding RequirementSearch, UpdateSourceTrigger=PropertyChanged}" controls:TextBoxHelper.PlaceholderText="{x:Static res:Resources.Verify_SearchRequirements}" />
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
-                                            <TextBlock Margin="16,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_LinkFilter}" />
+                                            
                                             <ContentControl Focusable="False" Content="{Binding ReqLinkBox}" ContentTemplate="{StaticResource LinkFilterTemplate}" />
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                        <TextBlock Margin="16,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_FilterStatus}" />
-                                        <ToggleButton x:Name="StatusFilterButton" Width="160" Margin="0,3" Padding="11,5" HorizontalContentAlignment="Stretch" Style="{StaticResource DropToggleStyle}"
+                                        
+                                        <ToggleButton x:Name="StatusFilterButton" Margin="0,3,8,3" Padding="12,4,10,4" HorizontalContentAlignment="Stretch" Style="{StaticResource DropToggleStyle}"
                                                       IsHitTestVisible="{Binding IsOpen, ElementName=StatusFilterPopup, Converter={StaticResource InverseBool}}">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*" />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock x:Name="StatusFilterText" Text="{Binding VerificationStatusFilterText}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <TextBlock Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_FilterStatus}" />
+                                                    <TextBlock Foreground="{DynamicResource TextTertiaryBrush}" Text=": " />
+                                                    <TextBlock x:Name="StatusFilterText" MaxWidth="200" Text="{Binding VerificationStatusFilterText}" TextTrimming="CharacterEllipsis" />
+                                                </StackPanel>
                                                 <local:AppIcon Grid.Column="1" Margin="8,0,0,0" Glyph="{x:Static local:AppIcons.ChevronDown}" FontSize="10" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
                                             </Grid>
                                         </ToggleButton>
@@ -3470,8 +3605,8 @@
                                         </Popup>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
-                                            <TextBlock Margin="16,0,8,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_SortBy}" />
-                                            <ComboBox Width="120" Margin="0,3" ItemsSource="{Binding VerificationSorts}" SelectedItem="{Binding VerificationSort, Mode=TwoWay}" />
+                                            
+                                            <ComboBox Style="{StaticResource PillCombo}" Tag="{x:Static res:Resources.Filter_SortCaption}" ItemsSource="{Binding VerificationSorts}" SelectedItem="{Binding VerificationSort, Mode=TwoWay}" />
                                         </StackPanel>
                                         <Button Margin="8,0,0,0" Padding="8,3" VerticalAlignment="Center" Style="{DynamicResource SubtleButtonStyle}" Click="VerLinkClear_Click" Visibility="{Binding HasReqLinkFilter, Converter={StaticResource BoolToVis}}">
                                             <TextBlock FontSize="12.5" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="{x:Static res:Resources.Verify_FilterClear}" />
@@ -4209,6 +4344,35 @@
                         </StackPanel>
                     </Border>
 
+                    <!-- Özellikler: türe özel alanlar iki sütun; etiket üstte küçük, değer altta, ince çizgiyle ayrılır; boş olan soluk -->
+                    <Border Padding="16,12" Margin="0,0,0,16" Visibility="{Binding Inventory.HasProperties, Converter={StaticResource BoolToVis}}"
+                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                            CornerRadius="{DynamicResource OverlayCornerRadius}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource PaneLabel}" Text="{Binding Inventory.PropertiesHeader}" />
+                            <!-- Yalnız dolu alanlar görünür (başlıkta "2 / 6 dolu"); hiçbiri dolu değilse tek satır ipucu -->
+                            <ItemsControl x:Name="PropertyList" ItemsSource="{Binding Inventory.Properties}" ItemTemplate="{StaticResource FactCellTemplate}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <local:TwoColumnRowsPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemContainerStyle>
+                                    <Style TargetType="ContentPresenter">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsEmpty}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ItemsControl.ItemContainerStyle>
+                            </ItemsControl>
+                            <TextBlock Margin="0,2,0,0" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}"
+                                       Visibility="{Binding Inventory.HasNoFilledProperties, Converter={StaticResource BoolToVis}}"
+                                       Text="{x:Static res:Resources.Inv_PropertiesEmpty}" />
+                        </StackPanel>
+                    </Border>
+
                     <!-- Süreç: düzey, talep, yapan, teslim, not (numara, tanım, alt tür, konum başlıkta yazar) -->
                     <Border Padding="16,12" Margin="0,0,0,16"
                             Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
@@ -4311,35 +4475,6 @@
                             </ItemsControl>
                             <TextBlock Margin="6,2,0,0" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.UsingStock_None}"
                                        Visibility="{Binding HasNoUsingStocks, Converter={StaticResource BoolToVis}}" />
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Özellikler: türe özel alanlar iki sütun; etiket üstte küçük, değer altta, ince çizgiyle ayrılır; boş olan soluk -->
-                    <Border Padding="16,12" Margin="0,0,0,16" Visibility="{Binding Inventory.HasProperties, Converter={StaticResource BoolToVis}}"
-                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
-                            CornerRadius="{DynamicResource OverlayCornerRadius}">
-                        <StackPanel>
-                            <TextBlock Style="{StaticResource PaneLabel}" Text="{Binding Inventory.PropertiesHeader}" />
-                            <!-- Yalnız dolu alanlar görünür (başlıkta "2 / 6 dolu"); hiçbiri dolu değilse tek satır ipucu -->
-                            <ItemsControl x:Name="PropertyList" ItemsSource="{Binding Inventory.Properties}" ItemTemplate="{StaticResource FactCellTemplate}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <local:TwoColumnRowsPanel />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemContainerStyle>
-                                    <Style TargetType="ContentPresenter">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsEmpty}" Value="True">
-                                                <Setter Property="Visibility" Value="Collapsed" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ItemsControl.ItemContainerStyle>
-                            </ItemsControl>
-                            <TextBlock Margin="0,2,0,0" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}"
-                                       Visibility="{Binding Inventory.HasNoFilledProperties, Converter={StaticResource BoolToVis}}"
-                                       Text="{x:Static res:Resources.Inv_PropertiesEmpty}" />
                         </StackPanel>
                     </Border>
 
@@ -4486,28 +4621,13 @@
                     <!-- 25.11.2026: türün listesi (araçlar ağaçta değil burada); özet, Proje / Stok süzgeci, geri dönünce süzgeç kalır -->
                     <TextBlock Margin="0,0,0,10" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Inventory.ListSummary}" />
                     <WrapPanel Orientation="Horizontal">
-                        <controls:SearchBox Width="220" Margin="0,0,8,6" PlaceholderText="{x:Static res:Resources.Filter_Search}"
+                        <controls:SearchBox Width="260" Margin="0,0,8,6" PlaceholderText="{x:Static res:Resources.Filter_Search}"
                                             Text="{Binding Inventory.FilterText, UpdateSourceTrigger=PropertyChanged}" />
-                        <StackPanel Orientation="Horizontal" Margin="0,0,8,6">
-                            <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Col_Project}" />
-                            <ComboBox MinWidth="150" ItemsSource="{Binding Inventory.ProjectOptions}" SelectedItem="{Binding Inventory.FilterProject, Mode=TwoWay}" />
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,8,6">
-                            <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Col_Stock}" />
-                            <ComboBox MinWidth="150" ItemsSource="{Binding Inventory.StockOptions}" SelectedItem="{Binding Inventory.FilterStock, Mode=TwoWay}" />
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,8,6" Visibility="{Binding Inventory.ShowTypeFilter, Converter={StaticResource BoolToVis}}">
-                            <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Inv_Type}" />
-                            <ComboBox MinWidth="110" ItemsSource="{Binding Inventory.TypeOptions}" SelectedItem="{Binding Inventory.FilterType, Mode=TwoWay}" />
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,8,6">
-                            <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Inv_SubType}" />
-                            <ComboBox MinWidth="130" ItemsSource="{Binding Inventory.SubTypeOptions}" SelectedItem="{Binding Inventory.FilterSubType, Mode=TwoWay}" />
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,8,6">
-                            <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Col_Status}" />
-                            <ComboBox MinWidth="150" ItemsSource="{Binding Inventory.StatusOptions}" SelectedItem="{Binding Inventory.FilterStatus, Mode=TwoWay}" />
-                        </StackPanel>
+                        <ComboBox Style="{StaticResource PillCombo}" Margin="0,0,8,6" Tag="{x:Static res:Resources.Col_Project}" ItemsSource="{Binding Inventory.ProjectOptions}" SelectedItem="{Binding Inventory.FilterProject, Mode=TwoWay}" />
+                        <ComboBox Style="{StaticResource PillCombo}" Margin="0,0,8,6" Tag="{x:Static res:Resources.Col_Stock}" ItemsSource="{Binding Inventory.StockOptions}" SelectedItem="{Binding Inventory.FilterStock, Mode=TwoWay}" />
+                        <ComboBox Style="{StaticResource PillCombo}" Margin="0,0,8,6" Visibility="{Binding Inventory.ShowTypeFilter, Converter={StaticResource BoolToVis}}" Tag="{x:Static res:Resources.Inv_Type}" ItemsSource="{Binding Inventory.TypeOptions}" SelectedItem="{Binding Inventory.FilterType, Mode=TwoWay}" />
+                        <ComboBox Style="{StaticResource PillCombo}" Margin="0,0,8,6" Tag="{x:Static res:Resources.Inv_SubType}" ItemsSource="{Binding Inventory.SubTypeOptions}" SelectedItem="{Binding Inventory.FilterSubType, Mode=TwoWay}" />
+                        <ComboBox Style="{StaticResource PillCombo}" Margin="0,0,8,6" Tag="{x:Static res:Resources.Col_Status}" ItemsSource="{Binding Inventory.StatusOptions}" SelectedItem="{Binding Inventory.FilterStatus, Mode=TwoWay}" />
                         <Button Margin="0,0,8,6" Padding="8,3" VerticalAlignment="Center" Style="{DynamicResource SubtleButtonStyle}" Click="InventoryFilterClear_Click"
                                 Visibility="{Binding Inventory.HasFilter, Converter={StaticResource BoolToVis}}">
                             <TextBlock Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="{x:Static res:Resources.Verify_FilterClear}" />
@@ -4561,7 +4681,7 @@
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                <GridViewColumn Header="{x:Static res:Resources.Inv_Location}" Width="120" DisplayMemberBinding="{Binding Location}" />
+                                <GridViewColumn Header="{x:Static res:Resources.Inv_Location}" Width="220" DisplayMemberBinding="{Binding Location}" />
                             </GridView>
                         </ListView.View>
                     </ListView>

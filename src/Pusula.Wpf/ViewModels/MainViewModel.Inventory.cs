@@ -339,6 +339,7 @@ namespace Pusula.Wpf.ViewModels
             group.IsExpanded = expanded.Count == 0 || expanded.Contains(groupPath);
             Nodes.Add(group);
             InventoryNodes.Add(group);
+            OnPropertyChanged(nameof(InventoryTypeNodes));
         }
 
         #endregion
@@ -1038,6 +1039,28 @@ namespace Pusula.Wpf.ViewModels
             }
 
             return links;
+        }
+
+        /// <summary>Sol listede "Test yardımcı araçları" başlığının altındaki türler (bölüm düğümü ağaçta gösterilmez; 25.11.2026).</summary>
+        public IEnumerable<TreeNodeViewModel> InventoryTypeNodes
+        {
+            get { return InventoryNodes.Count > 0 ? (IEnumerable<TreeNodeViewModel>)InventoryNodes[0].Children : new TreeNodeViewModel[0]; }
+        }
+
+        /// <summary>"Test yardımcı araçları" başlığı: bütün araçların listesi (bölüm düğümü) açılır.</summary>
+        public void ShowAllTools()
+        {
+            if (InventoryNodes.Count == 0)
+            {
+                return;
+            }
+
+            if (selectedNode != null && !ReferenceEquals(selectedNode, InventoryNodes[0]))
+            {
+                selectedNode.IsSelected = false;
+            }
+
+            SelectedNode = InventoryNodes[0];
         }
 
         /// <summary>Kaydı bulur ve sayfasını açar (kayıtlar ağaçta gizli; bkz. <see cref="TreeNodeViewModel.HiddenItems"/>).</summary>

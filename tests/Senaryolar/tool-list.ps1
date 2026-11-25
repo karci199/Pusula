@@ -147,7 +147,7 @@ Check 'kayit.json: projeler = 8000_DENEME' ($kayit -match 'projeler"[^}]*"8000_D
 Check 'stok aracında proje seçimi yok' ($vm.OpenEdit($cableDir) -and -not $vm.IsEditGeneral -and $vm.EditProjects.Count -eq 0)
 $vm.IsEditOpen = $false
 $vm.SelectNodeByPath($g5); Wait
-$fact = $vm.Inventory.Facts | Where-Object Label -eq 'Kullanıldığı projeler' | Select-Object -First 1
+$fact = $vm.Inventory.ProcessFacts | Where-Object Label -eq 'Kullanıldığı projeler' | Select-Object -First 1
 Check 'kayıt sayfasında Kullanıldığı projeler: 8000_DENEME' ($fact -ne $null -and $fact.Value -eq '8000_DENEME') ([string]$fact.Value)
 $vm.SelectedNode = $cables; Wait; $vm.Inventory.ClearFilters(); Pump
 $r5 = $vm.Inventory.Rows | Where-Object Number -eq 'JT-0000-0005' | Select-Object -First 1

@@ -3946,5 +3946,35 @@ namespace Pusula.Wpf.Properties
 
         /// <summary>Sorumlular (25.11.2026): Placeholder_ResponsibleRole.</summary>
         public static string Placeholder_ResponsibleRole { get { return Get("Placeholder_ResponsibleRole"); } }
+
+        /// <summary>Süzgeç kutusu etiketi (25.11.2026): Filter_SortCaption.</summary>
+        public static string Filter_SortCaption { get { return Get("Filter_SortCaption"); } }
+
+        /// <summary>Süzgeç kutusu etiketi (25.11.2026): Verify_LinkCaptionReq.</summary>
+        public static string Verify_LinkCaptionReq { get { return Get("Verify_LinkCaptionReq"); } }
+
+        /// <summary>Süzgeç kutusu etiketi (25.11.2026): Verify_LinkCaptionPlan.</summary>
+        public static string Verify_LinkCaptionPlan { get { return Get("Verify_LinkCaptionPlan"); } }
+
+        /// <summary>Süzgeç kutusu etiketi (25.11.2026): Verify_LinkCaptionReport.</summary>
+        public static string Verify_LinkCaptionReport { get { return Get("Verify_LinkCaptionReport"); } }
+
+        /// <summary>Sol liste (25.11.2026): Tree_InventoryHint.</summary>
+        public static string Tree_InventoryHint { get { return Get("Tree_InventoryHint"); } }
+
+        /// <summary>Sol liste (25.11.2026): Tree_NewTool.</summary>
+        public static string Tree_NewTool { get { return Get("Tree_NewTool"); } }
+
+        /// <summary>Ana sayfa boşken özet (25.11.2026): Home_LastEvent.</summary>
+        public static string Home_LastEvent { get { return Get("Home_LastEvent"); } }
+
+        /// <summary>Ana sayfa boşken özet (25.11.2026): Home_OpenTasks.</summary>
+        public static string Home_OpenTasks { get { return Get("Home_OpenTasks"); } }
+
+        /// <summary>Ana sayfa boşken özet (25.11.2026): Home_PendingDocuments.</summary>
+        public static string Home_PendingDocuments { get { return Get("Home_PendingDocuments"); } }
+
+        /// <summary>Ana sayfa boşken özet (25.11.2026): Home_ShowAll.</summary>
+        public static string Home_ShowAll { get { return Get("Home_ShowAll"); } }
     }
 }

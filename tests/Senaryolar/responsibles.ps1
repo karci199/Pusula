@@ -31,7 +31,7 @@ Check 'araç düzenlenir, sorumlu bölümü görünür' ($vm.OpenEdit($tool) -an
 $vm.AddEditResponsible(); $vm.EditResponsibles[0].Role = 'Kablo sorumlusu'; $vm.EditResponsibles[0].Person = 'Akşimşek'
 Check 'kaydedildi' ($vm.ConfirmEdit()) $vm.EditError
 $vm.SelectNodeByPath($tool); Wait
-$fact = $vm.Inventory.Facts | Where-Object Label -eq 'Sorumlular' | Select-Object -First 1
+$fact = $vm.Inventory.ProcessFacts | Where-Object Label -eq 'Sorumlular' | Select-Object -First 1
 Snap $win "$Out\responsibles-tool.png"
 Check 'araç sayfasında Sorumlular: Kablo sorumlusu: Akşimşek' ($fact -ne $null -and $fact.Value -eq 'Kablo sorumlusu: Akşimşek') ([string]$fact.Value)
 $vm.SelectNodeByPath($stock); Wait

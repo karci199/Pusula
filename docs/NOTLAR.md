@@ -232,10 +232,11 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
     kutularının "Tümü" geçici çözümü.
   - **Hata avı (25.11.2026):** düzenle penceresinde genel araçtan kalan proje seçimi; sayı satırı 261 maddelerini sayıyordu;
     son değişiklik sırası her seferinde tarıyordu.
-  - **Genel düzen (mock `docs/mock/genel_duzen.png`, onay bekliyor):** süzgeç çubuğu tek biçim (etiket kutunun içinde,
+  - **Genel düzen (yapıldı, 25.11.2026; mock `docs/mock/genel_duzen.png`):** süzgeç çubuğu tek biçim (etiket kutunun içinde,
     seçili mavi, ✕ ile temizle; Bağ → "Plan / rapor", Sırala → "Sıra"); sol listede "Test yardımcı araçları" başlığı
     Projeler gibi; ana sayfa boşken özet (geciken, açık iş, değişiklik bekleyen doküman, son açılanlar); araç sayfasında
-    Özellikler Süreç'in üstüne, çipler tek biçim, boş kartlar gizli.
+    Özellikler Süreç'in üstüne, çipler tek biçim. Ayrıca: araç sayfasında Sorumlular / Kullanıldığı projeler Süreç kartında
+    (önceden yalnız modelde vardı, ekranda görünmüyordu); araç listesinde Konum sütunu genişledi. Tam takım 75 senaryo geçti.
   - Sonraya: Kiwi için s2p / s1p / S11 analizi (zorunlu değil, jpg de olabilir).
 
 - **Durum (22.11.2026 akşam, 9cc1279):** aşağıdaki 22.11 maddelerinin hepsi bitti (elle durum, ## Rapor, eski TP/TR,

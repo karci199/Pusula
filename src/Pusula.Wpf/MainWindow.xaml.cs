@@ -1691,6 +1691,23 @@ namespace Pusula.Wpf
         }
 
         // "+" düğmesi: menüyü düğmenin altında açar (ok yok, sade ikon).
+        // Sol liste: "Test yardımcı araçları" başlığı bütün araçların listesini açar; + yeni araç penceresi.
+        // Ana sayfa Günlük boşken "Hepsi'ni göster": zaman süzgeci Hepsi olur.
+        private void HomeShowAll_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.IsRangeAll = true;
+        }
+
+        private void InventoryHeader_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.ShowAllTools();
+        }
+
+        private void NewTool_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.OpenAddTool();
+        }
+
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             var menu = (ContextMenu)FindResource("AddMenu");

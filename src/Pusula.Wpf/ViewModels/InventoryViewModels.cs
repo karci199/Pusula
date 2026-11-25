@@ -1157,7 +1157,7 @@ namespace Pusula.Wpf.ViewModels
             Facts.Add(new FactRow(Resources.Inv_Name, record.Name));
             Facts.Add(new FactRow(Resources.Inv_SubType, record.SubType));
             Facts.Add(new FactRow(Resources.Inv_Level, LevelText(shown)));
-            if (shown.Level == InventoryLevel.General)
+            if (shown.Level == InventoryLevel.General && MainViewModel.ProjectsOf(record).Count > 0)
             {
                 Facts.Add(new FactRow(Resources.Inv_UsedInProjects, string.Join(", ", MainViewModel.ProjectsOf(record))));
             }
@@ -1183,7 +1183,8 @@ namespace Pusula.Wpf.ViewModels
 
             // Sayfadaki "Süreç" kartı: başlıkta yazanlar (numara, tanım, alt tür, konum) tekrarlanmaz.
             foreach (var fact in Facts.Where(f => f.Label == Resources.Inv_Level || f.Label == Resources.Inv_Requested
-                || f.Label == Resources.Inv_MadeBy || f.Label == Resources.Inv_Delivered || f.Label == Resources.Inv_Docs || f.Label == Resources.Inv_Note))
+                || f.Label == Resources.Inv_MadeBy || f.Label == Resources.Inv_Delivered || f.Label == Resources.Inv_Docs || f.Label == Resources.Inv_Note
+                || f.Label == Resources.Inv_UsedInProjects || f.Label == Resources.Edit_Responsibles))
             {
                 ProcessFacts.Add(fact);
             }

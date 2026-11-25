@@ -396,6 +396,7 @@ namespace Pusula.Wpf.ViewModels
             Nodes.Clear();
             ProjectNodes.Clear();
             InventoryNodes.Clear();
+            OnPropertyChanged(nameof(InventoryTypeNodes));
             SelectedNode = null;
             OnPropertyChanged(nameof(HasRoot));
             WatchRoot();
