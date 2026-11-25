@@ -41,6 +41,8 @@ Snap $win "$Out\stock-scroll-top.png"
 $page.ScrollToVerticalOffset(700); Pump; $win.UpdateLayout(); Pump
 Check 'sayfa aşağı kaydı' ($page.VerticalOffset -gt 600) ([string]$page.VerticalOffset)
 Snap $win "$Out\stock-scroll-down.png"
+$page.ScrollToEnd(); Pump; $win.UpdateLayout(); Pump
+Snap $win "$Out\stock-scroll-end.png"
 
 $vm.SelectNodeByPath((Join-Path $Data '7000_MILKON\AB-7000-0003')); Wait; Pump
 Check 'başka stok seçilince sayfa başa döner' ($page.VerticalOffset -eq 0) ([string]$page.VerticalOffset)

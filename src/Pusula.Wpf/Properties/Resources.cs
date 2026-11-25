@@ -3928,5 +3928,11 @@ namespace Pusula.Wpf.Properties
 
         /// <summary>Alt / üst stok (25.11.2026): Stock_ComponentMissing.</summary>
         public static string Stock_ComponentMissing { get { return Get("Stock_ComponentMissing"); } }
+
+        /// <summary>@ önerisinde mail dosyası türü (25.11.2026).</summary>
+        public static string Note_KindMail { get { return Get("Note_KindMail"); } }
+
+        /// <summary>Ayarlar: kişi listesini açan düğme (25.11.2026).</summary>
+        public static string Button_EditPeople { get { return Get("Button_EditPeople"); } }
     }
 }

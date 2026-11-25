@@ -6,6 +6,9 @@
     /// </summary>
     public static class AppIcons
     {
+        /// <summary>Kişi (Ayarlar → Kişiler; 25.11.2026).</summary>
+        public const string Person = "\uE77B";
+
         /// <summary>Hepsini kapat (yukarı ok; 25.11.2026).</summary>
         public const string CollapseAll = "\uE70E";
 

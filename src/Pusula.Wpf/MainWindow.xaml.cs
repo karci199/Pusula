@@ -1301,15 +1301,21 @@ namespace Pusula.Wpf
             }
         }
 
-        /// <summary>Türler penceresini açar.</summary>
-        internal void EditTypes(Window owner)
+        /// <summary>Türler penceresini açar; <paramref name="people"/> ise kişi listesi seçili gelir (Ayarlar → Kişiler…).</summary>
+        internal void EditTypes(Window owner, bool people = false)
         {
             if (!viewModel.CanEditTemplates())
             {
                 return;
             }
 
-            var editor = new TypeEditorWindow(new ViewModels.TypeEditor.TypeEditorViewModel(viewModel.RootPath, viewModel.Types))
+            var typesModel = new ViewModels.TypeEditor.TypeEditorViewModel(viewModel.RootPath, viewModel.Types);
+            if (people)
+            {
+                typesModel.Selected = typesModel.PersonItem;
+            }
+
+            var editor = new TypeEditorWindow(typesModel)
             {
                 Owner = owner,
             };

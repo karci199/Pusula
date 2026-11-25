@@ -126,8 +126,52 @@ namespace Pusula.Wpf.ViewModels
                 }
             }
 
+            // Mail dosyaları (25.11.2026): seçili stokun (ya da kaydın) Diger\ klasöründeki .msg dosyaları; yalnız bahsedilir,
+            // tıklanınca Outlook'ta açılır.
+            foreach (var mail in MailFilesOfSelection())
+            {
+                var name = Path.GetFileName(mail);
+                if (seen.Add("msg:" + name))
+                {
+                    list.Add(new NoteSuggestion(name, string.Empty, Resources.Note_KindMail, AppIcons.Note, "[[" + MailFolderName + "/" + name + "]]"));
+                }
+            }
+
             return list;
         }
+
+        /// <summary>Seçili stokun / kaydın / projenin <c>Diger\</c> klasöründeki mail dosyaları (yeniden eskiye).</summary>
+        public IList<string> MailFilesOfSelection()
+        {
+            var folder = selectedNode?.Path ?? string.Empty;
+            var mails = Path.Combine(folder, MailFolderName);
+            try
+            {
+                return folder.Length > 0 && Directory.Exists(mails)
+                    ? Directory.GetFiles(mails, "*.msg").OrderByDescending(File.GetLastWriteTimeUtc).ToList()
+                    : new List<string>();
+            }
+            catch (IOException)
+            {
+                return new List<string>();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return new List<string>();
+            }
+        }
+
+        /// <summary>Mail dosyası açıcı (testlerde değiştirilir); varsayılan Outlook / Windows ile açar.</summary>
+        public Action<string> OpenMailFile { get; set; } = path =>
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(path) { UseShellExecute = true });
+            }
+            catch (System.ComponentModel.Win32Exception)
+            {
+            }
+        };
 
         /// <summary>
         /// <c>[[hedef]]</c> tıklandı: hedef bir proje, stok ya da envanter kaydıysa ağaçta seçilir ve ana pencere öne gelir;
@@ -138,6 +182,21 @@ namespace Pusula.Wpf.ViewModels
             var key = (target ?? string.Empty).Trim().TrimStart('@');
             if (key.Length == 0 || !HasRoot)
             {
+                return false;
+            }
+
+            // [[Diger/….msg]]: seçili kaydın mail dosyası Outlook'ta açılır.
+            if (key.EndsWith(".msg", StringComparison.OrdinalIgnoreCase))
+            {
+                var name = Path.GetFileName(key.Replace('/', '\\'));
+                var mail = MailFilesOfSelection().FirstOrDefault(m => string.Equals(Path.GetFileName(m), name, StringComparison.OrdinalIgnoreCase));
+                if (mail != null)
+                {
+                    OpenMailFile(mail);
+                    return true;
+                }
+
+                Status = string.Format(System.Globalization.CultureInfo.CurrentCulture, Resources.Journal_MailMissing, name);
                 return false;
             }
 

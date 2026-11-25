@@ -2394,7 +2394,7 @@
                 <ScrollViewer x:Name="StockPageScroll" Grid.Row="1" Grid.RowSpan="4" Margin="0,10,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
                               Padding="0,0,10,0" PreviewMouseWheel="StockPageScroll_PreviewMouseWheel"
                               Visibility="{Binding Detail.IsStock, Converter={StaticResource BoolToVis}}">
-                <Grid TextElement.FontWeight="Normal">
+                <Grid Margin="0,0,0,24" TextElement.FontWeight="Normal">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="380" />

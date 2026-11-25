@@ -22,6 +22,11 @@ namespace Pusula.Wpf
             main.EditTemplates(this);
         }
 
+        private void People_Click(object sender, RoutedEventArgs e)
+        {
+            main.EditTypes(this, true);
+        }
+
         private void Types_Click(object sender, RoutedEventArgs e)
         {
             main.EditTypes(this);

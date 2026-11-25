@@ -3723,4 +3723,10 @@ Ortak liste (ÇK / EMC): &quot;## standart&quot; başlığı altında &quot;- nu
   <data name="Stock_ComponentMissing" xml:space="preserve">
     <value>ağaçta yok</value>
   </data>
+  <data name="Note_KindMail" xml:space="preserve">
+    <value>Mail</value>
+  </data>
+  <data name="Button_EditPeople" xml:space="preserve">
+    <value>Kişiler…</value>
+  </data>
 </root>

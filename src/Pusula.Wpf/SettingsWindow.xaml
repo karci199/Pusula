@@ -89,6 +89,13 @@
                         <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Button_EditTypes}" />
                     </StackPanel>
                 </Button>
+                <!-- Kişiler (25.11.2026): Türler penceresi kişi listesiyle açılır -->
+                <Button Margin="0,0,8,8" Click="People_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <local:AppIcon Glyph="{x:Static local:AppIcons.Person}" FontSize="14" />
+                        <TextBlock Margin="8,0,0,0" Text="{x:Static res:Resources.Button_EditPeople}" />
+                    </StackPanel>
+                </Button>
                 <Button Margin="0,0,8,8" Click="Trash_Click">
                     <StackPanel Orientation="Horizontal">
                         <local:AppIcon Glyph="{x:Static local:AppIcons.Delete}" FontSize="14" />
