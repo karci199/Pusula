@@ -5117,6 +5117,25 @@
                 </controls:FormField>
                 <controls:FormField Header="{x:Static res:Resources.Inv_Tags}" LabelWidth="130" Margin="0,10,0,0">
                     <local:TagBox Tags="{Binding EditTags, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Tag_Placeholder}" />
+                </controls:FormField>
+                <!-- Genel araç (25.11.2026): kullanıldığı projeler; işaretlenen projelerin sayfasında da görünür -->
+                <controls:FormField Header="{x:Static res:Resources.Inv_UsedInProjects}" LabelWidth="130" Margin="0,10,0,0"
+                                    Visibility="{Binding IsEditGeneral, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <ItemsControl ItemsSource="{Binding EditProjects}" Focusable="False">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox Margin="0,2,16,2" Content="{Binding Text}" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Margin="0,2,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Inv_UsedInProjectsHint}" />
+                    </StackPanel>
                 </controls:FormField>                <!-- Süreç (isteğe bağlı): talep, yapan, doküman -->
                 <StackPanel Visibility="{Binding IsEditInventory, Converter={StaticResource BoolToVis}}">
                     <Border Margin="0,16,0,10" Padding="0,0,0,6" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">

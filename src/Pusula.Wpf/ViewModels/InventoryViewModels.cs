@@ -244,6 +244,15 @@ namespace Pusula.Wpf.ViewModels
                 }
             }
 
+            // Genel araçta elle işaretlenen "kullanıldığı projeler" (25.11.2026).
+            if (IsGeneral)
+            {
+                foreach (var used in MainViewModel.ProjectsOf(item.Record).Where(p => !Projects.Contains(p, StringComparer.OrdinalIgnoreCase)))
+                {
+                    Projects.Add(used);
+                }
+            }
+
             AttachedNote = IsGeneral ? string.Join(", ", Projects.Select(InventoryLinks.CodeOf)) : string.Empty;
         }
 
@@ -1148,6 +1157,10 @@ namespace Pusula.Wpf.ViewModels
             Facts.Add(new FactRow(Resources.Inv_Name, record.Name));
             Facts.Add(new FactRow(Resources.Inv_SubType, record.SubType));
             Facts.Add(new FactRow(Resources.Inv_Level, LevelText(shown)));
+            if (shown.Level == InventoryLevel.General)
+            {
+                Facts.Add(new FactRow(Resources.Inv_UsedInProjects, string.Join(", ", MainViewModel.ProjectsOf(record))));
+            }
             Facts.Add(new FactRow(Resources.Inv_Requested, EventText(request)));
             string maker, docs;
             Facts.Add(new FactRow(Resources.Inv_MadeBy, record.Fields.TryGetValue(MainViewModel.MakerKey, out maker) && maker.Length > 0 ? maker : making?.Person ?? string.Empty));

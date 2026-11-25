@@ -3895,5 +3895,11 @@ namespace Pusula.Wpf.Properties
 
         /// <summary>Sol liste (25.11.2026): Tree_TagClearHint.</summary>
         public static string Tree_TagClearHint { get { return Get("Tree_TagClearHint"); } }
+
+        /// <summary>Genel araç (25.11.2026): Inv_UsedInProjects.</summary>
+        public static string Inv_UsedInProjects { get { return Get("Inv_UsedInProjects"); } }
+
+        /// <summary>Genel araç (25.11.2026): Inv_UsedInProjectsHint.</summary>
+        public static string Inv_UsedInProjectsHint { get { return Get("Inv_UsedInProjectsHint"); } }
     }
 }

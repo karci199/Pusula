@@ -3690,4 +3690,10 @@ Ortak liste (ÇK / EMC): &quot;## standart&quot; başlığı altında &quot;- nu
   <data name="Tree_TagClearHint" xml:space="preserve">
     <value>Etiket süzgecini kaldırır</value>
   </data>
+  <data name="Inv_UsedInProjects" xml:space="preserve">
+    <value>Kullanıldığı projeler</value>
+  </data>
+  <data name="Inv_UsedInProjectsHint" xml:space="preserve">
+    <value>Genel araç; işaretlenen projelerin sayfasında (Kayıtlar, İstatistik) da görünür.</value>
+  </data>
 </root>

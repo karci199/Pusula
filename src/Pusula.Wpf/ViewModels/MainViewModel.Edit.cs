@@ -314,6 +314,24 @@ namespace Pusula.Wpf.ViewModels
             get { return editKind == RecordKind.Inventory; }
         }
 
+        /// <summary>Kayıt alanında genel aracın kullanıldığı projeler (virgülle proje klasörleri; 25.11.2026).</summary>
+        public const string ProjectsKey = "projeler";
+
+        /// <summary>Düzenlenen kayıt genel düzeyde mi ("Kullanıldığı projeler" seçimi görünür).</summary>
+        public bool IsEditGeneral { get; private set; }
+
+        /// <summary>Genel kayıtta kullanıldığı projeler: bütün projeler, işaretliler seçili.</summary>
+        public ObservableCollection<ChoiceOption> EditProjects { get; } = new ObservableCollection<ChoiceOption>();
+
+        /// <summary>Kayıt alanındaki proje listesini çözer ("7000_MILKON, 8000_DENEME").</summary>
+        public static System.Collections.Generic.List<string> ProjectsOf(InventoryRecord? record)
+        {
+            string value;
+            return record != null && record.Fields.TryGetValue(ProjectsKey, out value)
+                ? value.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).Where(s => s.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
+                : new System.Collections.Generic.List<string>();
+        }
+
         /// <summary>Stok şablonları (boş = şablonsuz).</summary>
         public ObservableCollection<string> EditTemplates { get; } = new ObservableCollection<string>();
 
@@ -429,6 +447,21 @@ namespace Pusula.Wpf.ViewModels
                     EditFields.Clear();
                     EditSubType = currentSub;
                     BuildEditFields();
+
+                    // Genel kayıt: kullanıldığı projeler (bütün projeler listelenir, kayıttakiler işaretli).
+                    var level = inventoryItems.FirstOrDefault(i => string.Equals(i.Folder, folder, StringComparison.OrdinalIgnoreCase))?.Level;
+                    IsEditGeneral = level == InventoryLevel.General;
+                    EditProjects.Clear();
+                    if (IsEditGeneral)
+                    {
+                        var used = ProjectsOf(record);
+                        foreach (var project in Nodes.Where(n => n.Kind == FolderKind.Project).Select(n => Path.GetFileName(n.Path)).OrderBy(n => n, StringComparer.CurrentCultureIgnoreCase))
+                        {
+                            EditProjects.Add(new ChoiceOption(project, project, used.Contains(project, StringComparer.OrdinalIgnoreCase), o => { }));
+                        }
+                    }
+
+                    OnPropertyChanged(nameof(IsEditGeneral));
 
                     // Liste yenilenince kutunun seçimi boşalmış olabilir; değer aynı kalsa da yeniden bildirilir.
                     OnPropertyChanged(nameof(EditSubType));
@@ -548,6 +581,11 @@ namespace Pusula.Wpf.ViewModels
                             EditError = requestDay.HasValue ? Resources.Date_Future : string.Format(Resources.Date_Invalid, EditRequestDateText);
                             return false;
                         }
+                    }
+
+                    if (IsEditGeneral)
+                    {
+                        editValues[ProjectsKey] = string.Join(", ", EditProjects.Where(o => o.IsChecked).Select(o => o.Key));
                     }
 
                     editValues[MakerKey] = EditMaker.Trim();

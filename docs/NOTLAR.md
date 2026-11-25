@@ -216,6 +216,8 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
   - **Sol liste madde 2 (yapıldı, 25.11.2026):** arama yanında ⇅ menüsü: sıra numara (sayı olarak) · son değişiklik · ad
     (proje.json adı), etiket süzgeci ("N proje gizli · göster"); ayarda hatırlanır. Proje olmayan kök klasörler sonda.
     "Hepsini kapat": seçili kaydın yolu açık kalır (yoksa seçim üst düğüme kayıp sayfa değişirdi).
+  - **Sol liste madde 3 (yapıldı, 25.11.2026):** genel araçta "Kullanıldığı projeler" (Düzenle'de proje işaretleri; kayit.json
+    fields → projeler). Kayıt sayfasında, listede (Genel + projeler, Proje süzgeci) ve proje sayfası Kayıtlar / İstatistik'te görünür.
   - **Sol liste (kalan):** araçlar çoğalınca kalabalık (Kablolar / Jigler'e tıklayınca stoka gidiyor; çok olunca karışır); proje
     listesinde hepsini kapat, arama ve süzgeç, proje sıralaması; hiçbir projeye ait olmayan genel kullanım (anten vb.) —
     kullanıldıkları projeler eklenebilir.

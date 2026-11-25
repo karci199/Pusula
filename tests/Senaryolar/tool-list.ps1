@@ -136,4 +136,35 @@ $found = FindNode $vm.Nodes 'JT-8000-0011'
 Check 'FindNode gizli aracı bulur' ($found -ne $null -and $found.Item -ne $null)
 $vm.SelectNodeByPath($stock3); Wait
 Check 'stok seçilince stok sayfası (araç değil)' ($vm.SelectedNode.Kind -eq 'Stock' -and -not $vm.Inventory.IsRecord)
-$win.Close()
+"--- 6. Genel araç: kullanıldığı projeler (madde 3)"
+$g5 = Join-Path $general 'JT-0000-0005'
+Check 'genel araç düzenlenir, proje seçimi görünür (iki proje)' ($vm.OpenEdit($g5) -and $vm.IsEditGeneral -and (@($vm.EditProjects | ForEach-Object Key) -join ',') -eq '7000_MILKON,8000_DENEME') (@($vm.EditProjects | ForEach-Object Key) -join ',')
+Check 'başta işaretli proje yok' (@($vm.EditProjects | Where-Object IsChecked).Count -eq 0)
+($vm.EditProjects | Where-Object Key -eq '8000_DENEME').IsChecked = $true
+Check 'kaydedildi' ($vm.ConfirmEdit()) $vm.EditError
+$kayit = [IO.File]::ReadAllText((Join-Path $g5 '_TAKIP\kayit.json'))
+Check 'kayit.json: projeler = 8000_DENEME' ($kayit -match 'projeler"[^}]*"8000_DENEME"') $kayit
+Check 'stok aracında proje seçimi yok' ($vm.OpenEdit($cableDir) -and -not $vm.IsEditGeneral -and $vm.EditProjects.Count -eq 0)
+$vm.IsEditOpen = $false
+$vm.SelectNodeByPath($g5); Wait
+$fact = $vm.Inventory.Facts | Where-Object Label -eq 'Kullanıldığı projeler' | Select-Object -First 1
+Check 'kayıt sayfasında Kullanıldığı projeler: 8000_DENEME' ($fact -ne $null -and $fact.Value -eq '8000_DENEME') ([string]$fact.Value)
+$vm.SelectedNode = $cables; Wait; $vm.Inventory.ClearFilters(); Pump
+$r5 = $vm.Inventory.Rows | Where-Object Number -eq 'JT-0000-0005' | Select-Object -First 1
+Check 'listede Genel + 8000' ($r5.IsGeneral -and $r5.AttachedNote -eq '8000') $r5.AttachedNote
+$vm.Inventory.FilterProject = '8000_DENEME'; Pump
+Check '8000 süzgecinde görünür' (@($vm.Inventory.Rows | ForEach-Object Number) -contains 'JT-0000-0005')
+$vm.Inventory.FilterProject = 'Genel'; Pump
+Check 'artık "Genel" (projesiz) süzgecinde değil' (-not (@($vm.Inventory.Rows | ForEach-Object Number) -contains 'JT-0000-0005'))
+$vm.Inventory.ClearFilters()
+$vm.SelectNodeByPath($other); Wait
+$vm.HomeTab = 2; $vm.IsViewTools = $true; $vm.ToolKindFilters[0].IsSelected = $true; Pump
+$nums8 = @($vm.ToolRows | ForEach-Object Number)
+Check '8000 proje sayfası Kayıtlar: genel araç görünür' ($nums8 -contains 'JT-0000-0005') ($nums8 -join ',')
+$vm.SelectNodeByPath((Join-Path $Data '7000_MILKON')); Wait
+$vm.HomeTab = 2; $vm.IsViewTools = $true; $vm.ToolKindFilters[0].IsSelected = $true; Pump
+Check '7000 proje sayfasında görünmez' (-not (@($vm.ToolRows | ForEach-Object Number) -contains 'JT-0000-0005'))
+$vm.OpenEdit($g5) | Out-Null
+foreach ($o in $vm.EditProjects) { $o.IsChecked = $false }
+$null = $vm.ConfirmEdit()
+Check 'işaret kalkınca projeler boş (alan düşer ya da boş)' (-not (([IO.File]::ReadAllText((Join-Path $g5 '_TAKIP\kayit.json'))) -match 'projeler"[^}]*8000_DENEME'))$win.Close()

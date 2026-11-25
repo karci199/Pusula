@@ -448,6 +448,12 @@ namespace Pusula.Wpf.ViewModels
                     break;
             }
 
+            // Genel araç: elle işaretlenen kullanıldığı projelerden birindeyse (25.11.2026).
+            if (item.Level == InventoryLevel.General && includeProjectLevel && ProjectsOf(item.Record).Any(p => projectFolders.Contains(p, StringComparer.OrdinalIgnoreCase)))
+            {
+                return true;
+            }
+
             return stocks.Any(s => s.Info != null && s.Info.Inventory.Contains(item.Record.Number, StringComparer.OrdinalIgnoreCase));
         }
 
