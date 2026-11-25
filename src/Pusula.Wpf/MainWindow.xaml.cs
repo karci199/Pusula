@@ -72,6 +72,15 @@ namespace Pusula.Wpf
                     InventoryTypeColumn.Width = viewModel.Inventory.TypeColumnWidth;
                 }
             };
+
+            // Başka düğüm seçilince stok sayfası baştan görünür.
+            viewModel.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(MainViewModel.SelectedNode))
+                {
+                    StockPageScroll.ScrollToTop();
+                }
+            };
         }
 
         private void FolderTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -1006,6 +1015,41 @@ namespace Pusula.Wpf
         private void HomeButton_Click(object sender, RoutedEventArgs e)
         {
             viewModel.GoHome();
+        }
+
+        // Stok sayfası tek kaydırma: içteki kaydırma alanı (zaman çizelgesi gibi) kaydırabildiği sürece tekerlek onundur;
+        // kaydıracak yeri yoksa (açılmış tablo) ya da sonuna geldiyse sayfa kayar. Açık açılır listedeki tekerleğe dokunulmaz.
+        private void StockPageScroll_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            ScrollViewer? inner = null;
+            var node = e.OriginalSource as DependencyObject;
+            while (node != null && !ReferenceEquals(node, StockPageScroll))
+            {
+                if (inner == null && node is ScrollViewer viewer)
+                {
+                    inner = viewer;
+                }
+
+                node = node is Visual || node is System.Windows.Media.Media3D.Visual3D ? VisualTreeHelper.GetParent(node) : LogicalTreeHelper.GetParent(node);
+            }
+
+            if (node == null)
+            {
+                return;
+            }
+
+            if (inner != null && inner.ScrollableHeight > 0)
+            {
+                var atTop = e.Delta > 0 && inner.VerticalOffset <= 0;
+                var atBottom = e.Delta < 0 && inner.VerticalOffset >= inner.ScrollableHeight;
+                if (!atTop && !atBottom)
+                {
+                    return;
+                }
+            }
+
+            StockPageScroll.ScrollToVerticalOffset(StockPageScroll.VerticalOffset - e.Delta);
+            e.Handled = true;
         }
 
         // Stok sayfası: TEÜ görünümündeki büyük fotoğrafa tıklayınca tam boy açılır.

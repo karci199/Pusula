@@ -193,6 +193,23 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 
 ## Bekleyen işler
 
+- **Kullanıcı notları (25.11.2026), önce hatalar:**
+  - Yapıldı: proje sayfasında başka projenin araçları görünüyordu (tür sayıları da); uzun ince fotoğrafta kapak boşluğu
+    (bulanık dolgu); doğrulama maddeleri sıkışıyordu (stok sayfası tek kaydırma, üst alan 380 px, özet görünüm düğmelerinin
+    yanında; hedef ekran 1080p).
+  - **ComboBox:** "chevron dışına tıklayınca tekrar" — hangi ekran / kutu olduğu sorulacak (Kiwi veri analizinde de yaşanmış;
+    KIWI'de bulunan düzeltme yalnız yazılabilir kutular içindi, Pusula'da yazılabilir kutu yok).
+  - **Doğrulama dokümanı (karar bekliyor):** her TG maddesi DOORS üzerinden yayınlanmıyor; bazen tasarımcının dokümanına
+    referans veriliyor ya da yalnız tasarımcının görüşü var. "261" kullanıcının hazırladığı üretim test dokümanı (tasarımcının
+    dokümanından / görüşünden hazırlanır). Fikir: gereksinimde "doğrulama dokümanı" seçimi (DOORS TG · tasarımcı dokümanı ·
+    tasarımcı görüşü · doküman hazırlanmayacak); 261 ile karşılananlar plan / rapor istemez, sarı uyarıya ve sayılara girmez.
+  - **Bağ / Durum / Sırala süzgeçleri:** çalışıyor; görsel olarak iyileştirilecek ve adları netleşecek.
+  - **Sol liste:** araçlar çoğalınca kalabalık (Kablolar / Jigler'e tıklayınca stoka gidiyor; çok olunca karışır); proje
+    listesinde hepsini kapat, arama ve süzgeç, proje sıralaması; hiçbir projeye ait olmayan genel kullanım (anten vb.) —
+    kullanıldıkları projeler eklenebilir.
+  - **Stok bağı:** alt stok / üst stok bilgisi ("şurada kullanılıyor" / "altında şu bileşen var") — hangisi konuşulacak.
+  - Sonraya: Kiwi için s2p / s1p / S11 analizi (zorunlu değil, jpg de olabilir); kişiler (modül / almaç sorumluları).
+
 - **Durum (22.11.2026 akşam, 9cc1279):** aşağıdaki 22.11 maddelerinin hepsi bitti (elle durum, ## Rapor, eski TP/TR,
   plan / rapor ayrıntısı, rapor Tarih/Birim, kırpışma, geniş tablo), Excel'den gereksinim al + plan / rapor Excel'e aktar,
   aramalı bağ seçimi, "Sonuç yok" durumu, ÇK/EMC standardı (gereksinimde test tipi · standart · yöntem · prosedür;
