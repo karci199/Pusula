@@ -432,6 +432,8 @@ namespace Pusula.Wpf.ViewModels
 
             AddInventoryNodes(expanded);
             OnPropertyChanged(nameof(HasInventory));
+            ReadProjectInfo();
+            ArrangeProjects();
             ApplySearch();
             if (keepSelected != null)
             {

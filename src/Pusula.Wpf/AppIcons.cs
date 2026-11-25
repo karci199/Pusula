@@ -6,6 +6,12 @@
     /// </summary>
     public static class AppIcons
     {
+        /// <summary>Hepsini kapat (yukarı ok; 25.11.2026).</summary>
+        public const string CollapseAll = "\uE70E";
+
+        /// <summary>Sırala / süz menüsü (25.11.2026).</summary>
+        public const string SortFilter = "\uE8CB";
+
         /// <summary>Proje (evrak çantası).</summary>
         public const string Project = "\uE821";
 

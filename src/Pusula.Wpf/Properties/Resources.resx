@@ -3657,4 +3657,37 @@ Ortak liste (ÇK / EMC): &quot;## standart&quot; başlığı altında &quot;- nu
   <data name="Inv_AttachedTo" xml:space="preserve">
     <value>Bağlı olduğu</value>
   </data>
+  <data name="Tree_SortMenu" xml:space="preserve">
+    <value>Sırala ve süz</value>
+  </data>
+  <data name="Tree_CollapseAll" xml:space="preserve">
+    <value>Hepsini kapat</value>
+  </data>
+  <data name="Tree_SortHeader" xml:space="preserve">
+    <value>Sırala</value>
+  </data>
+  <data name="Tree_SortNumber" xml:space="preserve">
+    <value>Numara</value>
+  </data>
+  <data name="Tree_SortRecent" xml:space="preserve">
+    <value>Son değişiklik</value>
+  </data>
+  <data name="Tree_SortName" xml:space="preserve">
+    <value>Ad</value>
+  </data>
+  <data name="Tree_TagHeader" xml:space="preserve">
+    <value>Etiket</value>
+  </data>
+  <data name="Tree_TagAll" xml:space="preserve">
+    <value>Hepsi</value>
+  </data>
+  <data name="Tree_NoTags" xml:space="preserve">
+    <value>Projelerde etiket yok</value>
+  </data>
+  <data name="Tree_HiddenProjects" xml:space="preserve">
+    <value>{0} proje gizli (etiket: {1}) · göster</value>
+  </data>
+  <data name="Tree_TagClearHint" xml:space="preserve">
+    <value>Etiket süzgecini kaldırır</value>
+  </data>
 </root>

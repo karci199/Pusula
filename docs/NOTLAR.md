@@ -213,6 +213,9 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
     genel), arama, Proje (Genel = hiçbir projede kullanılmayan), Stok (seçili projenin stokları), Alt tür, Durum, Temizle;
     "Bağlı olduğu" sütunu (stok, proje ya da Genel + kullanıldığı projeler). Satıra tek tıkla aracın sayfası; geri dönünce
     her liste kendi süzgeciyle gelir. Sıradaki: hepsini kapat, proje sıralama / süzgeç, genel araçlara kullanıldığı projeler.
+  - **Sol liste madde 2 (yapıldı, 25.11.2026):** arama yanında ⇅ menüsü: sıra numara (sayı olarak) · son değişiklik · ad
+    (proje.json adı), etiket süzgeci ("N proje gizli · göster"); ayarda hatırlanır. Proje olmayan kök klasörler sonda.
+    "Hepsini kapat": seçili kaydın yolu açık kalır (yoksa seçim üst düğüme kayıp sayfa değişirdi).
   - **Sol liste (kalan):** araçlar çoğalınca kalabalık (Kablolar / Jigler'e tıklayınca stoka gidiyor; çok olunca karışır); proje
     listesinde hepsini kapat, arama ve süzgeç, proje sıralaması; hiçbir projeye ait olmayan genel kullanım (anten vb.) —
     kullanıldıkları projeler eklenebilir.

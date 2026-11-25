@@ -98,6 +98,56 @@ namespace Pusula.Wpf
             FolderTree.MaxHeight = Math.Max(80, TreePane.ActualHeight * 2 / 3);
         }
 
+        // Sol liste: sırala (numara · son değişiklik · ad) ve etiket süzgeci; seçim ayarlarda hatırlanır (25.11.2026).
+        private void ProjectListMenu_Click(object sender, RoutedEventArgs e)
+        {
+            var menu = new ContextMenu { PlacementTarget = ProjectListMenuButton, Placement = PlacementMode.Bottom };
+            menu.Items.Add(new MenuItem { Header = Properties.Resources.Tree_SortHeader, IsEnabled = false });
+            foreach (var option in new[]
+            {
+                Tuple.Create(MainViewModel.SortByNumber, Properties.Resources.Tree_SortNumber),
+                Tuple.Create(MainViewModel.SortByRecent, Properties.Resources.Tree_SortRecent),
+                Tuple.Create(MainViewModel.SortByName, Properties.Resources.Tree_SortName),
+            })
+            {
+                var key = option.Item1;
+                var item = new MenuItem { Header = option.Item2, IsCheckable = true, IsChecked = viewModel.ProjectSort == key };
+                item.Click += (s, a) => viewModel.ProjectSort = key;
+                menu.Items.Add(item);
+            }
+
+            menu.Items.Add(new Separator());
+            menu.Items.Add(new MenuItem { Header = Properties.Resources.Tree_TagHeader, IsEnabled = false });
+            if (viewModel.ProjectTagOptions.Count == 0)
+            {
+                menu.Items.Add(new MenuItem { Header = Properties.Resources.Tree_NoTags, IsEnabled = false });
+            }
+            else
+            {
+                var all = new MenuItem { Header = Properties.Resources.Tree_TagAll, IsCheckable = true, IsChecked = viewModel.ProjectTag.Length == 0 };
+                all.Click += (s, a) => viewModel.ProjectTag = string.Empty;
+                menu.Items.Add(all);
+                foreach (var tag in viewModel.ProjectTagOptions)
+                {
+                    var value = tag;
+                    var item = new MenuItem { Header = value, IsCheckable = true, IsChecked = string.Equals(viewModel.ProjectTag, value, StringComparison.CurrentCultureIgnoreCase) };
+                    item.Click += (s, a) => viewModel.ProjectTag = value;
+                    menu.Items.Add(item);
+                }
+            }
+
+            menu.IsOpen = true;
+        }
+
+        private void CollapseAll_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.CollapseAll();
+        }
+
+        private void ProjectTagClear_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.ProjectTag = string.Empty;
+        }
         // Sağ tık, menü açılmadan önce tıklanan düğümü seçer.
         private void FolderTree_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {

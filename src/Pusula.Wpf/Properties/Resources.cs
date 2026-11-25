@@ -3862,5 +3862,38 @@ namespace Pusula.Wpf.Properties
 
         /// <summary>Envanter listesi: Bağlı olduğu sütunu.</summary>
         public static string Inv_AttachedTo { get { return Get("Inv_AttachedTo"); } }
+
+        /// <summary>Sol liste (25.11.2026): Tree_SortMenu.</summary>
+        public static string Tree_SortMenu { get { return Get("Tree_SortMenu"); } }
+
+        /// <summary>Sol liste (25.11.2026): Tree_CollapseAll.</summary>
+        public static string Tree_CollapseAll { get { return Get("Tree_CollapseAll"); } }
+
+        /// <summary>Sol liste (25.11.2026): Tree_SortHeader.</summary>
+        public static string Tree_SortHeader { get { return Get("Tree_SortHeader"); } }
+
+        /// <summary>Sol liste (25.11.2026): Tree_SortNumber.</summary>
+        public static string Tree_SortNumber { get { return Get("Tree_SortNumber"); } }
+
+        /// <summary>Sol liste (25.11.2026): Tree_SortRecent.</summary>
+        public static string Tree_SortRecent { get { return Get("Tree_SortRecent"); } }
+
+        /// <summary>Sol liste (25.11.2026): Tree_SortName.</summary>
+        public static string Tree_SortName { get { return Get("Tree_SortName"); } }
+
+        /// <summary>Sol liste (25.11.2026): Tree_TagHeader.</summary>
+        public static string Tree_TagHeader { get { return Get("Tree_TagHeader"); } }
+
+        /// <summary>Sol liste (25.11.2026): Tree_TagAll.</summary>
+        public static string Tree_TagAll { get { return Get("Tree_TagAll"); } }
+
+        /// <summary>Sol liste (25.11.2026): Tree_NoTags.</summary>
+        public static string Tree_NoTags { get { return Get("Tree_NoTags"); } }
+
+        /// <summary>Sol liste (25.11.2026): Tree_HiddenProjects.</summary>
+        public static string Tree_HiddenProjects { get { return Get("Tree_HiddenProjects"); } }
+
+        /// <summary>Sol liste (25.11.2026): Tree_TagClearHint.</summary>
+        public static string Tree_TagClearHint { get { return Get("Tree_TagClearHint"); } }
     }
 }

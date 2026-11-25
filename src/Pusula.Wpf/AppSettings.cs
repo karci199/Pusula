@@ -24,6 +24,8 @@ namespace Pusula.Wpf
             LastAction = string.Empty;
             UserName = string.Empty;
             Recent = new List<string>();
+            ProjectSort = string.Empty;
+            ProjectTag = string.Empty;
         }
 
         /// <summary>Son seçilen projeler klasörü.</summary>
@@ -75,6 +77,14 @@ namespace Pusula.Wpf
         /// </summary>
         [DataMember(Name = "recordColumns", Order = 10, EmitDefaultValue = false)]
         public Dictionary<string, bool>? RecordColumns { get; set; }
+
+        /// <summary>Sol listede proje sırası (25.11.2026): <c>number</c> (varsayılan, boş), <c>recent</c> ya da <c>name</c>.</summary>
+        [DataMember(Name = "projectSort", Order = 11, EmitDefaultValue = false)]
+        public string ProjectSort { get; set; } = string.Empty;
+
+        /// <summary>Sol listede yalnız bu etiketli projeler (boş: hepsi).</summary>
+        [DataMember(Name = "projectTag", Order = 12, EmitDefaultValue = false)]
+        public string ProjectTag { get; set; } = string.Empty;
 
         /// <summary>Ayar dosyasının yerini değiştiren ortam değişkeni (testler gerçek ayarlara dokunmasın diye).</summary>
         public const string PathVariable = "PUSULA_AYARLAR";

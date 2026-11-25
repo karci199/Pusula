@@ -1555,6 +1555,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -1562,11 +1563,35 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <!-- Ağaçta ara: numara, ad, tanım -->
-                        <controls:SearchBox Grid.Row="1" Grid.ColumnSpan="4" Margin="-4,8,0,0"
+                        <!-- Ağaçta ara: numara, ad, tanım; yanında sırala / süz menüsü ve hepsini kapat (25.11.2026) -->
+                        <controls:SearchBox Grid.Row="1" Grid.ColumnSpan="2" Margin="-4,8,0,0"
                                             PlaceholderText="{x:Static res:Resources.Tree_Search}"
                                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                                             Visibility="{Binding HasRoot, Converter={StaticResource BoolToVis}}" />
+                        <Button x:Name="ProjectListMenuButton" Grid.Row="1" Grid.Column="2" Width="34" Height="34" Margin="4,8,0,0"
+                                Click="ProjectListMenu_Click" ToolTip="{x:Static res:Resources.Tree_SortMenu}"
+                                Visibility="{Binding HasRoot, Converter={StaticResource BoolToVis}}">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasProjectListFilter}" Value="True">
+                                            <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.SortFilter}" FontSize="15" />
+                        </Button>
+                        <Button Grid.Row="1" Grid.Column="3" Width="34" Height="34" Margin="4,8,0,0" Style="{DynamicResource IconButtonStyle}"
+                                Click="CollapseAll_Click" ToolTip="{x:Static res:Resources.Tree_CollapseAll}"
+                                Visibility="{Binding HasRoot, Converter={StaticResource BoolToVis}}">
+                            <local:AppIcon Glyph="{x:Static local:AppIcons.CollapseAll}" FontSize="14" />
+                        </Button>
+                        <Button Grid.Row="2" Grid.ColumnSpan="4" Margin="-8,4,0,0" Padding="6,2" HorizontalAlignment="Left" Style="{DynamicResource SubtleButtonStyle}"
+                                Click="ProjectTagClear_Click" ToolTip="{x:Static res:Resources.Tree_TagClearHint}"
+                                Visibility="{Binding HiddenProjectCount, Converter={StaticResource CountToVis}}">
+                            <TextBlock FontSize="12" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="{Binding HiddenProjectText}" />
+                        </Button>
                         <TextBlock Grid.Column="0"
                                    FontSize="13" FontWeight="SemiBold"
                                    Foreground="{DynamicResource TextSecondaryBrush}"
