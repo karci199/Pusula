@@ -1018,7 +1018,8 @@ namespace Pusula.Wpf.ViewModels
                     return string.Empty;
                 }
 
-                var kinds = verificationItems.Select(i => VerificationRow.KindOf(i.EffectiveStatus)).ToList();
+                // 261 ile doğrulananlar (25.11.2026) özetteki gibi sayılmaz.
+                var kinds = verificationItems.Where(i => !IsDocumentVerified(i)).Select(i => VerificationRow.KindOf(i.EffectiveStatus)).ToList();
                 return string.Format(CultureInfo.CurrentCulture, Resources.Verify_Summary, kinds.Count(VerificationRow.IsPassedKind), kinds.Count(k => k != 5));
             }
         }
@@ -1028,7 +1029,7 @@ namespace Pusula.Wpf.ViewModels
         {
             get
             {
-                var kinds = verificationItems.Select(i => VerificationRow.KindOf(i.EffectiveStatus)).ToList();
+                var kinds = verificationItems.Where(i => !IsDocumentVerified(i)).Select(i => VerificationRow.KindOf(i.EffectiveStatus)).ToList();
                 var counted = kinds.Count(k => k != 5);
                 return counted == 0 ? 0 : 100.0 * kinds.Count(VerificationRow.IsPassedKind) / counted;
             }

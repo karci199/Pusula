@@ -168,3 +168,6 @@ $vm.OpenEdit($g5) | Out-Null
 foreach ($o in $vm.EditProjects) { $o.IsChecked = $false }
 $null = $vm.ConfirmEdit()
 Check 'işaret kalkınca projeler boş (alan düşer ya da boş)' (-not (([IO.File]::ReadAllText((Join-Path $g5 '_TAKIP\kayit.json'))) -match 'projeler"[^}]*8000_DENEME'))$win.Close()
+$vm.OpenEdit($g5) | Out-Null; $vm.IsEditOpen = $false
+Check 'genel araçtan sonra proje düzenlenince proje seçimi gizli (hata avı)' ($vm.OpenEdit((Join-Path $Data '7000_MILKON')) -and -not $vm.IsEditGeneral -and $vm.EditProjects.Count -eq 0)
+$vm.IsEditOpen = $false

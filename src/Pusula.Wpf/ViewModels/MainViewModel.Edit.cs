@@ -373,6 +373,11 @@ namespace Pusula.Wpf.ViewModels
             editFolder = folder;
             editKind = kind.Value;
             EditError = string.Empty;
+
+            // Önceki düzenlemeden (genel araç) kalan proje seçimi temizlenir; yalnız genel araçta yeniden kurulur.
+            IsEditGeneral = false;
+            EditProjects.Clear();
+            OnPropertyChanged(nameof(IsEditGeneral));
             EditTemplates.Clear();
             EditSubTypes.Clear();
             editType = null;

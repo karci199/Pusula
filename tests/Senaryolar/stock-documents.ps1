@@ -111,6 +111,7 @@ Check '261 yokken: madde sarı, çip "261 · yok"' (@(& $r261 | Where-Object { $
 Check '261 maddesinde rapor çipi yok' (@(& $r261 | Where-Object { @($_.LinkedReports).Count -eq 0 }).Count -eq 2)
 $sum = @($vm.VerificationSummary)
 Check 'özet: 1 gereksinim (test planlı), ayrıca "261 ile 2" sarı' ($vm.VerificationSummaryTotal -eq '1 gereksinim' -and $sum[-1].Label -eq '261 ile' -and $sum[-1].Count -eq 2 -and $sum[-1].Tone -eq 'waiting') (($sum | ForEach-Object { $_.Label + '=' + $_.Count }) -join ', ')
+Check 'sayı satırı da 261''leri saymaz: Doğrulama 0/1 (hata avı)' ($vm.StockVerificationText -like '*0/1*') $vm.StockVerificationText
 
 New-Item -ItemType Directory -Force $docs | Out-Null
 [IO.File]::WriteAllText((Join-Path $docs 'AB-7000-0003_261_AA_TASLAK.docx'), 'x')

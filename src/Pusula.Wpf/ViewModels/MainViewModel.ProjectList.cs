@@ -27,6 +27,9 @@ namespace Pusula.Wpf.ViewModels
         private readonly Dictionary<string, List<string>> projectTags = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, string> projectNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+        // Son değişiklik zamanları yenileme başına bir kez okunur (ağ yolunda her sıralamada taranmasın).
+        private readonly Dictionary<string, DateTime> projectTimes = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
+
         /// <summary>Seçili proje sırası (<see cref="SortByNumber"/>, <see cref="SortByRecent"/>, <see cref="SortByName"/>).</summary>
         public string ProjectSort
         {
@@ -135,6 +138,7 @@ namespace Pusula.Wpf.ViewModels
         {
             projectTags.Clear();
             projectNames.Clear();
+            projectTimes.Clear();
             foreach (var project in Nodes.Where(n => n.Kind == FolderKind.Project))
             {
                 var info = JsonFile.TryRead<ProjectInfo>(TrackingFiles.ProjectFile(project.Path));
@@ -162,8 +166,12 @@ namespace Pusula.Wpf.ViewModels
             switch (ProjectSort)
             {
                 case SortByRecent:
-                    var times = shown.ToDictionary(p => p.Path, p => ProjectCard.NewestWrite(p.Path, 2) ?? DateTime.MinValue, StringComparer.OrdinalIgnoreCase);
-                    ordered = shown.OrderByDescending(p => times[p.Path]).ThenBy(p => p.Title, Comparer<string>.Create(CompareNumbers));
+                    foreach (var p in shown.Where(p => !projectTimes.ContainsKey(p.Path)))
+                    {
+                        projectTimes[p.Path] = ProjectCard.NewestWrite(p.Path, 2) ?? DateTime.MinValue;
+                    }
+
+                    ordered = shown.OrderByDescending(p => projectTimes[p.Path]).ThenBy(p => p.Title, Comparer<string>.Create(CompareNumbers));
                     break;
                 case SortByName:
                     ordered = shown.OrderBy(p => NameOf(p), StringComparer.CurrentCultureIgnoreCase).ThenBy(p => p.Title, Comparer<string>.Create(CompareNumbers));
