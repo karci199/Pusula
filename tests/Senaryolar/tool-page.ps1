@@ -160,6 +160,31 @@ try {
     $kab = $anaKart[1].Lines | Where-Object { $_.Label -eq 'Kablaj' } | Select-Object -First 1
     $kab.Open.Execute($null); Pump
     Check 'kablaj sayısına tıklayınca Kayıtlar · araçlar · Kablaj' ($vm.HomeTab -eq 2 -and $vm.IsViewTools -and $vm.ToolRowCount -eq $kab.Count) ("sekme=$($vm.HomeTab) satır=$($vm.ToolRowCount) sayı=$($kab.Count)")
+    "--- 7. Proje sayfasında yalnız o projenin araçları (25.11.2026 hatası)"
+    $other = Join-Path $Data '8000_DENEME'
+    New-Item -ItemType Directory -Force (Join-Path $other '_TAKIP') | Out-Null
+    [IO.File]::WriteAllText((Join-Path $other '_TAKIP\proje.json'), '{ "schemaVersion": 1, "projectNo": "8000", "name": "DENEME" }')
+    $otherStock = Join-Path $other 'AB-8000-0001'
+    Copy-Item (Join-Path $Data '7000_MILKON\AB-7000-0001') $otherStock -Recurse
+    $otherTool = Join-Path $otherStock '02_Test_Araclari\Kablo\JT-8000-0101'
+    New-Item -ItemType Directory -Force (Split-Path $otherTool) | Out-Null
+    Copy-Item $cableDir $otherTool -Recurse
+    $kj = Get-ChildItem $otherTool -Recurse -Filter 'kayit.json' | Select-Object -First 1
+    [IO.File]::WriteAllText($kj.FullName, [IO.File]::ReadAllText($kj.FullName).Replace('JT-7000-0101', 'JT-8000-0101'))
+    $vm.Refresh(); Wait; for ($k = 0; $k -lt 40; $k++) { Pump; Start-Sleep -Milliseconds 30 }
+    $vm.SelectNodeByPath((Join-Path $Data '7000_MILKON')); Wait; for ($k = 0; $k -lt 40; $k++) { Pump; Start-Sleep -Milliseconds 30 }
+    $vm.HomeTab = 2; $vm.IsViewTools = $true; $vm.ToolKindFilters[0].IsSelected = $true; Pump
+    $nums = @($vm.ToolRows | ForEach-Object Number)
+    Check 'MILKON sayfasında DENEME''nin aracı yok' ($nums.Count -ge 7 -and -not ($nums -contains 'JT-8000-0101')) ($nums -join ',')
+    Check 'tür süzgecindeki Hepsi sayısı = satır sayısı' ($vm.ToolKindFilters[0].Count -eq $nums.Count) ([string]$vm.ToolKindFilters[0].Count + '/' + $nums.Count)
+    $vm.SelectNodeByPath($other); Wait; for ($k = 0; $k -lt 40; $k++) { Pump; Start-Sleep -Milliseconds 30 }
+    $vm.HomeTab = 2; $vm.IsViewTools = $true; $vm.ToolKindFilters[0].IsSelected = $true; Pump
+    $nums = @($vm.ToolRows | ForEach-Object Number)
+    Check 'DENEME sayfasında yalnız kendi aracı' (($nums -join ',') -eq 'JT-8000-0101') ($nums -join ',')
+    $vm.SelectedNode = $null; $vm.LoadHome(); Wait; for ($k = 0; $k -lt 40; $k++) { Pump; Start-Sleep -Milliseconds 30 }
+    $vm.HomeTab = 2; $vm.IsViewTools = $true; $vm.ToolKindFilters[0].IsSelected = $true; Pump
+    $nums = @($vm.ToolRows | ForEach-Object Number)
+    Check 'genel sayfada ikisi de' ($nums -contains 'JT-8000-0101' -and $nums -contains 'JT-7000-0101') ($nums -join ',')
     $win.Close()
 } finally {
     if ($savedSettings -ne $null) { [IO.File]::WriteAllText($settingsFile, $savedSettings) }

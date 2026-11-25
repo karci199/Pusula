@@ -277,12 +277,15 @@ namespace Pusula.Wpf.ViewModels
 
             BuildHomeStats(data, projects.Select(p => Path.GetFileName(p.Path)).ToList());
             // Araç türleri: türün kendi adıyla ("Jig", "Kablo" …); hiç kaydı olmayanlar da (0) görünür.
+            // Sayılar kapsamdaki araçlardan (proje sayfasında yalnız o projenin).
             var kind = toolKind;
+            var folders = projects.Select(p => Path.GetFileName(p.Path)).ToList();
+            var scopedTools = scopeProject == null ? inventoryItems.ToList() : inventoryItems.Where(i => ToolBelongsTo(i, data, folders, true)).ToList();
             ToolKindFilters.Clear();
-            ToolKindFilters.Add(new HomeRecordFilter(string.Empty, Resources.Home_RangeAll, inventoryItems.Count, ChooseToolKind));
+            ToolKindFilters.Add(new HomeRecordFilter(string.Empty, Resources.Home_RangeAll, scopedTools.Count, ChooseToolKind));
             foreach (var type in types.InventoryTypes.GroupBy(t => t.Key, StringComparer.OrdinalIgnoreCase).Select(g => g.First()))
             {
-                ToolKindFilters.Add(new HomeRecordFilter(type.Key, type.Name, inventoryItems.Count(i => string.Equals(i.Record.Type, type.Key, StringComparison.OrdinalIgnoreCase)), ChooseToolKind));
+                ToolKindFilters.Add(new HomeRecordFilter(type.Key, type.Name, scopedTools.Count(i => string.Equals(i.Record.Type, type.Key, StringComparison.OrdinalIgnoreCase)), ChooseToolKind));
             }
 
             (ToolKindFilters.FirstOrDefault(f => string.Equals(f.Key, kind, StringComparison.OrdinalIgnoreCase)) ?? ToolKindFilters[0]).IsSelected = true;
@@ -460,7 +463,8 @@ namespace Pusula.Wpf.ViewModels
             var checkedStocks = new HashSet<string>(StockOptions.Where(o => o.IsChecked).Select(o => o.Key), StringComparer.OrdinalIgnoreCase);
             var stocks = scopeStocks.Where(s => checkedStocks.Contains(s.Node.Path)).ToList();
             var stocksNarrowed = StockOptions.Any(o => !o.IsChecked);
-            var narrowed = ProjectOptions.Any(o => !o.IsChecked) || stocksNarrowed;
+            // Proje sayfasında (scopeProject) seçenek tek ve işaretli olsa da kapsam daralmıştır: başka projenin aracı görünmez.
+            var narrowed = scopeProject != null || ProjectOptions.Any(o => !o.IsChecked) || stocksNarrowed;
 
             ProjectRows.Clear();
             foreach (var option in ProjectOptions.Where(o => o.IsChecked))
