@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -54,6 +54,22 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Seçili stokun kullanıldığı yerler (onu bileşen olarak listeleyen stoklar).</summary>
         public ObservableCollection<StockLinkChip> StockUsedInChips { get; } = new ObservableCollection<StockLinkChip>();
+
+        /// <summary>Stokun kendi sorumluları ("Tasarım sorumlusu: Okan Özdemir · Test: katan"); yardımcı araçlarınki değil.</summary>
+        public string StockResponsiblesText { get; private set; } = string.Empty;
+
+        /// <summary>Sorumlu satırı görünür mü.</summary>
+        public bool HasStockResponsibles
+        {
+            get { return StockResponsiblesText.Length > 0; }
+        }
+
+        /// <summary>Sorumluları tek satır metne çevirir ("Rol: Kişi · Kişi").</summary>
+        public static string ResponsiblesText(IEnumerable<Responsible>? items)
+        {
+            return string.Join(" · ", (items ?? Enumerable.Empty<Responsible>()).Where(r => r.Person.Trim().Length > 0)
+                .Select(r => r.Role.Trim().Length > 0 ? r.Role.Trim() + ": " + r.Person.Trim() : r.Person.Trim()));
+        }
 
         /// <summary>"Kullanıldığı yerler" satırı görünür mü.</summary>
         public bool HasStockUsedIn
@@ -151,6 +167,7 @@ namespace Pusula.Wpf.ViewModels
                     map[node.Title] = info?.Components ?? new List<string>();
                 }
 
+                StockResponsiblesText = ResponsiblesText(JsonFile.TryRead<StockInfo>(TrackingFiles.StockFile(stock.Path))?.Responsibles);
                 Func<string, StockLinkChip> chip = n =>
                 {
                     string name, path;
@@ -173,6 +190,13 @@ namespace Pusula.Wpf.ViewModels
                 }
             }
 
+            if (stock == null)
+            {
+                StockResponsiblesText = string.Empty;
+            }
+
+            OnPropertyChanged(nameof(StockResponsiblesText));
+            OnPropertyChanged(nameof(HasStockResponsibles));
             OnPropertyChanged(nameof(HasStockUsedIn));
         }
 

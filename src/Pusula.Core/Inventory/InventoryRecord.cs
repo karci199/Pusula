@@ -31,6 +31,7 @@ namespace Pusula.Core.Inventory
             Events = new List<InventoryEvent>();
             Notes = new List<Tracking.QuickNote>();
             Tags = new List<string>();
+            Responsibles = new List<Tracking.Responsible>();
         }
 
         /// <summary>Dosya biçiminin sürümü.</summary>
@@ -62,6 +63,10 @@ namespace Pusula.Core.Inventory
         public Dictionary<string, string> Fields { get; set; } = new Dictionary<string, string>();
 
         /// <summary>Uygulamadan yazılan kısa notlar (eskiden yeniye).</summary>
+        /// <summary>Kaydın sorumluları (isteğe bağlı; 25.11.2026). Stok sayfasında görünmez, yalnız kaydın sayfasında.</summary>
+        [DataMember(Name = "responsibles", Order = 21, EmitDefaultValue = false)]
+        public List<Tracking.Responsible> Responsibles { get; set; } = new List<Tracking.Responsible>();
+
         [DataMember(Name = "notes", Order = 20, EmitDefaultValue = false)]
         public List<Tracking.QuickNote> Notes { get; set; } = new List<Tracking.QuickNote>();
 

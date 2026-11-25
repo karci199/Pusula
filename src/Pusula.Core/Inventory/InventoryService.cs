@@ -342,33 +342,17 @@ namespace Pusula.Core.Inventory
         /// </summary>
         public static bool SetStockLink(string stockFolder, string number, bool linked)
         {
-            var path = TrackingFiles.StockFile(stockFolder);
-            var info = JsonFile.TryRead<StockInfo>(path);
-            if (info == null)
+            return JsonFile.Update<StockInfo>(TrackingFiles.StockFile(stockFolder), info =>
             {
-                return false;
-            }
+                info.Inventory.RemoveAll(n => string.Equals(n, number, StringComparison.OrdinalIgnoreCase));
+                if (linked)
+                {
+                    info.Inventory.Add(number);
+                    info.Inventory.Sort(StringComparer.OrdinalIgnoreCase);
+                }
 
-            info.Inventory.RemoveAll(n => string.Equals(n, number, StringComparison.OrdinalIgnoreCase));
-            if (linked)
-            {
-                info.Inventory.Add(number);
-                info.Inventory.Sort(StringComparer.OrdinalIgnoreCase);
-            }
-
-            try
-            {
-                JsonFile.WriteAtomic(path, info);
                 return true;
-            }
-            catch (IOException)
-            {
-                return false;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return false;
-            }
+            }).Length == 0;
         }
 
         /// <summary>

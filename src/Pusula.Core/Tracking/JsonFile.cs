@@ -70,5 +70,37 @@ namespace Pusula.Core.Tracking
                 File.Move(tempPath, path);
             }
         }
+
+        /// <summary>
+        /// Oku – değiştir – atomik yaz (25.11.2026; dört yerde tekrar eden kalıp). Dosya okunamazsa ya da
+        /// <paramref name="change"/> <c>false</c> dönerse yazılmaz. Başarıda boş, aksi hâlde hata metni döner.
+        /// </summary>
+        public static string Update<T>(string path, System.Func<T, bool> change) where T : class
+        {
+            var value = TryRead<T>(path);
+            if (value == null)
+            {
+                return "okunamadı: " + path;
+            }
+
+            if (!change(value))
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                WriteAtomic(path, value);
+                return string.Empty;
+            }
+            catch (IOException ex)
+            {
+                return ex.Message;
+            }
+            catch (System.UnauthorizedAccessException ex)
+            {
+                return ex.Message;
+            }
+        }
     }
 }

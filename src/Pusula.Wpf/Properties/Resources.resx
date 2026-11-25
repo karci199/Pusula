@@ -3729,4 +3729,16 @@ Ortak liste (ÇK / EMC): &quot;## standart&quot; başlığı altında &quot;- nu
   <data name="Button_EditPeople" xml:space="preserve">
     <value>Kişiler…</value>
   </data>
+  <data name="Edit_Responsibles" xml:space="preserve">
+    <value>Sorumlular</value>
+  </data>
+  <data name="Edit_AddResponsible" xml:space="preserve">
+    <value>+ Sorumlu</value>
+  </data>
+  <data name="Edit_RemoveResponsible" xml:space="preserve">
+    <value>Sorumluyu kaldır</value>
+  </data>
+  <data name="Placeholder_ResponsibleRole" xml:space="preserve">
+    <value>Rol (örn. Tasarım sorumlusu)</value>
+  </data>
 </root>

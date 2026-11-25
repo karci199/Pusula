@@ -314,6 +314,27 @@ namespace Pusula.Wpf.ViewModels
             get { return editKind == RecordKind.Inventory; }
         }
 
+        /// <summary>Düzenle penceresinde sorumlular (stok ve yardımcı araç; isteğe bağlı; 25.11.2026).</summary>
+        public ObservableCollection<ResponsibleRow> EditResponsibles { get; } = new ObservableCollection<ResponsibleRow>();
+
+        /// <summary>Sorumlu bölümü görünür mü (stok ya da yardımcı araç düzenlenirken).</summary>
+        public bool IsEditResponsibles
+        {
+            get { return editKind == RecordKind.Stock || editKind == RecordKind.Inventory; }
+        }
+
+        /// <summary>Boş bir sorumlu satırı ekler.</summary>
+        public void AddEditResponsible()
+        {
+            EditResponsibles.Add(new ResponsibleRow(string.Empty, string.Empty));
+        }
+
+        /// <summary>Sorumlu satırını kaldırır.</summary>
+        public void RemoveEditResponsible(ResponsibleRow row)
+        {
+            EditResponsibles.Remove(row);
+        }
+
         /// <summary>Kayıt alanında genel aracın kullanıldığı projeler (virgülle proje klasörleri; 25.11.2026).</summary>
         public const string ProjectsKey = "projeler";
 
@@ -378,6 +399,18 @@ namespace Pusula.Wpf.ViewModels
             IsEditGeneral = false;
             EditProjects.Clear();
             OnPropertyChanged(nameof(IsEditGeneral));
+
+            // Sorumlular (stok / yardımcı araç): kayıttakiler satır olur.
+            EditResponsibles.Clear();
+            var owned = kind.Value == RecordKind.Stock
+                ? JsonFile.TryRead<StockInfo>(TrackingFiles.StockFile(folder))?.Responsibles
+                : kind.Value == RecordKind.Inventory ? JsonFile.TryRead<InventoryRecord>(InventoryService.RecordFile(folder))?.Responsibles : null;
+            foreach (var responsible in owned ?? new System.Collections.Generic.List<Responsible>())
+            {
+                EditResponsibles.Add(new ResponsibleRow(responsible.Role, responsible.Person));
+            }
+
+            OnPropertyChanged(nameof(IsEditResponsibles));
             EditTemplates.Clear();
             EditSubTypes.Clear();
             editType = null;
@@ -608,6 +641,11 @@ namespace Pusula.Wpf.ViewModels
                     }
 
                     break;
+            }
+
+            if (error.Length == 0 && IsEditResponsibles)
+            {
+                error = RecordEdit.SetResponsibles(editFolder, editKind, EditResponsibles.Select(r => new Responsible { Role = r.Role, Person = r.Person }));
             }
 
             if (error.Length > 0)

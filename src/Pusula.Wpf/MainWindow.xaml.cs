@@ -148,6 +148,18 @@ namespace Pusula.Wpf
         {
             viewModel.ProjectTag = string.Empty;
         }
+        private void AddResponsible_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.AddEditResponsible();
+        }
+
+        private void RemoveResponsible_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is ResponsibleRow row)
+            {
+                viewModel.RemoveEditResponsible(row);
+            }
+        }
         // Alt / üst stok çipi: o stoku açar (ağaçta yoksa bir şey yapmaz).
         private void StockLinkChip_Click(object sender, RoutedEventArgs e)
         {

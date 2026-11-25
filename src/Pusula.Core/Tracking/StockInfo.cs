@@ -23,6 +23,7 @@ namespace Pusula.Core.Tracking
             Notes = new System.Collections.Generic.List<QuickNote>();
             Tags = new System.Collections.Generic.List<string>();
             Components = new System.Collections.Generic.List<string>();
+            Responsibles = new System.Collections.Generic.List<Responsible>();
         }
 
         /// <summary>Dosya biçiminin sürümü.</summary>
@@ -74,6 +75,10 @@ namespace Pusula.Core.Tracking
         /// </summary>
         [DataMember(Name = "components", Order = 10, EmitDefaultValue = false)]
         public System.Collections.Generic.List<string> Components { get; set; } = new System.Collections.Generic.List<string>();
+
+        /// <summary>Stokun sorumluları (isteğe bağlı; tasarım sorumlusu gibi; 25.11.2026).</summary>
+        [DataMember(Name = "responsibles", Order = 11, EmitDefaultValue = false)]
+        public System.Collections.Generic.List<Responsible> Responsibles { get; set; } = new System.Collections.Generic.List<Responsible>();
 
         /// <summary>Durumu ve tarihini ayarlar.</summary>
         public void SetStatus(string status, string note, System.DateTime when)

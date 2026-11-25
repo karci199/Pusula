@@ -3934,5 +3934,17 @@ namespace Pusula.Wpf.Properties
 
         /// <summary>Ayarlar: kişi listesini açan düğme (25.11.2026).</summary>
         public static string Button_EditPeople { get { return Get("Button_EditPeople"); } }
+
+        /// <summary>Sorumlular (25.11.2026): Edit_Responsibles.</summary>
+        public static string Edit_Responsibles { get { return Get("Edit_Responsibles"); } }
+
+        /// <summary>Sorumlular (25.11.2026): Edit_AddResponsible.</summary>
+        public static string Edit_AddResponsible { get { return Get("Edit_AddResponsible"); } }
+
+        /// <summary>Sorumlular (25.11.2026): Edit_RemoveResponsible.</summary>
+        public static string Edit_RemoveResponsible { get { return Get("Edit_RemoveResponsible"); } }
+
+        /// <summary>Sorumlular (25.11.2026): Placeholder_ResponsibleRole.</summary>
+        public static string Placeholder_ResponsibleRole { get { return Get("Placeholder_ResponsibleRole"); } }
     }
 }

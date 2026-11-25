@@ -1,4 +1,4 @@
-<Border xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<Border xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Width="1280" Background="{DynamicResource SurfaceBaseBrush}" Padding="24,20" TextElement.FontFamily="Segoe UI"
         TextElement.Foreground="{DynamicResource TextPrimaryBrush}" TextElement.FontSize="13">

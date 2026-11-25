@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,33 +14,22 @@ namespace Pusula.Core.Tracking
         /// <summary>Üst stokun bileşen listesine numarayı ekler ya da çıkarır (atomik yazım). Başarılıysa <c>true</c>.</summary>
         public static bool Set(string stockFolder, string number, bool add)
         {
-            var path = TrackingFiles.StockFile(stockFolder);
-            var info = JsonFile.TryRead<StockInfo>(path);
-            if (info == null || string.IsNullOrWhiteSpace(number))
+            if (string.IsNullOrWhiteSpace(number) || !File.Exists(TrackingFiles.StockFile(stockFolder)))
             {
                 return false;
             }
 
-            info.Components.RemoveAll(n => string.Equals(n, number, StringComparison.OrdinalIgnoreCase));
-            if (add)
+            return JsonFile.Update<StockInfo>(TrackingFiles.StockFile(stockFolder), info =>
             {
-                info.Components.Add(number.Trim());
-                info.Components.Sort(StringComparer.OrdinalIgnoreCase);
-            }
+                info.Components.RemoveAll(n => string.Equals(n, number, StringComparison.OrdinalIgnoreCase));
+                if (add)
+                {
+                    info.Components.Add(number.Trim());
+                    info.Components.Sort(StringComparer.OrdinalIgnoreCase);
+                }
 
-            try
-            {
-                JsonFile.WriteAtomic(path, info);
                 return true;
-            }
-            catch (IOException)
-            {
-                return false;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return false;
-            }
+            }).Length == 0;
         }
 
         /// <summary>

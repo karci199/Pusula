@@ -95,6 +95,32 @@ namespace Pusula.Core.Tracking
             return Write(path, info);
         }
 
+        /// <summary>
+        /// Stokun ya da yardımcı aracın sorumlularını yazar (boş liste: hiç sorumlu yok). Proje için bir şey yapmaz.
+        /// Hata metni; başarıda boş.
+        /// </summary>
+        public static string SetResponsibles(string folder, RecordKind kind, IEnumerable<Responsible> responsibles)
+        {
+            var clean = Responsible.Clean(responsibles);
+            switch (kind)
+            {
+                case RecordKind.Stock:
+                    return JsonFile.Update<StockInfo>(TrackingFiles.StockFile(folder), info =>
+                    {
+                        info.Responsibles = clean;
+                        return true;
+                    });
+                case RecordKind.Inventory:
+                    return JsonFile.Update<InventoryRecord>(InventoryService.RecordFile(folder), record =>
+                    {
+                        record.Responsibles = clean;
+                        return true;
+                    });
+                default:
+                    return string.Empty;
+            }
+        }
+
         /// <summary>Etiket adlarını düzeltir (<c>#</c> atılır, boşluk <c>_</c>), boşları ve tekrarları atar.</summary>
         public static List<string> CleanTags(IEnumerable<string> tags)
         {

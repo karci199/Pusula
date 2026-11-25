@@ -1161,6 +1161,11 @@ namespace Pusula.Wpf.ViewModels
             {
                 Facts.Add(new FactRow(Resources.Inv_UsedInProjects, string.Join(", ", MainViewModel.ProjectsOf(record))));
             }
+
+            if (record.Responsibles.Count > 0)
+            {
+                Facts.Add(new FactRow(Resources.Edit_Responsibles, MainViewModel.ResponsiblesText(record.Responsibles)));
+            }
             Facts.Add(new FactRow(Resources.Inv_Requested, EventText(request)));
             string maker, docs;
             Facts.Add(new FactRow(Resources.Inv_MadeBy, record.Fields.TryGetValue(MainViewModel.MakerKey, out maker) && maker.Length > 0 ? maker : making?.Person ?? string.Empty));
