@@ -197,8 +197,9 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
   - Yapıldı: proje sayfasında başka projenin araçları görünüyordu (tür sayıları da); uzun ince fotoğrafta kapak boşluğu
     (bulanık dolgu); doğrulama maddeleri sıkışıyordu (stok sayfası tek kaydırma, üst alan 380 px, özet görünüm düğmelerinin
     yanında; hedef ekran 1080p).
-  - **ComboBox:** "chevron dışına tıklayınca tekrar" — hangi ekran / kutu olduğu sorulacak (Kiwi veri analizinde de yaşanmış;
-    KIWI'de bulunan düzeltme yalnız yazılabilir kutular içindi, Pusula'da yazılabilir kutu yok).
+  - **ComboBox:** "chevron dışına tıklayınca tekrar" — KIWI veri analizine bakıldı (25.11.2026): orada kesit kutusu metin + ok
+    düğmesi (yazılır, yalnız ok açar), ComboBox düzeltmesi yok; DesignKit Pusula'da daha yeni (0.3.8 / KIWI 0.3.5). Ekrana
+    dokunmadan yeniden üretilemedi; kullanıcı hangi kutuda ne olduğunu gösterirse bakılacak.
   - **Stok dokümanları (yapıldı, 25.11.2026):** `01_Ortak\Dokumanlar\<stok>_<kod>_<rev>[_TASLAK]` (Ortak: Dokumanlar,
     Fotograflar, Girdiler). Rev P1–P9 = taslak aktarımı, AA, AB … BA = resmî; `_TASLAK` eki = hazırlanıyor. Durum yalnız
     dosya adından okunur (Burada yok · hazırlanıyor · taslak aktarıldı · aktarıldı · değişiklik bekliyor); zaman çizelgesine
@@ -223,7 +224,12 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
     (doğrudan / dolaylı) engellenir. Klasörler ve ağaç değişmez.
   - **Kişiler (yapıldı, 25.11.2026):** Ayarlar → "Kişiler…" Türler penceresini kişi listesiyle açar. @ önerisinde kişiler,
     stoklar, araçlar ve seçili stokun `Diger\*.msg` mail dosyaları (`[[Diger/….msg]]`, tıklanınca Outlook'ta açılır); bahsetme
-    yalnız metin, iş atamaz. Kalan: stoka "sorumlu" alanı (modül / almaç sorumluları) istenirse.
+    yalnız metin, iş atamaz.
+  - **Sorumlular (yapıldı, 25.11.2026):** stok ve yardımcı araçta isteğe bağlı rol + kişi (Düzenle → Sorumlular, kişi # ile
+    önerilir); stok.json / kayit.json → responsibles. Stok sayfasında yalnız stokun kendi sorumluları, araç sayfasında Bilgiler'de.
+  - **Teknik borç (25.11.2026):** `JsonFile.Update<T>` (oku-değiştir-atomik yaz) eklendi; stok bağı, bileşen ve sorumlular onu
+    kullanıyor. Kalan: RecordEdit'teki eski oku-yaz kalıpları, UI thread'inde eşzamanlı yazımlar (kısa not / bağ), süzgeç
+    kutularının "Tümü" geçici çözümü.
   - **Hata avı (25.11.2026):** düzenle penceresinde genel araçtan kalan proje seçimi; sayı satırı 261 maddelerini sayıyordu;
     son değişiklik sırası her seferinde tarıyordu.
   - **Genel düzen (mock `docs/mock/genel_duzen.png`, onay bekliyor):** süzgeç çubuğu tek biçim (etiket kutunun içinde,
@@ -237,7 +243,6 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
   aramalı bağ seçimi, "Sonuç yok" durumu, ÇK/EMC standardı (gereksinimde test tipi · standart · yöntem · prosedür;
   ortak liste `_TAKIP\Standartlar.md`, başlangıç 810F / 810G / 810G CHG1 / 810H / 461G — numaralar elle doğrulanmalı).
   **Sıradaki:** istatistikler (mock `docs/mock/istatistikler.png`; kullanıcının itirazı var, konuşulacak).
-  Küçükler: DOORS sütun adları (gerçek çıktı görülünce).
 - **Test yardımcı aracı sayfası (22.11.2026 gece, kullanıcı kararları; kodlandı):**
   - Alanlar (turler.json sürüm 15): her türde **Kullanım amacı**. Kablaj: Boy, Ekran (ekranlı / ekransız), RF'te
     Frekans bandı, Haberleşme'de Pin yapısı, Güç'te Gerilim · Akım · Kesit (AWG). Jigin malzeme alanları (Malzeme,
@@ -318,8 +323,7 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
   eklenebilir); listede olmayan yöntem yazılırsa listeye eklenir. Planda ayrı seçim yok: bağlı gereksinimlerden okunur
   (turuncu çip), Excel'e aktarımda "Standart" sütunu. Aramalı seçim kutusu `SearchPickBox` (tip, standart, yöntem,
   plan altyapısı). Test `standard.ps1`.
-  Küçük not: gereksinimin rapor bağı "Yok" sayılırken sonuçsuz rapor da "raporu yok" uyarısına düşüyor (TSD-0042 5.3
-  sonuçsuz) — metin "sonucu eksik" olarak ayrılabilir.
+  Raporu yok / sonucu girilmedi ayrımı yapıldı (ayrı uyarı parçaları; excel-flow testi).
 - **Standart kütüphanesi (22.11.2026, sonraya; kullanıcı isteği):** ÇK / EMC test maddeleri için standartlar
   (MIL-STD-810G, MIL-STD-461G …) yüklenir; plan / gereksinim maddesinde doğrudan standart ve yöntem seçilebilir.
 - **Outlook / mail (22.11.2026 kullanıcı kararı):** yalnız `.msg` dosyası tutulur (kayda eklenir, `Diger\` klasörüne
