@@ -158,7 +158,7 @@ namespace Pusula.Wpf.ViewModels
                     OnPropertyChanged(nameof(CanEditSelected));
                     Detail.InventoryItems = inventoryItems;
                     Detail.Load(selectedNode, templates, types);
-                    Inventory.Load(selectedNode, inventoryItems, types);
+                    Inventory.Load(selectedNode, inventoryItems, types, InventoryLinksFor(selectedNode));
                     FillUsingStocks();
                     LoadMentions(selectedNode);
                     RememberRecent(selectedNode);

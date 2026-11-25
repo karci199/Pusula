@@ -24,7 +24,7 @@ try {
     $vm.SearchText = 'boynuz'
     Check 'stok adından bulur (TAKIM ANTEN BOYNUZ Y)' ((@(Visible $vm.Nodes)) -contains 'AB-7000-0002') ((@(Visible $vm.Nodes)) -join ',')
     $vm.SearchText = ''
-    Check 'boş: hepsi görünür, sayı 3' ((@(Visible $vm.Nodes).Count -gt 15) -and $jt.DisplaySubtitle -eq '3')
+    Check 'boş: hepsi görünür, araçlar yine gizli, sayı 3' ((@(Visible $vm.Nodes).Count -gt 8) -and $jt.DisplaySubtitle -eq '3' -and -not ((@(Visible $vm.Nodes)) -contains 'JIG-1000-0009'))
     "--- 2. Envanter süzgeçleri"
     $group = $vm.Nodes | Where-Object { $_.Kind -eq 'InventoryGroup' }
     $vm.SelectedNode = $group; Wait
@@ -50,7 +50,7 @@ try {
     Check 'Tür sütunu ekranda 0 geniş' ($col.ActualWidth -eq 0) $col.ActualWidth
     function Combos($d) { if ($d -is [System.Windows.Controls.ComboBox] -and $d.IsVisible) { $d }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($d); $i++) { Combos ([System.Windows.Media.VisualTreeHelper]::GetChild($d, $i)) } }
     $shown = @(Combos $win | ForEach-Object { [string]$_.SelectionBoxItem })
-    Check 'açılır kutular Tümü gösteriyor' ($shown.Count -eq 3 -and ($shown | Where-Object { $_ -ne 'Tümü' }).Count -eq 0) ($shown -join '|')
+    Check 'açılır kutular (Proje, Stok, Alt tür, Durum) Tümü gösteriyor' ($shown.Count -eq 4 -and ($shown | Where-Object { $_ -ne 'Tümü' }).Count -eq 0) ($shown -join '|')
     Snap $win "$Out\inventory-cables.png"
     $win.Close()
 } finally { if ($savedSettings -ne $null) { [IO.File]::WriteAllText($settingsFile, $savedSettings) } }

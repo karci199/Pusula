@@ -3856,5 +3856,11 @@ namespace Pusula.Wpf.Properties
 
         /// <summary>Doküman (25.11.2026): Editor_DocumentGroup.</summary>
         public static string Editor_DocumentGroup { get { return Get("Editor_DocumentGroup"); } }
+
+        /// <summary>Envanter listesi (25.11.2026): kayıt · stoka bağlı · genel sayıları.</summary>
+        public static string Inv_ListSummary { get { return Get("Inv_ListSummary"); } }
+
+        /// <summary>Envanter listesi: Bağlı olduğu sütunu.</summary>
+        public static string Inv_AttachedTo { get { return Get("Inv_AttachedTo"); } }
     }
 }

@@ -160,6 +160,19 @@ namespace Pusula.Wpf.ViewModels
                 return true;
             }
 
+            // Ağaçta gizli kayıt (araç): sayfası açılır; ağaçtaki eski seçim kalkar ki aynı düğüme yeniden tıklanabilsin.
+            var hidden = node.HiddenItems.FirstOrDefault(child => string.Equals(child.Path, path, StringComparison.OrdinalIgnoreCase));
+            if (hidden != null)
+            {
+                if (selectedNode != null && !ReferenceEquals(selectedNode, hidden))
+                {
+                    selectedNode.IsSelected = false;
+                }
+
+                SelectedNode = hidden;
+                return true;
+            }
+
             return false;
         }
     }

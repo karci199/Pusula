@@ -3651,4 +3651,10 @@ Ortak liste (ÇK / EMC): &quot;## standart&quot; başlığı altında &quot;- nu
   <data name="Editor_DocumentGroup" xml:space="preserve">
     <value>Grup (birlikte aktarılır)</value>
   </data>
+  <data name="Inv_ListSummary" xml:space="preserve">
+    <value>{0} kayıt · {1} stoka bağlı · {2} genel</value>
+  </data>
+  <data name="Inv_AttachedTo" xml:space="preserve">
+    <value>Bağlı olduğu</value>
+  </data>
 </root>

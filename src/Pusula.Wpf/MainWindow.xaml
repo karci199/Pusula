@@ -4384,9 +4384,20 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <WrapPanel Grid.Row="0" Orientation="Horizontal">
+                    <StackPanel Grid.Row="0">
+                    <!-- 25.11.2026: türün listesi (araçlar ağaçta değil burada); özet, Proje / Stok süzgeci, geri dönünce süzgeç kalır -->
+                    <TextBlock Margin="0,0,0,10" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Inventory.ListSummary}" />
+                    <WrapPanel Orientation="Horizontal">
                         <controls:SearchBox Width="220" Margin="0,0,8,6" PlaceholderText="{x:Static res:Resources.Filter_Search}"
                                             Text="{Binding Inventory.FilterText, UpdateSourceTrigger=PropertyChanged}" />
+                        <StackPanel Orientation="Horizontal" Margin="0,0,8,6">
+                            <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Col_Project}" />
+                            <ComboBox MinWidth="150" ItemsSource="{Binding Inventory.ProjectOptions}" SelectedItem="{Binding Inventory.FilterProject, Mode=TwoWay}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,8,6">
+                            <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Col_Stock}" />
+                            <ComboBox MinWidth="150" ItemsSource="{Binding Inventory.StockOptions}" SelectedItem="{Binding Inventory.FilterStock, Mode=TwoWay}" />
+                        </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,8,6" Visibility="{Binding Inventory.ShowTypeFilter, Converter={StaticResource BoolToVis}}">
                             <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Inv_Type}" />
                             <ComboBox MinWidth="110" ItemsSource="{Binding Inventory.TypeOptions}" SelectedItem="{Binding Inventory.FilterType, Mode=TwoWay}" />
@@ -4399,16 +4410,17 @@
                             <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Col_Status}" />
                             <ComboBox MinWidth="150" ItemsSource="{Binding Inventory.StatusOptions}" SelectedItem="{Binding Inventory.FilterStatus, Mode=TwoWay}" />
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,8,6">
-                            <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Inv_Level}" />
-                            <ComboBox MinWidth="100" ItemsSource="{Binding Inventory.LevelOptions}" SelectedItem="{Binding Inventory.FilterLevel, Mode=TwoWay}" />
-                        </StackPanel>
+                        <Button Margin="0,0,8,6" Padding="8,3" VerticalAlignment="Center" Style="{DynamicResource SubtleButtonStyle}" Click="InventoryFilterClear_Click"
+                                Visibility="{Binding Inventory.HasFilter, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="{x:Static res:Resources.Verify_FilterClear}" />
+                        </Button>
                         <TextBlock VerticalAlignment="Center" Margin="4,0,0,6" Style="{DynamicResource CaptionTextBlockStyle}"
                                    Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding Inventory.FilterSummary}" />
                     </WrapPanel>
+                    </StackPanel>
                     <ListView x:Name="InventoryList" Grid.Row="1" Margin="0,10,0,0" ContextMenu="{StaticResource InventoryRowMenu}"
                               ItemsSource="{Binding Inventory.Rows}"
-                              MouseDoubleClick="InventoryList_MouseDoubleClick">
+                              MouseLeftButtonUp="InventoryList_MouseLeftButtonUp">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Width="44">
@@ -4432,8 +4444,26 @@
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
+                                <GridViewColumn Header="{x:Static res:Resources.Inv_AttachedTo}" Width="190">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Border x:Name="GeneralBadge" Padding="7,1" CornerRadius="8" VerticalAlignment="Center" Background="{DynamicResource SubtleFillColorSecondaryBrush}" Visibility="Collapsed">
+                                                    <TextBlock FontSize="12" Text="{Binding Attached}" />
+                                                </Border>
+                                                <TextBlock x:Name="AttachedText" VerticalAlignment="Center" Text="{Binding Attached}" />
+                                                <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding AttachedNote}" />
+                                            </StackPanel>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding IsGeneral}" Value="True">
+                                                    <Setter TargetName="GeneralBadge" Property="Visibility" Value="Visible" />
+                                                    <Setter TargetName="AttachedText" Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
                                 <GridViewColumn Header="{x:Static res:Resources.Inv_Location}" Width="120" DisplayMemberBinding="{Binding Location}" />
-                                <GridViewColumn Header="{x:Static res:Resources.Inv_Level}" Width="145" DisplayMemberBinding="{Binding Level}" />
                             </GridView>
                         </ListView.View>
                     </ListView>

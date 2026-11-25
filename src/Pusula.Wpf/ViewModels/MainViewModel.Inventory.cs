@@ -322,10 +322,11 @@ namespace Pusula.Wpf.ViewModels
                     items.Count.ToString());
                 foreach (var entry in items)
                 {
-                    typeNode.Children.Add(new TreeNodeViewModel(new FolderEntry(entry.Folder, FolderKind.InventoryItem, entry.Record.Number), type, entry, entry.Record.Name));
+                    typeNode.HiddenItems.Add(new TreeNodeViewModel(new FolderEntry(entry.Folder, FolderKind.InventoryItem, entry.Record.Number), type, entry, entry.Record.Name));
                 }
 
-                // Elle açılmış, kaydı olmayan klasörler: soluk, sağ tıkla "… olarak işaretle".
+                // 25.11.2026: kayıtlar ağaçta listelenmez (sağdaki tür listesinde); seçme / arama için gizli tutulur.
+                // Elle açılmış, kaydı olmayan klasörler ağaçta kalır: soluk, sağ tıkla "… olarak işaretle".
                 foreach (var entry in unmarked.Where(i => string.Equals(i.Record.Type, type.Key, StringComparison.OrdinalIgnoreCase)))
                 {
                     typeNode.Children.Add(new TreeNodeViewModel(new FolderEntry(entry.Folder, FolderKind.Plain, entry.Record.Number), type, null, Resources.Inv_Unmarked));
@@ -1003,23 +1004,51 @@ namespace Pusula.Wpf.ViewModels
             return true;
         }
 
-        /// <summary>Ağaçta kaydı bulur, türünü açar ve seçer.</summary>
+        // Envanter listesi (tür / bölüm) için bağ bilgisi: stok → proje, kayıt → bağlayan stoklar (stok.json). Başka düğümde boş.
+        private InventoryLinks InventoryLinksFor(TreeNodeViewModel? node)
+        {
+            var links = new InventoryLinks();
+            if (node == null || (node.Kind != FolderKind.InventoryType && node.Kind != FolderKind.InventoryGroup))
+            {
+                return links;
+            }
+
+            foreach (var project in Nodes.Where(n => n.Kind == FolderKind.Project))
+            {
+                var folder = Path.GetFileName(project.Path);
+                foreach (var stock in project.Children.Where(c => c.Kind == FolderKind.Stock))
+                {
+                    links.StockProject[stock.Title] = folder;
+                    var info = JsonFile.TryRead<StockInfo>(TrackingFiles.StockFile(stock.Path));
+                    foreach (var number in info?.Inventory ?? new List<string>())
+                    {
+                        List<string> list;
+                        if (!links.LinkedStocks.TryGetValue(number, out list))
+                        {
+                            list = new List<string>();
+                            links.LinkedStocks[number] = list;
+                        }
+
+                        if (!list.Contains(stock.Title, StringComparer.OrdinalIgnoreCase))
+                        {
+                            list.Add(stock.Title);
+                        }
+                    }
+                }
+            }
+
+            return links;
+        }
+
+        /// <summary>Kaydı bulur ve sayfasını açar (kayıtlar ağaçta gizli; bkz. <see cref="TreeNodeViewModel.HiddenItems"/>).</summary>
         public void ShowInventory(string folder)
         {
             foreach (var group in Nodes.Where(n => n.Kind == FolderKind.InventoryGroup))
             {
                 group.IsExpanded = true;
-                foreach (var typeNode in group.Children)
-                {
-                    var match = typeNode.Children.FirstOrDefault(c => string.Equals(c.Path, folder, StringComparison.OrdinalIgnoreCase));
-                    if (match != null)
-                    {
-                        typeNode.IsExpanded = true;
-                        match.IsSelected = true;
-                        SelectedNode = match;
-                    }
-                }
             }
+
+            SelectNodeByPath(folder);
         }
 
         /// <summary>

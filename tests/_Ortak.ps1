@@ -42,7 +42,8 @@ function Snap($window, [string]$path)
 # Ağaçta başlığı verilen ilk düğüm.
 function FindNode($nodes, [string]$title)
 {
-    foreach ($n in $nodes) { if ($n.Title -eq $title) { return $n }; $r = FindNode $n.Children $title; if ($r) { return $r } }
+    # 25.11.2026: envanter kayıtları ağaçta gizli (HiddenItems); onlar da aranır.
+    foreach ($n in $nodes) { if ($n.Title -eq $title) { return $n }; $r = FindNode $n.Children $title; if ($r) { return $r }; if ($n.HiddenItems) { $r = FindNode $n.HiddenItems $title; if ($r) { return $r } } }
     return $null
 }
 

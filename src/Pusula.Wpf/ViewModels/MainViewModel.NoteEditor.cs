@@ -82,7 +82,7 @@ namespace Pusula.Wpf.ViewModels
             while (pending.Count > 0)
             {
                 var node = pending.Pop();
-                foreach (var child in node.Children)
+                foreach (var child in node.AllChildren)
                 {
                     pending.Push(child);
                 }
@@ -183,7 +183,7 @@ namespace Pusula.Wpf.ViewModels
                     }
                 }
 
-                foreach (var child in node.Children)
+                foreach (var child in node.AllChildren)
                 {
                     pending.Push(child);
                 }

@@ -185,9 +185,83 @@ namespace Pusula.Wpf.ViewModels
         }
     }
 
+    /// <summary>
+    /// Envanter listesinin bağ bilgisi (25.11.2026): stok → proje klasörü ve kayıt numarası → onu bağlamış stoklar
+    /// (<c>stok.json</c> → <c>inventory</c>). Liste açılırken bir kez kurulur.
+    /// </summary>
+    public sealed class InventoryLinks
+    {
+        /// <summary>Stok numarası → proje klasörü ("AB-7000-0003" → "7000_MILKON").</summary>
+        public Dictionary<string, string> StockProject { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>Kayıt numarası → onu bağlamış stoklar.</summary>
+        public Dictionary<string, List<string>> LinkedStocks { get; } = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>Proje klasöründen kısa kod ("7000_MILKON" → "7000").</summary>
+        public static string CodeOf(string projectFolder)
+        {
+            var cut = projectFolder.IndexOf('_');
+            return cut > 0 ? projectFolder.Substring(0, cut) : projectFolder;
+        }
+    }
+
     /// <summary>Envanter listesinde (tür ya da bölüm seçiliyken) bir satır.</summary>
     public sealed class InventoryRow
     {
+        /// <summary>
+        /// Kayıttan satır; bağ bilgisiyle "Bağlı olduğu" (stok, proje ya da Genel + kullanıldığı projeler) ve süzgeç için
+        /// proje / stok listeleri kurulur.
+        /// </summary>
+        public InventoryRow(InventoryItem item, TypeDefinition type, InventoryLinks links)
+            : this(item, type)
+        {
+            List<string> linked;
+            var stocks = links.LinkedStocks.TryGetValue(item.Record.Number, out linked) ? linked : new List<string>();
+            string project;
+            switch (item.Level)
+            {
+                case InventoryLevel.Stock:
+                    Stocks = new[] { item.Owner }.Concat(stocks).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+                    Attached = item.Owner;
+                    break;
+                case InventoryLevel.Project:
+                    Stocks = stocks;
+                    Projects.Add(item.Owner);
+                    Attached = item.Owner;
+                    break;
+                default:
+                    Stocks = stocks;
+                    IsGeneral = true;
+                    Attached = Resources.Records_General;
+                    break;
+            }
+
+            foreach (var stock in Stocks)
+            {
+                if (links.StockProject.TryGetValue(stock, out project) && !Projects.Contains(project, StringComparer.OrdinalIgnoreCase))
+                {
+                    Projects.Add(project);
+                }
+            }
+
+            AttachedNote = IsGeneral ? string.Join(", ", Projects.Select(InventoryLinks.CodeOf)) : string.Empty;
+        }
+
+        /// <summary>Bağlı olduğu: stok numarası, proje klasörü ya da "Genel".</summary>
+        public string Attached { get; } = string.Empty;
+
+        /// <summary>Genel düzeyde mi (rozetle gösterilir).</summary>
+        public bool IsGeneral { get; }
+
+        /// <summary>Genelde yanında kullanıldığı projelerin kodları ("7000, 8000").</summary>
+        public string AttachedNote { get; } = string.Empty;
+
+        /// <summary>Süzgeç: ilgili projeler (stoğun projesi, proje düzeyi, bağlayan stokların projeleri).</summary>
+        public List<string> Projects { get; } = new List<string>();
+
+        /// <summary>Süzgeç: ilgili stoklar (sahibi ve bağlayanlar).</summary>
+        public List<string> Stocks { get; private set; } = new List<string>();
+
         /// <summary>Kayıttan satır oluşturur.</summary>
         public InventoryRow(InventoryItem item, TypeDefinition type, bool isLinked = false)
         {
@@ -360,6 +434,13 @@ namespace Pusula.Wpf.ViewModels
         private string filterSubType = string.Empty;
         private string filterStatus = string.Empty;
         private string filterLevel = string.Empty;
+        private string filterProject = string.Empty;
+        private string filterStock = string.Empty;
+        private string listSummary = string.Empty;
+        private string listKey = string.Empty;
+        private bool restoring;
+        private InventoryLinks links = new InventoryLinks();
+        private readonly Dictionary<string, string[]> savedFilters = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
         private string filterText = string.Empty;
         private string filterSummary = string.Empty;
         private string cover = string.Empty;
@@ -598,6 +679,17 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Seçili düğüme göre kayıt sayfasını ya da listeyi kurar; envanter dışı düğümde temizler.</summary>
         public void Load(TreeNodeViewModel? node, IEnumerable<InventoryItem> allItems, TypeSet types)
         {
+            Load(node, allItems, types, new InventoryLinks());
+        }
+
+        /// <summary>
+        /// Kayıt sayfası ya da liste; listede bağ bilgisi (<paramref name="links"/>) "Bağlı olduğu" sütununu ve Proje / Stok
+        /// süzgeçlerini kurar. Aynı listeye geri dönülünce süzgeçler yerinde kalır (25.11.2026).
+        /// </summary>
+        public void Load(TreeNodeViewModel? node, IEnumerable<InventoryItem> allItems, TypeSet types, InventoryLinks links)
+        {
+            SaveFilters();
+            this.links = links;
             IsRecord = false;
             IsList = false;
             Steps.Clear();
@@ -624,33 +716,196 @@ namespace Pusula.Wpf.ViewModels
             }
 
             var filter = node.Type;
+            listKey = node.Path;
             allRows.Clear();
             foreach (var entry in allItems)
             {
                 var entryType = types.Find(entry.Record.Type);
                 if (entryType != null && (filter == null || entryType.Key == filter.Key))
                 {
-                    allRows.Add(new InventoryRow(entry, entryType));
+                    allRows.Add(new InventoryRow(entry, entryType, links));
                 }
             }
 
+            var stocked = allRows.Count(r => r.Stocks.Count > 0);
+            var general = allRows.Count(r => r.IsGeneral);
+            ListSummary = string.Format(System.Globalization.CultureInfo.CurrentCulture, Resources.Inv_ListSummary, allRows.Count, stocked, general);
+
             // Filtre seçenekleri listedeki kayıtlardan; tür seçeneği yalnızca bölüm seçiliyken anlamlı.
             ShowTypeFilter = filter == null;
+
+            // Değer değişmese de sütun genişliği yeniden bildirilir (ilk açılışta tür düğümünde Tür sütunu görünüyordu).
+            OnPropertyChanged(nameof(TypeColumnWidth));
 
             // Önce seçimler "Tümü"ye döner, sonra seçenekler yenilenir: seçili seçenek silinip kutu boş kalmasın.
             filterType = Resources.Filter_All;
             filterSubType = Resources.Filter_All;
             filterStatus = Resources.Filter_All;
             filterLevel = Resources.Filter_All;
+            filterProject = Resources.Filter_All;
+            filterStock = Resources.Filter_All;
             filterText = string.Empty;
             NotifyFilters();
             FillOptions(TypeOptions, allRows.Select(r => r.TypeName));
             FillOptions(StatusOptions, allRows.Select(r => r.Status.Name));
             FillOptions(LevelOptions, new[] { InventoryLevel.General, InventoryLevel.Project, InventoryLevel.Stock }.Select(LevelName));
+            FillProjectOptions();
             RefreshSubTypes();
+            RefreshStocks();
+            RestoreFilters();
             NotifyFilters();
             ApplyFilter();
             IsList = true;
+        }
+
+        /// <summary>"12 kayıt · 9 stoka bağlı · 3 genel".</summary>
+        public string ListSummary
+        {
+            get { return listSummary; }
+            private set { SetProperty(ref listSummary, value); }
+        }
+
+        /// <summary>Proje seçenekleri: "Tümü", "Genel" (projesiz), sonra proje klasörleri.</summary>
+        public ObservableCollection<string> ProjectOptions { get; } = new ObservableCollection<string>();
+
+        /// <summary>Stok seçenekleri (seçili projenin stokları; proje seçili değilse hepsi).</summary>
+        public ObservableCollection<string> StockOptions { get; } = new ObservableCollection<string>();
+
+        /// <summary>Seçili proje süzgeci ("Genel": hiçbir projeye bağlı olmayan genel kayıtlar).</summary>
+        public string FilterProject
+        {
+            get { return filterProject; }
+            set
+            {
+                if (value == null)
+                {
+                    RenotifyLater(nameof(FilterProject));
+                    return;
+                }
+
+                if (SetProperty(ref filterProject, value))
+                {
+                    filterStock = Resources.Filter_All;
+                    RefreshStocks();
+                    ApplyFilter();
+                }
+            }
+        }
+
+        /// <summary>Seçili stok süzgeci.</summary>
+        public string FilterStock
+        {
+            get { return filterStock; }
+            set
+            {
+                if (value == null)
+                {
+                    RenotifyLater(nameof(FilterStock));
+                    return;
+                }
+
+                if (SetProperty(ref filterStock, value))
+                {
+                    ApplyFilter();
+                }
+            }
+        }
+
+        /// <summary>Bütün süzgeçleri temizler.</summary>
+        public void ClearFilters()
+        {
+            filterType = Resources.Filter_All;
+            filterSubType = Resources.Filter_All;
+            filterStatus = Resources.Filter_All;
+            filterLevel = Resources.Filter_All;
+            filterProject = Resources.Filter_All;
+            filterStock = Resources.Filter_All;
+            filterText = string.Empty;
+            RefreshSubTypes();
+            RefreshStocks();
+            NotifyFilters();
+            ApplyFilter();
+        }
+
+        /// <summary>Herhangi bir süzgeç seçili mi (Temizle görünür).</summary>
+        public bool HasFilter
+        {
+            get
+            {
+                var all = Resources.Filter_All;
+                return filterText.Trim().Length > 0 || filterType != all || filterSubType != all || filterStatus != all
+                    || filterLevel != all || filterProject != all || filterStock != all;
+            }
+        }
+
+        private void FillProjectOptions()
+        {
+            FillOptions(ProjectOptions, allRows.SelectMany(r => r.Projects));
+            if (allRows.Any(r => r.IsGeneral && r.Projects.Count == 0))
+            {
+                ProjectOptions.Insert(1, Resources.Records_General);
+            }
+        }
+
+        private void RefreshStocks()
+        {
+            OnPropertyChanged(nameof(FilterStock));
+            // Proje seçiliyse yalnız o projenin stokları (genel aracı başka projede bağlayan stok çıkmaz).
+            string project;
+            FillOptions(StockOptions, allRows.Where(MatchesProject).SelectMany(r => r.Stocks)
+                .Where(s => filterProject == Resources.Filter_All || filterProject == Resources.Records_General
+                    || (links.StockProject.TryGetValue(s, out project) && string.Equals(project, filterProject, StringComparison.OrdinalIgnoreCase))));
+            OnPropertyChanged(nameof(FilterStock));
+        }
+
+        private bool MatchesProject(InventoryRow row)
+        {
+            if (filterProject == Resources.Filter_All)
+            {
+                return true;
+            }
+
+            return filterProject == Resources.Records_General
+                ? row.IsGeneral && row.Projects.Count == 0
+                : row.Projects.Contains(filterProject, StringComparer.OrdinalIgnoreCase);
+        }
+
+        // Liste değişmeden önce süzgeçler bu listenin (düğüm yolu) adına saklanır.
+        private void SaveFilters()
+        {
+            if (!isList || listKey.Length == 0 || restoring)
+            {
+                return;
+            }
+
+            savedFilters[listKey] = new[] { filterType, filterSubType, filterStatus, filterLevel, filterProject, filterStock, filterText };
+        }
+
+        // Aynı listeye dönülünce saklanan süzgeçler geri gelir (seçenekte artık olmayan değer "Tümü" kalır).
+        private void RestoreFilters()
+        {
+            string[] saved;
+            if (!savedFilters.TryGetValue(listKey, out saved))
+            {
+                return;
+            }
+
+            restoring = true;
+            filterType = Pick(TypeOptions, saved[0]);
+            RefreshSubTypes();
+            filterSubType = Pick(SubTypeOptions, saved[1]);
+            filterStatus = Pick(StatusOptions, saved[2]);
+            filterLevel = Pick(LevelOptions, saved[3]);
+            filterProject = Pick(ProjectOptions, saved[4]);
+            RefreshStocks();
+            filterStock = Pick(StockOptions, saved[5]);
+            filterText = saved[6];
+            restoring = false;
+        }
+
+        private static string Pick(IEnumerable<string> options, string value)
+        {
+            return options.FirstOrDefault(o => string.Equals(o, value, StringComparison.CurrentCultureIgnoreCase)) ?? Resources.Filter_All;
         }
 
         /// <summary>Bölüm seçiliyken tür süzgeci gösterilsin mi (tür düğümünde tür zaten belli).</summary>
@@ -824,6 +1079,8 @@ namespace Pusula.Wpf.ViewModels
             OnPropertyChanged(nameof(FilterSubType));
             OnPropertyChanged(nameof(FilterStatus));
             OnPropertyChanged(nameof(FilterLevel));
+            OnPropertyChanged(nameof(FilterProject));
+            OnPropertyChanged(nameof(FilterStock));
             OnPropertyChanged(nameof(FilterText));
         }
 
@@ -839,8 +1096,10 @@ namespace Pusula.Wpf.ViewModels
             foreach (var row in allRows)
             {
                 var record = row.Item?.Record;
-                var haystack = string.Join(" ", row.Number, row.Name, row.SubType, row.Location, row.Level, record?.Note ?? string.Empty);
+                var haystack = string.Join(" ", row.Number, row.Name, row.SubType, row.Location, row.Level, row.Attached, record?.Note ?? string.Empty);
                 if (MatchesType(row)
+                    && MatchesProject(row)
+                    && (filterStock == Resources.Filter_All || row.Stocks.Contains(filterStock, StringComparer.OrdinalIgnoreCase))
                     && (filterSubType == Resources.Filter_All || string.Equals(row.SubType, filterSubType, StringComparison.CurrentCultureIgnoreCase))
                     && (filterLevel == Resources.Filter_All || row.LevelName == filterLevel)
                     && (filterStatus == Resources.Filter_All || string.Equals(row.Status.Name, filterStatus, StringComparison.CurrentCultureIgnoreCase))
@@ -853,6 +1112,7 @@ namespace Pusula.Wpf.ViewModels
             FilterSummary = Rows.Count == allRows.Count
                 ? string.Format(Resources.Filter_Count, allRows.Count)
                 : string.Format(Resources.Filter_CountOf, allRows.Count, Rows.Count);
+            OnPropertyChanged(nameof(HasFilter));
         }
 
         private void ShowRecord(InventoryItem shown, TypeDefinition shownType)

@@ -208,7 +208,12 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
     harfli revizyonu aktarılana kadar sarı; özet sayıları ve yüzde yalnız test planlı maddeler ("261 ile" ayrı).
     Sonra: TG / TP dokümanlarının gereksinim ve plan maddeleriyle bağı.
   - **Bağ / Durum / Sırala süzgeçleri:** çalışıyor; görsel olarak iyileştirilecek ve adları netleşecek.
-  - **Sol liste:** araçlar çoğalınca kalabalık (Kablolar / Jigler'e tıklayınca stoka gidiyor; çok olunca karışır); proje
+  - **Sol liste madde 1 (yapıldı, 25.11.2026):** envanter türlerinin altı ağaçta açılmaz (araçlar gizli düğüm; aramada eşleşen
+    geçici görünür, kaydı olmayan elle açılmış klasörler ağaçta kalır). Türe tıklayınca sağda liste: özet (kayıt · stoka bağlı ·
+    genel), arama, Proje (Genel = hiçbir projede kullanılmayan), Stok (seçili projenin stokları), Alt tür, Durum, Temizle;
+    "Bağlı olduğu" sütunu (stok, proje ya da Genel + kullanıldığı projeler). Satıra tek tıkla aracın sayfası; geri dönünce
+    her liste kendi süzgeciyle gelir. Sıradaki: hepsini kapat, proje sıralama / süzgeç, genel araçlara kullanıldığı projeler.
+  - **Sol liste (kalan):** araçlar çoğalınca kalabalık (Kablolar / Jigler'e tıklayınca stoka gidiyor; çok olunca karışır); proje
     listesinde hepsini kapat, arama ve süzgeç, proje sıralaması; hiçbir projeye ait olmayan genel kullanım (anten vb.) —
     kullanıldıkları projeler eklenebilir.
   - **Stok bağı:** alt stok / üst stok bilgisi ("şurada kullanılıyor" / "altında şu bileşen var") — hangisi konuşulacak.

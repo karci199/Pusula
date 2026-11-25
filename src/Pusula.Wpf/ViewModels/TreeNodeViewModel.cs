@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
@@ -238,6 +239,21 @@ namespace Pusula.Wpf.ViewModels
         /// </summary>
         public bool ApplySearch(string text)
         {
+            // Gizli kayıtlar (araçlar) aramada eşleşirse geçici olarak ağaca girer; arama silinince yine gizlenir.
+            foreach (var hidden in HiddenItems)
+            {
+                var match = text.Length > 0 && hidden.ApplySearch(text);
+                var shown = Children.Contains(hidden);
+                if (match && !shown)
+                {
+                    Children.Add(hidden);
+                }
+                else if (!match && shown)
+                {
+                    Children.Remove(hidden);
+                }
+            }
+
             var anyChild = false;
             foreach (var child in Children)
             {
@@ -296,6 +312,18 @@ namespace Pusula.Wpf.ViewModels
 
         /// <summary>Alt düğümler.</summary>
         public ObservableCollection<TreeNodeViewModel> Children { get; } = new ObservableCollection<TreeNodeViewModel>();
+
+        /// <summary>
+        /// Ağaçta gösterilmeyen alt düğümler (25.11.2026: envanter türünün kayıtları; araçlar sağdaki listede).
+        /// Seçme ve arama bunları da bulur.
+        /// </summary>
+        public List<TreeNodeViewModel> HiddenItems { get; } = new List<TreeNodeViewModel>();
+
+        /// <summary>Görünen ve gizli bütün alt düğümler.</summary>
+        public IEnumerable<TreeNodeViewModel> AllChildren
+        {
+            get { return Children.Concat(HiddenItems); }
+        }
 
         /// <summary>"E703" → ikon karakteri; okunamazsa klasör ikonu.</summary>
         public static string GlyphOf(string hex)

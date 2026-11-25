@@ -455,7 +455,7 @@ namespace Pusula.Wpf.ViewModels
                     return node;
                 }
 
-                foreach (var child in node.Children)
+                foreach (var child in node.AllChildren)
                 {
                     pending.Push(child);
                 }

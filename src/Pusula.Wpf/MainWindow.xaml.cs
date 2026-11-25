@@ -1670,9 +1670,24 @@ namespace Pusula.Wpf
         }
 
         // Envanter listesinde satıra çift tıklayınca ağaçta o kayıt seçilir.
+        private void InventoryFilterClear_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.Inventory.ClearFilters();
+        }
+
+        // Stok sayfasındaki kayıt listesi: çift tıklayınca kayıt açılır.
         private void InventoryList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton != MouseButton.Left || viewModel.IsDialogBusy)
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                InventoryList_MouseLeftButtonUp(sender, e);
+            }
+        }
+
+        // 25.11.2026: satıra tek tıklayınca aracın sayfası açılır (geri dönünce liste aynı süzgeçle gelir).
+        private void InventoryList_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (viewModel.IsDialogBusy)
             {
                 return;
             }
