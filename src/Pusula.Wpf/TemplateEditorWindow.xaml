@@ -6,7 +6,7 @@
         xmlns:res="clr-namespace:Pusula.Wpf.Properties"
         Icon="/Pusula;component/Assets/pusula.ico"
         Title="{x:Static res:Resources.Editor_Title}"
-        Width="960" Height="700"
+        Width="960" Height="800"
         MinWidth="760" MinHeight="520"
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
@@ -28,6 +28,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
@@ -244,8 +245,30 @@
             </Grid>
         </Grid>
 
-        <!-- Alt: dosya bilgisi, hata, vazgeç, kaydet -->
+        <!-- Dokümanlar (25.11.2026): bütün şablonlar için ortak; stokta 01_Ortak\Dokumanlar altında <stok>_<kod>_<rev>[_TASLAK] aranır -->
         <Border Grid.Row="1"
+                Padding="24,10,24,12"
+                BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                BorderThickness="0,1,0,0">
+            <StackPanel>
+                <TextBlock Style="{StaticResource SectionLabel}" Text="{x:Static res:Resources.Editor_Documents}" />
+                <TextBlock Margin="0,2,0,6" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}"
+                           TextWrapping="Wrap" Text="{x:Static res:Resources.Editor_DocumentsHint}" />
+                <DataGrid x:Name="DocumentGrid" MaxHeight="200" ItemsSource="{Binding Documents}" AutoGenerateColumns="False"
+                          CanUserAddRows="True" CanUserDeleteRows="True" CanUserSortColumns="False" CanUserReorderColumns="False"
+                          HeadersVisibility="Column" GridLinesVisibility="Horizontal" SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="{x:Static res:Resources.Editor_DocumentCode}" Width="110" Binding="{Binding Code, UpdateSourceTrigger=PropertyChanged}" />
+                        <DataGridTextColumn Header="{x:Static res:Resources.Editor_DocumentName}" Width="*" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                        <DataGridTextColumn Header="{x:Static res:Resources.Editor_DocumentPrefix}" Width="110" Binding="{Binding StockPrefix, UpdateSourceTrigger=PropertyChanged}" />
+                        <DataGridTextColumn Header="{x:Static res:Resources.Editor_DocumentGroup}" Width="190" Binding="{Binding Group, UpdateSourceTrigger=PropertyChanged}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
+        </Border>
+
+        <!-- Alt: dosya bilgisi, hata, vazgeç, kaydet -->
+        <Border Grid.Row="2"
                 Background="{DynamicResource LayerBrush}"
                 BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
                 BorderThickness="0,1,0,0"

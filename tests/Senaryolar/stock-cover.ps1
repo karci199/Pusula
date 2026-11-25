@@ -47,7 +47,7 @@ $ts = [Pusula.Core.Templates.TemplateSet]::CreateDefault()
 $common = $ts.Modules | Where-Object Key -eq 'common'
 Check 'Ortak modülünde Fotograflar' (@($common.AllFolders()) -contains '01_Ortak\Fotograflar') (@($common.AllFolders()) -join ',')
 $common.SubFolders.Clear(); $ts.SchemaVersion = 4; $ts.Normalize()
-Check 'sürüm 4 → 5: Fotograflar eklendi' ($ts.SchemaVersion -eq 5 -and @($common.SubFolders) -contains 'Fotograflar')
+Check 'sürüm 4 → 6: Fotograflar eklendi (Dokumanlar, Girdiler de)' ($ts.SchemaVersion -eq 6 -and @($common.SubFolders) -contains 'Fotograflar')
 
 "--- 2. Arayüz (deneme verisi)"
 $settingsFile = Join-Path $env:LOCALAPPDATA 'Pusula\ayarlar.json'

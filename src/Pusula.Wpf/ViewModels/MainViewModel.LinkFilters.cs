@@ -259,10 +259,10 @@ namespace Pusula.Wpf.ViewModels
                 || item.SubGroup.IndexOf(text, StringComparison.CurrentCultureIgnoreCase) >= 0;
         }
 
-        // Kapsam dışı gereksinim bağ sayılarına, uyarıya ve bağ süzgecine girmez.
+        // Kapsam dışı gereksinim ve 261 ile doğrulanan gereksinim (25.11.2026) bağ sayılarına, plan / rapor uyarısına ve bağ süzgecine girmez.
         private static bool IsOutOfScope(VerificationItem item)
         {
-            return VerificationRow.KindOf(item.EffectiveStatus) == 5;
+            return VerificationRow.KindOf(item.EffectiveStatus) == 5 || IsDocumentVerified(item);
         }
 
         /// <summary>Gereksinimler: Test planı [Var · Yok].</summary>

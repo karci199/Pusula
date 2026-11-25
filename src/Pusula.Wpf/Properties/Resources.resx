@@ -3582,4 +3582,73 @@ Ortak liste (ÇK / EMC): &quot;## standart&quot; başlığı altında &quot;- nu
   <data name="Stats_SummaryHint" xml:space="preserve">
     <value>Tıklayınca tablo bu durumla süzülür</value>
   </data>
+  <data name="Editor_Documents" xml:space="preserve">
+    <value>Dokümanlar (bütün şablonlar)</value>
+  </data>
+  <data name="Editor_DocumentsHint" xml:space="preserve">
+    <value>Stokta 01_Ortak\Dokumanlar altında &lt;stok&gt;_&lt;kod&gt;_&lt;rev&gt; adıyla aranır: P1–P9 taslak aktarımı, AA, AB … resmî aktarım; hazırlanırken sonuna _TASLAK. Kodu boş satır yer tutar (stokta görünmez). Stok öneki boşsa bütün stoklarda aranır. Aynı grup adı yazılan dokümanlar (birlikte aktarılanlar) durumları aynıysa tek çip görünür.</value>
+  </data>
+  <data name="Editor_DocumentCode" xml:space="preserve">
+    <value>Kod</value>
+  </data>
+  <data name="Editor_DocumentName" xml:space="preserve">
+    <value>Ad</value>
+  </data>
+  <data name="Editor_DocumentPrefix" xml:space="preserve">
+    <value>Stok öneki</value>
+  </data>
+  <data name="Editor_ErrorDocumentCode" xml:space="preserve">
+    <value>Doküman kodu geçersiz ya da iki kez yazılmış: {0} (yalnız harf, rakam ve tire).</value>
+  </data>
+  <data name="Editor_ErrorDocumentName" xml:space="preserve">
+    <value>Her dokümanın bir adı olmalı.</value>
+  </data>
+  <data name="Doc_Strip" xml:space="preserve">
+    <value>Dokümanlar</value>
+  </data>
+  <data name="Doc_NotHere" xml:space="preserve">
+    <value>Burada yok</value>
+  </data>
+  <data name="Doc_NotHereHint" xml:space="preserve">
+    <value>{0} içinde bu koda uyan dosya yok (ad düzeni: &lt;stok&gt;_{1}_AA, hazırlanırken _TASLAK). Başka bir yerde olabilir.</value>
+  </data>
+  <data name="Doc_Draft" xml:space="preserve">
+    <value>{0} · hazırlanıyor</value>
+  </data>
+  <data name="Doc_Released" xml:space="preserve">
+    <value>{0} · aktarıldı</value>
+  </data>
+  <data name="Doc_PrototypeDraft" xml:space="preserve">
+    <value>{0} · taslak hazırlanıyor</value>
+  </data>
+  <data name="Doc_PrototypeReleased" xml:space="preserve">
+    <value>{0} · taslak aktarıldı</value>
+  </data>
+  <data name="Doc_ChangePending" xml:space="preserve">
+    <value>{0} aktarıldı · {1} değişiklik bekliyor</value>
+  </data>
+  <data name="Doc_261NotDefined" xml:space="preserve">
+    <value>261 · listede yok</value>
+  </data>
+  <data name="Verify_Method261" xml:space="preserve">
+    <value>261 dokümanı</value>
+  </data>
+  <data name="Stats_Document261" xml:space="preserve">
+    <value>261 ile</value>
+  </data>
+  <data name="Doc_ChipReleased" xml:space="preserve">
+    <value>261 · {0}</value>
+  </data>
+  <data name="Doc_ChipDraft" xml:space="preserve">
+    <value>261 · {0} taslak</value>
+  </data>
+  <data name="Doc_ChipMissing" xml:space="preserve">
+    <value>261 · yok</value>
+  </data>
+  <data name="Doc_ChipPreparing" xml:space="preserve">
+    <value>261 · {0} hazırlanıyor</value>
+  </data>
+  <data name="Editor_DocumentGroup" xml:space="preserve">
+    <value>Grup (birlikte aktarılır)</value>
+  </data>
 </root>

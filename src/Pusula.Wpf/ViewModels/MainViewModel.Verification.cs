@@ -99,11 +99,22 @@ namespace Pusula.Wpf.ViewModels
             }
         }
 
-        /// <summary>Doğrulama yöntemleri: Test, Muayene, Belge, Gösterim, Diğer.</summary>
+        /// <summary>Doğrulama yöntemleri: Test, Muayene, Belge, Gösterim, 261 dokümanı (25.11.2026), Diğer.</summary>
         public static string[] Methods
         {
-            get { return new[] { Resources.Verify_MethodTest, Resources.Verify_MethodInspection, Resources.Verify_MethodDocument, Resources.Verify_MethodDemonstration, Resources.Verify_MethodOther }; }
+            get { return new[] { Resources.Verify_MethodTest, Resources.Verify_MethodInspection, Resources.Verify_MethodDocument, Resources.Verify_MethodDemonstration, Resources.Verify_Method261, Resources.Verify_MethodOther }; }
         }
+
+        /// <summary>Yöntem 261 dokümanı mı ("261" ile başlayan yöntem; plan / rapor istemez).</summary>
+        public static bool IsDocumentMethod(string method)
+        {
+            var text = (method ?? string.Empty).Trim();
+            return text.StartsWith(DocumentCode261, StringComparison.OrdinalIgnoreCase)
+                && (text.Length == DocumentCode261.Length || !char.IsDigit(text[DocumentCode261.Length]));
+        }
+
+        /// <summary>Yöntemde ve doküman listesinde 261'in kodu.</summary>
+        public const string DocumentCode261 = "261";
 
         /// <summary>
         /// Durum metninin türü (renk için): 0 bekliyor (ya da tanınmayan), 1 geçti, 2 kaldı, 3 yapılıyor, 4 tekrarlanacak,
@@ -1495,6 +1506,7 @@ namespace Pusula.Wpf.ViewModels
                 });
             }
 
+            LoadStockDocuments();
             LoadPlanReports();
             BuildStatusFilters();
             FillVerificationGroups();
@@ -1706,7 +1718,7 @@ namespace Pusula.Wpf.ViewModels
                 }
 
                 var kinds = new HashSet<int>(verificationStatusFilter.Select(VerificationRow.KindOf));
-                var rows = SortVerification(verificationItems.Where(i => SameGroup(i, option.Key) && (kinds.Count == 0 || kinds.Contains(VerificationRow.KindOf(i.EffectiveStatus))) && PassesReqLinks(i) && PassesRequirementSearch(i))).Select(i => new VerificationRow(i) { SourceLine = SourceLineOf(i), Attempts = AttemptsOf(i), LinkedPlans = PlansOfRequirement(i), LinkedReports = ReportsOfRequirement(i), PlanItems = PlanRowsOf(i), ReportItems = ReportRowsOf(i), HasNoPlan = ReqPlanState(i) == 0 }).ToList();
+                var rows = SortVerification(verificationItems.Where(i => SameGroup(i, option.Key) && (kinds.Count == 0 || kinds.Contains(VerificationRow.KindOf(i.EffectiveStatus))) && PassesReqLinks(i) && PassesRequirementSearch(i))).Select(i => new VerificationRow(i) { SourceLine = SourceLineOf(i), Attempts = AttemptsOf(i), LinkedPlans = PlansOfRequirement(i), LinkedReports = ReportsOfRequirement(i), PlanItems = PlanRowsOf(i), ReportItems = ReportRowsOf(i), HasNoPlan = IsDocumentVerified(i) ? !Is261Official : ReqPlanState(i) == 0 }).ToList();
                 if (rows.Count > 0)
                 {
                     VerificationGroups.Add(new VerificationGroup(option.Key, Math.Max(0, option.Tone), rows));

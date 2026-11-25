@@ -15,10 +15,19 @@ namespace Pusula.Core.Templates
     public sealed class TemplateSet
     {
         /// <summary>Geçerli dosya biçimi sürümü.</summary>
-        public const int CurrentSchemaVersion = 5;
+        public const int CurrentSchemaVersion = 6;
 
         /// <summary>Ortak klasörün içindeki fotoğraf klasörü (<c>01_Ortak\Fotograflar</c>).</summary>
         public const string PhotosFolder = "Fotograflar";
+
+        /// <summary>Ortak klasörün içindeki doküman klasörü (<c>01_Ortak\Dokumanlar</c>; 25.11.2026).</summary>
+        public const string DocumentsFolder = "Dokumanlar";
+
+        /// <summary>Ortak klasörün içinde tasarımcıdan gelen girdiler (spek, DM, çizim, ÇK/EMC gerekleri; 25.11.2026).</summary>
+        public const string InputsFolder = "Girdiler";
+
+        /// <summary>Birlikte aktarılan yazılım dokümanlarının grubu (032, 132, 133).</summary>
+        public const string SoftwareDocumentsGroup = "Yazılım dokümanları";
 
         /// <summary>Yeni şablonda hazır gelen temel modüllerin anahtarları.</summary>
         public static readonly string[] BasicModuleKeys = { "common", "tests" };
@@ -46,6 +55,7 @@ namespace Pusula.Core.Templates
             LegacyCoreFolders = null;
             Modules = new List<ModuleDefinition>();
             Templates = new List<TemplatePreset>();
+            Documents = new List<DocumentDefinition>();
         }
 
         /// <summary>Dosya biçiminin sürümü.</summary>
@@ -67,6 +77,27 @@ namespace Pusula.Core.Templates
         /// <summary>Stok şablonları.</summary>
         [DataMember(Name = "stockTemplates", Order = 4)]
         public List<TemplatePreset> Templates { get; set; } = new List<TemplatePreset>();
+
+        /// <summary>Stokta izlenen dokümanlar (kod, ad, stok öneki); Şablonlar penceresinden düzenlenir.</summary>
+        [DataMember(Name = "documents", Order = 5)]
+        public List<DocumentDefinition> Documents { get; set; } = new List<DocumentDefinition>();
+
+        /// <summary>
+        /// Varsayılan doküman listesi (25.11.2026, kullanıcı): 261 üretim test dokümanı; yazılımlarda 032 kaynak kod,
+        /// 132 çalıştırılabilir kod, 133 açıklama. Test gereksinim ve test planı dokümanlarının kodu sonra girilecek (boş).
+        /// </summary>
+        public static List<DocumentDefinition> DefaultDocuments()
+        {
+            return new List<DocumentDefinition>
+            {
+                new DocumentDefinition { Code = "261", Name = "Üretim test dokümanı", StockPrefix = "AB" },
+                new DocumentDefinition { Code = string.Empty, Name = "Test gereksinim dokümanı" },
+                new DocumentDefinition { Code = string.Empty, Name = "Test planı dokümanı" },
+                new DocumentDefinition { Code = "032", Name = "Kaynak kod", StockPrefix = "JY", Group = SoftwareDocumentsGroup },
+                new DocumentDefinition { Code = "132", Name = "Çalıştırılabilir kod", StockPrefix = "JY", Group = SoftwareDocumentsGroup },
+                new DocumentDefinition { Code = "133", Name = "Açıklama dokümanı", StockPrefix = "JY", Group = SoftwareDocumentsGroup },
+            };
+        }
 
         /// <summary>Anahtarı verilen modüllerin klasörleri ve alt klasörleri (stoka göre göreli yollar).</summary>
         public IReadOnlyList<string> StockFoldersFor(IEnumerable<string> moduleKeys)
@@ -177,6 +208,26 @@ namespace Pusula.Core.Templates
                 }
             }
 
+            // Sürüm 6 (25.11.2026): doküman listesi ve 01_Ortak\Dokumanlar alt klasörü.
+            if (SchemaVersion < 6)
+            {
+                if (Documents.Count == 0)
+                {
+                    Documents = DefaultDocuments();
+                }
+
+                var commonModule = Modules.FirstOrDefault(m => string.Equals(m.Key, "common", StringComparison.OrdinalIgnoreCase));
+                if (commonModule != null && !commonModule.SubFolders.Contains(DocumentsFolder, StringComparer.OrdinalIgnoreCase))
+                {
+                    commonModule.SubFolders.Insert(0, DocumentsFolder);
+                }
+
+                if (commonModule != null && !commonModule.SubFolders.Contains(InputsFolder, StringComparer.OrdinalIgnoreCase))
+                {
+                    commonModule.SubFolders.Add(InputsFolder);
+                }
+            }
+
             foreach (var module in Modules)
             {
                 module.Core = false;
@@ -193,7 +244,8 @@ namespace Pusula.Core.Templates
             set.ProjectFolders.Add("00_Proje_Geneli");
             // 15.11.2026 klasör düzeni: 01_Ortak her stokta açılır (şablondan bağımsız); test araçları ve testler şablona göre.
             // Test alt klasörleri (Anten_Oruntu …) iş tanımlanınca, koşum klasörleri (SNP1_T1) koşum eklenince açılır.
-            set.Modules.Add(new ModuleDefinition { Key = "common", Name = "Ortak", Folder = "01_Ortak", SubFolders = new List<string> { PhotosFolder } });
+            set.Modules.Add(new ModuleDefinition { Key = "common", Name = "Ortak", Folder = "01_Ortak", SubFolders = new List<string> { DocumentsFolder, PhotosFolder, InputsFolder } });
+            set.Documents = DefaultDocuments();
             set.Modules.Add(new ModuleDefinition
             {
                 Key = "testTools",

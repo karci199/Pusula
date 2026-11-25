@@ -519,6 +519,11 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Gereksinimin bağlı plan maddeleri (Gereksinimler görünümünde Plan sütunu; yoksa sarı "plan yok").</summary>
         public IList<LinkChip> PlansOfRequirement(VerificationItem item)
         {
+            if (IsDocumentVerified(item))
+            {
+                return new List<LinkChip> { DocumentChipOf() };
+            }
+
             var key = VerificationList.KeyOf(item);
             var chips = verificationPlans.Where(p => p.Requirements.Contains(key, StringComparer.OrdinalIgnoreCase)).Select(p => new LinkChip(p.TpNo, 5)).ToList();
             return chips.Count > 0 ? chips : new List<LinkChip> { new LinkChip(Resources.Verify_NoPlan, 4) };
@@ -527,6 +532,11 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Gereksinimin (planları üzerinden) bağlı raporları; plan var rapor yoksa sarı "rapor yok", plan yoksa boş.</summary>
         public IList<LinkChip> ReportsOfRequirement(VerificationItem item)
         {
+            if (IsDocumentVerified(item))
+            {
+                return new List<LinkChip>();
+            }
+
             var key = VerificationList.KeyOf(item);
             var tps = verificationPlans.Where(p => p.Requirements.Contains(key, StringComparer.OrdinalIgnoreCase)).Select(p => p.TpNo).ToList();
             if (tps.Count == 0)

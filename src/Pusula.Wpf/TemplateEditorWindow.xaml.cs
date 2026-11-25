@@ -84,6 +84,8 @@ namespace Pusula.Wpf
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
+            // Doküman tablosunda yazılmakta olan hücre önce işlenir.
+            DocumentGrid.CommitEdit(DataGridEditingUnit.Row, true);
             if (viewModel.Save())
             {
                 DialogResult = true;

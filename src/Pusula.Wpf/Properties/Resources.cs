@@ -3788,5 +3788,73 @@ namespace Pusula.Wpf.Properties
 
         /// <summary>Stok doğrulama özeti: sayının ipucu.</summary>
         public static string Stats_SummaryHint { get { return Get("Stats_SummaryHint"); } }
+        /// <summary>Doküman (25.11.2026): Editor_Documents.</summary>
+        public static string Editor_Documents { get { return Get("Editor_Documents"); } }
+
+        /// <summary>Doküman (25.11.2026): Editor_DocumentsHint.</summary>
+        public static string Editor_DocumentsHint { get { return Get("Editor_DocumentsHint"); } }
+
+        /// <summary>Doküman (25.11.2026): Editor_DocumentCode.</summary>
+        public static string Editor_DocumentCode { get { return Get("Editor_DocumentCode"); } }
+
+        /// <summary>Doküman (25.11.2026): Editor_DocumentName.</summary>
+        public static string Editor_DocumentName { get { return Get("Editor_DocumentName"); } }
+
+        /// <summary>Doküman (25.11.2026): Editor_DocumentPrefix.</summary>
+        public static string Editor_DocumentPrefix { get { return Get("Editor_DocumentPrefix"); } }
+
+        /// <summary>Doküman (25.11.2026): Editor_ErrorDocumentCode.</summary>
+        public static string Editor_ErrorDocumentCode { get { return Get("Editor_ErrorDocumentCode"); } }
+
+        /// <summary>Doküman (25.11.2026): Editor_ErrorDocumentName.</summary>
+        public static string Editor_ErrorDocumentName { get { return Get("Editor_ErrorDocumentName"); } }
+
+        /// <summary>Doküman (25.11.2026): Doc_Strip.</summary>
+        public static string Doc_Strip { get { return Get("Doc_Strip"); } }
+
+        /// <summary>Doküman (25.11.2026): Doc_NotHere.</summary>
+        public static string Doc_NotHere { get { return Get("Doc_NotHere"); } }
+
+        /// <summary>Doküman (25.11.2026): Doc_NotHereHint.</summary>
+        public static string Doc_NotHereHint { get { return Get("Doc_NotHereHint"); } }
+
+        /// <summary>Doküman (25.11.2026): Doc_Draft.</summary>
+        public static string Doc_Draft { get { return Get("Doc_Draft"); } }
+
+        /// <summary>Doküman (25.11.2026): Doc_Released.</summary>
+        public static string Doc_Released { get { return Get("Doc_Released"); } }
+
+        /// <summary>Doküman (25.11.2026): Doc_PrototypeDraft.</summary>
+        public static string Doc_PrototypeDraft { get { return Get("Doc_PrototypeDraft"); } }
+
+        /// <summary>Doküman (25.11.2026): Doc_PrototypeReleased.</summary>
+        public static string Doc_PrototypeReleased { get { return Get("Doc_PrototypeReleased"); } }
+
+        /// <summary>Doküman (25.11.2026): Doc_ChangePending.</summary>
+        public static string Doc_ChangePending { get { return Get("Doc_ChangePending"); } }
+
+        /// <summary>Doküman (25.11.2026): Doc_261NotDefined.</summary>
+        public static string Doc_261NotDefined { get { return Get("Doc_261NotDefined"); } }
+
+        /// <summary>Doküman (25.11.2026): Verify_Method261.</summary>
+        public static string Verify_Method261 { get { return Get("Verify_Method261"); } }
+
+        /// <summary>Doküman (25.11.2026): Stats_Document261.</summary>
+        public static string Stats_Document261 { get { return Get("Stats_Document261"); } }
+
+        /// <summary>Doküman (25.11.2026): Doc_ChipReleased.</summary>
+        public static string Doc_ChipReleased { get { return Get("Doc_ChipReleased"); } }
+
+        /// <summary>Doküman (25.11.2026): Doc_ChipDraft.</summary>
+        public static string Doc_ChipDraft { get { return Get("Doc_ChipDraft"); } }
+
+        /// <summary>Doküman (25.11.2026): Doc_ChipMissing.</summary>
+        public static string Doc_ChipMissing { get { return Get("Doc_ChipMissing"); } }
+
+        /// <summary>Doküman (25.11.2026): Doc_ChipPreparing.</summary>
+        public static string Doc_ChipPreparing { get { return Get("Doc_ChipPreparing"); } }
+
+        /// <summary>Doküman (25.11.2026): Editor_DocumentGroup.</summary>
+        public static string Editor_DocumentGroup { get { return Get("Editor_DocumentGroup"); } }
     }
 }

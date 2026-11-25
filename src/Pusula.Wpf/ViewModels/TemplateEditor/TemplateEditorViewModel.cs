@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Input;
 using Pusula.Core.Templates;
 using Pusula.Core.Tracking;
@@ -39,6 +40,11 @@ namespace Pusula.Wpf.ViewModels.TemplateEditor
                 Templates.Add(new TemplateEditViewModel(preset.Name, Library.Where(m => keys.Contains(m.Key))));
             }
 
+            foreach (var document in source.Documents)
+            {
+                Documents.Add(new DocumentEditRow(document));
+            }
+
             AddTemplateCommand = new RelayCommand(AddTemplate);
             DeleteTemplateCommand = new RelayCommand(DeleteTemplate);
             RemoveModuleCommand = new RelayCommand(RemoveModule);
@@ -53,6 +59,9 @@ namespace Pusula.Wpf.ViewModels.TemplateEditor
 
         /// <summary>Modül kütüphanesi: tüm şablonların seçebildiği modüller.</summary>
         public ObservableCollection<ModuleEditViewModel> Library { get; } = new ObservableCollection<ModuleEditViewModel>();
+
+        /// <summary>Stokta izlenen dokümanlar (bütün şablonlar için ortak; 25.11.2026).</summary>
+        public ObservableCollection<DocumentEditRow> Documents { get; } = new ObservableCollection<DocumentEditRow>();
 
         /// <summary>Şablonlar (sol liste).</summary>
         public ObservableCollection<TemplateEditViewModel> Templates { get; } = new ObservableCollection<TemplateEditViewModel>();
@@ -297,8 +306,26 @@ namespace Pusula.Wpf.ViewModels.TemplateEditor
                 }
             }
 
+            var codes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var row in Documents.Where(d => !d.IsBlank))
+            {
+                var code = row.Code.Trim();
+                if (code.Length > 0 && (!Regex.IsMatch(code, "^[A-Za-z0-9-]+$") || !codes.Add(code)))
+                {
+                    Error = string.Format(Resources.Editor_ErrorDocumentCode, code);
+                    return false;
+                }
+
+                if (row.Name.Trim().Length == 0)
+                {
+                    Error = Resources.Editor_ErrorDocumentName;
+                    return false;
+                }
+            }
+
             var set = new TemplateSet();
             set.ProjectFolders.AddRange(projectFolders);
+            set.Documents = Documents.Where(d => !d.IsBlank).Select(d => d.ToDefinition()).ToList();
             foreach (var module in Library)
             {
                 set.Modules.Add(module.ToDefinition());

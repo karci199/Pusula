@@ -199,10 +199,14 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
     yanında; hedef ekran 1080p).
   - **ComboBox:** "chevron dışına tıklayınca tekrar" — hangi ekran / kutu olduğu sorulacak (Kiwi veri analizinde de yaşanmış;
     KIWI'de bulunan düzeltme yalnız yazılabilir kutular içindi, Pusula'da yazılabilir kutu yok).
-  - **Doğrulama dokümanı (karar bekliyor):** her TG maddesi DOORS üzerinden yayınlanmıyor; bazen tasarımcının dokümanına
-    referans veriliyor ya da yalnız tasarımcının görüşü var. "261" kullanıcının hazırladığı üretim test dokümanı (tasarımcının
-    dokümanından / görüşünden hazırlanır). Fikir: gereksinimde "doğrulama dokümanı" seçimi (DOORS TG · tasarımcı dokümanı ·
-    tasarımcı görüşü · doküman hazırlanmayacak); 261 ile karşılananlar plan / rapor istemez, sarı uyarıya ve sayılara girmez.
+  - **Stok dokümanları (yapıldı, 25.11.2026):** `01_Ortak\Dokumanlar\<stok>_<kod>_<rev>[_TASLAK]` (Ortak: Dokumanlar,
+    Fotograflar, Girdiler). Rev P1–P9 = taslak aktarımı, AA, AB … BA = resmî; `_TASLAK` eki = hazırlanıyor. Durum yalnız
+    dosya adından okunur (Burada yok · hazırlanıyor · taslak aktarıldı · aktarıldı · değişiklik bekliyor); zaman çizelgesine
+    otomatik bir şey yazılmaz, revizyon geçmişi tutulmaz. Kod listesi Ayarlar → Şablonlar → Dokümanlar (kod, ad, stok
+    öneki, grup): 261 (AB), TG ve TP dokümanı (kodu kullanıcı girecek), 032 / 132 / 133 (JY, "Yazılım dokümanları" grubu:
+    birlikte aktarılır, durumları aynıysa tek çip). Yöntemi "261 dokümanı" olan gereksinim plan / rapor istemez; 261'in
+    harfli revizyonu aktarılana kadar sarı; özet sayıları ve yüzde yalnız test planlı maddeler ("261 ile" ayrı).
+    Sonra: TG / TP dokümanlarının gereksinim ve plan maddeleriyle bağı.
   - **Bağ / Durum / Sırala süzgeçleri:** çalışıyor; görsel olarak iyileştirilecek ve adları netleşecek.
   - **Sol liste:** araçlar çoğalınca kalabalık (Kablolar / Jigler'e tıklayınca stoka gidiyor; çok olunca karışır); proje
     listesinde hepsini kapat, arama ve süzgeç, proje sıralaması; hiçbir projeye ait olmayan genel kullanım (anten vb.) —

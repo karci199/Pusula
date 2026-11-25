@@ -2812,6 +2812,7 @@
                                                             <DataTrigger Binding="{Binding Tone}" Value="done"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" /></DataTrigger>
                                                             <DataTrigger Binding="{Binding Tone}" Value="failed"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" /></DataTrigger>
                                                             <DataTrigger Binding="{Binding Tone}" Value="active"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentFillColorDefaultBrush}" /></DataTrigger>
+                                                            <DataTrigger Binding="{Binding Tone}" Value="waiting"><Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" /></DataTrigger>
                                                             <DataTrigger Binding="{Binding Count}" Value="0"><Setter TargetName="Part" Property="Opacity" Value="0.45" /></DataTrigger>
                                                         </DataTemplate.Triggers>
                                                     </DataTemplate>
@@ -2820,6 +2821,53 @@
                                         </Grid>
                                     </Border>
                                     </Grid>
+                                    <!-- Dokümanlar (25.11.2026): 01_Ortak\Dokumanlar'da <stok>_<kod>_<rev>[_TASLAK] adından okunan durum; yalnız gösterilir -->
+                                    <Border Margin="0,10,0,0" Padding="12,6" CornerRadius="10" BorderThickness="1"
+                                            Background="{DynamicResource LayerBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                            Visibility="{Binding HasStockDocuments, Converter={StaticResource BoolToVis}}">
+                                        <DockPanel>
+                                            <TextBlock DockPanel.Dock="Left" Margin="2,0,14,0" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}" Text="{x:Static res:Resources.Doc_Strip}" />
+                                            <ItemsControl ItemsSource="{Binding StockDocumentRows}" Focusable="False">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Margin="0,2,8,2" Padding="10,5" Style="{DynamicResource SubtleButtonStyle}" Command="{Binding Open}" ToolTip="{Binding ToolTip}">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <Ellipse x:Name="Dot" Width="8" Height="8" VerticalAlignment="Center" Fill="{DynamicResource TextTertiaryBrush}" />
+                                                                <TextBlock Margin="8,0,0,0" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold" Text="{Binding Code}" />
+                                                                <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" Text="{Binding Name}" />
+                                                                <TextBlock x:Name="State" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="13" Foreground="{DynamicResource TextTertiaryBrush}" Text="{Binding StateText}" />
+                                                            </StackPanel>
+                                                        </Button>
+                                                        <DataTemplate.Triggers>
+                                                            <DataTrigger Binding="{Binding Tone}" Value="done">
+                                                                <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                                                                <Setter TargetName="State" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Tone}" Value="active">
+                                                                <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                                                <Setter TargetName="State" Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Tone}" Value="waiting">
+                                                                <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                                                                <Setter TargetName="State" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Tone}" Value="failed">
+                                                                <Setter TargetName="Dot" Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                                                                <Setter TargetName="State" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                                                            </DataTrigger>
+                                                        </DataTemplate.Triggers>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </DockPanel>
+                                    </Border>
+
                                     <Border Margin="0,10,0,0" Padding="12,7" CornerRadius="8" BorderThickness="1"
                                             Background="{DynamicResource SystemFillColorCautionBackgroundBrush}" BorderBrush="{DynamicResource SystemFillColorCautionBrush}"
                                             Visibility="{Binding HasVerCoverageWarning, Converter={StaticResource BoolToVis}}">
