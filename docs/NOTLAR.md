@@ -241,9 +241,16 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 
 - **Kullanıcı notları (26.11.2026, WhatsApp listesi; Pusula'ya ait olanlar):** (1) grup ve test tipi aynı gibi — yapıldı;
   (2) odak sağ ekrana gidince doğrulama maddesi kayboluyor; iki ekranda pencere değişince açık pencere (stok ekleme)
-  alta düşüyor, ana ekran soluk kalıyor, geri gelince açılıyor — sırada; (3) bir şey eklerken yavaş; (4) 261'e bağlama
+  alta düşüyor, ana ekran soluk kalıyor, geri gelince açılıyor — yapıldı (aşağıda); (3) bir şey eklerken yavaş; (4) 261'e bağlama
   çalışmıyor — yapıldı; (5) stok eklerken pencere küçük; (9) bileşen ekleme nasıl (alt / üst stok, "+ Bileşen");
   (10) sonradan klasör yapısı eklenebiliyor mu. Kalan maddeler (jpg/png, s1p/s2p, ATD adı) KIWI'ye ait.
+- **Ortadaki pencereler odak kaybında gizlenmez (26.11.2026, DesignKit 0.3.9):** DesignKit `ContentDialog` uygulama odağı
+  kaybedince Popup'ı bilerek gizliyordu (her zaman üstte olduğu için başka uygulamanın üstünde kalmasın diye); karartma
+  ana pencerede kaldığından ekran soluk görünüyordu. Artık açık kalır: Popup ana pencerenin sahipliğinde, uygulama
+  arka plandayken her zaman üstte değil (Win32 `SetWindowPos`), başka uygulama ikisini birlikte örter; arka plandayken
+  pencereye tıklamak uygulamayı öne getirir. Bütün ContentDialog / FormDialog pencereleri. DesignKit dalı
+  `fix/dialog-odak-kaybi` (3c5db6f). Test `dialog-focus.ps1` (odak yokken görünür, üstte değil, sahipli); iki ekranda elle
+  denenmedi.
 - **Grup ve doğrulama yolu (26.11.2026, kullanıcı kararı; mock `docs/mock/gereksinim_penceresi.png`):**
   - Grup sabit liste: İşlevsel · Özellik · ÇK · EMC · Diğer (`VerificationList.Groups`). Test tipi gruba katıldı, Alt grup
     kalktı (karmaşıklaştırmaya gerek yok). ÇK / EMC grubu standart kutusunu açar. Excel başlıkları grup olmaz
