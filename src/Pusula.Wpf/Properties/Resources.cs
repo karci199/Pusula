@@ -2284,7 +2284,7 @@ namespace Pusula.Wpf.Properties
         /// <summary>Doğrulama grubu: Özellik</summary>
         public static string Verify_GroupFeature { get { return Get("Verify_GroupFeature"); } }
 
-        /// <summary>Doğrulama grubu: ÇK/EMC</summary>
+        /// <summary>Doğrulama grubu: ÇK (26.11.2026 öncesi ÇK/EMC)</summary>
         public static string Verify_GroupEmc { get { return Get("Verify_GroupEmc"); } }
 
         /// <summary>Doğrulama grubu: Diğer</summary>
@@ -3976,5 +3976,20 @@ namespace Pusula.Wpf.Properties
 
         /// <summary>Ana sayfa boşken özet (25.11.2026): Home_ShowAll.</summary>
         public static string Home_ShowAll { get { return Get("Home_ShowAll"); } }
+
+        /// <summary>Gereksinim penceresi (26.11.2026): Verify_GroupEmcOnly.</summary>
+        public static string Verify_GroupEmcOnly { get { return Get("Verify_GroupEmcOnly"); } }
+
+        /// <summary>Gereksinim penceresi (26.11.2026): Verify_FieldVerification.</summary>
+        public static string Verify_FieldVerification { get { return Get("Verify_FieldVerification"); } }
+
+        /// <summary>Gereksinim penceresi (26.11.2026): Verify_ByPlan.</summary>
+        public static string Verify_ByPlan { get { return Get("Verify_ByPlan"); } }
+
+        /// <summary>Gereksinim penceresi (26.11.2026): Verify_By261.</summary>
+        public static string Verify_By261 { get { return Get("Verify_By261"); } }
+
+        /// <summary>Gereksinim penceresi (26.11.2026): Verify_261Hint.</summary>
+        public static string Verify_261Hint { get { return Get("Verify_261Hint"); } }
     }
 }

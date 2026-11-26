@@ -239,6 +239,21 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
     (önceden yalnız modelde vardı, ekranda görünmüyordu); araç listesinde Konum sütunu genişledi. Tam takım 75 senaryo geçti.
   - Sonraya: Kiwi için s2p / s1p / S11 analizi (zorunlu değil, jpg de olabilir).
 
+- **Kullanıcı notları (26.11.2026, WhatsApp listesi; Pusula'ya ait olanlar):** (1) grup ve test tipi aynı gibi — yapıldı;
+  (2) odak sağ ekrana gidince doğrulama maddesi kayboluyor; iki ekranda pencere değişince açık pencere (stok ekleme)
+  alta düşüyor, ana ekran soluk kalıyor, geri gelince açılıyor — sırada; (3) bir şey eklerken yavaş; (4) 261'e bağlama
+  çalışmıyor — yapıldı; (5) stok eklerken pencere küçük; (9) bileşen ekleme nasıl (alt / üst stok, "+ Bileşen");
+  (10) sonradan klasör yapısı eklenebiliyor mu. Kalan maddeler (jpg/png, s1p/s2p, ATD adı) KIWI'ye ait.
+- **Grup ve doğrulama yolu (26.11.2026, kullanıcı kararı; mock `docs/mock/gereksinim_penceresi.png`):**
+  - Grup sabit liste: İşlevsel · Özellik · ÇK · EMC · Diğer (`VerificationList.Groups`). Test tipi gruba katıldı, Alt grup
+    kalktı (karmaşıklaştırmaya gerek yok). ÇK / EMC grubu standart kutusunu açar. Excel başlıkları grup olmaz
+    (grup adıysa o, değilse Diğer).
+  - Eski dosya bir kez (`RetireLegacy`, önce `_ARSIV\*.md.yedek`): Tip doluysa gruba geçer, tanınmayan grup (Excel başlığı)
+    Diğer olur, "ÇK/EMC" Tip'siz kalırsa olduğu gibi kalır (kullanıcı seçer); Tip ve Alt grup sütunları kalkar.
+  - Gereksinim penceresinde **Doğrulama**: Test planı / raporu ya da 261 (plan yöntem listesinden 261 çıktı). 261'li
+    maddenin Durum'u hesaplanır: 261 yok / hazırlanıyor / P1–P9 taslak → Planlandı, harfli revizyon (AA …) aktarıldı → Geçti
+    (25.11'deki "261 Geçti sayılmaz" kararı değişti). Özete ve yüzdeye girer; ayrı "261 ile" satırı kalktı. Stok açılınca
+    261'li madde varsa durum eşitlenir. Test: `group-merge.ps1`, `stock-documents.ps1`.
 - **Durum (22.11.2026 akşam, 9cc1279):** aşağıdaki 22.11 maddelerinin hepsi bitti (elle durum, ## Rapor, eski TP/TR,
   plan / rapor ayrıntısı, rapor Tarih/Birim, kırpışma, geniş tablo), Excel'den gereksinim al + plan / rapor Excel'e aktar,
   aramalı bağ seçimi, "Sonuç yok" durumu, ÇK/EMC standardı (gereksinimde test tipi · standart · yöntem · prosedür;

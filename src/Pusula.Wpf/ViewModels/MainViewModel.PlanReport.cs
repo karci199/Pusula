@@ -583,6 +583,12 @@ namespace Pusula.Wpf.ViewModels
             return results.Count > 0 && everyPlanReported && results.All(k => k == 1) ? Resources.Verify_StatusPassed : Resources.Verify_StatusPlanned;
         }
 
+        /// <summary>261 ile doğrulanan maddenin durumu (26.11.2026): 261'in harfli revizyonu aktarıldıysa Geçti, değilse Planlandı.</summary>
+        private string StatusFrom261()
+        {
+            return Is261Official ? Resources.Verify_StatusPassed : Resources.Verify_StatusPlanned;
+        }
+
         /// <summary>
         /// Seçilen durumdan elle durum: boş, Bekliyor ya da hesaplananla aynıysa boş (hesaplanan geçerli olur);
         /// değilse seçilen.
@@ -621,7 +627,7 @@ namespace Pusula.Wpf.ViewModels
                 var mine = plans.Where(p => p.Requirements.Contains(key, StringComparer.OrdinalIgnoreCase)).ToList();
                 var tps = mine.Select(p => p.TpNo).ToList();
                 var myReports = reports.Where(r => r.Plans.Any(p => tps.Contains(p, StringComparer.OrdinalIgnoreCase))).ToList();
-                var status = StatusFromLinks(mine, myReports);
+                var status = IsDocumentVerified(item) ? StatusFrom261() : StatusFromLinks(mine, myReports);
                 var manual = item.ManualStatus.Trim();
                 if (firstTime && manual.Length == 0 && item.Status.Trim() != status && !IsDefaultStatus(item.Status))
                 {

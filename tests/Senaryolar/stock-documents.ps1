@@ -4,6 +4,7 @@
 # Şablonlar → Dokümanlar listesi (sürüm 6), Doğrulamalar'da doküman şeridi, yöntemi 261 olan madde (plan / rapor istemez;
 # 261'in harfli revizyonu aktarılana kadar sarı, özet sayılarına girmez). Zaman çizelgesine hiçbir şey yazılmaz.
 $SD = [Pusula.Core.Testing.StockDocuments]
+$VL = [Pusula.Core.Testing.VerificationList]
 $def = New-Object Pusula.Core.Templates.DocumentDefinition; $def.Code = '261'; $def.Name = 'Üretim test dokümanı'; $def.StockPrefix = 'AB'
 $no = 'AB-7000-0003'
 $state = { param([string[]]$names) $SD::StateOf($def, $no, [string[]]($names | ForEach-Object { 'C:\x\' + $_ })) }
@@ -98,11 +99,12 @@ Check 'dosya yokken: Burada yok, gri' ($rows[0].StateText -eq 'Burada yok' -and 
 foreach ($pair in @(@('Besleme 18-32 V', 'Test'), @('Etiket üretim dokümanına uygun', '261 dokümanı'), @('Paketleme üretim dokümanına uygun', '261 dokümanı')))
 {
     $vm.AddVerificationCommand.Execute($null); Pump
-    $vm.NewVerText = $pair[0]; $vm.NewVerMethod = $pair[1]
+    # 26.11.2026: 261 gereksinim penceresinde Doğrulama yolu olarak seçilir (plan yöntem listesinde yok).
+    $vm.NewVerText = $pair[0]; if ($pair[1] -eq '261 dokümanı') { $vm.NewVerBy261 = $true } else { $vm.NewVerMethod = $pair[1] }
     $null = $vm.ConfirmNewVerification(); $vm.IsVerificationDialogOpen = $false; Pump
 }
 Wait
-Check 'yöntem listesinde 261 dokümanı' ([Pusula.Wpf.ViewModels.VerificationRow]::Methods -contains '261 dokümanı')
+Check 'plan yöntem listesinde 261 yok (gereksinimde seçilir)' (-not (@($vm.VerificationMethods) -contains '261 dokümanı'))
 $all = { @($vm.VerificationGroups | ForEach-Object { $_.Rows }) }
 $r261 = { @(& $all | Where-Object { $_.Item.Method -eq '261 dokümanı' }) }
 Check 'üç madde, ikisi 261' ($vm.VerificationCount -eq 3 -and (& $r261).Count -eq 2) ([string]$vm.VerificationCount)
@@ -110,8 +112,9 @@ Check '261 maddeleri plansız sayılmaz (yalnız test maddesi)' (@($vm.Requireme
 Check '261 yokken: madde sarı, çip "261 · yok"' (@(& $r261 | Where-Object { $_.HasNoPlan -and $_.LinkedPlans[0].Kind -eq 4 }).Count -eq 2) ((& $r261)[0].LinkedPlans[0].Text)
 Check '261 maddesinde rapor çipi yok' (@(& $r261 | Where-Object { @($_.LinkedReports).Count -eq 0 }).Count -eq 2)
 $sum = @($vm.VerificationSummary)
-Check 'özet: 1 gereksinim (test planlı), ayrıca "261 ile 2" sarı' ($vm.VerificationSummaryTotal -eq '1 gereksinim' -and $sum[-1].Label -eq '261 ile' -and $sum[-1].Count -eq 2 -and $sum[-1].Tone -eq 'waiting') (($sum | ForEach-Object { $_.Label + '=' + $_.Count }) -join ', ')
-Check 'sayı satırı da 261''leri saymaz: Doğrulama 0/1 (hata avı)' ($vm.StockVerificationText -like '*0/1*') $vm.StockVerificationText
+Check 'özet: 3 gereksinim, ayrı "261 ile" satırı yok' ($vm.VerificationSummaryTotal -eq '3 gereksinim' -and -not (@($sum | Where-Object { $_.Label -eq '261 ile' }).Count)) (($sum | ForEach-Object { $_.Label + '=' + $_.Count }) -join ', ')
+Check '261 yokken 261 maddeleri Planlandı' (@($VL::Read($stock) | Where-Object { $_.Method -eq '261 dokümanı' -and $_.Status -eq 'Planlandı' }).Count -eq 2) (($VL::Read($stock) | ForEach-Object { $_.Status }) -join ',')
+Check 'sayı satırı 261''leri de sayar: Doğrulama 0/3' ($vm.StockVerificationText -like '*0/3*') $vm.StockVerificationText
 
 New-Item -ItemType Directory -Force $docs | Out-Null
 [IO.File]::WriteAllText((Join-Path $docs 'AB-7000-0003_261_AA_TASLAK.docx'), 'x')
@@ -134,7 +137,7 @@ Remove-Item (Join-Path $docs 'AB-7000-0003_261_P1.pdf')
 $row = @($vm.StockDocumentRows)[0]
 Check 'aktarılınca: yeşil, "AA · aktarıldı"' ($row.StateText -eq 'AA · aktarıldı' -and $row.Tone -eq 'done') $row.StateText
 Check 'aktarılınca madde sarıdan çıkar, çip yeşil "261 · AA"' (@(& $r261 | Where-Object { -not $_.HasNoPlan -and $_.LinkedPlans[0].Kind -eq 1 -and $_.LinkedPlans[0].Text -eq '261 · AA' }).Count -eq 2)
-Check 'özette 261 ile yeşil; 261 Geçti sayılmaz' (@($vm.VerificationSummary)[-1].Tone -eq 'done' -and @($vm.VerificationSummary)[0].Count -eq 0) ((@($vm.VerificationSummary) | ForEach-Object { $_.Label + '=' + $_.Count + '/' + $_.Tone }) -join ', ')
+Check 'AA aktarılınca 261 maddeleri Geçti (md ve özet)' (@($VL::Read($stock) | Where-Object { $_.Method -eq '261 dokümanı' -and $_.Status -eq 'Geçti' }).Count -eq 2 -and @($vm.VerificationSummary)[0].Count -eq 2) ((@($vm.VerificationSummary) | ForEach-Object { $_.Label + '=' + $_.Count + '/' + $_.Tone }) -join ', ')
 
 [IO.File]::WriteAllText((Join-Path $docs 'AB-7000-0003_261_BA_TASLAK.docx'), 'x')
 & $show $stock
@@ -147,6 +150,28 @@ $page = $win.FindName('StockPageScroll'); $page.ScrollToVerticalOffset(330); Pum
 Snap $win "$Out\stock-documents-rows.png"
 $page.ScrollToTop(); Pump
 
+# Düzenleme penceresi: 261'li maddede Doğrulama yolu 261 seçili, 261'in durumu görünür; Test planı'na geçilirse yöntem silinir.
+$vm.EditVerification((& $r261)[0]); Wait
+Check 'düzenlemede 261 seçili, durum yazısı' ($vm.NewVerBy261 -and -not $vm.NewVerByPlan -and $vm.NewVer261Text -like '261 · AA*') $vm.NewVer261Text
+$dlg = $null; $st = New-Object System.Collections.Stack; $st.Push($win)
+while ($st.Count) { $e = $st.Pop(); if ($e -is [DesignKit.Controls.ContentDialog] -and $e.IsOpen) { $dlg = $e }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($e); $i++) { $st.Push([System.Windows.Media.VisualTreeHelper]::GetChild($e, $i)) } }
+if ($dlg)
+{
+    $child = $dlg.Template.FindName('PART_Popup', $dlg).Child
+    $child.Measure((New-Object System.Windows.Size 1360, 900)); $child.Arrange((New-Object System.Windows.Rect 0, 0, 1360, 900)); $child.UpdateLayout(); Wait
+    $rtb = New-Object System.Windows.Media.Imaging.RenderTargetBitmap 2040, 1350, 144, 144, ([System.Windows.Media.PixelFormats]::Pbgra32)
+    $dv = New-Object System.Windows.Media.DrawingVisual; $dc = $dv.RenderOpen()
+    $dc.DrawRectangle((New-Object System.Windows.Media.VisualBrush $win), $null, (New-Object System.Windows.Rect 0, 0, 1360, 900))
+    $dc.DrawRectangle((New-Object System.Windows.Media.VisualBrush $child), $null, (New-Object System.Windows.Rect 0, 0, 1360, 900))
+    $dc.Close(); $rtb.Render($dv)
+    $pe = New-Object System.Windows.Media.Imaging.PngBitmapEncoder; $pe.Frames.Add([System.Windows.Media.Imaging.BitmapFrame]::Create($rtb))
+    $fs = [IO.File]::Create("$Out\stock-documents-dialog.png"); $pe.Save($fs); $fs.Close()
+}
+$key = $vm.EditingVerificationKey
+$vm.NewVerByPlan = $true
+Check 'Test planı seçilince 261 kutusu kapanır' (-not $vm.NewVerBy261)
+Check 'kaydedilir' ($vm.ConfirmNewVerification()); $vm.IsVerificationDialogOpen = $false; Wait
+Check 'test planına dönen maddenin yöntemi boş, durumu Bekliyor' (@($VL::Read($stock) | Where-Object { $_.Method -eq '261 dokümanı' }).Count -eq 1) ((@($VL::Read($stock)) | ForEach-Object { $_.Method + '/' + $_.Status }) -join ', ')
 Check 'zaman çizelgesine bir şey yazılmadı (not ve olay notları aynı)' (($(if (Test-Path $note) { [IO.File]::ReadAllText($note) } else { '' }) -eq $noteBefore) -and @(Get-ChildItem $stock -Recurse -Filter '*.md' | Where-Object { $_.FullName -like '*Olaylar*' }).Count -eq $eventsBefore)
 Check 'uygulama dosyalara dokunmadı (üç dosya yerinde)' (@(Get-ChildItem $docs).Count -eq 3)
 

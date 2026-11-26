@@ -1,0 +1,172 @@
+<Border xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="1240" Background="{DynamicResource SurfaceBaseBrush}" Padding="24,20" TextElement.FontFamily="Segoe UI"
+        TextElement.Foreground="{DynamicResource TextPrimaryBrush}" TextElement.FontSize="13">
+    <Border.Resources>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource LayerBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+        </Style>
+        <Style x:Key="Cap" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11.5" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+        <Style x:Key="Lbl" TargetType="TextBlock">
+            <Setter Property="Width" Value="140" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+        </Style>
+        <Style x:Key="Box" TargetType="Border">
+            <Setter Property="Padding" Value="10,6" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+        </Style>
+        <Style x:Key="Pill" TargetType="Border">
+            <Setter Property="Padding" Value="12,5" />
+            <Setter Property="Margin" Value="0,0,6,0" />
+            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+        </Style>
+        <Style x:Key="PillOn" TargetType="Border" BasedOn="{StaticResource Pill}">
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+        </Style>
+        <Style x:Key="Row" TargetType="DockPanel">
+            <Setter Property="Margin" Value="0,0,0,12" />
+        </Style>
+        <Style x:Key="Note" TargetType="TextBlock">
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+        </Style>
+    </Border.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="700" />
+            <ColumnDefinition Width="24" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Sol: gereksinim penceresi (yeni hâli) -->
+        <StackPanel>
+            <TextBlock Style="{StaticResource Cap}" Text="GEREKSİNİM EKLE / DÜZENLE · AB-7000-0003" />
+            <Border Style="{StaticResource Card}" Padding="20,16">
+                <StackPanel>
+                    <TextBlock FontSize="18" FontWeight="SemiBold" Margin="0,0,0,4" Text="Gereksinimi düzenle" />
+                    <TextBlock Margin="0,0,0,16" Foreground="{DynamicResource TextTertiaryBrush}" Text="03_Testler\AB-7000-0003_Test_Gereksinimleri.md" />
+
+                    <DockPanel Style="{StaticResource Row}">
+                        <TextBlock Style="{StaticResource Lbl}" Text="TG no" />
+                        <Border Style="{StaticResource Box}" Width="160" HorizontalAlignment="Left"><TextBlock Text="TG-12" /></Border>
+                    </DockPanel>
+                    <DockPanel Style="{StaticResource Row}">
+                        <TextBlock Style="{StaticResource Lbl}" Text="Başlık" />
+                        <Border Style="{StaticResource Box}"><TextBlock Text="Besleme gerilimi aralığı" /></Border>
+                    </DockPanel>
+                    <DockPanel Style="{StaticResource Row}">
+                        <TextBlock Style="{StaticResource Lbl}" Text="Gereksinim" />
+                        <Border Style="{StaticResource Box}" Height="52"><TextBlock TextWrapping="Wrap" Text="Birim 22–32 VDC aralığında çalışmalıdır." /></Border>
+                    </DockPanel>
+
+                    <!-- Madde 1: Grup + Test tipi birleşti -->
+                    <DockPanel Style="{StaticResource Row}">
+                        <TextBlock Style="{StaticResource Lbl}" Text="Grup *" />
+                        <WrapPanel>
+                            <Border Style="{StaticResource Pill}"><TextBlock Text="İşlevsel" /></Border>
+                            <Border Style="{StaticResource Pill}"><TextBlock Text="Özellik" /></Border>
+                            <Border Style="{StaticResource PillOn}"><TextBlock FontWeight="SemiBold" Text="ÇK" /></Border>
+                            <Border Style="{StaticResource Pill}"><TextBlock Text="EMC" /></Border>
+                            <Border Style="{StaticResource Pill}"><TextBlock Text="Diğer" /></Border>
+                        </WrapPanel>
+                    </DockPanel>
+                    <DockPanel Style="{StaticResource Row}">
+                        <TextBlock Style="{StaticResource Lbl}" Text="Alt grup" />
+                        <Border Style="{StaticResource Box}" Width="300" HorizontalAlignment="Left"><TextBlock Text="Sıcaklık testleri                    ▾" /></Border>
+                    </DockPanel>
+                    <DockPanel Style="{StaticResource Row}">
+                        <TextBlock Style="{StaticResource Lbl}" Text="Standart" />
+                        <Border CornerRadius="8" BorderThickness="1" Padding="10,8" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Style="{StaticResource Box}" Width="150"><TextBlock Text="MIL-STD-810G" /></Border>
+                                <Border Style="{StaticResource Box}" Width="170" Margin="8,0"><TextBlock Text="501.5 · Yüksek sıcaklık" /></Border>
+                                <Border Style="{StaticResource Box}" Width="90"><TextBlock Foreground="{DynamicResource TextTertiaryBrush}" Text="Prosedür" /></Border>
+                            </StackPanel>
+                        </Border>
+                    </DockPanel>
+                    <DockPanel Style="{StaticResource Row}">
+                        <TextBlock Style="{StaticResource Lbl}" Text="Tür" />
+                        <Border Style="{StaticResource Box}" Width="200" HorizontalAlignment="Left"><TextBlock Text="Temel                       ▾" /></Border>
+                    </DockPanel>
+
+                    <!-- Madde 4: doğrulama yolu -->
+                    <DockPanel Style="{StaticResource Row}">
+                        <TextBlock Style="{StaticResource Lbl}" VerticalAlignment="Top" Margin="0,6,0,0" Text="Doğrulama" />
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Border Style="{StaticResource Pill}"><TextBlock Text="Test planı / raporu" /></Border>
+                                <Border Style="{StaticResource PillOn}"><TextBlock FontWeight="SemiBold" Text="261 · Üretim test dokümanı" /></Border>
+                            </StackPanel>
+                            <Border Margin="0,8,0,0" CornerRadius="8" BorderThickness="1" Padding="10,8" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="8" Height="8" VerticalAlignment="Center" Fill="{DynamicResource SystemFillColorCautionBrush}" />
+                                        <TextBlock Margin="8,0,0,0" FontWeight="SemiBold" Text="AB-7000-0003_261" />
+                                        <TextBlock Margin="10,0,0,0" Foreground="{DynamicResource SystemFillColorCautionBrush}" Text="Taslak" />
+                                    </StackPanel>
+                                    <TextBlock Margin="0,6,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}"
+                                               Text="Plan / rapor istemez. 261 yok ya da taslak → Planlandı; AA (harfli) revizyon aktarılınca → Geçti." />
+                                </StackPanel>
+                            </Border>
+                            <TextBlock Margin="0,8,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextTertiaryBrush}"
+                                       Text="Test planı / raporu seçilirse burada plan maddesi seçilebilir (boş bırakılırsa sonra Plan kartından bağlanır)." />
+                        </StackPanel>
+                    </DockPanel>
+
+                    <!-- Durum: tek alan -->
+                    <DockPanel Style="{StaticResource Row}">
+                        <TextBlock Style="{StaticResource Lbl}" Text="Durum" />
+                        <Border Style="{StaticResource Box}" Width="200" HorizontalAlignment="Left"><TextBlock Text="Bekliyor                    ▾" /></Border>
+                    </DockPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                        <Border Style="{StaticResource Box}" Background="{DynamicResource AccentFillColorDefaultBrush}" Padding="18,6"><TextBlock Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}" Text="Kaydet" /></Border>
+                        <Border Style="{StaticResource Box}" Margin="8,0,0,0" Padding="18,6"><TextBlock Text="Vazgeç" /></Border>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- Sağ: açıklamalar -->
+        <StackPanel Grid.Column="2">
+            <TextBlock Style="{StaticResource Cap}" Text="NE DEĞİŞTİ" />
+            <Border Style="{StaticResource Card}" Padding="16,14">
+                <StackPanel>
+                    <TextBlock FontWeight="SemiBold" Margin="0,0,0,4" Text="1 · Grup ve Test tipi birleşti" />
+                    <TextBlock Style="{StaticResource Note}" Text="Grup sabit liste: İşlevsel · Özellik · ÇK · EMC · Diğer (Test tipi alanı ve sütunu kalkar). ÇK ya da EMC seçilince standart kutusu açılır." />
+                    <TextBlock Style="{StaticResource Note}" Text="Excel'deki başlık satırları artık Alt grup olur (serbest metin). O sırada grup Diğer olur, elle düzeltilir." />
+                    <TextBlock Style="{StaticResource Note}" Text="Eski dosya bir kez düzenlenir: Test tipi doluysa gruba geçer (ÇK/EMC → ÇK ya da EMC); listede olmayan grup adı Alt grup'a taşınır." />
+
+                    <TextBlock FontWeight="SemiBold" Margin="0,6,0,4" Text="4 · Doğrulama yolu gereksinimde seçilir" />
+                    <TextBlock Style="{StaticResource Note}" Text="Gereksinimde: Test planı / raporu ya da 261. 261'li maddenin durumu da hesaplanır:" />
+                    <Border Style="{StaticResource Box}" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Text="261 yok, hazırlanıyor ya da P1–P9 taslak  →  Planlandı" />
+                            <TextBlock Margin="0,4,0,0" Foreground="{DynamicResource SystemFillColorSuccessBrush}" Text="261 AA, AB … aktarıldı  →  Geçti" />
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Note}" Text="261'li madde özete ve yüzdeye girer; ayrı '261 ile' sayısı kalkar. Elle durum yine hesaplananı ezer." />
+
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Grid>
+</Border>

@@ -39,7 +39,9 @@ try {
     $text = [IO.File]::ReadAllText($file)
     $backups = @(Get-ChildItem (Join-Path $stock '_ARSIV') -Filter '*.md.yedek' -ErrorAction SilentlyContinue)
     Check 'yedek alınır (_ARSIV, .md.yedek, içerik aynı)' ($backups.Count -eq 1 -and [IO.File]::ReadAllText($backups[0].FullName) -eq $original) ([string]$backups.Count)
-    Check 'gereksinim tablosu 13 sütun (+ tanınmayan Sorumlu)' ($text.Contains("$H13`r`n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|`r`n| 1 | DGÖ-1 |  | Hüzme |  |  | İşlevsel |  | Temel |  | Test | SATIMO | Geçti | Ali |")) $text
+    # 26.11.2026: Alt grup da kalkar (12 sütun + tanınmayan Sorumlu).
+    $H12 = $H13.Replace(' Alt grup |', '')
+    Check 'gereksinim tablosu 12 sütun (+ tanınmayan Sorumlu), Alt grup yok' ($text.Contains("$H12`r`n|---|---|---|---|---|---|---|---|---|---|---|---|---|`r`n| 1 | DGÖ-1 |  | Hüzme |  |  | İşlevsel | Temel |  | Test | SATIMO | Geçti | Ali |")) $text
     Check 'TP / TR sütunları yok' ($text -notlike '*TP açıklama*' -and $text -notlike '*TR sonuç*' -and $text -notlike '*| TP no | TP*')
     $items = $VL::Read($stock)
     Check '4 gereksinim, durum ve tanınmayan sütun korunur' ($items.Count -eq 4 -and $items[1].Status -eq 'Kaldı' -and $items[3].Extra['Sorumlu'] -eq 'Ayşe')

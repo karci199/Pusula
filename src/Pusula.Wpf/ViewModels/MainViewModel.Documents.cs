@@ -193,6 +193,55 @@ namespace Pusula.Wpf.ViewModels
             OnPropertyChanged(nameof(HasStockDocuments));
         }
 
+        private bool newVerBy261;
+
+        /// <summary>Pencerede doğrulama yolu (26.11.2026): 261 (üretim test dokümanı) mı; değilse test planı / raporu.</summary>
+        public bool NewVerBy261
+        {
+            get { return newVerBy261; }
+            set
+            {
+                if (SetProperty(ref newVerBy261, value))
+                {
+                    OnPropertyChanged(nameof(NewVerByPlan));
+                }
+
+                OnPropertyChanged(nameof(NewVer261Text));
+                OnPropertyChanged(nameof(IsNewVer261Official));
+            }
+        }
+
+        /// <summary>Pencerede doğrulama yolu: test planı / raporu (varsayılan).</summary>
+        public bool NewVerByPlan
+        {
+            get { return !newVerBy261; }
+            set { NewVerBy261 = !value; }
+        }
+
+        /// <summary>Pencerede 261'in bu stoktaki durumu: "261 · AA", "261 · P1 taslak", "261 · yok" …</summary>
+        public string NewVer261Text
+        {
+            get { return DocumentChipOf().Text; }
+        }
+
+        /// <summary>261'in harfli revizyonu aktarıldı mı (pencerede yeşil; değilse sarı).</summary>
+        public bool IsNewVer261Official
+        {
+            get { return Is261Official; }
+        }
+
+        // Kaydedilecek yöntem: 261 seçiliyse "261 dokümanı"; değilse eski yöntem (261 değilse) korunur.
+        private string MethodForSave()
+        {
+            if (newVerBy261)
+            {
+                return Resources.Verify_Method261;
+            }
+
+            var method = (newVerMethod ?? string.Empty).Trim();
+            return VerificationRow.IsDocumentMethod(method) ? string.Empty : method;
+        }
+
         // 261 ile doğrulanan madde: plan / rapor istemez (bağ uyarısına, bağ süzgecine, özet sayılarına girmez).
         private static bool IsDocumentVerified(VerificationItem item)
         {

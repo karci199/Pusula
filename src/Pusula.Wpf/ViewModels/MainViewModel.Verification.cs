@@ -51,22 +51,16 @@ namespace Pusula.Wpf.ViewModels
             get { return Item.Standard.Trim().Length > 0; }
         }
 
-        /// <summary>Başlığın altındaki turuncu çip: "ÇK · 810G 509.5" (tip ve / veya standart); ikisi de yoksa boş.</summary>
+        /// <summary>Başlığın altındaki turuncu çip: "ÇK · 810G 509.5" (ÇK / EMC grubu ve / veya standart); ikisi de yoksa boş.</summary>
         public string TypeChipText
         {
-            get { return string.Join(" · ", new[] { Item.TestType.Trim(), StandardText }.Where(s => s.Length > 0)); }
+            get { return string.Join(" · ", new[] { VerificationList.IsStandardGroup(Item.Group) ? Item.Group.Trim() : string.Empty, StandardText }.Where(s => s.Length > 0)); }
         }
 
         /// <summary>Çip görünür mü.</summary>
         public bool HasTypeChip
         {
             get { return TypeChipText.Length > 0; }
-        }
-
-        /// <summary>Test tipi (İşlevsel / ÇK / EMC); yoksa boş.</summary>
-        public string TestType
-        {
-            get { return Item.TestType; }
         }
 
         /// <summary>Durum elle mi verildi (bağlardan hesaplanan ezmez).</summary>
@@ -1018,8 +1012,7 @@ namespace Pusula.Wpf.ViewModels
                     return string.Empty;
                 }
 
-                // 261 ile doğrulananlar (25.11.2026) özetteki gibi sayılmaz.
-                var kinds = verificationItems.Where(i => !IsDocumentVerified(i)).Select(i => VerificationRow.KindOf(i.EffectiveStatus)).ToList();
+                var kinds = verificationItems.Select(i => VerificationRow.KindOf(i.EffectiveStatus)).ToList();
                 return string.Format(CultureInfo.CurrentCulture, Resources.Verify_Summary, kinds.Count(VerificationRow.IsPassedKind), kinds.Count(k => k != 5));
             }
         }
@@ -1029,7 +1022,7 @@ namespace Pusula.Wpf.ViewModels
         {
             get
             {
-                var kinds = verificationItems.Where(i => !IsDocumentVerified(i)).Select(i => VerificationRow.KindOf(i.EffectiveStatus)).ToList();
+                var kinds = verificationItems.Select(i => VerificationRow.KindOf(i.EffectiveStatus)).ToList();
                 var counted = kinds.Count(k => k != 5);
                 return counted == 0 ? 0 : 100.0 * kinds.Count(VerificationRow.IsPassedKind) / counted;
             }
@@ -1099,7 +1092,7 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Yöntem seçenekleri: —, Test, Muayene, Belge, Gösterim, Diğer.</summary>
         public IList<string> VerificationMethods
         {
-            get { return new[] { Resources.Verify_None }.Concat(VerificationRow.Methods).ToList(); }
+            get { return new[] { Resources.Verify_None }.Concat(VerificationRow.Methods.Where(m => !VerificationRow.IsDocumentMethod(m))).ToList(); }
         }
 
         /// <summary>Pencerede: yöntem ("—" boş).</summary>
@@ -1194,7 +1187,7 @@ namespace Pusula.Wpf.ViewModels
             NewVerKind = item.Kind;
             NewVerParent = item.Parent;
             NewVerMethod = item.Method;
-            NewVerSubGroup = item.SubGroup;
+            NewVerBy261 = IsDocumentVerified(item);
             NewVerFacility = item.Facility;
             ResetStandardFields(item);
             NewVerStatus = item.EffectiveStatus.Length > 0 ? item.EffectiveStatus : Resources.Verify_StatusPending;
@@ -1379,18 +1372,8 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Pencerede: grup seçenekleri (biri seçili).</summary>
         public ObservableCollection<ChoiceOption> VerificationGroupChoices { get; } = new ObservableCollection<ChoiceOption>();
 
-        /// <summary>Pencerede: alt grup (bu stokta kullanılanlardan seçilir ya da yeni yazılır).</summary>
-        public PickOrNew SubGroupPick { get; } = new PickOrNew(Resources.Verify_NewSubGroup);
-
         /// <summary>Pencerede: altyapı (ortak listeden seçilir ya da yeni yazılır; yeni ad ortak listeye eklenir).</summary>
         public PickOrNew FacilityPick { get; } = new PickOrNew(Resources.Verify_NewFacility);
-
-        /// <summary>Alt grup değeri (seçili ya da yeni yazılan).</summary>
-        public string NewVerSubGroup
-        {
-            get { return SubGroupPick.Value; }
-            set { SubGroupPick.Value = value; }
-        }
 
         /// <summary>Altyapı değeri (seçili ya da yeni yazılan).</summary>
         public string NewVerFacility
@@ -1405,11 +1388,6 @@ namespace Pusula.Wpf.ViewModels
             get { return FacilityPick.Options.Skip(1).Take(Math.Max(0, FacilityPick.Options.Count - 2)).ToList(); }
         }
 
-        /// <summary>Alt grup önerileri (bu stokta kullanılanlar).</summary>
-        public IList<string> SubGroupSuggestions
-        {
-            get { return SubGroupPick.Options.Skip(1).Take(Math.Max(0, SubGroupPick.Options.Count - 2)).ToList(); }
-        }
         /// <summary>Pencerede: TG no (isteğe bağlı).</summary>
         public string NewVerTgNo
         {
@@ -1454,7 +1432,7 @@ namespace Pusula.Wpf.ViewModels
 
         private static string[] KnownGroups()
         {
-            return new[] { Resources.Verify_GroupFunctional, Resources.Verify_GroupFeature, Resources.Verify_GroupEmc, Resources.Verify_GroupOther };
+            return new[] { Resources.Verify_GroupFunctional, Resources.Verify_GroupFeature, Resources.Verify_GroupEmc, Resources.Verify_GroupEmcOnly, Resources.Verify_GroupOther };
         }
 
         // Stok değişince ya da madde eklenince dosyadan yeniden okunur.
@@ -1469,7 +1447,14 @@ namespace Pusula.Wpf.ViewModels
 
             verificationStock = stock;
             RetireLegacyVerification();
-            verificationItems =stock.Length == 0 ? new List<VerificationItem>() : VerificationList.Read(stock).ToList();
+            LoadStockDocuments();
+            // 261 ile doğrulanan madde varsa durumu 261'in son hâline eşitlenir (aktarılınca Geçti).
+            if (stock.Length > 0 && VerificationList.Read(stock).Any(IsDocumentVerified))
+            {
+                SyncRequirementLinks();
+            }
+
+            verificationItems = stock.Length == 0 ? new List<VerificationItem>() : VerificationList.Read(stock).ToList();
             verificationAttempts = stock.Length == 0 ? new List<EventNote>() : Journal.Read(TaskNotePath(stock)).Where(e => e.Item.Trim().Length > 0).OrderByDescending(e => e.Date).ToList();
 
             // Süzgeç: Hepsi + dört grup (+ dosyada başka grup adı varsa o da).
@@ -1507,7 +1492,6 @@ namespace Pusula.Wpf.ViewModels
                 });
             }
 
-            LoadStockDocuments();
             LoadPlanReports();
             BuildStatusFilters();
             FillVerificationGroups();
@@ -1790,6 +1774,7 @@ namespace Pusula.Wpf.ViewModels
             NewVerParent = string.Empty;
             NewVerMethod = string.Empty;
             NewVerTgNo = string.Empty;
+            NewVerBy261 = false;
             NewVerStatus = Resources.Verify_StatusPending;
             VerificationError = string.Empty;
             ResetStandardFields(null);
@@ -1816,9 +1801,9 @@ namespace Pusula.Wpf.ViewModels
             }
 
             OnPropertyChanged(nameof(NewVerGroupChoice));
+            OnPropertyChanged(nameof(IsNewVerStandard));
 
             // Alt grup: bu stokta kullanılanlar; altyapı: ortak liste + bu stokta kullanılanlar.
-            SubGroupPick.SetNames(verificationItems.Select(i => i.SubGroup).Where(s => s.Length > 0).Distinct(StringComparer.CurrentCultureIgnoreCase).OrderBy(s => s, StringComparer.CurrentCulture));
             var facilities = FacilityList.Read(rootPath).ToList();
             foreach (var used in verificationItems.Select(i => i.Facility).Where(f => f.Length > 0))
             {
@@ -1862,6 +1847,8 @@ namespace Pusula.Wpf.ViewModels
             {
                 other.IsChecked = false;
             }
+
+            OnPropertyChanged(nameof(IsNewVerStandard));
         }
 
         /// <summary>
@@ -1870,9 +1857,9 @@ namespace Pusula.Wpf.ViewModels
         /// </summary>
         public bool ConfirmNewVerification()
         {
-            // Madde henüz belli değilse yalnız alt grup yazılabilir (örn. "Anten örüntü"); madde sonra doldurulur.
+            // TG no ya da başlıktan biri gerekir.
             var text = (NewVerText ?? string.Empty).Trim();
-            if (text.Length == 0 && NewVerSubGroup.Trim().Length == 0 && NewVerTgNo.Trim().Length == 0)
+            if (text.Length == 0 && NewVerTgNo.Trim().Length == 0)
             {
                 VerificationError = Resources.Verify_TextOrSubGroup;
                 return false;
@@ -1893,9 +1880,8 @@ namespace Pusula.Wpf.ViewModels
                 Source = NewVerTgNo.Trim().Length > 0 ? string.Empty : newVerSource.Trim(),
                 Kind = newVerKind.Trim(),
                 Parent = IsNewVerDerived ? newVerParent.Trim() : string.Empty,
-                Method = newVerMethod.Trim(),
+                Method = MethodForSave(),
                 Group = group,
-                SubGroup = NewVerSubGroup.Trim(),
                 Facility = NewVerFacility.Trim(),
                 TgNo = NewVerTgNo.Trim(),
 
@@ -1922,10 +1908,16 @@ namespace Pusula.Wpf.ViewModels
                     return false;
                 }
 
+                // Doğrulama yolu değiştiyse (261 ↔ test planı) durum hemen yeniden hesaplanır.
+                var pathChanged = IsDocumentVerified(editingVerification) != IsDocumentVerified(item);
                 editingVerification = null;
                 if (updateError.Length == 0)
                 {
                     RememberStandard(item);
+                    if (pathChanged)
+                    {
+                        SyncRequirementLinks();
+                    }
                 }
 
                 if (updateError.Length == 0 && item.Facility.Length > 0 && rootPath.Length > 0)

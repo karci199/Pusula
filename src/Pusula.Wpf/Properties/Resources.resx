@@ -2055,7 +2055,7 @@ Ayrıntı: {1}</value>
     <value>Özellik</value>
   </data>
   <data name="Verify_GroupEmc" xml:space="preserve">
-    <value>ÇK/EMC</value>
+    <value>ÇK</value>
   </data>
   <data name="Verify_GroupOther" xml:space="preserve">
     <value>Diğer</value>
@@ -3770,5 +3770,20 @@ Ortak liste (ÇK / EMC): &quot;## standart&quot; başlığı altında &quot;- nu
   </data>
   <data name="Home_ShowAll" xml:space="preserve">
     <value>Hepsini göster</value>
+  </data>
+  <data name="Verify_GroupEmcOnly" xml:space="preserve">
+    <value>EMC</value>
+  </data>
+  <data name="Verify_FieldVerification" xml:space="preserve">
+    <value>Doğrulama</value>
+  </data>
+  <data name="Verify_ByPlan" xml:space="preserve">
+    <value>Test planı / raporu</value>
+  </data>
+  <data name="Verify_By261" xml:space="preserve">
+    <value>261 · Üretim test dokümanı</value>
+  </data>
+  <data name="Verify_261Hint" xml:space="preserve">
+    <value>Plan / rapor istemez. 261 yok ya da taslak → Planlandı; harfli revizyon (AA …) aktarılınca → Geçti.</value>
   </data>
 </root>

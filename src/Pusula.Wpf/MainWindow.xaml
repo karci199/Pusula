@@ -1569,7 +1569,40 @@
                 </Grid>
                 <ItemsControl ItemsSource="{Binding Cards}" ItemTemplate="{StaticResource TimelineCardTemplate}" Focusable="False" />
             </StackPanel>
-        </DataTemplate>    </controls:ChromeWindow.Resources>
+        </DataTemplate>
+        <!-- Parçalı seçim düğmesi (süzgeçler, gereksinim penceresindeki Doğrulama yolu): seçili parça dolgulu ve kalın -->
+        <Style x:Key="SegmentStyle" TargetType="RadioButton">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Bg" CornerRadius="4" Padding="12,4" Background="Transparent">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="SegmentBox" TargetType="Border">
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+            <Setter Property="Background" Value="{DynamicResource LayerBrush}" />
+            <Setter Property="Padding" Value="2" />
+        </Style>
+    </controls:ChromeWindow.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -1901,37 +1934,6 @@
                             <!-- Parçalı süzgeç düğmesi: seçili parça dolgulu ve kalın, diğerleri soluk -->
                             <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
                                 <Setter Property="FontSize" Value="15" />
-                            </Style>
-                            <Style x:Key="SegmentStyle" TargetType="RadioButton">
-                                <Setter Property="FontSize" Value="14" />
-                                <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
-                                <Setter Property="Cursor" Value="Hand" />
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="RadioButton">
-                                            <Border x:Name="Bg" CornerRadius="4" Padding="12,4" Background="Transparent">
-                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="Bg" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
-                                                </Trigger>
-                                                <Trigger Property="IsChecked" Value="True">
-                                                    <Setter TargetName="Bg" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
-                                                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-                                                    <Setter Property="FontWeight" Value="SemiBold" />
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                            <Style x:Key="SegmentBox" TargetType="Border">
-                                <Setter Property="CornerRadius" Value="6" />
-                                <Setter Property="BorderThickness" Value="1" />
-                                <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
-                                <Setter Property="Background" Value="{DynamicResource LayerBrush}" />
-                                <Setter Property="Padding" Value="2" />
                             </Style>
                         </Grid.Resources>
 
@@ -4865,11 +4867,7 @@
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldKind}" LabelWidth="150">
                         <ComboBox ItemsSource="{Binding VerificationKinds}" SelectedItem="{Binding NewVerKind, Mode=TwoWay}" ItemTemplate="{StaticResource VerKindItemTemplate}" />
                     </controls:FormField>
-                    <!-- Test tipi ve standart (elle girilir, Excel'den gelmez): ÇK / EMC seçilince standart, yöntem, prosedür açılır -->
-                    <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldTestType}" LabelWidth="150">
-                        <local:SearchPickBox x:Name="TestTypePick" Width="240" HorizontalAlignment="Left" AllowNew="False" ItemsSource="{Binding VerificationTestTypes}"
-                                             SelectedValue="{Binding NewVerTestType, Mode=TwoWay}" Placeholder="{x:Static res:Resources.Verify_None}" />
-                    </controls:FormField>
+                    <!-- Standart (elle girilir, Excel'den gelmez): grup ÇK / EMC iken standart, yöntem, prosedür açılır (26.11.2026: Test tipi gruba katıldı) -->
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldStandard}" LabelWidth="150"
                                         Visibility="{Binding IsNewVerStandard, Converter={StaticResource BoolToVis}}">
                         <Border CornerRadius="8" BorderThickness="1" Padding="10,8" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}">
@@ -4898,6 +4896,32 @@
                     <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldParent}" LabelWidth="150"
                                         Visibility="{Binding IsNewVerDerived, Converter={StaticResource BoolToVis}}">
                         <ComboBox ItemsSource="{Binding VerificationParents}" SelectedItem="{Binding NewVerParent, Mode=TwoWay}" />
+                    </controls:FormField>
+                    <!-- Doğrulama yolu (26.11.2026): test planı / raporu ya da 261; 261'li madde plan / rapor istemez, durumu 261'den hesaplanır -->
+                    <controls:FormField Margin="0,12,0,0" Header="{x:Static res:Resources.Verify_FieldVerification}" LabelWidth="150">
+                        <StackPanel>
+                            <Border Style="{StaticResource SegmentBox}" HorizontalAlignment="Left">
+                                <StackPanel Orientation="Horizontal">
+                                    <RadioButton Style="{StaticResource SegmentStyle}" GroupName="VerifyPath" Content="{x:Static res:Resources.Verify_ByPlan}" IsChecked="{Binding NewVerByPlan, Mode=TwoWay}" />
+                                    <RadioButton Style="{StaticResource SegmentStyle}" GroupName="VerifyPath" Content="{x:Static res:Resources.Verify_By261}" IsChecked="{Binding NewVerBy261, Mode=TwoWay}" />
+                                </StackPanel>
+                            </Border>
+                            <Border Margin="0,8,0,0" Padding="10,8" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
+                                    Visibility="{Binding NewVerBy261, Converter={StaticResource BoolToVis}}">
+                                <StackPanel>
+                                    <!-- Harfli revizyon aktarıldıysa yeşil, değilse sarı -->
+                                    <StackPanel Orientation="Horizontal" Visibility="{Binding IsNewVer261Official, Converter={StaticResource InverseBoolToVis}}">
+                                        <Ellipse Width="8" Height="8" VerticalAlignment="Center" Fill="{DynamicResource SystemFillColorCautionBrush}" />
+                                        <TextBlock Margin="8,0,0,0" FontWeight="SemiBold" Foreground="{DynamicResource SystemFillColorCautionBrush}" Text="{Binding NewVer261Text}" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Visibility="{Binding IsNewVer261Official, Converter={StaticResource BoolToVis}}">
+                                        <Ellipse Width="8" Height="8" VerticalAlignment="Center" Fill="{DynamicResource SystemFillColorSuccessBrush}" />
+                                        <TextBlock Margin="8,0,0,0" FontWeight="SemiBold" Foreground="{DynamicResource SystemFillColorSuccessBrush}" Text="{Binding NewVer261Text}" />
+                                    </StackPanel>
+                                    <TextBlock Margin="0,6,0,0" TextWrapping="Wrap" Style="{DynamicResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextTertiaryBrush}" Text="{x:Static res:Resources.Verify_261Hint}" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
                     </controls:FormField>
                     <!-- Yöntem ve altyapı plana ait (21.11.2026): satırdaki Test planı kartından girilir; düzenlemede korunur. -->
                     <!-- TP / TR no pencerede yok (21.11.2026): madde önce yalnız gereksinimle girilir; plan ve rapor sonra ayrı adımda. Var olan değerler düzenlemede korunur. -->

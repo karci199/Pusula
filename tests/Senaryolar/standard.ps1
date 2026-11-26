@@ -35,16 +35,18 @@ $vm = $win.DataContext; $vm.RootPath = $Data; Wait
 $stock = Join-Path $Data '7000_MILKON\AB-7000-0001'
 $vm.SelectNodeByPath($stock); Wait; Wait
 $stdFile = $SL::PathFor($Data)
+# 26.11.2026: Test tipi gruba katıldı; ÇK / EMC grubu standart kısmını açar.
+function SetGroup([string]$g) { $vm.NewVerGroupChoice = @($vm.VerificationGroupChoices | Where-Object { $_.Key -eq $g })[0] }
 function RowOf([string]$tg) { @($vm.VerificationGroups | ForEach-Object { $_.Rows } | Where-Object { $_.Item.TgNo -eq $tg })[0] }
 
 "--- 2) Gereksinim penceresi: ÇK + 810G 509.5, Prosedür I"
 $vm.AddVerificationCommand.Execute($null); Wait
-Check 'yeni pencerede tip boş, standart kısmı gizli' ($vm.NewVerTestType -eq '' -and -not $vm.IsNewVerStandard)
-Check 'tip seçenekleri: İşlevsel, ÇK, EMC, Diğer' ((@($vm.VerificationTestTypes) -join ',') -eq 'İşlevsel,ÇK,EMC,Diğer')
+Check 'yeni pencerede grup İşlevsel, standart kısmı gizli' ($vm.NewVerGroupChoice.Key -eq 'İşlevsel' -and -not $vm.IsNewVerStandard) $vm.NewVerGroupChoice.Key
+Check 'grup seçenekleri: İşlevsel, Özellik, ÇK, EMC, Diğer' ((@($vm.VerificationGroupChoices | ForEach-Object Key) -join ',') -eq 'İşlevsel,Özellik,ÇK,EMC,Diğer') ((@($vm.VerificationGroupChoices | ForEach-Object Key) -join ','))
 $vm.NewVerTgNo = 'DGÖ-6'; $vm.NewVerText = 'Tuz sisi dayanımı'; $vm.NewVerRequirement = 'Anten MIL-STD-810G Yöntem 509.5''e göre tuz sisine dayanmalıdır.'
-$vm.NewVerTestType = 'İşlevsel'
+SetGroup 'İşlevsel'
 Check 'İşlevsel: standart kısmı gizli' (-not $vm.IsNewVerStandard)
-$vm.NewVerTestType = 'ÇK'
+SetGroup 'ÇK'
 Check 'ÇK: standart kısmı açık, standartlar listede' ($vm.IsNewVerStandard -and @($vm.StandardNames) -contains 'MIL-STD-810G' -and @($vm.StandardNames) -contains 'MIL-STD-461G')
 Check 'standart seçilmeden yöntem listesi boş' ($vm.StandardMethodOptions.Count -eq 0)
 $vm.NewVerStandard = 'MIL-STD-810G'
@@ -52,21 +54,21 @@ Check '810G yöntemleri (29) listede' ($vm.StandardMethodOptions.Count -eq 29 -a
 $vm.NewVerStandardMethod = '509.5 · Tuz sisi'; $vm.NewVerProcedure = 'I'
 Check 'kaydedilir' ($vm.ConfirmNewVerification()); $vm.IsVerificationDialogOpen = $false; Wait
 $it = @($VL::Read($stock) | Where-Object TgNo -eq 'DGÖ-6')[0]
-Check 'md: Tip ÇK, Standart, yöntem, prosedür' ($it.TestType -eq 'ÇK' -and $it.Standard -eq 'MIL-STD-810G' -and $it.StandardMethod -eq '509.5 · Tuz sisi' -and $it.Procedure -eq 'I')
+Check 'md: grup ÇK, Standart, yöntem, prosedür' ($it.Group -eq 'ÇK' -and $it.Standard -eq 'MIL-STD-810G' -and $it.StandardMethod -eq '509.5 · Tuz sisi' -and $it.Procedure -eq 'I')
 $mdText = [IO.File]::ReadAllText($VL::PathFor($stock))
-Check 'md başlığında yeni sütunlar' ($mdText -like '*| Altyapı | Tip | Standart | Standart yöntemi | Prosedür | Durum | Elle durum |*' -and $mdText -like '*| ÇK | MIL-STD-810G | 509.5 · Tuz sisi | I | Bekliyor |*') $mdText
+Check 'md başlığında yeni sütunlar' ($mdText -like '*| Grup | Tür | Bağlı | Yöntem | Altyapı | Standart | Standart yöntemi | Prosedür | Durum | Elle durum |*' -and $mdText -like '*| MIL-STD-810G | 509.5 · Tuz sisi | I | Bekliyor |*' -and $mdText -notlike '*Alt grup*' -and $mdText -notlike '*| Tip |*') $mdText
 $r6 = RowOf 'DGÖ-6'
 Check 'satır çipi: ÇK · 810G 509.5 · I; ipucu uzun' ($r6.TypeChipText -eq 'ÇK · 810G 509.5 · I' -and $r6.StandardLongText -eq 'MIL-STD-810G 509.5 · Tuz sisi, Prosedür I') ($r6.TypeChipText + ' | ' + $r6.StandardLongText)
 Check 'listedeki yöntem seçildi: ortak dosya oluşmadı' (-not (Test-Path $stdFile))
 
 "--- 3) EMC + listede olmayan yöntem → ortak listeye eklenir"
 $vm.AddVerificationCommand.Execute($null); Wait
-$vm.NewVerTgNo = 'DGÖ-7'; $vm.NewVerText = 'Işıma emisyonu'; $vm.NewVerTestType = 'EMC'; $vm.NewVerStandard = 'MIL-STD-461G'
+$vm.NewVerTgNo = 'DGÖ-7'; $vm.NewVerText = 'Işıma emisyonu'; SetGroup 'EMC'; $vm.NewVerStandard = 'MIL-STD-461G'
 Check '461G yöntemleri (20)' ($vm.StandardMethodOptions.Count -eq 20) ([string]$vm.StandardMethodOptions.Count)
 $vm.NewVerStandardMethod = 'RE102 · Işıma emisyonu, elektrik alan'
 Check 'kaydedilir' ($vm.ConfirmNewVerification()); $vm.IsVerificationDialogOpen = $false; Wait
 $vm.AddVerificationCommand.Execute($null); Wait
-$vm.NewVerTgNo = 'DGÖ-9'; $vm.NewVerText = 'Özel EMC'; $vm.NewVerTestType = 'EMC'; $vm.NewVerStandard = 'MIL-STD-461G'; $vm.NewVerStandardMethod = 'CS999 · Kurum içi deneme'
+$vm.NewVerTgNo = 'DGÖ-9'; $vm.NewVerText = 'Özel EMC'; SetGroup 'EMC'; $vm.NewVerStandard = 'MIL-STD-461G'; $vm.NewVerStandardMethod = 'CS999 · Kurum içi deneme'
 Check 'kaydedilir' ($vm.ConfirmNewVerification()); $vm.IsVerificationDialogOpen = $false; Wait
 Check 'ortak liste oluştu, CS999 461G altında' ((Test-Path $stdFile) -and ([IO.File]::ReadAllText($stdFile)) -like '*## MIL-STD-461G*- CS999 · Kurum içi deneme*')
 $vm.AddVerificationCommand.Execute($null); Wait
@@ -78,15 +80,15 @@ $vm.IsVerificationDialogOpen = $false; Wait
 
 "--- 4) Düzenleme: alanlar dolar; İşlevsel'e geçince standart korunur mu"
 $vm.EditVerification((RowOf 'DGÖ-6')); Wait
-Check 'düzenleme penceresi dolu' ($vm.NewVerTestType -eq 'ÇK' -and $vm.NewVerStandard -eq 'MIL-STD-810G' -and $vm.NewVerStandardMethod -eq '509.5 · Tuz sisi' -and $vm.NewVerProcedure -eq 'I' -and $vm.IsNewVerStandard)
-$vm.NewVerStandard = ''; $vm.NewVerTestType = 'İşlevsel'
+Check 'düzenleme penceresi dolu' ($vm.NewVerGroupChoice.Key -eq 'ÇK' -and $vm.NewVerStandard -eq 'MIL-STD-810G' -and $vm.NewVerStandardMethod -eq '509.5 · Tuz sisi' -and $vm.NewVerProcedure -eq 'I' -and $vm.IsNewVerStandard)
+$vm.NewVerStandard = ''; SetGroup 'İşlevsel'
 Check 'standart silinip İşlevsel seçilince kısım gizlenir' (-not $vm.IsNewVerStandard)
 Check 'kaydedilir' ($vm.ConfirmNewVerification()); $vm.IsVerificationDialogOpen = $false; Wait
 $it = @($VL::Read($stock) | Where-Object TgNo -eq 'DGÖ-6')[0]
-Check 'md: İşlevsel, standart / yöntem / prosedür boş' ($it.TestType -eq 'İşlevsel' -and $it.Standard -eq '' -and $it.StandardMethod -eq '' -and $it.Procedure -eq '')
-Check 'çip yalnız tip: İşlevsel' ((RowOf 'DGÖ-6').TypeChipText -eq 'İşlevsel')
+Check 'md: İşlevsel, standart / yöntem / prosedür boş' ($it.Group -eq 'İşlevsel' -and $it.Standard -eq '' -and $it.StandardMethod -eq '' -and $it.Procedure -eq '')
+Check 'İşlevsel ve standart yok: çip yok' ((RowOf 'DGÖ-6').TypeChipText -eq '')
 $vm.EditVerification((RowOf 'DGÖ-6')); Wait
-$vm.NewVerTestType = 'ÇK'; $vm.NewVerStandard = 'MIL-STD-810G'; $vm.NewVerStandardMethod = '509.5 · Tuz sisi'; $vm.NewVerProcedure = 'I'
+SetGroup 'ÇK'; $vm.NewVerStandard = 'MIL-STD-810G'; $vm.NewVerStandardMethod = '509.5 · Tuz sisi'; $vm.NewVerProcedure = 'I'
 Check 'geri alınır' ($vm.ConfirmNewVerification()); $vm.IsVerificationDialogOpen = $false; Wait
 
 "--- 5) Excel'den gelen maddenin grubu düzenlemede korunur"
@@ -95,10 +97,10 @@ $VL::Add($stock, $i8, '') | Out-Null
 [Pusula.Wpf.ViewModels.MainViewModel].GetMethod('LoadVerifications', [Reflection.BindingFlags]'NonPublic,Instance').Invoke($vm.psobject.BaseObject, $null) | Out-Null; Wait
 $vm.EditVerification((RowOf 'DGÖ-8')); Wait
 Check 'grup seçeneklerinde bölüm var ve seçili' ((@($vm.VerificationGroupChoices | Where-Object { $_.IsChecked } | ForEach-Object Key) -join ',') -eq '3.2 Fiziksel ve çevresel')
-$vm.NewVerText = 'Sızdırmazlık'; $vm.NewVerTestType = 'ÇK'; $vm.NewVerStandard = 'MIL-STD-810G'; $vm.NewVerStandardMethod = '512.5 · Suya daldırma'
+$vm.NewVerText = 'Sızdırmazlık'; SetGroup 'ÇK'; $vm.NewVerStandard = 'MIL-STD-810G'; $vm.NewVerStandardMethod = '512.5 · Suya daldırma'
 Check 'kaydedilir' ($vm.ConfirmNewVerification()); $vm.IsVerificationDialogOpen = $false; Wait
 $it8 = @($VL::Read($stock) | Where-Object TgNo -eq 'DGÖ-8')[0]
-Check 'grup hâlâ bölüm, başlık ve standart yazıldı' ($it8.Group -eq '3.2 Fiziksel ve çevresel' -and $it8.Text -eq 'Sızdırmazlık' -and $it8.StandardMethod -eq '512.5 · Suya daldırma') $it8.Group
+Check 'grup ÇK seçildi, başlık ve standart yazıldı' ($it8.Group -eq 'ÇK' -and $it8.Text -eq 'Sızdırmazlık' -and $it8.StandardMethod -eq '512.5 · Suya daldırma') $it8.Group
 
 "--- 6) Plan: standart gereksinimden gelir; Excel'de Standart sütunu"
 $vm.NewPlanItem(); Wait
@@ -116,8 +118,8 @@ Remove-Item $xl -ErrorAction SilentlyContinue
 
 "--- 7) Aramalı seçim kutusu (ekranda)"
 $vm.EditVerification((RowOf 'DGÖ-7')); Wait
-$mp = $win.FindName('StandardMethodPick'); $tp = $win.FindName('TestTypePick'); $sp = $win.FindName('StandardPick')
-Check 'kutular bulundu' ($mp -and $tp -and $sp)
+$mp = $win.FindName('StandardMethodPick'); $sp = $win.FindName('StandardPick')
+Check 'kutular bulundu; Test tipi kutusu yok' ($mp -and $sp -and -not $win.FindName('TestTypePick'))
 Check 'düğmede seçili değer' ($mp.SelectedValue -eq 'RE102 · Işıma emisyonu, elektrik alan')
 $mp.IsDropOpen = $true; Wait
 Check 'açılınca tüm yöntemler (21)' ($mp.ShownItems.Count -eq 21) ([string]$mp.ShownItems.Count)
@@ -131,12 +133,6 @@ $mp.IsDropOpen = $true; $mp.SearchText = 'CS200 · Yeni deneme'; Wait
 Check 'eşleşme yok: liste boş' ($mp.ShownItems.Count -eq 0)
 $mp.PickFirst(); Wait
 Check 'listede olmayan yazı seçilir' ($vm.NewVerStandardMethod -eq 'CS200 · Yeni deneme')
-$tp.IsDropOpen = $true; $tp.SearchText = 'olmayan tip'; Wait
-$tp.PickFirst(); Wait
-Check 'tip kutusu yeni değer kabul etmez' ($vm.NewVerTestType -eq 'EMC')
-$tp.SearchText = 'ç'; Wait
-Check 'tip araması "ç": ÇK' (($tp.ShownItems -join ',') -eq 'ÇK')
-$tp.IsDropOpen = $false; Wait
 $vm.IsVerificationDialogOpen = $false; Wait
 Check 'Vazgeç: md değişmedi' ((@($VL::Read($stock) | Where-Object TgNo -eq 'DGÖ-7')[0]).StandardMethod -eq 'RE102 · Işıma emisyonu, elektrik alan')
 

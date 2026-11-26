@@ -128,27 +128,21 @@ namespace Pusula.Wpf.ViewModels
         private void BuildStockStats()
         {
             VerificationSummary.Clear();
-            // 261 ile doğrulanan maddeler (25.11.2026) "Geçti" sayılmaz; özet ve yüzde test planlı maddelerden, 261'liler ayrı satırda.
+            // 261 ile doğrulanan maddeler de sayılır (26.11.2026): durumları 261'den hesaplanır (aktarılınca Geçti).
             var isStock = selectedNode != null && selectedNode.Kind == FolderKind.Stock;
-            var byDocument = isStock ? verificationItems.Count(IsDocumentVerified) : 0;
             var kinds = isStock
-                ? verificationItems.Where(i => !IsDocumentVerified(i)).Select(i => VerificationRow.KindOf(i.EffectiveStatus)).ToList()
+                ? verificationItems.Select(i => VerificationRow.KindOf(i.EffectiveStatus)).ToList()
                 : new List<int>();
             var counted = kinds.Count(k => k != 5);
             var passed = kinds.Count(VerificationRow.IsPassedKind);
             var failed = kinds.Count(IsFailedKind);
             var running = kinds.Count(IsRunningKind);
-            if (kinds.Count > 0 || byDocument > 0)
+            if (kinds.Count > 0)
             {
                 VerificationSummary.Add(new StatLine(Resources.Stats_Passed, passed, StatusTone.Done, () => ShowVerificationKinds(VerificationRow.IsPassedKind)));
                 VerificationSummary.Add(new StatLine(Resources.Stats_Failed, failed, StatusTone.Failed, () => ShowVerificationKinds(IsFailedKind)));
                 VerificationSummary.Add(new StatLine(Resources.Stats_Running, running, StatusTone.Active, () => ShowVerificationKinds(IsRunningKind)));
                 VerificationSummary.Add(new StatLine(Resources.Stats_Pending, kinds.Count(k => k == 0), string.Empty, () => ShowVerificationKinds(k => k == 0)));
-            }
-
-            if (byDocument > 0)
-            {
-                VerificationSummary.Add(new StatLine(Resources.Stats_Document261, byDocument, Is261Official ? StatusTone.Done : StatusTone.Waiting, null));
             }
 
             VerificationSummaryTotal = string.Format(CultureInfo.CurrentCulture, Resources.Stats_Requirements, counted);

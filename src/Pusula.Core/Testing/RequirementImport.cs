@@ -161,7 +161,7 @@ namespace Pusula.Core.Testing
                         Text = string.Empty,
                         Kind = imp.Kind,
                         Description = imp.Note,
-                        Group = imp.Section.Length > 0 ? imp.Section : defaultGroup,
+                        Group = KnownGroup(imp.Section, defaultGroup),
                         Status = string.Empty,
                     };
                     error = VerificationList.Add(stockFolder, item, newFileTemplate);
@@ -174,7 +174,7 @@ namespace Pusula.Core.Testing
                     continue;
                 }
 
-                var group = imp.Section.Length > 0 ? imp.Section : old.Group;
+                var group = KnownGroup(imp.Section, old.Group);
                 if (old.Requirement == imp.Text && old.Kind == imp.Kind && old.Description == imp.Note && old.Group == group)
                 {
                     same++;
@@ -195,6 +195,13 @@ namespace Pusula.Core.Testing
             }
 
             return Tuple.Create(added, updated, same);
+        }
+
+        // Excel başlığı bir grup adıysa (İşlevsel, ÇK …) o; değilse verilen grup (26.11.2026: başlıklar grup olmaz).
+        private static string KnownGroup(string section, string fallback)
+        {
+            var known = VerificationList.Groups.FirstOrDefault(g => string.Equals(g, (section ?? string.Empty).Trim(), StringComparison.CurrentCultureIgnoreCase));
+            return known ?? fallback;
         }
 
         private static string Cell(List<string> row, int col)

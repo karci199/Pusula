@@ -35,10 +35,10 @@ namespace Pusula.Core.Testing
         /// <summary>Doğrulama yöntemi: Test, Muayene, Belge, Gösterim, Diğer (test planında belirlenir).</summary>
         public string Method { get; set; } = string.Empty;
 
-        /// <summary>Grup: İşlevsel, Özellik, ÇK/EMC, Diğer.</summary>
+        /// <summary>Grup: İşlevsel, Özellik, ÇK, EMC, Diğer (<see cref="VerificationList.Groups"/>).</summary>
         public string Group { get; set; } = string.Empty;
 
-        /// <summary>Alt grup (isteğe bağlı), örn. "Anten örüntü".</summary>
+        /// <summary>Eski Alt grup sütunu (26.11.2026 kalktı; yalnız eski dosyadan okunur, yazılmaz).</summary>
         public string SubGroup { get; set; } = string.Empty;
 
         /// <summary>Altyapı (isteğe bağlı), örn. "SATIMO".</summary>
@@ -83,7 +83,7 @@ namespace Pusula.Core.Testing
         /// </summary>
         public string ManualStatus { get; set; } = string.Empty;
 
-        /// <summary>Test tipi: İşlevsel, ÇK, EMC ya da boş (elle girilir; Excel'den gelmez).</summary>
+        /// <summary>Eski Tip sütunu (26.11.2026 gruba katıldı; yalnız eski dosyadan okunur, yazılmaz).</summary>
         public string TestType { get; set; } = string.Empty;
 
         /// <summary>Test standardı, örn. "MIL-STD-810G" (ÇK / EMC için).</summary>
@@ -107,8 +107,8 @@ namespace Pusula.Core.Testing
 
     /// <summary>
     /// Stokun doğrulama listesi: <c>03_Testler\&lt;stok&gt;_Test_Gereksinimleri.md</c> içindeki ilk tablo.
-    /// Sütunlar başlıklarından tanınır: # · TG no · kaynak · başlık · kısa not · gereksinim · grup · alt grup · tür · bağlı ·
-    /// yöntem · altyapı · tip · standart · standart yöntemi · prosedür · durum (hesaplanan) · elle durum (sıra serbest, tanınmayan sütunlar korunur). Eski tablolarda eksik sütunlar ilk yazımda
+    /// Sütunlar başlıklarından tanınır: # · TG no · kaynak · başlık · kısa not · gereksinim · grup · tür · bağlı ·
+    /// yöntem · altyapı · standart · standart yöntemi · prosedür · durum (hesaplanan) · elle durum (sıra serbest, tanınmayan sütunlar korunur). Eski tablolarda eksik sütunlar ilk yazımda
     /// eklenir; eski TP / TR sütunları (22.11.2026 öncesi) okunur ve <see cref="PlanReportList.RetireLegacy"/> ile Plan / Rapor
     /// tablolarına taşınıp kaldırılır. Uygulama tabloya satır
     /// ekler, satırı değiştirir ya da kaldırır (16.11.2026 kullanıcı kararı); dosyanın geri kalanına dokunmaz.
@@ -154,13 +154,56 @@ namespace Pusula.Core.Testing
         private const int KnownCount = 26;
 
         /// <summary>Yeni ya da yükseltilen tablonun başlıkları (sırasıyla).</summary>
-        public static readonly string[] Headers = { "#", "TG no", "Kaynak", "Başlık", "Kısa not", "Gereksinim", "Grup", "Alt grup", "Tür", "Bağlı", "Yöntem", "Altyapı", "Tip", "Standart", "Standart yöntemi", "Prosedür", "Durum", "Elle durum" };
+        public static readonly string[] Headers = { "#", "TG no", "Kaynak", "Başlık", "Kısa not", "Gereksinim", "Grup", "Tür", "Bağlı", "Yöntem", "Altyapı", "Standart", "Standart yöntemi", "Prosedür", "Durum", "Elle durum" };
 
         // Eski (22.11.2026 öncesi) TP / TR sütunları: okunur (taşıma için), yeni tabloya eklenmez; taşınınca kaldırılır.
         private static readonly int[] LegacyKeys = { ColTp, ColTpDescription, ColTpNote, ColTr, ColTrDescription, ColTrNote, ColTrResult, ColResultPath };
 
         // Yeni tablonun sütun anahtarları (Headers sırasıyla).
-        private static readonly int[] CurrentKeys = { ColNumber, ColTg, ColSource, ColText, ColDescription, ColRequirement, ColGroup, ColSubGroup, ColKind, ColParent, ColMethod, ColFacility, ColTestType, ColStandard, ColStandardMethod, ColProcedure, ColStatus, ColManualStatus };
+        private static readonly int[] CurrentKeys = { ColNumber, ColTg, ColSource, ColText, ColDescription, ColRequirement, ColGroup, ColKind, ColParent, ColMethod, ColFacility, ColStandard, ColStandardMethod, ColProcedure, ColStatus, ColManualStatus };
+
+        // Kalkan (26.11.2026) Alt grup ve Tip sütunları: okunur, Tip grubu belirler (RetireLegacyLines), sonra kaldırılır.
+        private static readonly int[] RetiredKeys = { ColSubGroup, ColTestType };
+
+        /// <summary>Gruplar (26.11.2026; Test tipi gruba katıldı): İşlevsel, Özellik, ÇK, EMC, Diğer.</summary>
+        public static readonly string[] Groups = { "İşlevsel", "Özellik", "ÇK", "EMC", "Diğer" };
+
+        /// <summary>Tanınmayan grubun yerine geçen grup.</summary>
+        public const string OtherGroup = "Diğer";
+
+        /// <summary>Grubu standart ÇK / EMC kutusunu açan gruplardan mı.</summary>
+        public static bool IsStandardGroup(string group)
+        {
+            var g = (group ?? string.Empty).Trim();
+            return string.Equals(g, Groups[2], StringComparison.CurrentCultureIgnoreCase) || string.Equals(g, Groups[3], StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        /// <summary>
+        /// Eski satırın yeni grubu: Tip (İşlevsel / ÇK / EMC / Diğer) doluysa ve grup boş, "ÇK/EMC" ya da tanınmayan bir
+        /// adsa Tip; değilse tanınan grup kalır; tanınmayan grup (Excel başlığı gibi) Diğer olur. Boş grup boş kalır.
+        /// </summary>
+        public static string GroupFor(string group, string testType)
+        {
+            var g = (group ?? string.Empty).Trim();
+            var t = (testType ?? string.Empty).Trim();
+            var known = Groups.FirstOrDefault(x => string.Equals(x, g, StringComparison.CurrentCultureIgnoreCase));
+            var type = Groups.FirstOrDefault(x => string.Equals(x, t, StringComparison.CurrentCultureIgnoreCase));
+            if (type != null && (known == null || known == OtherGroup))
+            {
+                return type;
+            }
+
+            // "ÇK/EMC" Tip'siz kalırsa olduğu gibi kalır (hangisi olduğunu kullanıcı seçer).
+            if (known != null || string.Equals(g, LegacyEnvironmentGroup, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return known ?? g;
+            }
+
+            return g.Length == 0 ? string.Empty : OtherGroup;
+        }
+
+        // 26.11.2026 öncesi ortak ÇK / EMC grubu.
+        private const string LegacyEnvironmentGroup = "ÇK/EMC";
 
         // Eski (16.11.2026 öncesi) 7 sütunlu tablonun sırası; başlık tanınmazsa kullanılır.
         private static readonly int[] LegacyOrder = { ColNumber, ColText, ColGroup, ColSubGroup, ColFacility, ColTg, ColStatus };
@@ -395,6 +438,12 @@ namespace Pusula.Core.Testing
             var changed = false;
             var table = Table.Parse(lines);
             if (table != null && table.DropLegacy())
+            {
+                changed = true;
+            }
+
+            table = Table.Parse(lines);
+            if (table != null && table.DropRetired())
             {
                 changed = true;
             }
@@ -871,7 +920,7 @@ namespace Pusula.Core.Testing
                     return;
                 }
 
-                var legacy = LegacyKeys.Where(k => Keys.Contains(k)).ToList();
+                var legacy = LegacyKeys.Concat(RetiredKeys).Where(k => Keys.Contains(k)).ToList();
                 Rebuild(Headers.Concat(legacy.Select(k => HeaderCells[Array.IndexOf(Keys, k)])).ToList(), CurrentKeys.Concat(legacy).ToList());
             }
 
@@ -888,13 +937,38 @@ namespace Pusula.Core.Testing
                 return true;
             }
 
-            // Tabloyu verilen tanınan sütunlarla (tanınmayanlar sonda) yeniden yazar.
-            private void Rebuild(List<string> knownHeaders, List<int> knownKeys)
+            /// <summary>
+            /// Kalkan Alt grup ve Tip sütunlarını kaldırır; önce her satırın grubu <see cref="GroupFor"/> ile Tip'ten
+            /// belirlenir (Excel başlığı gibi tanınmayan grup Diğer olur). Kaldırdıysa true.
+            /// </summary>
+            public bool DropRetired()
+            {
+                if (!RetiredKeys.Any(k => Keys.Contains(k)))
+                {
+                    return false;
+                }
+
+                var keep = Enumerable.Range(0, Keys.Length).Where(i => Keys[i] >= 0 && !RetiredKeys.Contains(Keys[i])).ToList();
+                if (!keep.Select(i => Keys[i]).Contains(ColGroup))
+                {
+                    keep.Add(-1);
+                }
+
+                var headers = keep.Select(i => i >= 0 ? HeaderCells[i] : Headers[Array.IndexOf(CurrentKeys, ColGroup)]).ToList();
+                var keys = keep.Select(i => i >= 0 ? Keys[i] : ColGroup).ToList();
+                Rebuild(headers, keys, item => item.Group = GroupFor(item.Group, item.TestType));
+                return true;
+            }
+
+            // Tabloyu verilen tanınan sütunlarla (tanınmayanlar sonda) yeniden yazar; fix her maddeye yazmadan önce uygulanır.
+            private void Rebuild(List<string> knownHeaders, List<int> knownKeys, Action<VerificationItem>? fix = null)
             {
                 var items = new List<VerificationItem>();
                 for (var i = Start + 2; i < End; i++)
                 {
-                    items.Add(ItemOf(Lines[i], items.Count + 1));
+                    var item = ItemOf(Lines[i], items.Count + 1);
+                    fix?.Invoke(item);
+                    items.Add(item);
                 }
 
                 var extras = HeaderCells.Where((h, i) => Keys[i] < 0 && h.Length > 0).ToList();
