@@ -62,8 +62,9 @@ New-Xlsx $xlsx $rows
 $vm.PrepareImport($xlsx); Wait
 Check 'onay penceresi: 6 madde, 2 başlık, 6 yeni' ($vm.IsImportOpen -and $vm.ImportText -like '6 madde, 2 başlık*6 yeni*0 var olan*') $vm.ImportText
 $vm.ConfirmImport(); Wait
-Check '6 gereksinim, iki bölüm grubu' ($vm.VerificationCount -eq 6 -and (@($vm.VerificationGroups | ForEach-Object Title) -join '|') -eq '3.1 Elektriksel özellikler|3.2 Fiziksel ve çevresel') (@($vm.VerificationGroups | ForEach-Object Title) -join '|')
-Check 'sabit gruplar (İşlevsel …) boşken görünmez' (@($vm.VerificationFilters | Where-Object { $_.Key -eq 'İşlevsel' }).Count -eq 0)
+# 26.11.2026: Excel başlıkları grup olmaz; hepsi varsayılan grupta (Diğer).
+Check '6 gereksinim, hepsi Diğer grubunda' ($vm.VerificationCount -eq 6 -and (@($vm.VerificationGroups | ForEach-Object Title) -join '|') -eq 'Diğer') (@($vm.VerificationGroups | ForEach-Object Title) -join '|')
+Check 'süzgeçte Hepsi + 5 sabit grup' ($vm.VerificationFilters.Count -eq 6) ([string]$vm.VerificationFilters.Count)
 $r3 = RowOf 'DGÖ-3'
 Check 'satır: metin üstte, not altta, başlık tekrar yok' ($r3.DisplayText -like 'Yan lob*' -and $r3.Description -eq 'E ve H düzlemi' -and -not $r3.IsTextLater) ($r3.DisplayText + ' / ' + $r3.Description)
 Check 'notsuz satırda alt satır boş' ((RowOf 'DGÖ-2').Description -eq '')
@@ -171,7 +172,7 @@ Check 'özet: 7 madde, 1 yeni, 6 var olan' ($vm.ImportText -like '7 madde*1 yeni
 $vm.ConfirmImport(); Wait
 Check '7 gereksinim; DGÖ-3 metni yeni, hâlâ 4.1 + 4.2, Kaldı' ($vm.VerificationCount -eq 7 -and (RowOf 'DGÖ-3').DisplayText -like '*−18 dB*' -and ((@((RowOf 'DGÖ-3').LinkedPlans | ForEach-Object Text)) -join ',') -eq '4.1,4.2' -and (RowOf 'DGÖ-3').StatusText -eq 'Kaldı')
 Check 'elle durumlar korunur (DGÖ-6, DGÖ-7)' ((RowOf 'DGÖ-6').StatusText -eq 'Kapsam dışı' -and (RowOf 'DGÖ-7').StatusText -eq 'Geçti')
-Check 'DGÖ-8 yeni, 3.2 grubunda, plansız' ((RowOf 'DGÖ-8').Item.Group -eq '3.2 Fiziksel ve çevresel' -and (@($vm.RequirementsWithoutPlan) -join ',') -eq 'DGÖ-5,DGÖ-7,DGÖ-8')
+Check 'DGÖ-8 yeni, Diğer grubunda, plansız' ((RowOf 'DGÖ-8').Item.Group -eq 'Diğer' -and (@($vm.RequirementsWithoutPlan) -join ',') -eq 'DGÖ-5,DGÖ-7,DGÖ-8')
 Check 'plan ve rapor tabloları değişmedi' (@($PRL::ReadPlans($stock)).Count -eq 4 -and @($PRL::ReadReports($stock)).Count -eq 5)
 
 "--- 7) Bağ kutusu: açıkken düğme tıklanmaz (ikinci tık yeniden açmaz)"
@@ -189,7 +190,7 @@ $opts = @($vm.PlanRequirementOptions)
 function Pickable() { @($vm.PlanPickView | ForEach-Object { $_.Key }) }
 Check 'bağlı 2: sayaç "2 gereksinim", uyarı yok' ($vm.PlanCountText -eq '2 gereksinim' -and $vm.HasPlanSelection) $vm.PlanCountText
 Check 'ekleme listesi: bağlı olmayan 5 madde' ((Pickable).Count -eq 5 -and (Pickable) -notcontains 'DGÖ-2') ((Pickable) -join ',')
-Check 'ekleme listesi bölümlere ayrılı' ((@($vm.PlanPickView.Groups | ForEach-Object Name) -join '|') -eq '3.1 Elektriksel özellikler|3.2 Fiziksel ve çevresel') (@($vm.PlanPickView.Groups | ForEach-Object Name) -join '|')
+Check 'ekleme listesi gruplara ayrılı (Diğer)' ((@($vm.PlanPickView.Groups | ForEach-Object Name) -join '|') -eq 'Diğer') (@($vm.PlanPickView.Groups | ForEach-Object Name) -join '|')
 $o5 = @($opts | Where-Object Key -eq 'DGÖ-5')[0]; $o3 = @($opts | Where-Object Key -eq 'DGÖ-3')[0]
 Check 'başlıksız madde: gereksinim metni görünür, tam metin ipucunda' ($o5.Text -like 'Antenin kütlesi*' -and $o5.Detail -like 'Antenin kütlesi*')
 Check 'DGÖ-3 bilgi: diğer planı 4.2 (mor)' ($o3.Badge -eq '4.2' -and -not $o3.IsWarning) $o3.Badge

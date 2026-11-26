@@ -477,12 +477,11 @@
         </member>
         <member name="P:DesignKit.Controls.ContentDialog.IsPopupOpen">
             <summary>
-            Whether the popup itself is showing. This is <see cref="P:DesignKit.Controls.ContentDialog.IsOpen"/> AND "the owning window
-            is active" — a Popup is its own always-on-top window and does not hide when the app
-            behind it loses activation, so a modal dialog would otherwise sit on top of whatever
-            application the user alt-tabs to. Unlike a flyout, a dialog must not be *dismissed* by
-            an app switch — the decision it is asking for is still pending — so the surface is
-            hidden and restored while <see cref="P:DesignKit.Controls.ContentDialog.IsOpen"/> stays true.
+            Whether the popup itself is showing: the same as <see cref="P:DesignKit.Controls.ContentDialog.IsOpen"/>. It used to be hidden while the owning
+            window was inactive (a Popup is an always-on-top OS window and would float over the app the user switched to),
+            but then the dialog vanished whenever the user clicked another monitor to read something. Now it stays shown
+            and <see cref="T:DesignKit.Controls.PopupZOrder"/> drops its topmost flag while the window is inactive, keeping it directly above
+            the window so other apps cover both together.
             </summary>
         </member>
         <member name="F:DesignKit.Controls.ContentDialog.IsPopupOpenProperty">
@@ -501,7 +500,7 @@
             <summary>Dims the adorned element and swallows mouse input on it (a modal blocks the page behind).</summary>
         </member>
         <member name="M:DesignKit.Controls.ContentDialog.SyncPopupOpen">
-            <summary>Recomputes <see cref="P:DesignKit.Controls.ContentDialog.IsPopupOpen"/> from the open state and the window's activation.</summary>
+            <summary>Shows the popup while open and restacks it for the window's activation (see <see cref="T:DesignKit.Controls.PopupZOrder"/>).</summary>
         </member>
         <member name="M:DesignKit.Controls.ContentDialog.FocusSurface">
             <summary>Puts keyboard focus on the first control inside the dialog, or the surface itself.</summary>
@@ -2216,6 +2215,26 @@
         </member>
         <member name="F:DesignKit.Controls.PipsPagerButtonVisibility.VisibleOnPointerOver">
             <summary>Same as <see cref="F:DesignKit.Controls.PipsPagerButtonVisibility.Visible"/>, but the button is only visible while the pointer is over the pager or it has keyboard focus.</summary>
+        </member>
+        <member name="T:DesignKit.Controls.PopupZOrder">
+            <summary>
+            Keeps a <see cref="T:System.Windows.Controls.Primitives.Popup"/> stacked directly above its owning window instead of above every application.
+            A WPF popup is a separate, always-on-top OS window: left alone it would float over whatever app the user
+            switches to (on any monitor). Hiding it on deactivation (the old <see cref="T:DesignKit.Controls.ContentDialog"/> behaviour)
+            fixed that but made an open dialog vanish the moment the user clicked another monitor to read something,
+            leaving only the dimmed page behind. Instead, while the owner is inactive the popup drops its topmost flag,
+            is owned by the window and sits immediately above it, so other apps cover both together and the dialog
+            stays visible next to them.
+            </summary>
+        </member>
+        <member name="M:DesignKit.Controls.PopupZOrder.Apply(System.Windows.Controls.Primitives.Popup,System.Windows.Window)">
+            <summary>
+            Applies the stacking for the owner's current activation: topmost while the owner is active (as WPF does),
+            otherwise not topmost and directly above the owner. Does nothing until the popup's window exists.
+            </summary>
+        </member>
+        <member name="M:DesignKit.Controls.PopupZOrder.IsPopupTopmost(System.Windows.Controls.Primitives.Popup)">
+            <summary>True when the popup's OS window currently has the topmost flag (for tests and diagnostics).</summary>
         </member>
         <member name="T:DesignKit.Controls.ProgressBarState">
             <summary>

@@ -5,7 +5,7 @@ Güncellerken bu tabloyu da güncelle.
 
 | Kütüphane | Sürüm | Kaynak | Lisans |
 |---|---|---|---|
-| `DesignKit/DesignKit.Wpf.dll` (+ `.xml`) | 0.3.8 | `C:\Projeler\Aktif\DesignKit`, 30db891 + ContentDialog `DialogWidth`, karartma içeriğe göre (tam ekranda ve pencere değişince de yeniden ölçülür) + `TextBoxHelper.PlaceholderText` (10.11.2026), `MSBuild src\DesignKit.Wpf\DesignKit.Wpf.csproj /p:Configuration=Release` (restore yok) | İç kütüphane |
+| `DesignKit/DesignKit.Wpf.dll` (+ `.xml`) | 0.3.9 | `C:\Projeler\Aktif\DesignKit`, dal `fix/dialog-odak-kaybi`, 3c5db6f (6bdbc99 = 0.3.8 + ContentDialog odak kaybında gizlenmez: pencere ana pencerenin sahipliğinde, uygulama arka plandayken her zaman üstte değil; 26.11.2026), `MSBuild src\DesignKit.Wpf\DesignKit.Wpf.csproj /p:Configuration=Release` (restore yok) | İç kütüphane |
 | `AvalonEdit/ICSharpCode.AvalonEdit.dll` (+ `.xml`) | 6.3.1.120 (`lib/net462`) | nuget.org `AvalonEdit` 6.3.1.120 (AvalonEdit Contributors, github.com/icsharpcode/AvalonEdit), indirildi 10.11.2026, SHA256 B0032716…0B10C7; bağımlılığı yalnız .NET Framework. md penceresinin düzenleyicisi (renklendirme, satır numarası, geçerli satır; `MarkdownTextEditor`) | MIT |
 | `ReferenceAssemblies/.NETFramework/v4.8/` (238 dosya, ~43 MB) | 1.0.3 | nuget.org `Microsoft.NETFramework.ReferenceAssemblies.net48` paketinin `build/.NETFramework` içi açıldı (10.11.2026); `TargetFrameworkRootPath` buraya bakar, paket ve restore yok | MIT |
 | `Markdig/Markdig.dll` (+ `.xml`) | 0.37.0 (`lib/net462`) | nuget.org `Markdig` 0.37.0, Alexandre Mutel, github.com/xoofx/markdig | BSD-2-Clause |
@@ -31,11 +31,11 @@ SHA-256:
 ## DesignKit'i güncelleme
 
 1. DesignKit reposunu temiz bir klasöre klonla (asıl klasörde derleme yapma).
-2. `src\DesignKit.Wpf\DesignKit.Wpf.csproj` projesini Release derle.
+2. `src\DesignKit.Wpf\DesignKit.Wpf.csproj` projesini Release derle. Restore yapılmaz: asıl klasördeki `src\DesignKit.Wpf\obj\project.assets.json` ile `*.nuget.g.props` / `.targets` / `.dgspec.json` dosyaları, içindeki yol klona çevrilerek kopyalanır (paket yok, dosyalar boş şablon).
 3. `bin\Release\net48\DesignKit.Wpf.dll` ve `.xml` dosyalarını buraya kopyala.
 4. Yukarıdaki sürüm ve commit bilgisini güncelle.
 
-SHA-256 (`DesignKit.Wpf.dll`): `041277C9E117D6F3279A1ADE1CF66D4D8FEECCC5E7DCB76A3411D2C15682DEC1`
+SHA-256 (`DesignKit.Wpf.dll`): `D314917D5E4FB81EA9CCF855553F73E4EEB2A59B43FD94373591CD390441FA4D`
 
 ## .NET Framework 4.8 başvuru derlemeleri
 
