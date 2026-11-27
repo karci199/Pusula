@@ -442,6 +442,12 @@ namespace Pusula.Wpf.ViewModels
         /// <summary>Kaydın stoku ("AB-7000-0002"); yalnız ana sayfa Günlük'te dolu.</summary>
         public string Source { get; set; } = string.Empty;
 
+        /// <summary>Kaydın projesi (klasör adı); yalnız ana sayfa Günlük'te dolu (iş raporu için).</summary>
+        public string ProjectName { get; set; } = string.Empty;
+
+        /// <summary>Stokun adı (ağaçtaki açıklama); boş olabilir.</summary>
+        public string StockName { get; set; } = string.Empty;
+
         /// <summary>Stokun klasörü (ana sayfada çift tıklayınca açılır).</summary>
         public string SourcePath { get; set; } = string.Empty;
 

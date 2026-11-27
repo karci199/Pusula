@@ -32,6 +32,7 @@ namespace Pusula.Wpf.ViewModels
                 {
                     OnPropertyChanged(nameof(IsHomeRecordsTab));
                     OnPropertyChanged(nameof(IsHomeRangeTab));
+                    OnPropertyChanged(nameof(IsHomeJournalTab));
                 }
             }
         }
@@ -40,6 +41,12 @@ namespace Pusula.Wpf.ViewModels
         public bool IsHomeRecordsTab
         {
             get { return homeTab == 2; }
+        }
+
+        /// <summary>Günlük sekmesi açık mı ("İş raporu" düğmesi görünür).</summary>
+        public bool IsHomeJournalTab
+        {
+            get { return homeTab == 0; }
         }
 
         /// <summary>Zaman süzgeci görünür mü (yalnız Günlük ve Yapılacaklar sekmelerinde).</summary>
@@ -57,6 +64,29 @@ namespace Pusula.Wpf.ViewModels
             get { return HomeTimeline.Count == 0; }
         }
 
+        /// <summary>
+        /// Günlük'ün üstünde iş raporu özeti (27.11.2026): "11 kayıt · Test 4 · Toplantı 2 · Doküman aktarımı 1"; aynı dönem
+        /// "İş raporu" ile Excel'e aktarılır. Aralıkta kayıt yoksa boş.
+        /// </summary>
+        public string HomeJournalSummary
+        {
+            get
+            {
+                var cards = HomeTimeline.SelectMany(d => d.Cards).ToList();
+                if (cards.Count == 0)
+                {
+                    return string.Empty;
+                }
+
+                var kinds = cards.Where(c => c.KindLabel.Length > 0).GroupBy(c => c.KindLabel, StringComparer.CurrentCultureIgnoreCase)
+                    .OrderByDescending(g => g.Count()).ThenBy(g => g.Key, StringComparer.CurrentCultureIgnoreCase)
+                    .Select(g => g.Key + " " + g.Count().ToString(CultureInfo.CurrentCulture));
+                var projects = cards.Select(c => c.ProjectName).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+                var stocks = cards.Select(c => c.SourcePath).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+                var head = string.Format(CultureInfo.CurrentCulture, Resources.Report_HomeSummary, cards.Count, projects, stocks);
+                return string.Join("  ·  ", new[] { head }.Concat(kinds));
+            }
+        }
         // Seçili aralığın başlangıcı (geçmiş için): bugün, bu haftanın pazartesisi, ayın biri; Hepsi'de yok.
         private DateTime? RangeStart()
         {
@@ -70,6 +100,8 @@ namespace Pusula.Wpf.ViewModels
                     return today.AddDays(-fromMonday);
                 case "month":
                     return new DateTime(today.Year, today.Month, 1);
+                case "year":
+                    return new DateTime(today.Year, 1, 1);
                 default:
                     return null;
             }
@@ -85,6 +117,7 @@ namespace Pusula.Wpf.ViewModels
             }
 
             OnPropertyChanged(nameof(IsHomeTimelineEmpty));
+            OnPropertyChanged(nameof(HomeJournalSummary));
             BuildHomeEmptySummary();
         }
 
@@ -162,7 +195,7 @@ namespace Pusula.Wpf.ViewModels
                 {
                     var notes = Journal.Read(NoteFile.Find(stock.Path, System.IO.Path.GetFileName(stock.Path)));
                     notes.AddRange(Pusula.Core.Notes.EventNote.ReadAll(stock.Path));
-                    cards.AddRange(notes.Select(n => new StockTimelineCard(new TimelineItem(n)) { ProjectColor = color, Source = stock.Title, SourcePath = stock.Path }));
+                    cards.AddRange(notes.Select(n => new StockTimelineCard(new TimelineItem(n)) { ProjectColor = color, Source = stock.Title, SourcePath = stock.Path, ProjectName = project.Title, StockName = stock.Subtitle }));
                 }
             }
 

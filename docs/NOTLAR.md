@@ -433,3 +433,10 @@ Deneme kökü: `C:\PusulaDeneme`.
 
 - Karar (09.11): **Seri numarası kayıt olarak tutulmaz.** SN'ler test klasörü adlarından okunur (`03_Test_Sonuclari\<SİSTEM>\<SN>_T<tur>`, kalifikasyon da). `SNP…` = prototip, `SN…` = üretim birimi. Bir SN birden çok sistemde olabilir; her SN'nin her turu ayrı klasör. Genel'de **Seri numaraları** kartı (SN × sistem, son tur ve sonuç, tıklanınca not). Yetmezse ileride `stok.json`'da ayrı SN listesi (elle ekleme, yeniden adlandırma / eski adlar) eklenir.
 
+## 27.11.2026 — İş raporu (Excel) ve Modül ekle
+
+- **İş raporu:** ana sayfa Günlük'te "İş raporu" düğmesi. Dönem: Günlük / Haftalık / Aylık / Yıllık / Tüm zaman + tarih (o günü içeren dönem; hafta pazartesi başlar). Excel: *İşler* sayfası (Tarih · Gün · Proje · Stok · Tür · Yapılan iş · Durum; başlıkta süzgeç; üstteki sayılar süzgece göre) ve *Özet* sayfası (proje + stok başına kayıt, son kayıt, türler).
+- **Durum zorunlu değil:** ölçüm sonucu (Geçti / Kaldı), talep durumu, sorun durumu ya da revizyon varsa yazılır; yoksa boş. "Test", "Doküman aktarımı", "Talep" gibi işler Tür sütununda.
+- **Ana ekranda da:** Günlük süzgecine "Bu yıl" eklendi; listenin üstünde özet satırı (kayıt · proje · stok · türler). Rapor penceresi ana sayfadaki süzgeçle açılır.
+- **Modül ekle** stok sayfasının ⋯ menüsünde de var (sol ağaç sağ tık menüsüyle aynı pencere).
+- Kütüphane yok: xlsx elle yazılıyor (`Core/Office/WorkReportWriter.cs`). Mock: `docs/mock/is_raporu_*.png / .xlsx`. Test: `tests/Senaryolar/work-report.ps1`.

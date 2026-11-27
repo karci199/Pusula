@@ -3991,5 +3991,140 @@ namespace Pusula.Wpf.Properties
 
         /// <summary>Gereksinim penceresi (26.11.2026): Verify_261Hint.</summary>
         public static string Verify_261Hint { get { return Get("Verify_261Hint"); } }
+
+        /// <summary>İş raporu: İş raporu</summary>
+        public static string Report_Open { get { return Get("Report_Open"); } }
+
+        /// <summary>İş raporu: Seçilen dönemin işlerini Excel&apos;e aktarır (proje ve stoka göre süzülebilir)</summary>
+        public static string Report_OpenHint { get { return Get("Report_OpenHint"); } }
+
+        /// <summary>İş raporu: İş raporu</summary>
+        public static string Report_DialogTitle { get { return Get("Report_DialogTitle"); } }
+
+        /// <summary>İş raporu: Dönem</summary>
+        public static string Report_Period { get { return Get("Report_Period"); } }
+
+        /// <summary>İş raporu: Tarih</summary>
+        public static string Report_Date { get { return Get("Report_Date"); } }
+
+        /// <summary>İş raporu: Excel&apos;e aktar</summary>
+        public static string Report_Export { get { return Get("Report_Export"); } }
+
+        /// <summary>İş raporu: Günlük</summary>
+        public static string Report_Day { get { return Get("Report_Day"); } }
+
+        /// <summary>İş raporu: Haftalık</summary>
+        public static string Report_Week { get { return Get("Report_Week"); } }
+
+        /// <summary>İş raporu: Aylık</summary>
+        public static string Report_Month { get { return Get("Report_Month"); } }
+
+        /// <summary>İş raporu: Yıllık</summary>
+        public static string Report_Year { get { return Get("Report_Year"); } }
+
+        /// <summary>İş raporu: Tüm zaman</summary>
+        public static string Report_All { get { return Get("Report_All"); } }
+
+        /// <summary>İş raporu: Günlük iş raporu</summary>
+        public static string Report_TitleDay { get { return Get("Report_TitleDay"); } }
+
+        /// <summary>İş raporu: Haftalık iş raporu</summary>
+        public static string Report_TitleWeek { get { return Get("Report_TitleWeek"); } }
+
+        /// <summary>İş raporu: Aylık iş raporu</summary>
+        public static string Report_TitleMonth { get { return Get("Report_TitleMonth"); } }
+
+        /// <summary>İş raporu: Yıllık iş raporu</summary>
+        public static string Report_TitleYear { get { return Get("Report_TitleYear"); } }
+
+        /// <summary>İş raporu: İş raporu · tüm zaman</summary>
+        public static string Report_TitleAll { get { return Get("Report_TitleAll"); } }
+
+        /// <summary>İş raporu: (0). hafta</summary>
+        public static string Report_WeekTag { get { return Get("Report_WeekTag"); } }
+
+        /// <summary>İş raporu: Tüm projeler</summary>
+        public static string Report_AllProjects { get { return Get("Report_AllProjects"); } }
+
+        /// <summary>İş raporu: (0) kayıt</summary>
+        public static string Report_Count { get { return Get("Report_Count"); } }
+
+        /// <summary>İş raporu: İşler</summary>
+        public static string Report_SheetWork { get { return Get("Report_SheetWork"); } }
+
+        /// <summary>İş raporu: Özet</summary>
+        public static string Report_SheetSummary { get { return Get("Report_SheetSummary"); } }
+
+        /// <summary>İş raporu: Sayılar Excel süzgecine göre değişir: Proje ya da Stok sütununda süzün.</summary>
+        public static string Report_FilterHint { get { return Get("Report_FilterHint"); } }
+
+        /// <summary>İş raporu: Kayıt</summary>
+        public static string Report_Records { get { return Get("Report_Records"); } }
+
+        /// <summary>İş raporu: Yapılan işler</summary>
+        public static string Report_WorkSection { get { return Get("Report_WorkSection"); } }
+
+        /// <summary>İş raporu: Tarih</summary>
+        public static string Report_ColDate { get { return Get("Report_ColDate"); } }
+
+        /// <summary>İş raporu: Gün</summary>
+        public static string Report_ColDay { get { return Get("Report_ColDay"); } }
+
+        /// <summary>İş raporu: Proje</summary>
+        public static string Report_ColProject { get { return Get("Report_ColProject"); } }
+
+        /// <summary>İş raporu: Stok</summary>
+        public static string Report_ColStock { get { return Get("Report_ColStock"); } }
+
+        /// <summary>İş raporu: Tür</summary>
+        public static string Report_ColKind { get { return Get("Report_ColKind"); } }
+
+        /// <summary>İş raporu: Yapılan iş</summary>
+        public static string Report_ColWork { get { return Get("Report_ColWork"); } }
+
+        /// <summary>İş raporu: Durum</summary>
+        public static string Report_ColStatus { get { return Get("Report_ColStatus"); } }
+
+        /// <summary>İş raporu: Projeye ve stoka göre</summary>
+        public static string Report_SummarySection { get { return Get("Report_SummarySection"); } }
+
+        /// <summary>İş raporu: Stok adı</summary>
+        public static string Report_ColStockName { get { return Get("Report_ColStockName"); } }
+
+        /// <summary>İş raporu: Kayıt</summary>
+        public static string Report_ColCount { get { return Get("Report_ColCount"); } }
+
+        /// <summary>İş raporu: Son kayıt</summary>
+        public static string Report_ColLast { get { return Get("Report_ColLast"); } }
+
+        /// <summary>İş raporu: Türler</summary>
+        public static string Report_ColKinds { get { return Get("Report_ColKinds"); } }
+
+        /// <summary>İş raporu: Bu dönemde kayıt yok.</summary>
+        public static string Report_Empty { get { return Get("Report_Empty"); } }
+
+        /// <summary>İş raporu: Pusula zaman çizelgesinden · (0) · Durum isteğe bağlıdır (ölçüm sonucu, talep durumu, revizyon).</summary>
+        public static string Report_Footer { get { return Get("Report_Footer"); } }
+
+        /// <summary>İş raporu: Is_raporu</summary>
+        public static string Report_FilePrefix { get { return Get("Report_FilePrefix"); } }
+
+        /// <summary>İş raporu: tum</summary>
+        public static string Report_FileAll { get { return Get("Report_FileAll"); } }
+
+        /// <summary>İş raporu: İş raporu Excel&apos;e aktarıldı ((0) kayıt): (1)</summary>
+        public static string Report_Done { get { return Get("Report_Done"); } }
+
+        /// <summary>İş raporu: (0) · (1) kayıt</summary>
+        public static string Report_Preview { get { return Get("Report_Preview"); } }
+
+        /// <summary>İş raporu: Henüz kayıt yok</summary>
+        public static string Report_NoData { get { return Get("Report_NoData"); } }
+
+        /// <summary>Ana sayfa Günlük özeti: (0) kayıt · (1) proje · (2) stok.</summary>
+        public static string Report_HomeSummary { get { return Get("Report_HomeSummary"); } }
+
+        /// <summary>Süzgeç: Bu yıl.</summary>
+        public static string Home_RangeYear { get { return Get("Home_RangeYear"); } }
     }
 }

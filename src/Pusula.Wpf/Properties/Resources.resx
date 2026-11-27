@@ -3786,4 +3786,139 @@ Ortak liste (ÇK / EMC): &quot;## standart&quot; başlığı altında &quot;- nu
   <data name="Verify_261Hint" xml:space="preserve">
     <value>Plan / rapor istemez. 261 yok ya da taslak → Planlandı; harfli revizyon (AA …) aktarılınca → Geçti.</value>
   </data>
+  <data name="Report_Open" xml:space="preserve">
+    <value>İş raporu</value>
+  </data>
+  <data name="Report_OpenHint" xml:space="preserve">
+    <value>Seçilen dönemin işlerini Excel&apos;e aktarır (proje ve stoka göre süzülebilir)</value>
+  </data>
+  <data name="Report_DialogTitle" xml:space="preserve">
+    <value>İş raporu</value>
+  </data>
+  <data name="Report_Period" xml:space="preserve">
+    <value>Dönem</value>
+  </data>
+  <data name="Report_Date" xml:space="preserve">
+    <value>Tarih</value>
+  </data>
+  <data name="Report_Export" xml:space="preserve">
+    <value>Excel&apos;e aktar</value>
+  </data>
+  <data name="Report_Day" xml:space="preserve">
+    <value>Günlük</value>
+  </data>
+  <data name="Report_Week" xml:space="preserve">
+    <value>Haftalık</value>
+  </data>
+  <data name="Report_Month" xml:space="preserve">
+    <value>Aylık</value>
+  </data>
+  <data name="Report_Year" xml:space="preserve">
+    <value>Yıllık</value>
+  </data>
+  <data name="Report_All" xml:space="preserve">
+    <value>Tüm zaman</value>
+  </data>
+  <data name="Report_TitleDay" xml:space="preserve">
+    <value>Günlük iş raporu</value>
+  </data>
+  <data name="Report_TitleWeek" xml:space="preserve">
+    <value>Haftalık iş raporu</value>
+  </data>
+  <data name="Report_TitleMonth" xml:space="preserve">
+    <value>Aylık iş raporu</value>
+  </data>
+  <data name="Report_TitleYear" xml:space="preserve">
+    <value>Yıllık iş raporu</value>
+  </data>
+  <data name="Report_TitleAll" xml:space="preserve">
+    <value>İş raporu · tüm zaman</value>
+  </data>
+  <data name="Report_WeekTag" xml:space="preserve">
+    <value>{0}. hafta</value>
+  </data>
+  <data name="Report_AllProjects" xml:space="preserve">
+    <value>Tüm projeler</value>
+  </data>
+  <data name="Report_Count" xml:space="preserve">
+    <value>{0} kayıt</value>
+  </data>
+  <data name="Report_SheetWork" xml:space="preserve">
+    <value>İşler</value>
+  </data>
+  <data name="Report_SheetSummary" xml:space="preserve">
+    <value>Özet</value>
+  </data>
+  <data name="Report_FilterHint" xml:space="preserve">
+    <value>Sayılar Excel süzgecine göre değişir: Proje ya da Stok sütununda süzün.</value>
+  </data>
+  <data name="Report_Records" xml:space="preserve">
+    <value>Kayıt</value>
+  </data>
+  <data name="Report_WorkSection" xml:space="preserve">
+    <value>Yapılan işler</value>
+  </data>
+  <data name="Report_ColDate" xml:space="preserve">
+    <value>Tarih</value>
+  </data>
+  <data name="Report_ColDay" xml:space="preserve">
+    <value>Gün</value>
+  </data>
+  <data name="Report_ColProject" xml:space="preserve">
+    <value>Proje</value>
+  </data>
+  <data name="Report_ColStock" xml:space="preserve">
+    <value>Stok</value>
+  </data>
+  <data name="Report_ColKind" xml:space="preserve">
+    <value>Tür</value>
+  </data>
+  <data name="Report_ColWork" xml:space="preserve">
+    <value>Yapılan iş</value>
+  </data>
+  <data name="Report_ColStatus" xml:space="preserve">
+    <value>Durum</value>
+  </data>
+  <data name="Report_SummarySection" xml:space="preserve">
+    <value>Projeye ve stoka göre</value>
+  </data>
+  <data name="Report_ColStockName" xml:space="preserve">
+    <value>Stok adı</value>
+  </data>
+  <data name="Report_ColCount" xml:space="preserve">
+    <value>Kayıt</value>
+  </data>
+  <data name="Report_ColLast" xml:space="preserve">
+    <value>Son kayıt</value>
+  </data>
+  <data name="Report_ColKinds" xml:space="preserve">
+    <value>Türler</value>
+  </data>
+  <data name="Report_Empty" xml:space="preserve">
+    <value>Bu dönemde kayıt yok.</value>
+  </data>
+  <data name="Report_Footer" xml:space="preserve">
+    <value>Pusula zaman çizelgesinden · {0} · Durum isteğe bağlıdır (ölçüm sonucu, talep durumu, revizyon).</value>
+  </data>
+  <data name="Report_FilePrefix" xml:space="preserve">
+    <value>Is_raporu</value>
+  </data>
+  <data name="Report_FileAll" xml:space="preserve">
+    <value>tum</value>
+  </data>
+  <data name="Report_Done" xml:space="preserve">
+    <value>İş raporu Excel&apos;e aktarıldı ({0} kayıt): {1}</value>
+  </data>
+  <data name="Report_Preview" xml:space="preserve">
+    <value>{0} · {1} kayıt</value>
+  </data>
+  <data name="Report_NoData" xml:space="preserve">
+    <value>Henüz kayıt yok</value>
+  </data>
+  <data name="Report_HomeSummary" xml:space="preserve">
+    <value>{0} kayıt · {1} proje · {2} stok</value>
+  </data>
+  <data name="Home_RangeYear" xml:space="preserve">
+    <value>Bu yıl</value>
+  </data>
 </root>

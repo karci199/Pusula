@@ -102,7 +102,7 @@ namespace Pusula.Core.Office
 
         // Hücre metni: XML'de geçersiz denetim karakterleri (DOORS metnindeki \v gibi) atılır, Excel dosyayı bozuk saymasın;
         // Excel'in hücre sınırı 32 767 karakter.
-        private static string CellSafe(string text)
+        internal static string CellSafe(string text)
         {
             var sb = new StringBuilder(text.Length);
             foreach (var ch in text)
@@ -120,7 +120,7 @@ namespace Pusula.Core.Office
         }
 
         // 0 → A, 25 → Z, 26 → AA.
-        private static string ColumnName(int index)
+        internal static string ColumnName(int index)
         {
             var name = string.Empty;
             index++;
@@ -135,7 +135,13 @@ namespace Pusula.Core.Office
         }
 
         // Excel sayfa adı: en çok 31 karakter, : \ / ? * [ ] yok.
-        private static string SheetName(string name)
+        internal static string SheetName(string name)
+        {
+            return SecurityElement.Escape(CleanSheetName(name));
+        }
+
+        // Sayfa adının kendisi (XML kaçışı yok; formülde 'ad' olarak kullanılır).
+        internal static string CleanSheetName(string name)
         {
             var clean = new string((name ?? "Sayfa1").Where(ch => ":\\/?*[]".IndexOf(ch) < 0).ToArray()).Trim();
             if (clean.Length == 0)
@@ -143,10 +149,10 @@ namespace Pusula.Core.Office
                 clean = "Sayfa1";
             }
 
-            return SecurityElement.Escape(clean.Length > 31 ? clean.Substring(0, 31) : clean);
+            return clean.Length > 31 ? clean.Substring(0, 31) : clean;
         }
 
-        private static void Put(ZipArchive zip, string name, string content)
+        internal static void Put(ZipArchive zip, string name, string content)
         {
             var entry = zip.CreateEntry(name);
             using (var writer = new StreamWriter(entry.Open(), new UTF8Encoding(false)))
@@ -155,7 +161,7 @@ namespace Pusula.Core.Office
             }
         }
 
-        private static void TryDelete(string path)
+        internal static void TryDelete(string path)
         {
             try
             {

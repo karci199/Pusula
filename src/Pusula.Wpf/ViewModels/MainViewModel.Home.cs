@@ -81,6 +81,13 @@ namespace Pusula.Wpf.ViewModels
             set { SetHomeRange(value, "month"); }
         }
 
+        /// <summary>Süzgeç: bu yıl (27.11.2026: yıllık iş raporu ana sayfada da görünsün).</summary>
+        public bool IsRangeYear
+        {
+            get { return homeRange == "year"; }
+            set { SetHomeRange(value, "year"); }
+        }
+
         /// <summary>Süzgeç: bütün açık işler (tarihsizler en sonda).</summary>
         public bool IsRangeAll
         {
@@ -152,6 +159,7 @@ namespace Pusula.Wpf.ViewModels
             OnPropertyChanged(nameof(IsRangeToday));
             OnPropertyChanged(nameof(IsRangeWeek));
             OnPropertyChanged(nameof(IsRangeMonth));
+            OnPropertyChanged(nameof(IsRangeYear));
             OnPropertyChanged(nameof(IsRangeAll));
             FilterHomeTasks();
             FilterHomeTimeline();
@@ -174,6 +182,9 @@ namespace Pusula.Wpf.ViewModels
                     break;
                 case "month":
                     until = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
+                    break;
+                case "year":
+                    until = new DateTime(today.Year, 12, 31);
                     break;
                 default:
                     until = null;

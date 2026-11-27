@@ -1664,6 +1664,15 @@ namespace Pusula.Wpf
                 }
             };
             menu.Items.Add(copy);
+
+            // Stokta "Modül ekle" (27.11.2026): sol ağaçtaki sağ tık menüsüyle aynı pencere.
+            if (node.Kind == Pusula.Core.Tracking.FolderKind.Stock)
+            {
+                var modules = new MenuItem { Header = Properties.Resources.Menu_AddModules, Icon = new AppIcon { Glyph = AppIcons.Add } };
+                modules.Click += (s, args) => viewModel.AddModulesCommand.Execute(null);
+                menu.Items.Add(modules);
+            }
+
             if (viewModel.CanEditSelected)
             {
                 menu.Items.Add(new Separator());
@@ -2162,6 +2171,23 @@ namespace Pusula.Wpf
             if (editor.ShowDialog() == true)
             {
                 viewModel.ReloadTemplates();
+            }
+        }
+
+        // İş raporu: kaydetme yeri sorulur (önerilen ad dönemden), sonra Excel yazılır.
+        private void WorkReportDialog_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Microsoft.Win32.SaveFileDialog
+            {
+                FileName = viewModel.WorkReportFileName,
+                DefaultExt = ".xlsx",
+                Filter = Properties.Resources.Import_Filter,
+                OverwritePrompt = true,
+                InitialDirectory = Directory.Exists(viewModel.RootPath) ? viewModel.RootPath : string.Empty,
+            };
+            if (dialog.ShowDialog(this) == true)
+            {
+                viewModel.ExportWorkReport(dialog.FileName);
             }
         }
 
