@@ -3921,4 +3921,13 @@ Ortak liste (ÇK / EMC): &quot;## standart&quot; başlığı altında &quot;- nu
   <data name="Home_RangeYear" xml:space="preserve">
     <value>Bu yıl</value>
   </data>
+  <data name="Report_AllStocks" xml:space="preserve">
+    <value>Tüm stoklar</value>
+  </data>
+  <data name="Home_TabReport" xml:space="preserve">
+    <value>Rapor</value>
+  </data>
+  <data name="Report_ColNote" xml:space="preserve">
+    <value>Açıklama</value>
+  </data>
 </root>

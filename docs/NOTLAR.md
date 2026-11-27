@@ -440,3 +440,5 @@ Deneme kökü: `C:\PusulaDeneme`.
 - **Ana ekranda da:** Günlük süzgecine "Bu yıl" eklendi; listenin üstünde özet satırı (kayıt · proje · stok · türler). Rapor penceresi ana sayfadaki süzgeçle açılır.
 - **Modül ekle** stok sayfasının ⋯ menüsünde de var (sol ağaç sağ tık menüsüyle aynı pencere).
 - Kütüphane yok: xlsx elle yazılıyor (`Core/Office/WorkReportWriter.cs`). Mock: `docs/mock/is_raporu_*.png / .xlsx`. Test: `tests/Senaryolar/work-report.ps1`.
+- **Arayüzde Rapor sekmesi** (ana sayfa, İstatistik'in yanında): dönem + tarih, proje / stok süzgeci, sayı kutuları, tablo (Tarih · Gün · Proje · Stok · Tür · Yapılan iş + kısa açıklama · Durum), "Excel'e aktar" görünen satırları yazar. Günlük'teki "İş raporu" düğmesi bu sekmeyi açar (ayrı pencere kalktı).
+- **Açıklama:** raporda kaydın başlığı (Yapılan iş) ve kısa açıklaması var; "#### Ayrıntı" bölümü alınmaz. Excel'de ayrı "Açıklama" sütunu.

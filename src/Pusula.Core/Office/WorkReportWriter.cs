@@ -48,7 +48,8 @@ namespace Pusula.Core.Office
         private const int SStatus = 18;
         private const int SBold = 19;
         private const int SNumber = 20;
-        private const int BandOffset = 10;
+        private const int SNote = 21;
+        private const int BandOffset = 11;
 
         /// <summary>Raporu yazar. Hata metni ya da boş döndürür.</summary>
         public static string Write(string path, WorkReportLabels labels, IList<WorkReportRow> rows)
@@ -68,7 +69,7 @@ namespace Pusula.Core.Office
                     XlsxWriter.Put(zip, "_rels/.rels", Xml + "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"xl/workbook.xml\"/></Relationships>");
                     XlsxWriter.Put(zip, "xl/workbook.xml", Xml + "<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"><sheets>"
                         + "<sheet name=\"" + workSheet + "\" sheetId=\"1\" r:id=\"rId1\"/><sheet name=\"" + summarySheet + "\" sheetId=\"2\" r:id=\"rId2\"/></sheets><definedNames>"
-                        + "<definedName name=\"_xlnm._FilterDatabase\" localSheetId=\"0\" hidden=\"1\">" + SecurityElement.Escape(Quote(labels.SheetWork)) + "!$B$" + HeaderRow + ":$H$" + last + "</definedName>"
+                        + "<definedName name=\"_xlnm._FilterDatabase\" localSheetId=\"0\" hidden=\"1\">" + SecurityElement.Escape(Quote(labels.SheetWork)) + "!$B$" + HeaderRow + ":$I$" + last + "</definedName>"
                         + "<definedName name=\"_xlnm.Print_Titles\" localSheetId=\"0\">" + SecurityElement.Escape(Quote(labels.SheetWork)) + "!$" + HeaderRow + ":$" + HeaderRow + "</definedName>"
                         + "</definedNames><calcPr calcId=\"191029\" fullCalcOnLoad=\"1\"/></workbook>");
                     XlsxWriter.Put(zip, "xl/_rels/workbook.xml.rels", Xml + "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\" Target=\"worksheets/sheet1.xml\"/><Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\" Target=\"worksheets/sheet2.xml\"/><Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/></Relationships>");
@@ -108,7 +109,7 @@ namespace Pusula.Core.Office
         private static string WorkSheet(WorkReportLabels labels, List<WorkReportRow> rows, int last)
         {
             var s = new SheetBuilder();
-            s.Row(2, 30).Text("B", 2, labels.Title, STitle).Text("H", 2, labels.PeriodTag, SPeriod);
+            s.Row(2, 30).Text("B", 2, labels.Title, STitle).Text("I", 2, labels.PeriodTag, SPeriod);
             s.Row(3, 18).Text("B", 3, labels.Subtitle, SSubtitle);
             s.Row(5, 14).Text("B", 5, labels.FilterHint, SHint);
 
@@ -150,7 +151,7 @@ namespace Pusula.Core.Office
 
             s.Row(9, 20).Text("B", 9, labels.WorkSection, SSection);
             s.Row(HeaderRow, 18);
-            var cols = new[] { "B", "C", "D", "E", "F", "G", "H" };
+            var cols = new[] { "B", "C", "D", "E", "F", "G", "H", "I" };
             for (var c = 0; c < cols.Length; c++)
             {
                 s.Text(cols[c], HeaderRow, c < labels.Columns.Length ? labels.Columns[c] : string.Empty, c == 1 || c == 6 ? SHeaderCenter : SHeader);
@@ -175,7 +176,10 @@ namespace Pusula.Core.Office
 
                 previous = row.Date.Date;
                 var o = band ? 0 : BandOffset;
-                s.Row(r, 21);
+                // Açıklama sütunu kaydırmalı: satır yüksekliği metnin uzunluğundan (en çok 4 satır).
+                var note = row.Note.Length > 300 ? row.Note.Substring(0, 297) + "…" : row.Note;
+                var lines = Math.Max(1, Math.Min(4, (int)Math.Ceiling(note.Length / 58.0)));
+                s.Row(r, lines == 1 ? 21 : (lines * 13.5) + 6);
                 s.Number("B", r, row.Date.Date.ToOADate(), (newDay ? SDate : SDateDim) + o);
                 s.Number("C", r, row.Date.Date.ToOADate(), (newDay ? SDay : SDayDim) + o);
                 s.Text("D", r, row.Project, SText + o);
@@ -183,6 +187,7 @@ namespace Pusula.Core.Office
                 s.Text("F", r, row.Kind, SMuted + o);
                 s.Text("G", r, row.Work, SText + o);
                 s.Text("H", r, row.Status, SStatus + o);
+                s.Text("I", r, note, SNote + o);
             }
 
             var footer = last + 2;
@@ -196,9 +201,9 @@ namespace Pusula.Core.Office
             var cfXml = cf.Length > 0 ? "<conditionalFormatting sqref=\"H" + FirstRow + ":H" + last + "\">" + cf + "</conditionalFormatting>" : string.Empty;
 
             return s.Build(
-                new[] { 2.0, 12.5, 6, 20, 15, 19, 60, 16, 2 },
+                new[] { 2.0, 12.5, 6, 20, 15, 19, 48, 16, 60, 2 },
                 "<pane ySplit=\"" + HeaderRow + "\" topLeftCell=\"A" + FirstRow + "\" activePane=\"bottomLeft\" state=\"frozen\"/><selection pane=\"bottomLeft\" activeCell=\"B" + FirstRow + "\" sqref=\"B" + FirstRow + "\"/>",
-                "<autoFilter ref=\"B" + HeaderRow + ":H" + last + "\"/>",
+                "<autoFilter ref=\"B" + HeaderRow + ":I" + last + "\"/>",
                 cfXml);
         }
 
@@ -318,6 +323,7 @@ namespace Pusula.Core.Office
             const string center = "<alignment horizontal=\"center\" vertical=\"center\"/>";
             const string indent = "<alignment horizontal=\"left\" vertical=\"center\" indent=\"1\"/>";
             const string right = "<alignment horizontal=\"right\" vertical=\"center\"/>";
+            const string wrap = "<alignment vertical=\"center\" wrapText=\"1\"/>";
             var xfs = new List<string>
             {
                 Xf(0, 0, 0, 0, null),            // 0
@@ -344,7 +350,8 @@ namespace Pusula.Core.Office
                 xfs.Add(Xf(0, 9, fill, 1, left));      // 17 / 27 stok no
                 xfs.Add(Xf(0, 10, fill, 1, center));   // 18 / 28 durum
                 xfs.Add(Xf(0, 10, fill, 1, left));     // 19 / 29 kalın
-                xfs.Add(Xf(1, 0, fill, 1, center));    // 20 / 30 sayı
+                xfs.Add(Xf(1, 0, fill, 1, center));    // 20 / 31 sayı
+                xfs.Add(Xf(0, 3, fill, 1, wrap));      // 21 / 32 açıklama (soluk, kaydırmalı)
             }
 
             var dxfs = new[]

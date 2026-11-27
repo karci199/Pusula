@@ -4126,5 +4126,14 @@ namespace Pusula.Wpf.Properties
 
         /// <summary>Süzgeç: Bu yıl.</summary>
         public static string Home_RangeYear { get { return Get("Home_RangeYear"); } }
+
+        /// <summary>Rapor süzgeci: Tüm stoklar.</summary>
+        public static string Report_AllStocks { get { return Get("Report_AllStocks"); } }
+
+        /// <summary>Ana sayfa sekmesi: Rapor.</summary>
+        public static string Home_TabReport { get { return Get("Home_TabReport"); } }
+
+        /// <summary>İş raporu sütunu: Açıklama (kısa açıklama, Ayrıntı hariç).</summary>
+        public static string Report_ColNote { get { return Get("Report_ColNote"); } }
     }
 }

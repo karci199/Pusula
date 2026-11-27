@@ -1,7 +1,7 @@
 ﻿param([string]$Bin, [string]$Out, [string]$Data, [string]$Sample)
 . (Join-Path $PSScriptRoot '..\_Ortak.ps1')
 # 27.11.2026: iş raporu. Ana sayfa Günlük'te dönem (Bugün / Bu hafta / Bu ay / Bu yıl / Hepsi) ve özet satırı;
-# "İş raporu" seçilen dönemi (gün / hafta / ay / yıl / tüm zaman) Excel'e yazar: İşler (süzgeçli) + Özet sayfası.
+# "İş raporu" Rapor sekmesini açar (dönem, proje / stok süzgeci, tablo); seçilen dönemi (gün / hafta / ay / yıl / tüm zaman) Excel'e yazar: İşler (süzgeçli) + Özet sayfası.
 # Durum isteğe bağlı. Stok sayfasının ⋯ menüsünde "Modül ekle".
 Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
 $WR = [Pusula.Core.Office.WorkReport]
@@ -36,11 +36,21 @@ $vm.IsRangeYear = $true; Wait
 Check 'Bu yıl seçilir' ($vm.IsRangeYear -and -not $vm.IsRangeAll)
 Check 'İş raporu düğmesi Günlük sekmesinde' ($vm.IsHomeJournalTab)
 
-"--- İş raporu penceresi"
+"--- Rapor sekmesi"
 $vm.IsRangeAll = $true; Wait
 $vm.OpenWorkReportCommand.Execute($null); Wait
-Check 'pencere açık, dönem ana sayfadan (Hepsi → tüm zaman)' ($vm.IsWorkReportOpen -and $vm.IsReportAll -and -not $vm.IsReportDateVisible)
+Check 'İş raporu → Rapor sekmesi, dönem ana sayfadan (Hepsi → tüm zaman)' ($vm.HomeTab -eq 4 -and $vm.IsHomeReportTab -and $vm.IsReportAll -and -not $vm.IsReportDateVisible)
+Check 'tabloda bütün kayıtlar' ($vm.WorkReportLines.Count -eq $all) ([string]$vm.WorkReportLines.Count)
+Check 'ilk kutu Kayıt' ($vm.WorkReportTiles[0].Count -eq $all -and $vm.WorkReportTiles.Count -ge 2)
 Check 'önizleme kayıt sayısı' ($vm.ReportPreview -like ('* · ' + $all + ' kayıt')) $vm.ReportPreview
+Check 'proje / stok seçenekleri' ($vm.ReportProjects.Count -ge 2 -and $vm.ReportProjects[0] -eq 'Tüm projeler' -and $vm.ReportStocks[0] -eq 'Tüm stoklar')
+$vm.ReportProject = $vm.ReportProjects[1]; Wait
+Check 'proje süzgeci' ($vm.WorkReportLines.Count -gt 0 -and @($vm.WorkReportLines | Where-Object { $_.Project -ne $vm.ReportProjects[1] }).Count -eq 0)
+$stock = $vm.ReportStocks[1]
+$vm.ReportStock = $stock; Wait
+Check 'stok süzgeci' ($vm.WorkReportLines.Count -gt 0 -and @($vm.WorkReportLines | Where-Object { $_.Stock -ne $stock }).Count -eq 0) $stock
+$vm.ReportProject = 'Tüm projeler'; Wait
+Check 'Tüm projeler: stok da sıfırlanır' ($vm.ReportStock -eq 'Tüm stoklar' -and $vm.WorkReportLines.Count -eq $all)
 $tmp = Join-Path $env:TEMP ('pusula-rapor-' + [guid]::NewGuid().ToString('N').Substring(0,6))
 New-Item -ItemType Directory $tmp | Out-Null
 try {
@@ -51,11 +61,13 @@ try {
     $wb = & $read 'xl/workbook.xml'; $s1 = & $read 'xl/worksheets/sheet1.xml'; $s2 = & $read 'xl/worksheets/sheet2.xml'
     $zip.Dispose()
     Check 'iki sayfa: İşler, Özet' ($wb.Contains('name="İşler"') -and $wb.Contains('name="Özet"'))
-    Check 'başlık satırında süzgeç (proje / stok)' ($s1.Contains('<autoFilter ref="B10:H') -and $s1.Contains('>Proje<') -and $s1.Contains('>Stok<'))
+    Check 'başlık satırında süzgeç (proje / stok)' ($s1.Contains('<autoFilter ref="B10:I') -and $s1.Contains('>Proje<') -and $s1.Contains('>Stok<'))
     Check 'satır sayısı = kayıt' (([regex]::Matches($s1, '<row r="(\d+)"') | Where-Object { [int]$_.Groups[1].Value -ge 11 -and [int]$_.Groups[1].Value -lt 11 + $all }).Count -eq $all)
     Check 'özet kutuları süzgece göre (SUBTOTAL)' ($s1.Contains('<f>SUBTOTAL(103,'))
     Check 'özet sayfası formülle (COUNTIFS)' ($s2.Contains('COUNTIFS(&apos;İşler&apos;!'))
     Check 'proje adı yazılır' ($s1.Contains('>7000_MILKON<'))
+    Check 'Açıklama sütunu var, Ayrıntı bölümü yok' ($s1.Contains('>Açıklama<') -and -not $s1.Contains('Ayrıntı'))
+    Check 'arayüzde kısa açıklama' (@($vm.WorkReportLines | Where-Object { $_.HasNote }).Count -gt 0)
 
     $vm.IsReportYear = $true; $vm.WorkReportDate = [datetime]'2020-06-01'; Wait
     Check 'kaydı olmayan yıl: 0 kayıt' ($vm.ReportPreview -like '* · 0 kayıt') $vm.ReportPreview
@@ -68,21 +80,7 @@ finally {
     Remove-Item -Recurse -Force $tmp -ErrorAction SilentlyContinue
 }
 
-# Pencerenin resmi
-$vm.IsReportWeek = $true; $vm.WorkReportDate = [datetime]::Today; Wait
-$d = $null; $st = New-Object System.Collections.Stack; $st.Push($win)
-while ($st.Count) { $e = $st.Pop(); if ($e -is [DesignKit.Controls.ContentDialog] -and $e.IsOpen) { $d = $e }; for ($i = 0; $i -lt [System.Windows.Media.VisualTreeHelper]::GetChildrenCount($e); $i++) { $st.Push([System.Windows.Media.VisualTreeHelper]::GetChild($e, $i)) } }
-if ($d) {
-    $child = $d.Template.FindName('PART_Popup', $d).Child
-    $child.Measure((New-Object System.Windows.Size 1360, 900)); $child.Arrange((New-Object System.Windows.Rect 0, 0, 1360, 900)); $child.UpdateLayout(); Wait
-    $rtb = New-Object System.Windows.Media.Imaging.RenderTargetBitmap 2040, 1350, 144, 144, ([System.Windows.Media.PixelFormats]::Pbgra32)
-    $dv = New-Object System.Windows.Media.DrawingVisual; $dc = $dv.RenderOpen()
-    $dc.DrawRectangle((New-Object System.Windows.Media.VisualBrush $win), $null, (New-Object System.Windows.Rect 0, 0, 1360, 900))
-    $dc.DrawRectangle((New-Object System.Windows.Media.VisualBrush $child), $null, (New-Object System.Windows.Rect 0, 0, 1360, 900))
-    $dc.Close(); $rtb.Render($dv)
-    $pe = New-Object System.Windows.Media.Imaging.PngBitmapEncoder; $pe.Frames.Add([System.Windows.Media.Imaging.BitmapFrame]::Create($rtb))
-    $fs = [IO.File]::Create("$Out\work-report-dialog.png"); $pe.Save($fs); $fs.Close()
-}
-$vm.IsWorkReportOpen = $false; Wait
-
+# Rapor sekmesinin resmi (tüm zaman)
+$vm.IsReportAll = $true; Wait
+Snap $win "$Out\work-report-tab.png"
 $win.Close()

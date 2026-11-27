@@ -22,7 +22,7 @@ namespace Pusula.Wpf.ViewModels
         private int homeTab;
         private List<StockTimelineCard> homeEvents = new List<StockTimelineCard>();
 
-        /// <summary>Seçili sekme: 0 Günlük, 1 Yapılacaklar, 2 Kayıtlar, 3 İstatistik.</summary>
+        /// <summary>Seçili sekme: 0 Günlük, 1 Yapılacaklar, 2 Kayıtlar, 3 İstatistik, 4 Rapor.</summary>
         public int HomeTab
         {
             get { return homeTab; }
@@ -33,6 +33,7 @@ namespace Pusula.Wpf.ViewModels
                     OnPropertyChanged(nameof(IsHomeRecordsTab));
                     OnPropertyChanged(nameof(IsHomeRangeTab));
                     OnPropertyChanged(nameof(IsHomeJournalTab));
+                    OnPropertyChanged(nameof(IsHomeReportTab));
                 }
             }
         }
@@ -119,6 +120,7 @@ namespace Pusula.Wpf.ViewModels
             OnPropertyChanged(nameof(IsHomeTimelineEmpty));
             OnPropertyChanged(nameof(HomeJournalSummary));
             BuildHomeEmptySummary();
+            RefreshReport();
         }
 
         /// <summary>Günlük boşken son olay: "Son olay 12.11.2026 · AB-7000-0003 · Kalibrasyon"; hiç olay yoksa boş.</summary>

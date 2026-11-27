@@ -16,25 +16,21 @@ namespace Pusula.Wpf.ViewModels
     /// </summary>
     public sealed partial class MainViewModel
     {
-        private bool isWorkReportOpen;
+        private string reportProject = string.Empty;
+        private string reportStock = string.Empty;
+        private bool fillingReportFilters;
         private ReportPeriod reportPeriod = ReportPeriod.Week;
         private DateTime workReportDate = DateTime.Today;
         private ICommand? openWorkReportCommand;
 
         private static readonly CultureInfo Turkish = CultureInfo.GetCultureInfo("tr-TR");
 
-        /// <summary>İş raporu penceresini açar.</summary>
+        /// <summary>Ana sayfada Rapor sekmesine geçer (dönem Günlük süzgecinden).</summary>
         public ICommand OpenWorkReportCommand
         {
             get { return openWorkReportCommand ?? (openWorkReportCommand = new RelayCommand(OpenWorkReport)); }
         }
 
-        /// <summary>İş raporu penceresi açık mı.</summary>
-        public bool IsWorkReportOpen
-        {
-            get { return isWorkReportOpen; }
-            set { SetProperty(ref isWorkReportOpen, value); }
-        }
 
         /// <summary>Seçili dönem.</summary>
         public ReportPeriod ReportPeriod
@@ -50,7 +46,8 @@ namespace Pusula.Wpf.ViewModels
                     OnPropertyChanged(nameof(IsReportYear));
                     OnPropertyChanged(nameof(IsReportAll));
                     OnPropertyChanged(nameof(IsReportDateVisible));
-                    OnPropertyChanged(nameof(ReportPreview));
+                    OnPropertyChanged(nameof(WorkReportFileName));
+                    RefreshReport();
                 }
             }
         }
@@ -101,7 +98,8 @@ namespace Pusula.Wpf.ViewModels
                 {
                     workReportDate = day;
                     OnPropertyChanged();
-                    OnPropertyChanged(nameof(ReportPreview));
+                    OnPropertyChanged(nameof(WorkReportFileName));
+                    RefreshReport();
                 }
             }
         }
@@ -112,7 +110,7 @@ namespace Pusula.Wpf.ViewModels
             get { return reportPeriod != ReportPeriod.All; }
         }
 
-        /// <summary>Pencerede önizleme: "23 – 29 Kasım 2026 · 11 kayıt".</summary>
+        /// <summary>Rapor başlığı: "23 – 29 Kasım 2026 · 11 kayıt" (proje / stok süzgeciyle).</summary>
         public string ReportPreview
         {
             get
@@ -138,27 +136,32 @@ namespace Pusula.Wpf.ViewModels
 
         private void OpenWorkReport()
         {
-            // Pencere ana sayfadaki süzgeçle açılır: Bugün → gün, Bu ay → ay, Bu yıl → yıl, Hepsi → tüm zaman, yoksa hafta.
+            // Rapor sekmesi ana sayfadaki süzgeçle açılır: Bugün → gün, Bu ay → ay, Bu yıl → yıl, Hepsi → tüm zaman, yoksa hafta.
             workReportDate = DateTime.Today;
             OnPropertyChanged(nameof(WorkReportDate));
             ReportPeriod = homeRange == "today" ? ReportPeriod.Day : homeRange == "month" ? ReportPeriod.Month : homeRange == "year" ? ReportPeriod.Year : homeRange == "all" ? ReportPeriod.All : ReportPeriod.Week;
-            OnPropertyChanged(nameof(ReportPreview));
-            IsWorkReportOpen = true;
+            RefreshReport();
+            HomeTab = ReportTabIndex;
         }
 
-        /// <summary>Seçili dönemin satırları (eskiden yeniye).</summary>
+        /// <summary>Seçili dönemin (ve seçili proje / stokun) satırları, eskiden yeniye.</summary>
         internal List<WorkReportRow> WorkReportRows()
         {
             DateTime? from;
             DateTime? to;
             WorkReport.RangeOf(reportPeriod, workReportDate, out from, out to);
-            return WorkReport.Sorted(homeEvents.Where(c => WorkReport.InRange(c.When, from, to)).Select(ReportRowOf));
+            return WorkReport.Sorted(homeEvents.Where(c => WorkReport.InRange(c.When, from, to)
+                && (reportProject.Length == 0 || string.Equals(c.ProjectName, reportProject, StringComparison.OrdinalIgnoreCase))
+                && (reportStock.Length == 0 || string.Equals(c.Source, reportStock, StringComparison.OrdinalIgnoreCase))).Select(ReportRowOf));
         }
 
         private static WorkReportRow ReportRowOf(StockTimelineCard card)
         {
             var journal = card.Item?.Journal;
-            var title = card.Title.Trim().Length > 0 ? card.Title.Trim() : (card.Description ?? string.Empty).Trim();
+            // Yapılan iş = başlık; açıklama = kartın kısa açıklaması ("#### Ayrıntı" bölümü alınmaz).
+            var summary = (card.Description ?? string.Empty).Trim();
+            var hasTitle = card.Title.Trim().Length > 0;
+            var title = hasTitle ? card.Title.Trim() : summary;
             return new WorkReportRow
             {
                 Date = card.When,
@@ -167,6 +170,7 @@ namespace Pusula.Wpf.ViewModels
                 StockName = card.StockName,
                 Kind = card.KindLabel,
                 Work = title,
+                Note = hasTitle && !string.Equals(summary, title, StringComparison.CurrentCultureIgnoreCase) ? summary : string.Empty,
                 Status = ReportStatusOf(card, journal?.Result.Trim() ?? string.Empty),
             };
         }
@@ -238,7 +242,8 @@ namespace Pusula.Wpf.ViewModels
         public bool ExportWorkReport(string path)
         {
             var rows = WorkReportRows();
-            var scope = scopeProject == null ? Resources.Report_AllProjects : System.IO.Path.GetFileName(scopeProject);
+            var scope = reportStock.Length > 0 ? reportStock : reportProject.Length > 0 ? reportProject
+                : scopeProject == null ? Resources.Report_AllProjects : System.IO.Path.GetFileName(scopeProject);
             var labels = new WorkReportLabels
             {
                 SheetWork = Resources.Report_SheetWork,
@@ -249,7 +254,7 @@ namespace Pusula.Wpf.ViewModels
                 FilterHint = Resources.Report_FilterHint,
                 Records = Resources.Report_Records,
                 WorkSection = Resources.Report_WorkSection,
-                Columns = new[] { Resources.Report_ColDate, Resources.Report_ColDay, Resources.Report_ColProject, Resources.Report_ColStock, Resources.Report_ColKind, Resources.Report_ColWork, Resources.Report_ColStatus },
+                Columns = new[] { Resources.Report_ColDate, Resources.Report_ColDay, Resources.Report_ColProject, Resources.Report_ColStock, Resources.Report_ColKind, Resources.Report_ColWork, Resources.Report_ColStatus, Resources.Report_ColNote },
                 SummarySection = Resources.Report_SummarySection,
                 SummaryColumns = new[] { Resources.Report_ColProject, Resources.Report_ColStock, Resources.Report_ColStockName, Resources.Report_ColCount, Resources.Report_ColLast, Resources.Report_ColKinds },
                 Empty = Resources.Report_Empty,

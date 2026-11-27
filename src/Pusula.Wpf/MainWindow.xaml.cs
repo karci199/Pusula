@@ -2174,8 +2174,8 @@ namespace Pusula.Wpf
             }
         }
 
-        // İş raporu: kaydetme yeri sorulur (önerilen ad dönemden), sonra Excel yazılır.
-        private void WorkReportDialog_PrimaryButtonClick(object sender, RoutedEventArgs e)
+        // Rapor sekmesi "Excel'e aktar": kaydetme yeri sorulur (önerilen ad dönemden), görünen satırlar Excel'e yazılır.
+        private void WorkReportExport_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new Microsoft.Win32.SaveFileDialog
             {

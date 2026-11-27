@@ -44,6 +44,9 @@ namespace Pusula.Core.Office
         /// <summary>Yapılan iş (kaydın başlığı).</summary>
         public string Work { get; set; } = string.Empty;
 
+        /// <summary>Kısa açıklama (kaydın "#### Ayrıntı" öncesi metni, tek satır); boş olabilir.</summary>
+        public string Note { get; set; } = string.Empty;
+
         /// <summary>Durum (isteğe bağlı): ölçüm sonucu, talep durumu, revizyon …; boş olabilir.</summary>
         public string Status { get; set; } = string.Empty;
     }
@@ -75,8 +78,8 @@ namespace Pusula.Core.Office
         /// <summary>İşler tablosunun başlığı.</summary>
         public string WorkSection { get; set; } = string.Empty;
 
-        /// <summary>Sütunlar: Tarih, Gün, Proje, Stok, Tür, Yapılan iş, Durum.</summary>
-        public string[] Columns { get; set; } = new string[7];
+        /// <summary>Sütunlar: Tarih, Gün, Proje, Stok, Tür, Yapılan iş, Durum, Açıklama.</summary>
+        public string[] Columns { get; set; } = new string[8];
 
         /// <summary>Özet sayfasının başlığı ("Projeye ve stoka göre").</summary>
         public string SummarySection { get; set; } = string.Empty;
