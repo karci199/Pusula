@@ -35,10 +35,28 @@ function CheckDialog([string]$name)
     Check ($name + ': ana pencerenin sahipliğinde') ($src -and [PusulaTest.User32]::GetWindow($src.Handle, 4) -eq $mainHwnd)
 }
 
+function SnapDialog([string]$path)
+{
+    $d = @(OpenDialogs)[0]
+    $child = $d.Template.FindName('PART_Popup', $d).Child
+    $child.Measure((New-Object System.Windows.Size 1360, 900)); $child.Arrange((New-Object System.Windows.Rect 0, 0, 1360, 900)); $child.UpdateLayout(); Wait
+    $rtb = New-Object System.Windows.Media.Imaging.RenderTargetBitmap 2040, 1350, 144, 144, ([System.Windows.Media.PixelFormats]::Pbgra32)
+    $dv = New-Object System.Windows.Media.DrawingVisual; $dc = $dv.RenderOpen()
+    $dc.DrawRectangle((New-Object System.Windows.Media.VisualBrush $win), $null, (New-Object System.Windows.Rect 0, 0, 1360, 900))
+    $dc.DrawRectangle((New-Object System.Windows.Media.VisualBrush $child), $null, (New-Object System.Windows.Rect 0, 0, 1360, 900))
+    $dc.Close(); $rtb.Render($dv)
+    $pe = New-Object System.Windows.Media.Imaging.PngBitmapEncoder; $pe.Frames.Add([System.Windows.Media.Imaging.BitmapFrame]::Create($rtb))
+    $fs = [IO.File]::Create($path); $pe.Save($fs); $fs.Close()
+}
+
 "--- Stok ekleme penceresi"
 $vm.SelectNodeByPath((Join-Path $Data '7000_MILKON')); Wait
 $vm.NewStockCommand.Execute($null); Wait; Wait
 CheckDialog 'stok ekleme'
+# 27.11.2026: ekleme pencereleri genişledi; stokta modüller iki sütun, içerik kayar.
+$sd = @(OpenDialogs)[0]
+Check 'stok penceresi 680 geniş, şablon modülleri listede' ($sd.DialogWidth -eq 680 -and $vm.StockModules.Count -gt 0) ([string]$sd.DialogWidth)
+SnapDialog "$Out\stock-dialog.png"
 $vm.IsStockDialogOpen = $false; Wait
 Check 'kapanınca gizlenir' (@(OpenDialogs).Count -eq 0)
 

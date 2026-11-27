@@ -242,7 +242,9 @@ Kopyası `C:\PusulaDeneme\7000_MILKON\AB-7000-0002` altında (işaretsiz). KIWI 
 - **Kullanıcı notları (26.11.2026, WhatsApp listesi; Pusula'ya ait olanlar):** (1) grup ve test tipi aynı gibi — yapıldı;
   (2) odak sağ ekrana gidince doğrulama maddesi kayboluyor; iki ekranda pencere değişince açık pencere (stok ekleme)
   alta düşüyor, ana ekran soluk kalıyor, geri gelince açılıyor — yapıldı (aşağıda); (3) bir şey eklerken yavaş; (4) 261'e bağlama
-  çalışmıyor — yapıldı; (5) stok eklerken pencere küçük; (9) bileşen ekleme nasıl (alt / üst stok, "+ Bileşen");
+  çalışmıyor — yapıldı; (5) stok eklerken pencere küçük — yapıldı (27.11.2026: ekleme pencereleri genişledi: proje,
+  analiz, olay, kısa not, modül 360 → 600; stok 680, modüller iki sütun, içerik kayar; kayıt düzenle 640 / 760, plan, rapor,
+  günlük, iş 720, gereksinim ve envanter 760); (9) bileşen ekleme nasıl (alt / üst stok, "+ Bileşen");
   (10) sonradan klasör yapısı eklenebiliyor mu. Kalan maddeler (jpg/png, s1p/s2p, ATD adı) KIWI'ye ait.
 - **Ortadaki pencereler odak kaybında gizlenmez (26.11.2026, DesignKit 0.3.9):** DesignKit `ContentDialog` uygulama odağı
   kaybedince Popup'ı bilerek gizliyordu (her zaman üstte olduğu için başka uygulamanın üstünde kalmasın diye); karartma
